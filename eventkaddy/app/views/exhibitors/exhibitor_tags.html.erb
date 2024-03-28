@@ -1,0 +1,98 @@
+<h4>Tags for Exhibitor: <%= @exhibitor.company_name %></h4>
+
+<%= link_to 'Back to Exhibitor', exhibitor_path(@exhibitor) ,class:"btn btn-link" %>
+<br/><br/>
+
+
+<%= form_tag("/exhibitors/#{@exhibitor.id}/update_exhibitor_tags", :method => "post", :remote => false, :multipart => false, :id=>"update_exhibitor_tags_form", :class=>"bg-light custom-border px-1 py-3") do %>
+		
+        <%= hidden_field_tag :tag_groups_count, @tag_groups.length %>
+        <%= hidden_field_tag :tag_type_id, @tagType.id %>
+        <%= submit_tag "Save", class:"btn btn-primary" %></br></br>
+        		
+		<% @tag_groups.each_with_index do |tag_group,i| %>
+			<div class="col-md-9">
+				<% tag_group.each_with_index do |tag,j| %>
+					<%= text_field_tag "tag_#{i}_#{j}",@tag_groups[i][j], class: "form-control" %>
+				<% end %>
+			</div> 
+			<br/><br/>
+		<% end %>
+
+
+
+		
+		<%= submit_tag "Save", class:"btn btn-primary" %>
+
+<% end %>
+
+
+
+<script type="text/javascript">
+$(function() {
+
+	<% @tag_groups.each_with_index do |tag_group,i| %>
+		
+		<% tag_group.each_with_index do |tag,j| %>
+
+			// Below is the name of the textfield that will be autocomplete    
+			$('#tag_<%=i%>_<%=j%>').autocomplete({
+				// This shows the min length of charcters that must be typed before the autocomplete looks for a match.
+		        minLength: 2,
+				// This is the source of the auocomplete suggestions. In this case a list of names from the people controller, in JSON format.
+		        source: '<%= "/exhibitors/tags_autocomplete" %>',
+		        //position: { my : "right top", at: "right bottom" },
+				// This updates the textfield when you move the updown the suggestions list, with your keyboard. In our case it will reflect the same value that you see in the suggestions which is the person.given_name.
+		        focus: function(event, ui) {
+		            
+		            $('#tag_<%=i%>_<%=j%>').val(ui.item.tag.name);
+		            return false;
+		        },
+				// Once a value in the drop down list is selected, do the following:
+		        select: function(event, ui) {
+					// place the person.given_name value into the textfield called 'select_origin'...
+		            $('#tag_<%=i%>_<%=j%>').val(ui.item.tag.name);
+					// and place the person.id into the hidden textfield called 'link_origin_id'. 
+		    		
+		    		//$('#link_origin_id').val(ui.item.person.id);
+		            return false;
+		        }
+		    })
+			
+			
+			// The below code is straight from the jQuery example. It formats what data is displayed in the dropdown box, and can be customized.
+		    
+			.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+			  return $( "<li>" )
+			   // .data( "ui-autocomplete-item", item )
+			    .append( "<a>" + item.tag.name + "</a>" )
+			    .appendTo( ul );
+			};
+		    
+
+    	<% end %>
+    <% end %>
+});
+</script>
+
+  <style>
+  .ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
+  /* IE 6 doesn't support max-height
+   * we use height instead, but this forces the menu to always be this tall
+   */
+  * html .ui-autocomplete {
+    height: 200px;
+  }
+  </style>
+
+
+
+
+
+
+

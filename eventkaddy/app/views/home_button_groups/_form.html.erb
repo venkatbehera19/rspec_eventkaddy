@@ -1,0 +1,110 @@
+<%= form_for(@home_button_group, :html => { :multipart => true, :class=>"form-horizontal well"}) do |f| %>
+  <% if @home_button_group.errors.any? %>
+
+    <div id="error_explanation" class='error'>
+      <h4><%= pluralize(@home_button_group.errors.count, "error") %> prohibited this home_button_group from being saved:</h4>
+
+      <ul>
+      <% @home_button_group.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+
+  <% end %>
+
+  <div class="field">
+    <%= hidden_field_tag :json %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :icon_button %>
+    <%= f.text_field :icon_button, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :image_file, "Icon Image"%>
+    <br />
+    <%= file_field_tag :image_file %><br />
+  </div>
+
+<%= label_tag "Position" %>
+
+  <div class="row">
+    <ul id="position" class="connectedSortable ml-md-3">
+      <li id="new" class="highlighted ui-state-default py-2">New Group</li>
+      <% @home_button_groups.each do |group| %>
+        <li id="<%= group.id %>" class="ui-state-default py-2 <%= ((@home_button_group.id.eql? group.id) ? "highlighted" : "") %>">
+          <%= group.name %>
+        </li>
+      <% end %>
+
+    </ul>
+  </div>
+
+  <br />
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>
+
+<script>
+window.onload = function () {
+  if (/edit/i.test(window.location)) {
+    $("#new").remove();
+  }
+  /* $(function () {
+    $("#position, #new_entry").sortable({
+      connectWith: ".connectedSortable",
+      update: function () {
+        var newstatus = [];
+        $(this).children().each(function () {
+          var column, id, name, order;
+          column     = $(this).parent().attr("id");
+          id         = $(this).attr("id");
+          name       = $(this).html();
+          order      = $(this).index();
+          return newstatus.push({
+            id       : id,
+            column   : column,
+            name     : name,
+            order    : order
+          });
+        });
+        $("#json").empty().attr("value",JSON.stringify(newstatus));
+      }
+    })
+  }); */
+  $('.connectedSortable').sortable({
+    update: updateJson
+  });
+
+  $("#home_button_group_name").blur(function () {
+    $("#new").empty().append(this.value);
+    updateJson();
+  });
+};
+
+function updateJson(){
+  let newstatus = [];
+  $('.connectedSortable').children().each(function(){
+    let column, id, name, order;
+    column     = $(this).parent().attr("id");
+    id         = $(this).attr("id");
+    name       = $(this).html();
+    order      = $(this).index();
+    return newstatus.push({
+      id       : id,
+      column   : column,
+      name     : name,
+      order    : order
+    });
+  });
+  $('#json').empty().attr("value", JSON.stringify(newstatus));
+}
+</script>

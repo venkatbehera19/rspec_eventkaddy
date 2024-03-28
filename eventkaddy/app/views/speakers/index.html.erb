@@ -1,0 +1,101 @@
+<script>
+  $(function() {
+    ModalForm.init($('#new_speaker'), $('#speaker_speaker_code'), $('#speaker_last_name'));
+  });
+</script>
+
+<% settings = Setting.return_cms_settings session[:event_id] %>
+
+<h4>Listing speakers for:<b> <%= session[:event_name] %></b></h4>
+
+<div class="row mb-2">
+  <div class="col-6 mb-2">
+    <div class="btn-group">
+      <!-- <%= link_to new_speaker_path,class:"btn btn-primary" do %>
+        New Speaker <i class="fa fa-plus-square"></i>
+      <% end %> -->
+      <a href="#quickAdd" class='btn btn-primary' data-toggle='modal'>
+        <span class="d-none d-md-inline">New Speaker</span> <i class="fa fa-plus"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="col-6 mb-2">
+    <div class="btn-group pull-right side-drops">
+      <div class="btn-group" id="menu1">
+        <a class="dropdown-toggle btn report-dropdown" data-toggle="dropdown" href="#menu1">
+          <span class="d-none d-md-inline">Downloads</span> <i class="d-md-none d-inline fa fa-download"></i>
+        </a>
+        <div class="dropdown-menu report-dropdown-list">
+          <%= link_to "Export Speakers To Spreadsheet", "/speakers/speaker_report.xlsx", class: "dropdown-item" %>
+
+          <%= link_to "Export Feedback To Spreadsheet", "/feedbacks/sessions_and_speakers_feedback.xlsx", class: "dropdown-item"%> 
+      <%= link_to "Export Feedback To Spreadsheet", "/feedbacks/sessions_and_speakers_feedback.xlsx", class: "dropdown-item"%> 
+          <%= link_to "Export Feedback To Spreadsheet", "/feedbacks/sessions_and_speakers_feedback.xlsx", class: "dropdown-item"%> 
+      <%= link_to "Export Feedback To Spreadsheet", "/feedbacks/sessions_and_speakers_feedback.xlsx", class: "dropdown-item"%> 
+          <%= link_to "Export Feedback To Spreadsheet", "/feedbacks/sessions_and_speakers_feedback.xlsx", class: "dropdown-item"%> 
+
+          <div class="dropdown-divider"></div>
+
+          <%= link_to "Download All Speakers' Files as Zip", "/speakers/download_all_zip", class: "dropdown-item" %>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <a data-toggle="dropdown" class="btn report-dropdown">
+          <span class="d-none d-md-inline dropdown-toggle">Menu</span>
+          <i class="fa fa-ellipsis-v d-inline d-md-none"></i>
+        </a>
+        <div class="dropdown-menu">
+        <% unless settings.method("hide_speaker_index_bulk_add_speaker_photos").call %>
+          <%= link_to "/speakers/bulk_add_speaker_photos", class:"dropdown-item" do %>
+            Bulk Update Speaker Photos <i class="fa fa-picture-o"></i>
+          <% end %>
+        <% end %>
+        <% unless settings.method("hide_speaker_index_bulk_set_speakers_photos_to_online").call %>
+          <%= link_to '/speakers/bulk_set_speakers_photos_to_online', class: "dropdown-item", method: 'post', confirm: "Are you sure?" do %>
+            Bulk Set Speaker Photos To Online URL <i class="fa fa-link"></i>
+          <% end %>
+        <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <%= link_to 'New Speaker', new_speaker_path,class:"btn btn-primary" %><br><br>
+<a href="#quickAdd" class='btn btn-primary' data-toggle='modal'>Quick Add Speaker</a><br><br>
+<% unless settings.method("hide_speaker_index_bulk_add_speaker_photos").call %>
+    <%= link_to 'Bulk Update Speaker Photos', "/speakers/bulk_add_speaker_photos", class:"btn btn-primary" %><br><br>
+<% end %>
+
+<% unless settings.method("hide_speaker_index_bulk_set_speakers_photos_to_online").call %>
+    <%= link_to 'Bulk Set Speaker Photos To Online URL', 
+        '/speakers/bulk_set_speakers_photos_to_online', 
+        class:   "btn btn-primary",
+        method:  'post',
+        confirm: "Are you sure?"
+    %>
+<% end %>
+<br>
+<br> -->
+
+<table id="speakers" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" data-source="<%= speakers_url(format: "json") %>" data-event="<%= @event_id%>">
+	<thead>
+	  <tr>
+	  	<th class="d-none d-md-table-cell">Photo</th>
+      <th class="d-none d-md-table-cell">Honor Prefix</th>
+	    <th>First name</th>
+	    <th>Last name</th>
+      <th class="d-none d-md-table-cell">Honor Suffix</th>
+	    <th class="d-none d-md-table-cell">Email</th>
+      <th>Company</th>
+	    <th></th>
+	  </tr>
+	</thead>
+
+	<tbody>
+	</tbody>
+</table>
+
+<%= render 'new_speaker_modal' %>

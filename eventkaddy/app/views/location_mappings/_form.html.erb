@@ -1,0 +1,51 @@
+<%= form_for(@location_mapping, :html => {:class=>"form-horizontal well"}) do |f| %>
+  <% if @location_mapping.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@location_mapping.errors.count, "error") %> prohibited this location_mapping from being saved:</h2>
+
+      <ul>
+      <% @location_mapping.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :name %> 
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+  <div class="form-row">
+    <div class="col d-flex">
+      <%= f.label :X, class: "mr-2 pt-2" %>
+      <%= f.text_field :x, class: "form-control" %>
+    </div>
+    <div class="col d-flex">
+      <%= f.label :Y, class: "mr-2 pt-2" %>
+      <%= f.text_field :y, class: "form-control" %>
+    </div>
+  </div>
+  <br>
+  
+  
+    <!--get location mapping types for this event -->
+  <div class="field">
+  <%= label_tag(:select_mapping_type, "Location Type:") %>
+  <%= f.collection_select(:mapping_type,LocationMappingType.all, :id, :type_name, {}, class: "custom-select") %>  <br /><br />
+  </div>
+  
+    <!--get maps for this event -->
+  <div class="field">
+  <%= label_tag(:select_map, "Location Map:") %>
+  <%= f.collection_select(:map_id,@event_maps, :id, :name, {}, class: "custom-select") %>  <br /><br />
+  </div>
+
+  <br />
+  <div class="actions">
+    <%= f.submit "Submit", class:"btn btn-primary" %>
+  </div>
+<% end %>

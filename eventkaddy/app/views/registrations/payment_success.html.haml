@@ -1,0 +1,118 @@
+%body
+  - unless @settings.hide_banner_bar
+    / ======= Banner ======= /
+    %nav.navbar.navbar-light.bg-light.reg-banner
+      = @settings.reg_banner.to_s.html_safe
+
+  / ======= Main ======= /
+  .container-fluid.d-flex.flex-column.mx-auto.reg-main
+
+    / ======= Header ======= /
+    .d-flex.reg-section-container.align-items-center.reg-header{style: ("background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_registered_page)}
+      .row.mx-auto.d-flex.reg-row
+        .col-12.d-flex.reg-col
+
+          / ======= Nav ======= /
+          .row
+            %nav.navbar.navbar-expand-sm.navbar-light.full-width
+              %a.navbar-brand.text-wrap{ id:"registration-top-nav"}
+                -if @event.logo_event_file_id.present?
+                  = image_tag(@event.event_file.return_authenticated_url["url"], :class =>'photo_preview', style: "max-height: 70px")
+                -else
+                  %img{:src => "/assets/ek_logo.png", :width => "100px"}/
+              %button.navbar-toggler.collapsed{type:"button", 'data-toggle':"collapse", 'data-target':".navbar-collapse", 'aria-expanded':"false" }
+                %span.navbar-toggler-icon
+              .collapse.navbar-collapse.justify-content-end
+                %ul.navbar-nav.ml-auto
+                  %li.nav-item
+                    %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations"}
+                      %i.fa.fa-home
+                  - if @settings.method("agenda").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations/agenda"}
+                        AGENDA
+                  - if @settings.method("speakers").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations/speakers"}
+                        SPEAKERS
+
+          / ======= Header Content ======= /
+          - if @settings.show_header_registered_page
+            .row
+              .reg-header-content
+                -if !@settings.reg_header_content.blank?
+                  - efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(@settings.reg_header_content.to_i)
+                  - if efile.cloud_storage_type_id.blank?
+                    = image_tag(efile.path, :class=>'photo_preview')
+                  - else
+                    = image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview')
+                  %br/
+
+                  %br/
+    
+    / ======= Notice ======= /
+    - if notice
+      .alert.alert-info.shadow{:role => "alert", :style => "border-left:#178acc 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#178acc"} ×
+        .row
+          %i.fa.fa-check-circle-o.info-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px;color:#178acc !important;"}= notice
+    - if alert
+      .alert.alert-danger.shadow{:role => "alert", :style => "border-left:#721C24 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#721C24"} ×
+        .row
+          %i.fa.fa-exclamation-circle.danger-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px"}= alert
+    - if @settings.have_payment_page && @attendee_product
+      .paymeent_confirmation.alert.alert-info.shadow{:role => "alert", :style => "border-left:#178acc 5px solid; border-radius: 0px"}
+        %p.mb-0
+          = "#{@attendee.full_name}, your payment for #{@attendee_product.product.name} has been successful"
+          <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+    - !!@settings.no_of_content_sections_post_reg && @settings.no_of_content_sections_post_reg.times do |i|
+      .d-flex.reg-section-container.align-items-center{id: "post_reg_section_container#{i+1}", style:(@settings.send("post_reg_section_container#{i+1}_style").to_s if @settings.respond_to?("post_reg_section_container#{i+1}_style"))}
+        .row.mx-auto.d-flex
+          .col-12.d-flex.p-0
+            .row.mx-auto.d-flex
+              - !!@settings.column_list_post_reg && !!@settings.column_list_post_reg[i+1] && @settings.column_list_post_reg[i+1].times do |j|
+                .col-12.col-center{id: "post_reg_section_container#{i+1}_col#{j+1}", class: "col-md", style:(@settings.send("post_reg_section_container#{i+1}_col#{j+1}_style").to_s if @settings.respond_to?("post_reg_section_container#{i+1}_col#{j+1}_style"))}
+                  = @settings.send("post_reg_section_container#{i+1}_col#{j+1}").gsub(/{{virtual_portal}}/, "<a href='#{@login_url}' target='_blank' style='text-decoration: underline;'>Log In</a>").to_s.html_safe
+              - if @order
+                .col-12
+                  %section.h-100.h-custom
+                    .container.py-5.h-100
+                      .row.d-flex.justify-content-center.align-items-center.h-100
+                        .col-lg-8.col-xl-6
+                          .card.border-top.border-bottom.border-3
+                            .card-body.p-5
+                              %p.lead.fw-bold.mb-5 Purchase History
+                              .row
+                                .col.mb-3
+                                  %p.small.text-muted.mb-1 Date
+                                  %p
+                                    = @order.updated_at
+                                .col.mb-3
+                                  %p.small.text-muted.mb-1 Order No.
+                                  %p 
+                                    = @order.id
+                              .mx-n5.px-5.py-4
+                                - @order.order_items.each do |item|
+                                  .row
+                                    .col-md-8.col-lg-9
+                                      %p
+                                        - if item.item_type == 'Product'
+                                          = item.item.name + "(Qty: " + item.quantity.to_s + ")"
+                                    .col-md-4.col-lg-3
+                                      %p
+                                        = "$"+ item.price.to_s
+                              .row.my-4
+                                .col-md-4.offset-md-8.col-lg-3.offset-lg-9
+                                  %p.lead.fw-bold.mb-0
+                                    = "$" + @order.total.to_s
+
+
+:css
+  .reg-header{
+    background-image: url("#{(!!@settings.reg_header_bg_img && @settings.show_header_registered_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : ''}");
+  }

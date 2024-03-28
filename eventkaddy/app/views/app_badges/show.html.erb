@@ -1,0 +1,69 @@
+<div class='well'>
+    <%= link_to "Back to Badges Index", @m[:game_url], class: "btn btn-secondary" %>
+    <h2 ><%= @m[:name] %></h2>
+
+        <%= link_to "Edit", @m[:edit_url], class: "btn btn-outline-success pull-right mb-2" %>
+
+    <br>
+    <br>
+    <%= image_tag @m[:image] %>
+
+    <br>
+    <br>
+
+    <%= @m[:description] %>
+
+    <br>
+    <br>
+    <br>
+
+    <h3>Tasks</h3>
+    <%= link_to "Add Task to Badge", @m[:new_task_url], class: "btn btn-primary" %>
+
+    <br>
+    <br>
+
+    <table id="app_badge_tasks" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th class="d-none d-md-table-cell">Position</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th></th> <!-- View Tasks -->
+            </tr>
+        </thead>
+
+        <tbody>
+            <% if @m[:tasks].blank? %>
+                <tr><td style="text-align:center" colspan="6">There are no tasks for this badge yet.</td></tr>
+            <% end %>
+
+            <% @m[:tasks].each do |task| %>
+                <tr>
+                    <td class="d-none d-md-table-cell"><%= task[:position] %></td>
+                    <td><%= image_tag task[:image], height:100 %></td>
+                    <td><%= task[:name] %></td>
+                    <td><%= task[:type] %></td>
+                    <td class="table-actions">
+                        <div class="btn-group d-flex">
+                            <%= link_to 'Show', task[:tasks_url], class:"btn btn-outline-info" %>
+                            <%= link_to 'Edit', task[:edit_url], class:"btn btn-outline-success" %>
+                            <%= link_to 'Delete', task[:delete_url], data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %>
+                        </div>
+                        <div class="dropdown dropleft">
+                            <a class="ellipse-style" data-toggle="dropdown">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <%= link_to 'Show', task[:tasks_url], class:"btn dropdown-item text-info" %>
+                                <%= link_to 'Edit', task[:edit_url], class:"btn dropdown-item text-success" %>
+                                <%= link_to 'Delete', task[:delete_url], data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn dropdown-item text-danger" %>
+                            </div>                            
+                        </div>
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>

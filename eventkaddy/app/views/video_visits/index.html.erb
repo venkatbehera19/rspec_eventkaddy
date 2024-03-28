@@ -1,0 +1,85 @@
+  <div class="show-reports">
+  <span class="toolbar">
+    <h4 class="toolbar-title">Attendee Visits</h4>
+  </span>
+  <div class="dropdown download-menu">
+    <div
+      class="btn report-dropdown dropdown-toggle"
+      data-toggle="dropdown"
+    >
+      Download Visit Reports
+    </div>
+    <ul class="dropdown-menu report-dropdown-list">
+      <li>
+        <%= link_to "Export Attendee Visits Data To Spreadsheet",
+        "/reports/video_visits_report/#{@exhibitor.id}", class: "dropdown-item"%>
+      </li>
+    </ul>
+  </div>
+  <br />
+  <br />
+  <br />
+  
+  <table
+    id="exhibitor-show-video_views-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped table-bordered"
+  >
+    <thead>
+      <th>Full Name</th>
+      <th>Company</th>
+      <%if !@setting['hide_exhibitor_portal_attendee_email']%>
+        <th class="hide-on-mob">Email</th>
+      <% end %>
+      <%if !(@setting['hide_exhibitor_portal_attendee_mobile_phone'] && @setting['hide_exhibitor_portal_attendee_business_phone'])%>
+        <th class="hide-on-mob">Phone Number&nbsp;</th>
+      <% end %>
+      <th>Title</th>
+      <th class="hide-on-mob">Check-in</th>
+      <th>Total Visits</th>
+      <th></th>
+    </thead>
+    <% !@video_views.blank? && @video_views.each do |video_view| %>
+    <tr>
+      <td><%=video_view["first_name"]%> <%=video_view["last_name"]%></td>
+      <td><%=video_view["company"]%></td>
+      <%if !@setting['hide_exhibitor_portal_attendee_email']%>
+        <td><a href="mailto: <%=video_view["email"]%>"><%=video_view["email"]%> </a></td>
+      <% end %>
+      <%if (!@setting['hide_exhibitor_portal_attendee_mobile_phone'] && !@setting['hide_exhibitor_portal_attendee_business_phone'])%>
+        <td><%=video_view["mobile_phone"].to_s + ' ' + video_view["business_phone"].to_s%></td>
+      <% elsif !@setting['hide_exhibitor_portal_attendee_mobile_phone']%>
+        <td><%=video_view["mobile_phone"]%></td>
+      <% elsif !@setting['hide_exhibitor_portal_attendee_business_phone']%>
+        <td><%=video_view["business_phone"]%></td>
+      <% end %>
+      <td> <%= video_view["title"] %> </td>
+      <td><%= !!(video_view["exhibitor_checkin"] && (video_view["exhibitor_checkin"].include? @exhibitor.id.to_s)) %></td>
+      <td><%= video_view["total_visits"]%></td>
+      <td style="text-align:center">
+        <%= link_to 'Show', "/exhibitor_portals/video_visits/#{video_view["attendee_id"]}?total_visits=#{video_view["total_visits"]}", class: "btn btn-primary" %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline table-responsive'
+    })
+    $('#exhibitor-show-video_views-table').dataTable({
+      sDom: "<'pull-left mr-1'f><'ml-auto'l>rt<'pull-left'i><'ml-auto'p>",
+      'aoColumnDefs': [{ 'sClass': 'd-none d-md-table-cell', 'aTargets': 'hide-on-mob' }],
+      fnInitComplete: () => { 
+        $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+        $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+        $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+          .prepend("<span class='d-none d-md-inline'>Show:</span>");
+      },
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

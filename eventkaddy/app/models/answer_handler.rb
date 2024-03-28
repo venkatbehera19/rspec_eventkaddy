@@ -1,0 +1,2 @@
+class AnswerHandler < ApplicationRecord
+end

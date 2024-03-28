@@ -1,0 +1,103 @@
+<div
+    <% if current_user.role?(:speaker) || current_user.role?(:client) || current_user.role?(:exhibitor) %>
+         style="text-align:center;"
+     <% end %>
+    >
+    <h3>Choose event</h3>
+    <br>
+    <table class="table table-hover" id="select-event">
+        <thead>
+            <tr>
+                <th>Event ID</th>
+                <th>Event name</th>
+                <th>Role</th>
+                <th>Start Date</th>
+                <th class="d-none d-md-table-cell">End Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+          <% @data.each do |data| %>
+          <tr style="cursor: pointer;">
+            <td> <%= data[:event][:id] %> </td>
+            <td> <%= data[:event][:name] %> </td>
+            <td>
+              <% if data[:event][:roles].length == 0 %>
+                <p> No roles Assigned </p>
+              <% elsif data[:event][:roles].length == 1 %> 
+                <p><%= data[:event][:roles].join(',') %></p>
+              <% else %>
+                <select class="custom-select">
+                  <% data[:event][:roles].each do |role| %>
+                    <option><%= role %></option>
+                  <% end %>
+                </select>
+              <% end %>
+            </td>
+            <td class="date-time" date="<%= data[:event][:start_date] %>"></td>
+            <td class="date-time d-none d-md-table-cell" date="<%= data[:event][:end_date] %>"></td>
+            <td>
+              <% if data[:event][:roles].length == 0 %>
+                <p> No roles Assigned </p>
+              <% elsif data[:event][:roles].length == 1 %> 
+                <%= link_to "Go to #{data[:event][:roles][0]} Portal", data[:event][:link]+"?role=#{data[:event][:roles][0].downcase}" %>
+              <% else %>
+                <a id="event-portal-link" href="<%= data[:event][:link] %>?role=<%= data[:event][:roles][0].downcase %>">Go to <%= data[:event][:roles][0] %> Portal</a>
+              <% end %>
+            </td>
+          </tr>
+          <% end %>
+        </tbody>
+    </table>
+</div>
+
+<style>
+  .custom-select {
+    width: 200px;
+    height: 30px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+</style>
+
+<script>
+    $(function () {
+        $.extend($.fn.dataTableExt.oStdClasses, {
+            sWrapper: 'dataTables_wrapper form-inline table-responsive'
+        })
+        let dt = $('#select-event').dataTable({
+            sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+            iDisplayLength: 25,
+            order: [[3, 'desc']],
+            fnDrawCallback: function(){
+                /* Make date readable */
+                $('.date-time').each(function(){
+                    let dateString = moment.utc($(this).attr('date'), 'YYYY-MM-DD HH:mm:ss [UTC]')
+                                .toString();
+                    $(this).text(dateString.split(' ').slice(1, 4).join(' '));
+                });
+
+                $('#select-event tbody > tr > td select.custom-select').change(function () {
+                  const selectedRole = $(this).val();
+                  const tableRow = $(this).closest('tr');
+                  const linkElement = tableRow.find('#event-portal-link');
+                  linkHref = linkElement.attr('href')
+                  link = linkHref.split('?role=')
+                  link[1] = selectedRole.toLowerCase()
+                  updated_link = link.join('?role=')
+                  linkElement.attr('href', updated_link)
+                  linkElement.text('Go to ' + selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1) + ' Portal');
+                });
+            },
+            fnInitComplete: () => { 
+                $(".dataTables_filter input").attr('placeholder', 'search');
+                $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+                $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+                    .prepend("<span class='d-none d-md-inline'>Show:</span>");
+                $(".dataTables_length option[value='25']").attr('selected', 'selected')
+            }
+        })
+    })
+</script>
+

@@ -1,0 +1,39 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   event_id: 1
+#   user_id: 1
+#   sponsor_stype: 1
+#   company_name: MyString
+#   description: MyString
+#   logo: MyString
+#   address_line1: MyString
+#   address_line2: MyString
+#   zip: MyString
+#   state: MyString
+#   country: MyString
+#   phone: MyString
+#   url_web: MyString
+#   url_twitter: MyString
+#   url_facebook: MyString
+#   url_linkedin: MyString
+#   url_rss: MyString
+
+# two:
+#   event_id: 1
+#   user_id: 1
+#   sponsor_stype: 1
+#   company_name: MyString
+#   description: MyString
+#   logo: MyString
+#   address_line1: MyString
+#   address_line2: MyString
+#   zip: MyString
+#   state: MyString
+#   country: MyString
+#   phone: MyString
+#   url_web: MyString
+#   url_twitter: MyString
+#   url_facebook: MyString
+#   url_linkedin: MyString
+#   url_rss: MyString

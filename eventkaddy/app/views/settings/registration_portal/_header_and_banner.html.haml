@@ -1,0 +1,44 @@
+.custom-control.custom-switch
+    = f.check_box :hide_banner_bar, class: "custom-control-input"
+    = f.label :hide_banner_bar, "Hide Banner/App Bar", class: "custom-control-label"
+.form-group
+    %h6 Banner / App Bar
+    = f.cktext_area :reg_banner, :ckeditor => {:toolbar => "Full"}
+%hr/
+%h6 Header (Navigation Bar + Content)
+%label Header Background Image
+%br
+-if !@registration_portal_settings.reg_header_bg_img.blank?
+    - event_file = @registration_portal_settings.reg_header_bg_img.to_i
+    - efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(event_file)
+    - if efile.cloud_storage_type_id.blank?
+        = image_tag(efile.path, :class=>'photo_preview')
+    - else
+        = image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview')
+        %br/
+        %br/
+        = link_to('Delete', event_file_path(id: event_file, registration_header_event_file_id: true), data: {:confirm => "Are you sure?"}, :method => :delete, class: "btn btn-outline-danger")
+    %br/
+
+    %br/
+    Change Image
+= file_field_tag :reg_header_bg_img
+%br/
+%br/
+%label Header Content (Image)
+%br
+-if !@registration_portal_settings.reg_header_content.blank?
+    - event_file = @registration_portal_settings.reg_header_content.to_i
+    - efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(event_file)
+    - if efile.cloud_storage_type_id.blank?
+        = image_tag(efile.path, :class=>'photo_preview')
+    - else
+        = image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview')
+        %br/
+        %br/
+        = link_to('Delete', event_file_path(id: event_file, registration_content_event_file_id: true), data: {:confirm => "Are you sure?"}, :method => :delete, class: "btn btn-outline-danger")
+    %br/
+
+    %br/
+    Change Image
+= file_field_tag :reg_header_content

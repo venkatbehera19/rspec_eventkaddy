@@ -1,0 +1,60 @@
+
+<%= form_for(@event_setting, :html => { :multipart => true, :class => "form-horizontal well" }, :url => {:action => "update_event_settings"}, :method => "put"   ) do |f| %>
+
+    <div class="actions">
+        <%= f.submit "Update" ,class:"btn btn-primary" %>
+    </div>
+    <hr/>
+
+    <% if @event_setting.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@event_setting.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+            <ul>
+                <% @event_setting.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <%# <%= f.label :hide_cv do %1> %>
+    <%#     <%= f.check_box :hide_cv %1> %>
+    <%#     Hide CV %>
+    <%# <% end %1><br> %>
+
+    <%# <%= f.label :hide_bio do %1> %>
+    <%#     <%= f.check_box :hide_bio %1> %>
+    <%#     Hide Biography %>
+    <%# <% end %1><Br> %>
+
+    <%= f.label :sessions_editable do %>
+        <%= f.check_box :sessions_editable %>
+        Speakers Can Edit Session Titles and Descriptions
+    <% end %><br>
+
+    <%= f.label :speaker_details_editable do %>
+        <%= f.check_box :speaker_details_editable %>
+        Speakers Can Edit Profiles
+    <% end %><br>
+
+    <%= f.label :speaker_files do %>
+        <%= f.check_box :speaker_files %>
+        Speakers Can Upload Files
+    <% end %><br>
+
+    <%= f.label :session_files do %>
+        <%= f.check_box :session_files %>
+        Speakers Can Create Session Files
+    <% end %><br>
+
+    <%= f.label :av_requests do %>
+        <%= f.check_box :av_requests %>
+        Speakers Can Request Audio/Visual Equipment
+    <% end %><br>
+
+    <div class="actions">
+        <%= f.submit "Update" ,class:"btn btn-primary" %>
+    </div>
+
+<% end %>

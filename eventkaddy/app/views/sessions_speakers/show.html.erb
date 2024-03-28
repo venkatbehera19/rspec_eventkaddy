@@ -1,0 +1,26 @@
+<%= link_to 'Back', sessions_speakers_path,class:"btn" %>
+<%= link_to 'Edit', edit_sessions_speaker_path(@sessions_speaker) ,class:"btn edit" %> 
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Session:</b>
+  <%= @sessions_speaker.session_id %>
+</p>
+
+<p>
+  <b>Speaker:</b>
+  <%= @sessions_speaker.speaker_id %>
+</p>
+
+<p>
+  <b>Is moderator:</b>
+  <%= @sessions_speaker.is_moderator %>
+</p>
+
+<p>
+  <b>Speaker type:</b>
+  <%= @sessions_speaker.speaker_type_id %>
+</p>
+

@@ -1,0 +1,112 @@
+= form_for(@app_image, html: { multipart: true}) do |f|
+    = file_field_tag "event_files[]", :multiple => true
+    %br
+    %br
+    = f.hidden_field :app_image_type_id, :value => @app_image_type.id
+    %br
+    %br
+    .form-group
+        On Click, banner links to:
+        %br/
+        = f.text_field :link, class: "form-control"
+
+        = hidden_field_tag :json
+        = label_tag "Position"
+
+        %br/
+        .row
+            %ul#position.connectedSortable.ml-md-3
+                %li#new.highlighted.ui-state-default.py-2.d-flex
+                    %span.up-down-btns
+                        %button(type="button" class="pos-btn" role="up")
+                            %i.fa.fa-angle-up
+                        %br/
+                        %button(type="button" class="pos-btn" role="down")
+                            %i.fa.fa-angle-down
+                    .item-text{style: "word-break: break-word; white-space: normal;"} New Image  
+                - @app_images.each do |group|
+                    %li(id="#{group.id}" class="ui-state-default py-2 d-flex #{(@app_image.id.eql? group.id) ? "highlighted" : ""}")
+                        %span.up-down-btns
+                            %button(type="button" class="pos-btn" role="up")
+                                %i.fa.fa-angle-up
+                            %br/
+                            %button(type="button" class="pos-btn" role="down")
+                                %i.fa.fa-angle-down
+                        .item-text{style: "word-break: break-word; white-space: normal;"}
+                            = group.hr_name
+
+        = f.submit 'Submit', class:'btn btn-primary'
+
+:javascript
+    window.onload = function () {
+        //Don't show new entry sortable unless on new page
+        if (/edit/i.test(window.location)) {
+            $("#new").remove();
+        }
+
+        $(function () {
+            $("#position").sortable({
+                connectWith: ".connectedSortable",
+                update: updateJson
+            })
+        });
+
+        if ($("#image_name").val()!=="") { $("#new item-text").text($("#image_name").val()); }
+
+        $('#event_files_').change(function(){
+            console.log('change');
+            let file_objs = $(this)[0].files;
+            let new_panel = $('#new');
+            if (file_objs.length === 1)
+                new_panel.find('.item-text').text(file_objs[0].name)
+            else{
+                console.log('here');
+                let new_panel_clone = new_panel.clone(true, true);
+                new_panel.remove();
+                for (let i = 0; i < file_objs.length; i++){
+                    $("#position").prepend(new_panel_clone)
+                    new_panel_clone.attr('id', "new")
+                        .find('.item-text').text(file_objs[i].name)
+                    new_panel_clone = new_panel_clone.clone(true, true);
+                }
+            }
+        })
+
+        $('.pos-btn').on('click', function(event){
+            event.stopPropagation();
+            let btn = $(this);
+            let currentItem = btn.parents('li');
+            if (btn.attr('role') === 'up'){
+            let prevItem = currentItem.prev();
+            if (prevItem.length !== 0){
+                currentItem.after(prevItem);
+            } 
+            } else if(btn.attr('role') === 'down'){
+            let nextItem = currentItem.next();
+            if (nextItem.length !== 0){
+                currentItem.before(nextItem);
+            }
+            }
+            updateJson();
+        });
+    };
+
+    function updateJson() {
+        var newstatus = [];
+        $('#position').children().each(function () {
+            var column, id, name, order;
+            column     = $(this).parent().attr("id");
+            id         = $(this).attr("id");
+            name       = $(this).find('.item-text').text();
+            order      = $(this).index();
+            return newstatus.push({
+                id       : id,
+                column   : column,
+                name     : name,
+                order    : order
+            });
+        });
+
+        $("#json").empty().attr("value",JSON.stringify(newstatus));
+    }
+

@@ -1,0 +1,16 @@
+super_admin:
+  name: SuperAdmin
+client:
+  name: Client
+speaker:
+  name: Speaker
+exhibitor:
+  name: Exhibitor
+track_owner:
+  name: TrackOwner
+moderator:
+  name: Moderator
+diy_client:
+  name: DiyClient
+partner:
+  name: Partner

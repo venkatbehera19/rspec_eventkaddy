@@ -1,0 +1,16 @@
+.custom-control.custom-switch
+    = f.check_box :have_payment_page, class: "custom-control-input"
+    = f.label :have_payment_page, "Add Payment Page", class: "custom-control-label"
+%br
+
+.form-group
+    Payment Via
+    = f.select :payment_gateway, ModeOfPayment.where(event_id: session[:event_id]).collect {|p| [ p.name, p.id ] }, include_blank: true ,class: "form-control"
+
+-# .form-group
+-#     Choose Product category
+-#     = f.select :product_categories, ProductCategory.where(event_id: session[:event_id]).collect {|p| [ p.name, p.id ] }, include_blank: true ,class: "form-control"
+
+-# .form-group 
+-#     = f.label :product_categories_id, "Choose Multiple Product Category" 
+-#     = f.collection_select :product_categories_ids, ProductCategory.where(event_id: session[:event_id]), :id, :name, {}, {multiple: true}

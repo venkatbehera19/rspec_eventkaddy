@@ -1,0 +1,72 @@
+%h4 Surveys
+
+.btn-toolbar.my-2
+    - if current_user.role? :exhibitor
+        / show only one survey for exhibitors 
+        - if @surveys.length < 1
+            .btn-group.mr-2
+                = link_to "/survey_wizard", class:"btn btn-primary" do
+                    New Survey
+                    %i.fa.fa-plus
+    - else
+        .btn-group.mr-2
+            = link_to "/survey_wizard", class:"btn btn-primary" do
+                New Survey
+                %i.fa.fa-plus
+        .btn-group.mr-2
+            = link_to "/surveys/copy_surveys_form", class:"btn btn-primary" do
+                Copy Surveys Form
+                %i.fa.fa-clone
+        .btn-group.mr-2
+            = link_to "/attendee_survey_images", method: :get,class:"btn btn-primary" do
+                Survey Images
+                %i.fa.fa-download
+
+%br
+
+%table#survey-data-table.table.table-striped.table-bordered
+    %thead
+        %tr
+            %th Title
+            %th Type
+            %th Available From
+            %th Closes On
+            %th
+    %tbody
+        - @surveys.each do |s|
+            %tr
+                %th= s.title
+                %th= s.type_name
+                %th= s.begins.blank? ? '' : (current_user.twelve_hour_format ?  s.begins.strftime("%Y-%m-%d %I:%M %p") : s.begins.to_s.gsub(/\sUTC/, ''))
+                %th= s.ends.blank? ? '' : (current_user.twelve_hour_format ?  s.ends.strftime("%Y-%m-%d %I:%M %p") : s.ends.to_s.gsub(/\sUTC/, ''))
+                %td.table-actions
+                    .btn-group.d-flex
+                        = link_to 'Show', "/surveys/#{s.id}", class:"btn btn-outline-info"
+                        = link_to 'Edit', "/survey_wizard?id=#{s.id}", class:"btn btn-outline-success"
+                        = link_to 'Delete', "/surveys/#{s.id}", :confirm => 'Are you sure? All responses to this survey will be lost if the survey is removed.', :method => :delete, class:"btn btn-outline-danger"   
+                    .dropdown
+                        %a{'data-toggle': 'dropdown', style: 'font-size: 1.4rem; cursor: pointer;'}
+                            %i.fa.fa-ellipsis-v
+                        .dropdown-menu
+                            = link_to 'Show', "/surveys/#{s.id}", class:"btn text-info dropdown-item"
+                            = link_to 'Edit', "/survey_wizard?id=#{s.id}", class:"btn text-warning dropdown-item"
+                            = link_to 'Delete', "/surveys/#{s.id}", :confirm => 'Are you sure? All responses to this survey will be lost if the survey is removed.', :method => :delete, class:"btn text-danger dropdown-item"
+
+:javascript
+    $(function() {
+        $.extend( $.fn.dataTableExt.oStdClasses, {"sWrapper": "dataTables_wrapper form-inline table-responsive"} );
+
+        $('#survey-data-table').dataTable({
+            "sDom": "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+            fnInitComplete: () => { 
+                $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+                $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+                $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+                    .prepend("<span class='d-none d-md-inline'>Show:</span>");
+                //$(".dataTables_length option[value='10']").attr('selected', 'selected')
+            }
+        });
+
+        $('table.dataTable th').css('padding-right','20px');
+
+    });

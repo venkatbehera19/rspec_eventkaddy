@@ -1,0 +1,34 @@
+global !p
+def lower_case(string):
+	s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', string)
+	return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def snake_to_title(string):
+    # return " ".join( map( str.capitalize, string.split('_') ) )
+	return string.title().replace("_", " ")
+endglobal
+
+# hide session form setting accessor
+snippet hs
+:hide_session_form_${1},
+endsnippet
+
+# hide speaker form setting accessor
+snippet hsp
+:hide_speaker_form_${1},
+endsnippet
+
+# hide attendee form setting accessor
+snippet ha
+:hide_attendee_form_${1},
+endsnippet
+
+# hide exhibitor form setting accessor
+snippet he
+:hide_exhibitor_form_${1},
+endsnippet
+
+# function ${1:name}( ${2:args} ) {
+# 	${0:${VISUAL:body}}
+# }
+

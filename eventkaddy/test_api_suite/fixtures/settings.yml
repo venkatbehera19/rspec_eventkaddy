@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  setting_type: one
+  json: '{"video_portal":true,"single_page_app":true,"auto_sign_in":true,"favourites":false,"full_schedule":true}'
+
+two:
+  event: two
+  setting_type: two
+  json: '{"video_portal":true,"single_page_app":true,"auto_sign_in":true,"favourites":false,"full_schedule":true}'

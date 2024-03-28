@@ -1,0 +1,21 @@
+<%= form_for(@link_type, :html => { :class => "form-horizontal well" }) do |f| %>
+  <% if @link_type.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@link_type.errors.count, "error") %> prohibited this link_type from being saved:</h2>
+
+      <ul>
+      <% @link_type.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :link_type %>
+    <%= f.text_field :link_type %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

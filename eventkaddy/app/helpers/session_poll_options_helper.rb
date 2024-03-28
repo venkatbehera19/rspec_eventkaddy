@@ -1,0 +1,2 @@
+module SessionPollOptionsHelper
+end

@@ -1,0 +1,12 @@
+#+TITLE: Configuring a new sok event on the CMS
+
+* Explanation
+
+I am writing this out in an effort to see where these steps could be streamlined with code, or taken on by Sok. 
+
+* Steps
+1. Push "Fetch new SoK events" in /dev view
+2. Add new event to 6 users (machine@sok-media.com, slough@sok-media.com, cbauman@sok-media.com, pmonta@sok-media.com, mdoane@synchvue.com, mdoane@sok-media.com)
+3. Add short title to events from /events. This is the only part the script can't do, as it requires a relevant name for the user to see, such as "Spring 2020". 
+4. Make the settings menu available, and then the Video Searchsite Style and Video Searchsite Images tabs available. 
+5. Either configure the styles and images, or go to a previous event and select the "Update All Events in this Organization" checkbox at the top of the page. For the images you can click "Duplicate Image for all Events in Organization"

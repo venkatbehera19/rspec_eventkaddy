@@ -1,0 +1,178 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div id="content">
+      <div id="content" class="container">
+        <h4>Order Details</h4>
+        <table class="table table-bordered">
+          <tr>
+            <td><strong>Order Id</strong></td>
+            <td><%= @order.id %></td>
+          </tr>
+          <tr>
+            <td><strong>User Created?</strong></td>
+            <td>
+              <!-- <%= @order.user_id? ? 'Yes' : 'No' %> -->
+              <% if @order.user_id? %>
+                <p>Yes</p>
+              <% else %>
+                <% if @order.registration_form_id.present? %>
+                  <% user = User.where(email: @order.registration_form.email).first %>
+                  <% if user.present? %>
+                    <p>Yes</p>
+                  <% else %>
+                    <%= link_to "Create User and Attendee", "/purchases/create_user/#{@order.id}", method: :post %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Transactions</strong></td>
+            <td><%= @order.transaction_id %></td>
+          </tr>
+          <tr>
+            <td><strong>Status</strong></td>
+            <td><%= @order.status %></td>
+          </tr>
+          <tr>
+            <td><strong>Email</strong></td>
+            <td><%= @order&.user&.email %></td>
+          </tr>
+        </table>
+        <% if @order.order_items.present? %>
+          <h4>Order items</h4>
+          <table class="table table-bordered">
+            <% @order.order_items.each do |order_item| %>
+              <tr>
+                <td><strong>Product name</strong></td>
+                <% if order_item.size? %>
+                  <td><%= order_item.item.name %>/size(<%= order_item.size %>)</td>
+                <% else %>
+                  <td><%= order_item.item.name %></td>
+                <% end %>
+              </tr>
+              <% if order_item.coupon_id? %>
+                <tr>
+                  <td><strong>Coupon Code and Amount</strong></td>
+                  <td> <%= order_item.coupon.coupon_code %> - <%= number_to_currency(order_item.coupon_amount, unit: "$")  %> </td>
+                </tr>
+              <% end %>
+              <tr>
+                <td><strong>Product Quantity</strong></td>
+                <td><%= order_item.quantity %></td>
+              </tr>
+              <tr>
+                <td><strong>Price</strong></td>
+                <% if order_item.discount_allocations.present? %>
+                  <td><%= number_to_currency(order_item.discount_allocations.first.amount, unit: "$") %></td>
+                <% else %>
+                  <td><%= number_to_currency(order_item.price * order_item.quantity, unit: "$") %></td>
+                <% end %>
+              </tr>
+              <br>
+            <% end %>
+          </table>
+        <% end %>
+        <h4>Transaction details</h4>
+        <% if @order.transaction_id.present? %>
+          <table class="table table-bordered">
+            <tr>
+              <td><strong>Amount</strong></td>
+              <td><%= number_to_currency(@order.transaction_detail&.amount, unit: "$") %></td>
+            </tr>
+            <tr>
+              <td><strong>Transaction Status</strong></td>
+              <td><%= @order.transaction_detail&.external_status %></td>
+            </tr>
+            <tr>
+              <td><strong>Attendee Created?</strong></td>
+              <td><%= @order.transaction_detail&.attendee_id? ? 'Yes' : 'No' %></td>
+            </tr>
+            <tr>
+              <td><strong>Mode Of Payment</strong></td>
+              <td><%= mode_of_payment_name(@order.transaction_detail.mode_of_payment.id) %></td>
+            </tr>
+            <tr>
+              <td><strong>Created At</strong></td>
+              <td><%= @order.transaction_detail.created_at.strftime("%B %d, %Y %I:%M:%S %p") %></td>
+            </tr>
+            <tr>
+              <td><strong>Updated At</strong></td>
+              <td><%= @order.transaction_detail.updated_at.strftime("%B %d, %Y %I:%M:%S %p") %></td>
+            </tr>
+            <tr>
+              <td><strong>Refund</strong></td>
+              <td>
+                <% if @order.transaction_detail.external_status == "AUTHORIZED" || @order.total == 0 %>
+                  <%= button_to 'N/A', '#', class: 'btn btn-outline-danger', :disabled => true %>
+                <% elsif @order.transaction_detail.external_refund_status == "AUTHORIZED" %>
+                  <%= button_to "Intiated", "#", class: 'btn btn-outline-danger', :disabled => true %>
+                <% elsif @order.transaction_detail.external_refund_status == "COMPLETED" %>
+                  <%= link_to 'Refund', transaction_refund_purchase_path(@order.transaction_detail.id) , data: {:confirm => 'Are you sure?'}, :method => :post, class: 'btn btn-outline-info' %>
+                <% else %>
+                  <%= link_to 'Refund', transaction_refund_purchase_path(@order.transaction_detail.id) , data: {:confirm => 'Are you sure?'}, :method => :post, class: 'btn btn-outline-info' %>
+                <% end %>
+              </td>               
+            </tr>
+          </table>
+        <% else %>
+          <p>No transaction available</p>
+        <% end %>
+
+        <% if @order.order_transactions.present? %>
+          <h4>Order Transaction History</h4>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">Order Transaction Id</th>
+                <th scope="col">Order Transaction Status</th>
+                <th scope="col">Order Transaction SourceID</th>
+                <th scope="col">Refund</th>
+              </tr>
+            </thead>
+            <% @order.order_transactions.each do |order_transaction| %>
+              <tr>
+                <td><%= order_transaction.transaction_id? ? order_transaction.transaction_id : 'N/A' %></td>
+                <td><%= order_transaction.transaction_status %></td>
+                <td><%= order_transaction.source_id? ? order_transaction.source_id : 'N/A' %></td>
+                <td>
+                  <% if order_transaction.transaction_status == 'COMPLETED' %>
+                    <%= link_to 'Refund', "/purchases/charge_id_refund/#{order_transaction.transaction_id}" , data: {:confirm => 'Are you sure?'}, :method => :post, class: 'btn btn-outline-info' %>
+                  <% else %>
+                    <%= button_to 'N/A', '#', class: 'btn btn-outline-danger', :disabled => true %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        <% end %>
+        <% if  @order.user_id? %>
+          <% tried_register_users =  RegistrationForm.where(email: @order.user.email) %>
+          <% if tried_register_users.present? %>
+            <h4>Registration Form User</h4>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">Email</th>
+                  <th scope="col">First Name</th>
+                  <th scope="col">Last Name</th>
+                  <th scope="col">Mobile</th>
+                  <th scope="col">Company</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <% tried_register_users.each do |tried_register_user| %>
+                <td><%= tried_register_user.email %></td>
+                <td><%= tried_register_user.first_name %></td>
+                <td><%= tried_register_user.last_name %></td>
+                <td><%= tried_register_user.mobile_phone %></td>
+                <td><%= tried_register_user.company %></td>
+                <td><%= tried_register_user.status %></td>
+              <% end %>
+            </table>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

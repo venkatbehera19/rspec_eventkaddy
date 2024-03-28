@@ -1,0 +1,57 @@
+<h4>
+  Listing Attendee Survey Images 
+</h4>
+<br>
+<div id="imagesListingContainer">
+  <div class="row">
+    <%unless @attendee_responses.nil?%>
+      <%@attendee_responses.each do |attendee_response|%>
+        <div class="col-lg-4 col-md-6 col-6 p-2" id="shrink">
+          <div class="card image-shadow">
+            <%= image_tag "spinner.gif", width: 200, height: 250, class: "card-img-top lazyload", data:{original: attendee_response["url"]}, alt: "spinner"%>
+
+            <div class="card-body">
+              <h5 class="card-title">Survey: <%=attendee_response["title"]%></h5>
+              <p class="card-text">Question: <%=attendee_response["question"]%></p>
+              <p class="card-text"><small class="text-muted">Submitted At: <%=Time.new(attendee_response["created_at"]).strftime("%Y-%m-%d %l-%M")%></small></p>
+            </div>
+          </div>
+        </div>
+      <%end%>
+    <%end%>
+  </div>
+</div>
+
+<script>
+  // console.log("ITS DONE WITH THE HELP OF MR. RRB. HE IS A MAN OF SUBSTANCE.");
+  $(".lazyload").lazyload();
+  let sideBarToggleBtn      = $("#menu-toggle");
+  let parentContainer       = $("#parent-container");
+  let imagePreviewContainer = null;
+  sideBarToggleBtn.on('click',function(){
+    $.ajax({
+      url: "/surveys/toggle_view",
+      data: sideBarToggleBtn.hasClass("opened") ? {isOpened: true} : {isOpened: false}
+    });
+  });
+  // $('img').click(function(){
+  //   var state = true;
+  //   if(state){
+  //     $("#menu-toggle").click()
+  //     $("[id=shrink]").each(function(index){
+  //       $(this).removeClass("col-lg-4 col-md-6 col-6")
+  //     })
+  //     $( "#image-slide" ).addClass("image-side")
+  //     state = false
+  //   }
+  //   else{
+  //     $("#menu-toggle").click()
+  //     $("[id=shrink]").each(function(index){
+  //       $(this).addClass("col-lg-4 col-md-6 col-6")
+  //     })
+  //     $( "#image-slide" ).removeClass("image-side")
+  //     state = true
+  //   }
+
+  // })
+</script>

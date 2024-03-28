@@ -1,0 +1,53 @@
+<%= form_for(@sponsor_specification) do |f| %>
+  <% if @sponsor_specification.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sponsor_specification.errors.count, "error") %> prohibited this sponsor_specification from being saved:</h2>
+
+      <ul>
+      <% @sponsor_specification.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :exhibitor_id, :value => params[:exhibitor_id] %>
+  </div>
+
+  <div class="field">
+    <%= f.label :sponsor_level_type %>
+    <%= f.text_field :sponsor_level_type %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :banner_ad %>
+    <%= f.check_box :banner_ad %><br /><br />  
+  </div>
+  <div class="field">
+    <%= f.label :banner_ad_iphone %>
+    <%= f.text_field :banner_ad_iphone %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :banner_ad_android %>
+    <%= f.text_field :banner_ad_android %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :banner_ad_mobile %>
+    <%= f.text_field :banner_ad_mobile %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :banner_ad_home %>
+    <%= f.text_field :banner_ad_home %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :banner_ad_touch %>
+    <%= f.text_field :banner_ad_touch %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :banner_ad_link %>
+    <%= f.text_field :banner_ad_link %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

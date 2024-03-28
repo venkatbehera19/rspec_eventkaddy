@@ -1,0 +1,25 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   app_badge_id: 1
+#   name: MyString
+#   description: MyString
+#   details: MyText
+#   app_badge_type_id: 1
+#   scavenger_hunt_item_id: 1
+#   survey_id: 1
+#   points_per_action: 1
+#   points_to_complete: 1
+
+# two:
+#   event_id: 1
+#   app_badge_id: 1
+#   name: MyString
+#   description: MyString
+#   details: MyText
+#   app_badge_type_id: 1
+#   scavenger_hunt_item_id: 1
+#   survey_id: 1
+#   points_per_action: 1
+#   points_to_complete: 1

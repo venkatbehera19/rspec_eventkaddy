@@ -1,0 +1,83 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+realistic: &realistic
+  location_mapping_id: 1
+  event: one
+  user_id: 1
+  logo_event_file_id: 1
+  sponsor_level_type_id: 1
+  company_name: A realistic company
+  description: Such an ordinary company
+  logo: bear
+  address_line1: "123 bear lane"
+  address_line2: apartment 3
+  city: Ottawa
+  zip: K1N 6B7
+  state: ON
+  country: Canada
+  email: mycompany@gmail.com
+  phone: "613-0000-1111"
+  fax: 
+  url_web: mycompany.net
+  url_twitter: 
+  url_facebook: 
+  url_linkedin: 
+  url_rss: 
+  message: 
+  is_sponsor: false
+  contact_name: Mr. Bear
+  contact_title: Senior
+  toll_free: test
+  unsubscribed: 
+  token: 
+  custom_fields: 
+  tags_safeguard: 
+  exhibitor_code:
+  diy_uploaded_location_name: 
+  diy_uploaded_tagsets: 
+
+barebones:
+  location_mapping:
+  event: one
+  user: 
+  logo_event_file_id: 1 
+  sponsor_level_type:
+  company_name: Minimalist company
+  description: 
+  logo: 
+  address_line1: 
+  address_line2: 
+  city: 
+  zip: 
+  state:
+  country:
+  email:
+  phone:
+  fax:
+  url_web:
+  url_twitter:
+  url_facebook:
+  url_linkedin:
+  url_rss:
+  message: 
+  is_sponsor: 
+  contact_name:
+  contact_title:
+  toll_free:
+  unsubscribed: 
+  token:
+  custom_fields: 
+  tags_safeguard: 
+  exhibitor_code:
+  diy_uploaded_location_name:
+  diy_uploaded_tagsets:
+
+leaf:
+  <<: *realistic
+  company_name: Leaf
+
+nonleaf:
+  <<: *realistic 
+  company_name: Nonleaf
+
+

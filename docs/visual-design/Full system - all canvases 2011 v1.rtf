@@ -1,0 +1,505 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf350
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset129 AppleGothic;\f2\fnil\fcharset0 MyriadPro-Regular;
+}
+{\colortbl;\red255\green255\blue255;\red85\green85\blue85;\red255\green255\blue255;\red64\green64\blue64;
+}
+\pard\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 Title\
+\
+\pard\tx240\tx460\li460\fi-460\ql\qnatural\pardirnatural
+
+\f1\fs26 \cf2 \cb3 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Organization\
+\pard\li460\ql\qnatural\pardirnatural
+
+\b0 org_id: integer\
+name: string\
+description: text\
+address: string\
+address2:string\
+city: string\
+zip: sting\
+state: string\
+country:string\
+contact_name: string\
+contact_phone: string\
+contact_mobile: string\
+web_url: string\
+twitter_url: string\
+facebook_url: string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Org-Event\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 org_id:integer\
+event_id:integer\
+\pard\tx240\tx460\li460\fi-460\ql\qnatural\pardirnatural
+
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Event\
+\pard\li460\ql\qnatural\pardirnatural
+
+\b0 event_id: integer\
+name: string\
+description: text\
+event_start_at: datetime\
+event_end_at: datetime\
+lng:decimal\
+lat:decimal\
+web_url: string\
+facebook_url: string\
+twitter_url: string\
+rss_url: string\
+exhibitors: boolean\
+enhanced_listings:boolean\
+sponsorship:boolean\
+iphone: boolean\
+android: boolean\
+mobile_site: boolean\
+touchscreen: boolean\
+soma_record: boolean\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Session\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 session_id: integer\
+event_id:integer\
+session_code: string\
+session_cancelled:boolean\
+title: string\
+description: string\
+room_id:integer\
+link_id:integer\
+twitter_tag:string\
+start_at: datetime\
+end_at: datetime\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Room\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 room_id:integer\
+event_id:integer\
+map_id:integer\
+name: string\
+x: integer\
+y:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx1080\tx1320\tx1540\li1540\fi-1540\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Map\
+\pard\li1540\ql\qnatural\pardirnatural
+
+\b0 map_id:integer\
+event_id:integer\
+filename: string\
+width:integer\
+height:integer\
+map_type_id:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx1440\tx1680\tx1900\li1900\fi-1900\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Map_type\
+\pard\li1900\ql\qnatural\pardirnatural
+
+\b0 map_type_id:integer\
+map_type:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Record\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 record_id:integer\
+session_id: integer\
+event_id:integer\
+record_type_id:integer\
+number_formats:integer\
+tape:integer\
+comments_id:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx1080\tx1320\tx1540\li1540\fi-1540\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Record_type\
+\pard\li1540\ql\qnatural\pardirnatural
+
+\b0 recordtype_id:integer\
+record_type:string\
+\pard\tx1080\tx1320\tx1540\li1540\fi-1540\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Comment\
+\pard\li1540\ql\qnatural\pardirnatural
+
+\b0 comment_id:integer\
+comment:text\
+user_id:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Session-Link\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 session_id:integer\
+link_id:integer\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Session-Speaker\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 session_id:integer\
+speaker_id:integer\
+speaker_type_id:integer\
+\pard\tx1080\tx1320\tx1540\li1540\fi-1540\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Speaker_type\
+\pard\li1540\ql\qnatural\pardirnatural
+
+\b0 speaker_type_id:integer\
+speaker_type:string\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Track (header)\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 track_id:integer\
+event_id:integer\
+name: string\
+track_color:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Session-Track-Subtrack\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 session_id:integer\
+track_id:integer\
+subtrack_id:integer\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Subtrack (track)\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 subtrack_id:integer\
+event_id:integer\
+name: string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Home_Button (Group)\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 group_id: integer\
+event_id:integer\
+name:string\
+icon_button:string\
+position:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Home_Button_Entry\
+\pard\li1180\ql\qnatural\pardirnatural
+(Entry)\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 entry_id: integer\
+group_id:integer\
+render_url:string\
+name:string\
+icon_entry:string\
+content:text\
+position:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Exhibitor\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 exhibitor_id: integer\
+event_id:integer\
+user_id:integer\
+sponsor_type:integer\
+company_name: string\
+description: string\
+logo:filename\
+address1:string\
+address2:string\
+zip:string\
+state:string\
+country:string\
+phone:string\
+web_url:string\
+twitter_url:string\
+facebook_url:string\
+linkedin_url:string\
+rss_url:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Booth\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 booth_id:integer\
+event_id:integer\
+exhibitor_id:integer\
+map_type_id:integer\
+booth_number: string\
+x: integer\
+y:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Sponsor_type\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 sponsor_type_id:integer\
+sponsor_level_type_id:integer\
+banner_ad:boolean\
+banner_ad_iphone:string\
+banner_ad_android:string\
+banner_ad_mobile:string\
+banner_ad_home:string\
+banner_ad_touch:string\
+banner_ad_link:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx1080\tx1320\tx1540\li1540\fi-1540\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Sponsor_level_type\
+\pard\li1540\ql\qnatural\pardirnatural
+
+\b0 sponsor_level_type_id:integer\
+sponsor_type:string \
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Enhanced_listing\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 enhanced_listing_id:integer\
+event_id:integer\
+exhibitor_id:integer\
+product_name:string\
+product_image:string\
+product_description:sstring\
+product_link:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Coupon\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 coupon_id:integer\
+event_id:integer\
+exhibitor_id:integer\
+coupon_name:string\
+coupon_description:string\
+coupon_link:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx720\tx960\tx1180\li1180\fi-1180\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Exhibitor_link\
+\pard\li1180\ql\qnatural\pardirnatural
+
+\b0 exhibitor_link_id:integer\
+event_id:integer\
+exhibitor_id:integer\
+exhibitor_link_name:string\
+exhibitior_link_url:string:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Speaker\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 speaker_id: integer\
+event_id:integer\
+first_name: string\
+last_name: string\
+honor_prefix:string\
+honor_suffix:string\
+company: string\
+biography: string\
+photo: string\
+email: string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Notification\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 notification_id: integer\
+event_id:integer\
+name:string\
+description:string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx240\tx460\li460\fi-460\ql\qnatural\pardirnatural
+
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 User\
+\pard\li460\ql\qnatural\pardirnatural
+
+\b0 user_id: integer\
+username: string (email)\
+password: string\
+first_name:string\
+last_name:string\
+phone:string\
+user_type_id:integer\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 User-Org-Event\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 admin_id:integer\
+org_id:integer\
+event_id:integer\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 User-type\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 user_type_id:integer\
+user_type:string\
+\pard\tx240\tx460\li460\fi-460\ql\qnatural\pardirnatural
+
+\f1\fs26 \cf2 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'a1\'e5
+\f0\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Link\
+\pard\li460\ql\qnatural\pardirnatural
+
+\b0 link_id: integer\
+name:string\
+link_type_id:integer\
+filename: string\
+created_at: datetime\
+updated_at: datetime\
+\pard\tx360\tx600\tx820\li820\fi-820\ql\qnatural\pardirnatural
+
+\fs24 	
+\fs26 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\b\fs16 Link_type\
+\pard\li820\ql\qnatural\pardirnatural
+
+\b0 link_type_id:integer\
+link_type:string\
+\pard\tx240\tx460\li460\fi-460\ql\qnatural\pardirnatural
+
+\fs26 \cf0 \cb1 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \'95
+\fs24 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	\cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 \uc0\u10065 \cf0 \up0 \nosupersub \ulnone \obliqueness0 \expansion0 	
+\f2\fs18 \cf4 <%Canvas Name%> \'95 \cf0 <%#%>/<%TotalPages%>
+\f0\fs24 , 
+\f2\fs18 Soma Media Inc. \'95 Confidential
+\f0\fs24 , 
+\f2\fs18 \cf4 <%Document Name%> \'95 <%date %d/%m/%Y%>\
+}

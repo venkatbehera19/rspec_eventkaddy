@@ -1,0 +1,64 @@
+<% if @attendee_badge_print_settings.portal_open %>
+  <div class="simple_registration_heading" style="margin:auto">
+    <%= @attendee_badge_print_settings.attendee_badge_portal_heading.html_safe %>
+  </div> 
+  <div class="simple_registration_subheading">
+    <%= @attendee_badge_print_settings.attendee_badge_portal_subheading.html_safe %>
+  </div>
+  <%= @attendee_badge_print_settings.attendee_badge_portal_duration.html_safe %>
+  <%= @attendee_badge_print_settings.attendee_badge_portal_content.html_safe %>
+  <div class="form-group col-md-4 p-0">
+    <select id="selected_device" class="form-control">
+      <option value="none">Choose Printer</option>
+    </select>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <% if @attendee_badge_print_settings.show_badge_search_field_for_exhibitor %>
+        <div class="form-group">
+          <ul class="list-group" style=" max-height: 15rem; overflow-y: auto; ">
+            <h5>Search For Exhibitor</h5>
+            <li class="list-group-item d-flex justify-content-between">
+              <input class="form-control" id="search-exhibitor" placeholder="<%= @attendee_badge_print_settings.search_attendee_by.titleize %>" data-type='exhibitor'>
+              <button class="btn btn-primary search-exhibitor-btn">Search</button>
+            </li>
+          </ul>    
+        </div>
+      <% end %>
+      <div class="attendee-listing">
+      </div>
+    </div>
+<!--     <div class="col-md-6">
+      <div class="preview-badge" style="display: none;">
+        <img src="" id="preview-badge-img" class="preview-badge-img">
+      </div>
+    </div> -->
+  </div>
+  <!-- Modal -->
+  <%= render partial: 'modal' %>
+<% else %>
+  <h2 style="text-align: center;">Portal Closed</h2>
+<% end %>
+
+<style>
+
+::-webkit-scrollbar {
+  display: block !important;
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 
+</style>

@@ -1,0 +1,231 @@
+<% unless @session.blank? %>
+ <p><%="Session: #{@session.title}"%></p>
+<%end%>
+
+<%= form_for(@media_file, :html => { :multipart => true, :id => 'banner_form' } ) do |f| %>
+  
+  <% if @media_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@media_file.errors.count, "error") %> prohibited this exhibitor file from being saved:</h2>
+
+      <ul>
+      <% @media_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+    <% if @exhibitor %>
+      <%= f.hidden_field :exhibitor_id, :value => @exhibitor.id %>
+    <% end %>
+    <% if @session %>
+      <%= f.hidden_field :session_id, :value => @session.id %>
+    <% end %>
+  </div>
+  
+  <% if @exhibitor %>
+     <div class="form-group">
+       <%= f.label :name %>
+       <%= f.text_field :name, :required => true, class: "form-control" %>
+     </div>
+  <%end%>
+  <p>If no thumbnail uploaded, thumbnail would be created from the video</p>
+   <div class="field">
+     <% unless @media_file.event_file_id.blank? %>
+        <%url = @media_file.return_authenticated_url(session[:event_id], @media_file.event_file.path)%>
+         <tr><td><%= image_tag(url["url"], :height=>'100') %></td></tr>
+     <% end %>
+         <tr><td>
+     <%= label_tag :thumbnail_file, "Upload a Thumbnail" %>
+     <br>
+     <%= file_field_tag "thumbnail_file", id: 'thumbnail_file' %>
+   </div><br />
+
+  <div class="field">
+    <%= label_tag :video_file, "Upload a Video" %>
+    <br>
+    <%= file_field_tag "video_file"%>
+  </div><br />
+ 
+  <% if @exhibitor %>
+     <div class="form-group">
+       <%= f.label :website %>
+       <%= f.text_field :website, class: "form-control" %>
+     </div>
+  <%end%>
+
+  <% if @exhibitor %>
+     <div class="field">
+       <%= hidden_field_tag :json %>
+     </div>
+     <!-- <%= label_tag "Position" %>
+
+     <table id="tabstable" class="tabstable">
+       <thead>
+        <tr>
+         <th></th>
+         <th></th>
+        </tr>
+       </thead>
+       <tr>
+         <td>
+           <ul id="position" class="connectedSortable">
+             <% @media_files.each do |group| %>
+               <li id="<%= group.id %>" class="ui-state-default"><%= group.name %></li>
+             <% end %>
+           </ul>
+         </td>
+         <td>
+           <%= label_tag :position, "Your New Media File", :style=>"text-align:center;" %>
+           <ul id="new_entry" class="highlighted">
+             <li id="new" class="highlighted ui-state-default">New Media File</li>
+           </ul>
+         </td>
+       </tr>
+     </table>
+     <br /> -->
+    <%= label_tag "Position" %> <br>
+    <div class='row'>
+      <ul id="position" class="connectedSortable ml-md-3">
+        <li id="new" class="highlighted ui-state-default py-2 d-flex">
+          <span class="up-down-btns">
+            <button type="button" class="pos-btn" role="up">
+              <i class="fa fa-angle-up"></i>
+            </button> <br>
+            <button type="button" class="pos-btn" role="down">
+              <i class="fa fa-angle-down"></i>
+            </button>
+          </span>
+          <div class="item-text"> New Home Button </div>
+        </li>
+        <% @media_files.each do |group| %>
+          <li id="<%= group.id %>" class="ui-state-default py-2 d-flex <%= ((@media_file.id.eql? group.id) ? "highlighted" : "") %>">
+            <span class="up-down-btns">
+              <button type="button" class="pos-btn" role="up">
+                <i class="fa fa-angle-up"></i>
+              </button> <br>
+              <button type="button" class="pos-btn" role="down">
+                <i class="fa fa-angle-down"></i>
+              </button>
+            </span>
+            <div class="item-text"><%= group.name %></div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <%end%>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary", id: "submitBtn"   %>
+  </div>
+  <div class="loader">
+    
+  </div>
+<% end %>
+
+<script>
+window.onload = function () {
+  //Don't show new entry sortable unless on new page
+  if (/edit/i.test(window.location)) {
+    $("#new").remove();
+  }
+  /* Repositioning through button controls */
+  $('.pos-btn').on('click', function(event){
+    event.stopPropagation();
+    let btn = $(this);
+    let currentItem = btn.parents('li');
+    if (btn.attr('role') === 'up'){
+      let prevItem = currentItem.prev();
+      if (prevItem.length !== 0){
+        currentItem.after(prevItem);
+      } 
+    } else if(btn.attr('role') === 'down'){
+      let nextItem = currentItem.next();
+      if (nextItem.length !== 0){
+        currentItem.before(nextItem);
+      }
+    }
+    updateJson();
+  });
+
+  $(function () {
+    $("#position").sortable({
+      update: updateJson
+    })
+  });
+
+  if ($("#media_file_name").val()!=="") { $("#new").empty().append($("#media_file_name").val()); }
+
+  $("#media_file_name").blur(function () {
+    $("#new .item-text").text(this.value);
+    updateJson();
+  });
+
+  $('form#banner_form').submit(function() {
+    if ("<%@exhibitor%>") {
+      let thumbnail_file = $('#thumbnail_file').val()
+      let position_json = $('#json').val()
+      if ($('form#banner_form').context.location.pathname === "/media_files/new" && !thumbnail_file) {
+        alert("Please upload a thumbnail")
+        return false
+      }
+      if (!position_json && window.location.pathname.toString().includes('/new')) {
+        alert("Please assign a position by dragging 'Your New Media File' to the position stack")
+        return false
+      }
+    }
+    return true
+  })
+};
+
+function updateJson(){
+  var newstatus = [];
+  $("#position").children().each(function () {
+    var column, id, name, order;
+    column     = $(this).parent().attr("id");
+    id         = $(this).attr("id");
+    name       = $(this).html();
+    order      = $(this).index();
+    return newstatus.push({
+      id       : id,
+      column   : column,
+      name     : name,
+      order    : order
+    });
+  });
+  $("#json").empty().attr("value",JSON.stringify(newstatus));
+}
+
+$(document).ready(function(){
+  $("#banner_form").submit(function(e) {
+      e.preventDefault();    
+      var formData = new FormData(this);
+      $.ajax({
+        url: '/media_files',
+        type: 'POST',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        beforeSend: function(){
+          submitBtn = $(`#submitBtn`);
+          submitBtn.attr('value',"Uploading");
+          $(".loader").html('<span style="margin-right:10px;" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>');
+          submitBtn.addClass("disabled");
+        },
+        success: function(data){
+          console.log('Uploaded')
+        },
+        error: function(data){
+          alert(data.responseJSON.message)
+          $(".loader").html(data.responseJSON.message)
+        }
+        });
+      });
+  })
+</script>
+
+

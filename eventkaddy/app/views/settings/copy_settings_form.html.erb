@@ -1,0 +1,56 @@
+<div class='well'>
+    <%= form_tag("/settings/copy_settings_form", method: "post", :html => {:class=>"form-horizontal well" }) do |f| %>
+
+
+      <div class="field">
+          Copy Settings from a previous event. Existing settings for the current event will be overwritten.<br><br>
+          <div class='alert alert-info'>
+          After submitting this form, if you hit back to return to a settings page you will need to refresh it to see the changes, otherwise you risk submitting the form with the old or default settings.
+          </div>
+      </div>
+
+      <div class="field">
+        <%= label_tag(:settings, "Select Settings to Copy") %>
+        <%= select_tag(
+            :setting_ids,
+            options_for_select(
+                @settings.map { |s|
+                    begin
+                        diff = @longest_setting_name.length - s.setting_type_name.length
+                        ["#{s.setting_type_name} #{"&nbsp;" * diff}#{s.event_id} #{s.event_name}".html_safe,
+                         s.id]
+                    rescue
+                        raise s.setting_type_name
+                    end
+                },
+                [] # no previous selections ever
+            ), :multiple => true, :size=>30, :style => "font-family:monospace,monospace;", class: "custom-select"
+        ) %>
+      </div>
+        <br>
+        <br>
+       <div class="actions"><%= submit_tag "Copy Settings", class:"btn btn-primary" %></div>
+    <% end %>
+</div>
+
+<script>
+$(function() {
+
+    var selections = []
+    $('#setting_ids').on('change', function(e) {
+        var xs = $('#setting_ids option:selected').map(function() { return $(this).text() })
+        var types = []
+        for (var i = 0; i < xs.length;i++) {
+            var type_name = xs[i].match('[A-z_]*')[0]
+            if (!types.includes( type_name ) ) {
+                types.push( type_name )
+            } else {
+                alert( 'Multiple options selected for type ' + type_name + ' selected, deselecting last option.' )
+                $(this).val( selections )
+            }
+        }
+        selections = $(this).val()
+    })
+
+})
+</script>

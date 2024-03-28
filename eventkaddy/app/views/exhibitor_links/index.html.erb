@@ -1,0 +1,30 @@
+<h1>Listing exhibitor_links</h1>
+
+<%= link_to 'New Exhibitor link', new_exhibitor_link_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Event</th>
+    <th>Exhibitor</th>
+    <th>Exhibitor link name</th>
+    <th>Exhibitor link url</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @exhibitor_links.each do |exhibitor_link| %>
+  <tr>
+    <td><%= exhibitor_link.event_id %></td>
+    <td><%= exhibitor_link.exhibitor_id %></td>
+    <td><%= exhibitor_link.exhibitor_link_name %></td>
+    <td><%= exhibitor_link.exhibitor_link_url %></td>
+    <td><%= link_to 'Show', exhibitor_link ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_exhibitor_link_path(exhibitor_link) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', exhibitor_link, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+

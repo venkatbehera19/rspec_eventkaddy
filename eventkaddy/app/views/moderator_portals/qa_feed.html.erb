@@ -1,0 +1,772 @@
+<style>
+
+.titlebox {
+  background-color: rgb(164, 181, 192);
+  padding:          5px;
+  border-radius:    2px;
+  margin-bottom:    20px;
+}
+
+.title_content {
+  color:  #fefefe;
+  margin: 10px;
+}
+
+#refreshed {
+  border:        1px solid #5cad62;
+  border-radius: 3px;
+  padding:       5px;
+  color:         #5cad62;
+  display:       none;
+  font-weight:   bold;
+  float:         right;
+}
+
+#text_upload_container {
+  width:  90%;
+  margin: 10px;
+}
+
+.question_container {
+  color:         #00464a;
+  margin-bottom: 10px;
+}
+
+.question_title, .answer_title {
+  font-weight: 700;
+  display:     inline-block;
+}
+
+.moderate, .mark_answered, .edit_question_text, .edit_answer_text, .delete_question_text {
+  margin-left: 5px;
+  background-color: #F4EBF3;
+}
+
+.moderate:hover, .mark_answered:hover, .edit_question_text:hover, .edit_answer_text:hover {
+  background-color: #FFF;
+}
+
+#refresh-questions {
+  margin-left:   10px;
+  margin-bottom: 20px;
+}
+
+#toggle-refresh {
+  margin-bottom: 20px;
+}
+
+.answered {
+    background-color: #D7F7D4;
+    border:           1px #8EB695 solid;
+}
+
+.edit_text_area {
+    width:  100%;
+    height: auto;
+}
+
+.new_question_text{
+    float: right;
+    display: block;
+    margin-top: 7px;
+}
+
+</style>
+
+<div class='titlebox'>
+	<h3 class="title_content"><%= sanitize @session.title %> Questions Feed</h3>
+</div>
+
+<button id="refresh-questions" class="btn btn-outline-info">Refresh Now!</button> 
+<button id="toggle-refresh" class="btn btn-outline-info">Auto-Refresh On</button> 
+<div id="refreshed" style=>Refreshed!</div>
+
+<br>
+
+<%= link_to "Back", "/moderator_portals/landing", :class=>"btn btn-link" %>
+<%= link_to "View Guest QA Page (Attendee / Presentation View)", "/qa_feed/#{@session.id}", class:"btn btn-link", target:"_blank" %>
+<% if @cordova_booleans.chat_management %>
+    <%= link_to "Chat Management", "/moderator_portals/chat/#{@session.id}", class:"btn btn-link", target:"_blank" %>
+<% end %>
+<% if @cordova_booleans.session_video_display %>
+    <%= link_to "Session Video", "/moderator_portals/session_video/#{@session.id}", class:"btn btn-link", target:"_blank" %>
+<% end %>
+<% if @cordova_booleans.poll_management %>
+    <%= link_to "Poll Management", "/moderator_portals/sessions/#{@session.id}/session_polls", class:"btn btn-link", target:"_blank" %>
+<% end %>
+
+<br><br>
+
+<br>
+Tips: 
+<ul>
+    <li>Hide questions to help you manage the amount of text on the page.</li>
+    <li>Drag and drop questions to help you organize questions in order of
+        interest or relevance.</li>
+    <li>Use the Mark Answered Button to keep track of which questions have been
+        addressed already</li>
+    <li>If you make a mistake, you can retrieve questions you've hidden and the
+        original order of the questions by refreshing the page (f5 for windows, 
+        Apple-r for mac).</li>
+        <li>Questions marked <%= @whitelist_mode ? "whitelisted or " : "" %> answered will be preserved even with a page refresh.</li>
+    <% if @whitelist_mode || @single_question_mode %>
+        <% select_verb = @whitelist_mode ? "whitelisting" : "selecting" %>
+        <li>You can edit question bodies before <%= select_verb %> them, at your discretion for needs such as 
+        brevity or privacy.</li>
+    <% end %>
+</ul>
+<br>
+
+<% if @whitelist_mode %>
+    <div id="text_upload_container">
+        <h3>Published Questions</h3>
+        <div id="whitelisted"></div>
+        <button class='new_question_text btn btn-outline-primary' onclick="addNewQuestion()">Add New Question</button> <br>
+        <h3>Pending Approval</h3>
+        <div id="pending_approval">
+        </div>
+    </div>
+<% elsif @single_question_mode %>
+    <div id="text_upload_container">
+        <h3>Selected Question</h3>
+        <div id="whitelisted"></div>
+        <button class='new_question_text btn btn-outline-primary' onclick="addNewQuestion()">Add New Question</button> <br>
+        <h3>Available Questions</h3>
+        <div id="pending_approval">
+        </div>
+    </div>
+<% else %>
+    <div id="text_upload_container">
+        <h3>Questions</h3>
+        <div id="whitelisted"></div>
+    </div>
+<% end %>
+
+<script>
+
+var first_time                        = true;
+var attendee_text_upload_question_ids = [];
+var whitelist_mode                    = <%= @whitelist_mode %>;
+var single_question_mode              = <%= @single_question_mode %>;
+var session_id = <%= @session.id %>;
+
+let channel = '/questions_stream/' + session_id;
+var client = new Faye.Client('<%=@event.chat_url%>' + '/faye')
+
+function fadeInEl( el, parent_selector ) {
+    return el.hide().prependTo(parent_selector).fadeIn(1000);
+}
+
+function fadeQuestion( el ) {
+    $(el).parent().fadeOut(700);
+}
+
+function editQuestionText( e ) {
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+
+    var text = $container.children('.question_text').html();
+    $container.children('.question_text').html(
+        "<textarea class='edit_text_area form-control'>" + text + "</textarea>"
+    );
+        
+    var $text_area = $container.children('.question_text').children('textarea');
+
+    // keep all text of question visible for easy editing
+    $text_area.height(
+        $text_area.prop('scrollHeight')
+    );
+
+    $container
+        .children('.edit_question_text')
+        .off()
+        .on('click', updateQuestionText)
+        .first().html('Update Question Text');
+    $container.children('.moderate').prop('disabled', true);
+}
+
+function updateQuestionText( e ) {
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+
+	$.ajax({
+		type:        "POST",
+		url:         "/moderator_portals/update_question_text/" + id,
+		dataType:    "JSON",
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "text" : $container.children('.question_text').children('textarea').val()
+        }),
+        success:     function( data ) { 
+            client.publish(channel, {
+                changedQuestion: id,
+                type: 'update_question_text',
+                updatedRecord: data
+            });
+            // $container.children('.question_text').html( _.escape(data.new_text) );
+            // $container
+            //     .children('.edit_question_text')
+            //     .off()
+            //     .on('click', editQuestionText)
+            //     .first().html('Edit Question Text');
+            // $container.children('.moderate').prop('disabled', false);
+        },
+		error:       ajaxErrorHandler
+	});	
+}
+
+function postNewQuestion( e ){
+    var $container = $( this ).parent();
+    var question = $container.children('.question_text').children('textarea').val()
+    if (!question || question == "Question") {
+        alert("Cannot add blank question")
+        return;
+    }
+	$.ajax({
+		type:        "POST",
+		url:         "/moderator_portals/post_qa?session_id=<%= @session.id %>",
+		dataType:    "JSON",
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "text" : $container.children('.question_text').children('textarea').val(),
+            "answer" : $container.children('.answer_text').children('textarea').val()
+        }),
+        success:     function( data ) { 
+            if(data.status == "success"){
+                client.publish(channel, {
+                    changedQuestion: true,
+                    type: 'new_question_added'
+                });
+                let white_list_text = whitelist_mode ? 'Publish' : 'Select Question';
+                let moderate_button = "<button class='moderate btn'>" + white_list_text + "</button>";
+                attendee_text_upload_question_ids.push(data.new_question.id);
+                $container.attr('data-q_id', data.new_question.id);
+                $container.children('.answer_text').html( _.escape(data.new_question.answer) );
+                $container.children('.question_text').html( _.escape(data.new_question.text) );
+                $container.children('.post_new_question').remove();
+                $container.children('.cancel_new_question').remove();
+                $container.append(moderate_button)
+                $container.children('.moderate').on('click', whitelistQuestion);
+                $container.append("<button class='edit_question_text btn'>Edit Question Text</button>")
+                $container.children('.edit_question_text').on('click', editQuestionText);
+                $container.append("<button class='edit_answer_text btn'>Edit Answer Text</button>")
+                $container.children('.edit_answer_text').on('click', editAnswerText);
+                $container.append("<button class='mark_answered btn'>Mark Answered</button>");
+                $container.children('.mark_answered').on('click', markQuestionAnswered);
+                $container.append("<button class='delete_question_text btn'>Delete Question</button>");
+                $container.children('.delete_question_text').on('click', deleteQuestion);
+                
+                alert("You posted a new question!")
+
+            }
+            else throw new error();
+        },
+		error:       ajaxErrorHandler
+	});	
+}
+
+function deleteQuestion( e ) {
+    var x = confirm("Are you sure you want to delete?");
+    if (!x)
+        return false;
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+	$.ajax({
+		type:        "DELETE",
+		url:         "/moderator_portals/delete_question/" + id,
+		dataType:    "JSON",
+        contentType: 'application/json',
+        success:     function( data ) { 
+            client.publish(channel, {
+                changedQuestion: id,
+                type: 'delete_question'
+            });
+            // $container.fadeOut(700, ()=>{
+            //     $container.remove();
+            // });
+        },
+		error:       ajaxErrorHandler
+	});	
+}
+
+function addNewQuestion(){
+    var q_el = questionEl(
+        0,
+        "Moderator",
+        "",
+        "Question",
+        "Answer",
+        false,
+        false
+    )
+
+    if ( whitelist_mode || single_question_mode ) {
+        fadeInEl( 
+            q_el,
+            "#text_upload_container > #pending_approval"
+        )
+    } else { // always whitelisted if not whitelist mode
+        fadeInEl( q_el, "#text_upload_container > #whitelisted" )
+    }
+    q_el.children('.edit_question_text').click()
+    q_el.children('.edit_answer_text').click()
+    q_el.children('.moderate').remove()
+    q_el.children('.edit_question_text').remove()
+    q_el.children('.edit_answer_text').remove()
+    q_el.children('.mark_answered').remove()
+    q_el.children('.delete_question_text').remove()
+    q_el.append("<button class='post_new_question btn btn-success'>Create Question</button>  <button class='cancel_new_question btn btn-danger'>Cancel</button>");
+    q_el.children('.post_new_question').on('click', postNewQuestion);
+    q_el.children('.cancel_new_question').on('click', () => {
+        q_el.fadeOut(700, ()=>{
+            q_el.remove();
+        });
+    });
+}
+
+function editAnswerText( e ) {
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+
+    var text = $container.children('.answer_text').html();
+    $container.children('.answer_text').html(
+        "<textarea class='edit_text_area form-control'>" + text + "</textarea>"
+    );
+        
+    var $text_area = $container.children('.answer_text').children('textarea');
+
+    // keep all text of question visible for easy editing
+    $text_area.height(
+        $text_area.prop('scrollHeight')
+    );
+
+    $container
+        .children('.edit_answer_text')
+        .off()
+        .on('click', updateAnswerText)
+        .first().html('Update Answer Text');
+    $container.children('.moderate').prop('disabled', true);
+}
+
+function updateAnswerText( e ) {
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+
+   $.ajax({
+      type:        "POST",
+      url:         "/moderator_portals/update_answer_text/" + id,
+      dataType:    "JSON",
+        contentType: 'application/json',
+        data: JSON.stringify({
+            "text" : $container.children('.answer_text').children('textarea').val()
+        }),
+        success:     function( data ) { 
+            client.publish(channel, {
+                changedQuestion: id,
+                type: 'update_answer_text',
+                updatedRecord: data
+            });
+            // $container.children('.answer_text').html( _.escape(data.new_answer) );
+            // $container
+            //     .children('.edit_answer_text')
+            //     .off()
+            //     .on('click', editAnswerText)
+            //     .first().html('Edit Answer Text');
+            // $container.children('.moderate').prop('disabled', false);
+        },
+      error:       ajaxErrorHandler
+   });   
+}
+
+function markQuestionAnswered( e ) {
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+
+	$.ajax({
+		type:        "POST",
+		url:         "/moderator_portals/mark_question_answered/" + id,
+		dataType:    "JSON",
+        contentType: 'application/json',
+        success:     function( data ) { 
+            client.publish(channel, {
+                changedQuestion: id,
+                type: 'mark_question_answered',
+                updatedRecord: data
+            });
+            // $container.addClass('answered');
+            // $container.children('.question_title').prepend("<b style='color:#A1B598;font-size:1.2em;'>Answered.</b><br><br>");
+            // $container.children('.answer_title').prepend("Our answer:");
+            // $container.children('.mark_answered').remove();
+        },
+		error:       ajaxErrorHandler
+	});	
+}
+
+function whitelistQuestion( e ) {
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+
+	$.ajax({
+		type:        "POST",
+		url:         "/moderator_portals/whitelist_question/" + id + "?session_id=<%= @session.id %>",
+		dataType:    "JSON",
+        contentType: 'application/json',
+        success:     function( data ) { 
+            client.publish(channel, {
+                data: data,
+                changedQuestion: id,
+                type: 'whitelist_question'
+            });
+            // var btn_text = whitelist_mode ? 'Unpublish Question' : 'Deselect Question';
+
+            // if (single_question_mode) {
+            //     $('#whitelisted').children('.question_container').each(function() {
+            //         // this function is used in revokeWhitelist as well, and could be abstracted
+            //         var $q_container = $(this)
+            //         $q_container.detach();
+            //         $('#pending_approval').append( $q_container );
+            //         $q_container
+            //             .children('.moderate')
+            //             .off()
+            //             .on('click', whitelistQuestion)
+            //             .first().html( 'Select Question' )
+
+            //         $q_container.append("<button class='edit_question_text btn'>Edit Question Text</button>");
+            //         $q_container.children('.edit_question_text').on('click', editQuestionText);
+            //         $q_container.append("<button class='edit_answer_text btn'>Edit Answer Text</button>");
+            //         $q_container.children('.edit_answer_text').on('click', editAnswerText);
+            //         $q_container.append("<button class='delete_question_text btn'>Delete Question</button>");
+            //         $q_container.children('.delete_question_text').on('click', deleteQuestion);
+            //     })
+            // }
+
+            // $container.detach();
+            // $('#whitelisted').prepend( $container );
+            // $container
+            //     .children('.moderate')
+            //     .off()
+            //     .on('click', revokeWhitelistQuestion)
+            //     .first().html( btn_text )
+
+            // $container.children('.edit_question_text').remove();
+            // $container.children('.edit_answer_text').remove();
+        },
+		error: ajaxErrorHandler
+	});	
+}
+
+function revokeWhitelistQuestion( e ) {
+    var $container = $( this ).parent();
+    var id         = $container.attr('data-q_id');
+
+	$.ajax({
+		type:        "POST",
+		url:         "/moderator_portals/revoke_whitelist_question/" + id + "?session_id=<%= @session.id %>" ,
+		dataType:    "JSON",
+        contentType: 'application/json',
+        success: function( data ) {
+            client.publish(channel, {
+                data: data,
+                changedQuestion: id,
+                type: 'revoke_whitelist_question'
+            });
+            // var btn_text = whitelist_mode ? 'Publish' : 'Select Question';
+            // $container.detach();
+            // $('#pending_approval').append( $container )
+            // $container
+            //     .children('.moderate')
+            //     .off()
+            //     .on('click', whitelistQuestion)
+            //     .first().html( btn_text );
+
+            // if ( whitelist_mode || single_question_mode ) {
+            //     $container.append("<button class='edit_question_text btn'>Edit Question Text</button>")
+            //     $container.children('.edit_question_text').on('click', editQuestionText);
+            //     $container.append("<button class='edit_answer_text btn'>Edit Answer Text</button>")
+            //     $container.children('.edit_answer_text').on('click', editAnswerText);
+            //     $container.append("<button class='delete_question_text btn'>Delete Question</button>");
+            //     $container.children('.delete_question_text').on('click', deleteQuestion);
+            // }
+        },
+		error: ajaxErrorHandler
+	});	
+}
+
+function questionEl( id, f_name, l_name, text, answer_text, whitelist, answered ) {
+    var white_list_fn = whitelist ? revokeWhitelistQuestion : whitelistQuestion;
+    var style = answered ? 'answered' : '';
+
+    // items are always whitelisted if not in whitelist mode
+    if (whitelist_mode) {
+        var white_list_text = whitelist ? "Unpublish Question" : "Publish Question";
+        var moderate_button = "<button class='moderate btn'>" + white_list_text + "</button>";
+    } else if (single_question_mode) {
+        var white_list_text = whitelist ? "Deselect Question" : "Select Question";
+        var moderate_button = "<button class='moderate btn'>" + white_list_text + "</button>";
+    } else {
+        var moderate_button = "";
+    }
+    var mark_answered_button = answered ? "" : "<button class='mark_answered btn'>Mark Answered</button>";
+    var edit_question_text = ( !whitelist && (whitelist_mode || single_question_mode) ) ? "<button class='edit_question_text btn'>Edit Question Text</button>" : "";
+    var edit_answer_text = ( !whitelist && (whitelist_mode || single_question_mode) ) ? "<button class='edit_answer_text btn'>Edit Answer Text</button>" : "";
+    var delete_question_text = ( !whitelist && (whitelist_mode || single_question_mode) ) ? "<button class='delete_question_text btn'>Delete Question</button>" : "";
+
+    var $q_el = $("<div class='question_container alert alert-dismissible alert-info " + style + "' data-q_id='" + id + "'>" +
+        "<span class='question_title'>" + 
+            (answered ? "<b style='color:#A1B598;font-size:1.2em;'>Answered.</b><br><br>" : "") +
+            _.escape(f_name) + " " + _.escape(l_name) + " asked..." +
+        "</span>" +
+        "<button class='close' onClick='fadeQuestion(this)'>Hide</button>" +
+        "<br><br>" + 
+        "<span class='question_text'>" +
+            _.escape(text) + 
+        "</span>" +
+        "<br><br>" +
+        "<span class='answer_title'>" +
+            (answered ? "Our answer:" : "") +
+        "</span>" +
+        "<br><br>" +    
+        "<span class='answer_text'>" + 
+            _.escape(answer_text) + 
+        "</span>" +
+        "<br><br>" +
+        moderate_button +
+        " " + 
+        edit_question_text +
+        " " +
+        edit_answer_text +
+        " " +
+        mark_answered_button +
+        " " +
+        delete_question_text +
+    "</div>");
+    if (whitelist_mode || single_question_mode) {
+        $q_el.children('.moderate').on('click', white_list_fn);
+    }
+    $q_el.children('.edit_question_text').on('click', editQuestionText);
+    $q_el.children('.edit_answer_text').on('click', editAnswerText);
+    $q_el.children('.mark_answered').on('click', markQuestionAnswered);
+    $q_el.children('.delete_question_text').on('click', deleteQuestion);
+    return $q_el;
+}
+
+function ajaxErrorHandler(jqXHR, textStatus, errorThrown) {
+    console.error("ajax error", jqXHR, textStatus, errorThrown);
+    alert('An error occured.');
+}
+
+var loadQuestions = function() {
+
+	var getQuestionsSuccessFunction = function(data) {
+		
+		$.each(data, function(index,value) {
+            var t_u = value
+
+            // For purpose of query to not fetch ids we already have
+            attendee_text_upload_question_ids.push(
+                t_u.id
+            );
+
+            var q_el = questionEl(
+                t_u.id,
+                t_u.first_name,
+                t_u.last_name,
+                t_u.text,
+                t_u.answer,
+                t_u.whitelist,
+                t_u.answered
+            )
+
+            if ( whitelist_mode || single_question_mode ) {
+                fadeInEl( 
+                    q_el,
+                    t_u.whitelist ? "#text_upload_container > #whitelisted" : "#text_upload_container > #pending_approval"
+                )
+            } else { // always whitelisted if not whitelist mode
+                fadeInEl( q_el, "#text_upload_container > #whitelisted" )
+            }
+		});
+
+		if (first_time) {
+			first_time = false;
+		} else {
+			$("#refreshed").show().fadeOut(2000);
+		}
+	};
+
+	$.ajaxSetup({
+		timeout: 15000
+	});
+
+	$.ajax({
+		type:        "POST",
+		url:         "/moderator_portals/qa_ajax_data/<%= @session.id %>",
+		dataType:    "JSON",
+        contentType: 'application/json',
+        data:        JSON.stringify({ "question_ids": attendee_text_upload_question_ids }),
+		success:     getQuestionsSuccessFunction,
+        error:       function() { console.log('qa ajax post error') }
+	});	
+};
+
+function update_question_text(el_id, data) {
+    var $container = $(`[data-q_id='${el_id}']`)
+    $container.children('.question_text').html( _.escape(data.new_text) );
+    $container
+        .children('.edit_question_text')
+        .off()
+        .on('click', editQuestionText)
+        .first().html('Edit Question Text');
+    $container.children('.moderate').prop('disabled', false);
+}
+
+function update_answer_text(el_id, data) {
+    var $container = $(`[data-q_id='${el_id}']`)
+    $container.children('.answer_text').html( _.escape(data.new_answer) );
+    $container
+        .children('.edit_answer_text')
+        .off()
+        .on('click', editAnswerText)
+        .first().html('Edit Answer Text');
+    $container.children('.moderate').prop('disabled', false);
+}
+
+function mark_question_answered(el_id, data) {
+    var $container = $(`[data-q_id='${el_id}']`)
+    $container.addClass('answered');
+    $container.children('.question_title').prepend("<b style='color:#A1B598;font-size:1.2em;'>Answered.</b><br><br>");
+    $container.children('.answer_title').prepend("Our answer:");
+    $container.children('.mark_answered').remove();
+}
+
+function delete_question(el_id, data) {
+    var $container = $(`[data-q_id='${el_id}']`)
+    $container.fadeOut(700, ()=>{
+        $container.remove();
+    });
+}
+
+function whitelist_question(el_id, data) {
+    var $container = $(`[data-q_id='${el_id}']`)
+    var btn_text = whitelist_mode ? 'Unpublish Question' : 'Deselect Question';
+    if (single_question_mode) {
+        $('#whitelisted').children('.question_container').each(function() {
+            // this function is used in revokeWhitelist as well, and could be abstracted
+            var $q_container = $(this)
+            $q_container.detach();
+            $('#pending_approval').append( $q_container );
+            $q_container
+                .children('.moderate')
+                .off()
+                .on('click', whitelistQuestion)
+                .first().html( 'Select Question' )
+
+            $q_container.append("<button class='edit_question_text btn'>Edit Question Text</button>");
+            $q_container.children('.edit_question_text').on('click', editQuestionText);
+            $q_container.append("<button class='edit_answer_text btn'>Edit Answer Text</button>");
+            $q_container.children('.edit_answer_text').on('click', editAnswerText);
+            $q_container.append("<button class='delete_question_text btn'>Delete Question</button>");
+            $q_container.children('.delete_question_text').on('click', deleteQuestion);
+        })
+    }
+    $container.detach();
+    $('#whitelisted').prepend( $container );
+    $container
+        .children('.moderate')
+        .off()
+        .on('click', revokeWhitelistQuestion)
+        .first().html( btn_text )
+
+    $container.children('.edit_question_text').remove();
+    $container.children('.edit_answer_text').remove();
+}
+
+function revoke_whitelist_question(el_id, data){
+    var $container = $(`[data-q_id='${el_id}']`)
+    var btn_text = whitelist_mode ? 'Publish' : 'Select Question';
+    $container.detach();
+    $('#pending_approval').append( $container )
+    $container
+        .children('.moderate')
+        .off()
+        .on('click', whitelistQuestion)
+        .first().html( btn_text );
+
+    if ( whitelist_mode || single_question_mode ) {
+        $container.append("<button class='edit_question_text btn'>Edit Question Text</button>")
+        $container.children('.edit_question_text').on('click', editQuestionText);
+        $container.append("<button class='edit_answer_text btn'>Edit Answer Text</button>")
+        $container.children('.edit_answer_text').on('click', editAnswerText);
+        $container.append("<button class='delete_question_text btn'>Delete Question</button>");
+        $container.children('.delete_question_text').on('click', deleteQuestion);
+    }
+}
+
+window.onload = function(){
+
+	var checkQuestions = setInterval(function(){
+		loadQuestions();
+	}, 30000);
+
+	var autoRefresh = true;
+	loadQuestions();
+	$("#refresh-questions").on("click", function(){
+		loadQuestions();
+	});
+
+	$("#toggle-refresh").on("click", function(){
+		if (autoRefresh===false) {
+			$("#toggle-refresh").html("Auto-Refresh On");
+			autoRefresh = true;
+			checkQuestions = setInterval(function(){
+				loadQuestions();
+			}, 30000);
+		} else {
+			$("#toggle-refresh").html("Auto-Refresh Off");
+			autoRefresh = false;
+			clearInterval(checkQuestions);
+		}
+		
+	});
+
+    $( "#whitelisted" ).sortable();
+    // otherwise items are always in the whitelist container
+    if ( whitelist_mode || single_question_mode ) { $( "#pending_approval" ).sortable(); }
+
+
+    function updateQuestionsArray(data){
+        if(data.changedQuestion){
+            switch(data.type) {
+                case 'new_question_added':
+                    loadQuestions()
+                    break;
+                case 'update_question_text':
+                    update_question_text(data.changedQuestion, data.updatedRecord)
+                    break;
+                case 'update_answer_text':
+                    update_answer_text(data.changedQuestion, data.updatedRecord)
+                    break;
+                case 'mark_question_answered':
+                    mark_question_answered(data.changedQuestion, data.updatedRecord)
+                    break;
+                case 'delete_question':
+                    delete_question(data.changedQuestion, data.updatedRecord)
+                    break;
+                case 'whitelist_question':
+                    whitelist_question(data.changedQuestion, data.updatedRecord)
+                    break;
+                case 'revoke_whitelist_question':
+                    revoke_whitelist_question(data.changedQuestion, data.updatedRecord)
+                default:
+                    break;
+            }
+        }
+    }
+
+    var questions_stream = client.subscribe(channel, function(data) {
+        updateQuestionsArray(data)
+    });
+
+};
+
+</script>

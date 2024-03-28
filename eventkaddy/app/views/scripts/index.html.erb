@@ -1,0 +1,42 @@
+<h3>Scripts for <%=@event.name%></h3>
+<%= link_to 'Add Button from Template', script_types_path ,class:"btn btn-primary" %> <br/><br/>
+
+<div class="table-responsive">
+<table class="table">
+  <tr>
+    <th>Button Label</th>
+    <th>Script Type</th>
+    <th>File Name</th>
+    <th>Published</th>
+    <th></th>
+  </tr>
+
+<% @scripts.each do |script| %>
+  <tr>
+    <td><%= script.button_label %></td>
+    <td><%= script.script_type.name%></td>
+    <td><%= script.file_name %></td>
+    <td><%= script.published%></td>
+    <td class="table-actions">
+      <div class="dropdown">
+        <a class="ellipse-style" data-toggle="dropdown">
+          <i class="fa fa-ellipsis-v"></i>
+        </a>
+        <div class="dropdown-menu">
+          <%= link_to 'Show', script, class:"btn dropdown-item text-info" %>
+          <%= link_to 'Edit', edit_script_path(script) ,class:"btn dropdown-item text-success" %>
+          <%= link_to 'Delete', script, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn dropdown-item text-danger" %>
+        </div>
+      </div>
+      <div class="btn-group d-flex">
+        <%= link_to 'Show', script, class:"btn btn-outline-info" %>
+        <%= link_to 'Edit', edit_script_path(script) ,class:"btn btn-outline-success" %>
+        <%= link_to 'Delete', script, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %>
+      </div>
+    </td>
+  </tr>
+<% end %>
+</table>
+</div>
+<br />
+

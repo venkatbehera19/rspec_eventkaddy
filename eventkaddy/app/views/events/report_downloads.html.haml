@@ -1,0 +1,129 @@
+#upload-notice
+.current-job-status
+  .status-header
+    Current Job Status
+  .cancel-job.btn.btn-warning.btn-sm
+    Cancel Job
+  .status
+  .row-progress
+    0 rows processed.
+  .progress.progress-striped
+    .bar
+  %br/
+  .errors
+  .warnings
+  .job-info
+
+:ruby
+  def report_job_form label, path, method = 'post'
+    form_tag("/reports/#{path}", method: method, remote: true, style:'margin:0px;' ) do
+      hidden_field_tag(:job_id) +
+      submit_tag(label + " (runs in background)", class: 'job-submit reports-export btn btn-link', data: {sname:"reports-page-#{path.gsub('_', '-')}", event_id: "#{session[:event_id]}"})
+    end
+  end
+
+%h5 Event
+= report_job_form "Event App Report", "cordova_report"
+
+%h5 Sessions
+= report_job_form 'Export Sessions To Spreadsheet',         'sessions_report'
+= report_job_form 'Export Feedback To Spreadsheet',         'sessions_and_speakers_feedback'
+= report_job_form 'Export Feedback Summary To Spreadsheet', 'feedbacks_summary', 'get'
+= report_job_form 'Export Session Questions & Answers',     'download_qa'
+= report_job_form 'Export AV Requests To Spreadsheet',      'sessions_av_report'
+= report_job_form "Export Session Surveys to Spreadsheet", "general_survey_report"
+= report_job_form "Export Session Surveys to Spreadsheet (Simple)", "general_survey_report_simple"
+= report_job_form "Generate Session Survey Reports", "generate_session_survey_reports"
+= link_to 'Generate Global Survey Report', "/reports/global_survey_report", class:'btn btn-link'
+%br/
+- survey_reports_path = Rails.root.join('public','event_data',@event.id.to_s,'session_survey_reports',@event.name + '_session_survey_reports.zip')
+- if File.exists?(survey_reports_path)
+  = link_to 'Survey Reports Zip', "/event_data/#{@event.id}/session_survey_reports/#{@event.name}_session_survey_reports.zip", class:'btn btn-link'
+  Last Updated:
+  = File.mtime survey_reports_path
+
+-# probably won't convert this one for now; it's kinda unused
+-# = report_job_form "Export Sessions To Session Grid", "xls_grid"
+= link_to "Export Sessions To Session Grid", "/session_grid/xls_grid.xlsx", class: 'btn btn-link'
+
+%h5 Speakers
+= report_job_form "Export Speakers To Spreadsheet", "speaker_report"
+= report_job_form "Export Feedback To Spreadsheet", "sessions_and_speakers_feedback"
+= link_to "Download All Speakers' Files as Zip", "/speakers/download_all_zip", class: 'btn btn-link'
+
+%h5 Exhibitors
+= report_job_form "Export Exhibitors To Spreadsheet", "exhibitors_report"
+= report_job_form "Export Exhibitor-Attendees To Spreadsheet", "exhibitor_attendee_report"
+= report_job_form "Export Exhibitors User Info To Spreadsheet", "exhibitor_user_summary_report"
+= report_job_form "Export Exhibitor Leads Report", "exhibitor_leads_report"
+= report_job_form "Export Scans Full Reports", "exhibitors_scan_report"
+
+%h5 Attendees
+= report_job_form "Export Attendees To Spreadsheet", "attendee_report"
+= report_job_form "Export App Logins To Spreadsheet", "download_logins"
+= report_job_form "Export Virtual Platform Logins To Spreadsheet", "download_reporting_logins"
+= report_job_form "Export QR Scanner Data To Spreadsheet", "exhibitor_products_report"
+= report_job_form "Export Scans Summary To Spreadsheet", "attendee_scans_summary_report"
+= report_job_form "Export Scans Full Report To Spreadsheet", "attendee_scans_full_report"
+= report_job_form "Export iAttend Scans Report To Spreadsheet", "iattend_scans_report"
+= report_job_form "Export Posts Report To Spreadsheet", "flare_photos_report"
+= report_job_form "Export iAttend Scans By Attendee Report", "iattend_scans_by_attendee_report"
+= report_job_form "Export iAttend Scans By Attendee Report Version 2", "iattend_scans_by_attendee_report_v2"
+= link_to "Export Attendee Surveys Report", "/reports/attendee_survey_report", class: 'btn btn-link', multipart: true
+%br/
+= link_to "Generate Daily Health Check Survey Report", "/reports/daily_health_check_report", class: 'btn btn-link'
+%br/
+= report_job_form "Generate Daily Health check Incomplete Report", "daily_health_check_unsubmitted_attendees_report"
+
+- last_date = @event.event_end_at.to_date > Date.today ? Date.today : @event.event_end_at.to_date
+
+- (@event.event_start_at.to_date..last_date).each do |date|
+  = link_to "Generate Daily Health check Incomplete Report for #{date.to_s}", "/reports/incomplete_daily_health_check_attendees_per_day?date=#{date.to_s}", class: "btn btn-link"
+  %br/
+
+%h5 Session Files
+= report_job_form "Export Notes To Spreadsheet", "session_files_summary_conference_note"
+= link_to "Download All Session Files as Zip", "/session_files/download_all_zip", class: 'btn btn-link'
+
+%h5 Game
+= report_job_form "Export App Badge Statistics To Spreadsheet", "game_stats_report"
+= report_job_form "Export Attendee Per Row App Badge Statistics To Spreadsheet", "attendee_per_row_game_stats_report"
+= report_job_form "Export Full Leaderboard", "full_leaderboard_report"
+= report_job_form "Export Full Leaderboard By All Badges Completed Time", "all_badges_completed_leaderboard_report"
+
+%h5 Zip Archive Downloads
+= link_to "Download Generated PDFs as Zip", "/events/download_generated_certificates_as_zip", class: 'btn btn-link'
+
+%h5 Miscellaneous
+= report_job_form "Export Quiz Surveys to Spreadsheet", "quiz_survey_report"
+= link_to "Attendees Who Completed 5 Surveys Ticket Sheet", "/reports/attendees_who_completed_surveys_report", class: 'btn btn-link'
+
+:css
+  /*basic adjustment of bootstrap btn-link */
+  .btn-link-ek {
+    margin:      0px 0px 0px -1px;
+    padding:     0px;
+    line-height: 16px;
+    font-size: 13px;
+    font-family: verdana, arial, helvetica, sans-serif;
+  }
+  .div {
+    margin: 3px 0 3px 0;
+    line-height: 16px;
+    font-size: 13px;
+    font-family: verdana, arial, helvetica, sans-serif;
+  }
+
+%script{type:"text/javascript", src:"/non_pipeline_assets/job.js"}
+%link{href:"/non_pipeline_assets/job.css", media:"all", rel:"stylesheet", type:"text/css"}
+
+:javascript
+  let statuses = JSON.parse(`#{Job.running_statuses}`.replace(/&quot;/g,'"'))
+  CMS.Job.setupJob( #{@event.id}, statuses);
+
+- running_jobs = Job.running_jobs @event.id
+- if running_jobs.length > 0
+  :javascript
+    var options = { job_id: #{running_jobs.last.id} };
+    job = job || Object.create(CMS.Job).resume(options); // TODO: intentionally global, but should be refactored.
+

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>EventKaddy CMS</title>
+  <!--%= stylesheet_link_tag "scaffold" %-->
+  	<%= stylesheet_link_tag    "application", :media => "all" %>
+    <%= javascript_include_tag "application" %>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+    <%= csrf_meta_tag %>
+		<style>
+			.profile-link{
+				padding: 5px 10px !important;
+				font-size: 24px;
+			}
+			.profile-nav{
+				display: flex;
+				align-items: center;
+			}
+		</style>
+
+</head>
+
+<body>
+	<% if user_signed_in? && !current_user.id.eql?(true_user.id) %>
+			<div class="impersonate-banner">
+							You are signed-in as <%= current_user.email %>&nbsp;
+							<%= link_to "Back to admin", stop_impersonating_users_path, method: :post %>
+			</div>
+	<% end %>
+	<nav class="navbar navbar-expand-md bg-celurean-custom navbar-dark">
+
+			<div class="narbar-brand">
+				<!-- <img src="/assets/ek_logo.png" width="90px" height="31px"> -->
+				<%= image_tag 'ek_logo_large.png', width: "90px", height: "31px" %>
+			</div>
+
+			<ul class="navbar-nav ml-auto">
+				<% if user_signed_in? %>
+						<li class="nav-item"><%= link_to "Home", "/home/index", class: "nav-link" %></li>
+						<!--<li><%#= link_to "Change Password", "/speaker_portals/edit_account" ,class:"btn" %></li> -->			
+						<% if (current_user.role?("SuperAdmin") || current_user.role?("Client")) %>
+								<li class="nav-item profile-nav">
+										<%= link_to profile_user_path(id: current_user.id), class: "profile-link" do %>
+												<i class="fa fa-user-circle "></i>
+										<% end %>
+								</li>	
+						<%end%>
+						<li class="nav-item"><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete, class: "nav-link" %></li>
+				<% end %>
+			</ul>
+	</nav>
+
+	<% if notice %>
+		<div class="alert alert-success shadow" role="alert" style="border-left:#155724 5px solid; border-radius: 0px">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true" style="color:#155724">&times;</span>
+			</button>
+			<div class="row">
+					<i class="fa fa-check-circle-o success-font"></i>
+					<p style="font-size:12px" class="mb-0 font-weight-light"><%= notice %></p>
+			</div>
+		</div>
+	<% end %>
+	<% if alert %>
+		<div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true" style="color:#721C24">&times;</span>
+			</button>
+			<div class="row">
+					<i class="fa fa-exclamation-circle danger-font"></i>
+					<p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+			</div>
+		</div>
+	<% end %>
+  <br>
+
+  <div class="container mt-4 content-containerp5">
+
+		<div>
+			
+			<%= yield %>
+		</div>
+		
+		<br>
+  	<br>
+
+		<div class="footer" style="text-align:center">
+            Questions?  Email support@eventkaddy.com
+		</div>
+	
+	</div><!--container-->
+	
+</body>
+</html>

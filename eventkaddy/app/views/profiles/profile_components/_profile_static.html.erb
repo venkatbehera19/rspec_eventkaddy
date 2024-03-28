@@ -1,0 +1,23 @@
+<div class="col-12 col-sm-auto mb-3">
+  <div class="mx-auto" style="width: 140px;">
+    <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; background-color: rgb(233, 236, 239);">
+      <%= image_tag("default_profile_picture.jpeg", size: "140x140", alt: "Default Image")%>
+    </div>
+  </div>
+</div>
+<div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+  <div class="text-center text-sm-left mb-2 mb-sm-0">
+    <h5 class="pt-sm-2 pb-1 mb-0 text-nowrap"> 
+      <%if (!current_user.first_name.blank? && current_user.last_name.blank?)%>
+        <%= current_user.first_name%>
+      <% else %>
+        <%= current_user.first_name.blank? ? "FirstName" : current_user.first_name%> <%= current_user.last_name.blank? ? "LastName" : current_user.last_name%>
+      <%end%>
+    </h5>
+    <p class="mb-0"><%=current_user.email%></p>
+  </div>
+  <div class="text-center text-sm-right">
+    <span class="badge badge-secondary"><%=current_user.roles.first.name%></span>
+    <div class="text-muted"><small>Joined <%=current_user.created_at.strftime('%Y-%m-%d %H:%M')%></small></div>
+  </div>
+</div>

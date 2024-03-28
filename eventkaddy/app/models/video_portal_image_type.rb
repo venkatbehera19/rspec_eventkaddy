@@ -1,0 +1,2 @@
+class VideoPortalImageType < ApplicationRecord
+end

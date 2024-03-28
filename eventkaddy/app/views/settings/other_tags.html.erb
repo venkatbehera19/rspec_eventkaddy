@@ -1,0 +1,36 @@
+<h1>Other Session Tags</h1>
+<br/>
+<br/>
+
+<table id="spsessions" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Sesssion Code</th>
+      <th>Session Title</th>
+      <th>Speaker</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @tags.each do |tag| %>
+      <tr>
+        <td><%= tag.name %></td>
+        <td><%= link_to tag.tags_session.first.session.session_code,"/sessions/#{tag.tags_session.first.session.id}" %></td>
+        <td><%= tag.sessions.first.title %></td>
+        <td><%= tag.sessions.first.speakers.first.first_name %>  <%= tag.sessions.first.speakers.first.last_name %> </td>
+        <td class="table-actions">
+          <% if !check_existing_tag_or_keyword(@event, @tag_type, tag.name) %>
+            <%= link_to 'Add to Session Tags', "/events/add_preset_tags/#{tag.id}", method: :post, class:"btn btn-outline-success" %>
+          <% else %>
+            <%= link_to 'Remove from Session Tags',"/events/remove_preset_tags/#{tag.id}", method: :post, class:"btn btn-outline-success" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br/>
+<hr/>
+

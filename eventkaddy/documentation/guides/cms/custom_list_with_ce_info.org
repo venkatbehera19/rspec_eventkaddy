@@ -1,0 +1,11 @@
+#+TITLE: Custom List with CE Info
+
+* Explanation
+This was build for AVMA. It solves an issue where we wanted an email credits button on the page with the listing of the credits you've collected so far, links to those sessions etc.
+
+Factually all that needs to happen is to have a home button with type "Custom List" and the custom list it is associated with have the type "CE Info" as its name. To do this through the CMS, you will want to create a home button with the name "CE Info" and the type Custom List. After that, the name of the home button can be changed to anything, but this is how the custom_list_type gets generated (it must happen on create, or edit a non-custom-list to a custom list. If it was already a custom list, editting it will not change the custom_list_type_name.
+* How To
+Create (not edit) a home button and name it "CE Info" and give it the type "Custom List." After creation the name of the home button may be changed.
+
+Update:
+Alternatively, simply select Custom List & CE Info as the home button type, even if you are modifying a home button, and it will set things up for you. Keep in mind Custom List & CE Info is a fake type, the real type of the home button will be saved as Custom List.

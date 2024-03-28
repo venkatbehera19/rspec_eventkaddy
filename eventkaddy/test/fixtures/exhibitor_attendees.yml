@@ -1,0 +1,13 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   attendee_id: 1
+#   exhibitor_id: 1
+#   flag: MyString
+#   company_name: MyText
+
+# two:
+#   attendee_id: 1
+#   exhibitor_id: 1
+#   flag: MyString
+#   company_name: MyText

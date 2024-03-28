@@ -1,0 +1,13 @@
+<div class="row">
+  <div class="col-md-5 mx-auto <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>" id="verify-email">
+    <h2>We need to verify your email</h2>
+    <p class="text-left">We sent an email to the address you provided when you registered. Please verify it to activate your account and complete the registration process.</p>
+        <%= text_field_tag :email, @user_attendee.email, :class => "form-control", :readonly=>"readonly", :type=>"text" %><br>
+    <p class="text-left"> Click on the link in that email to verify your account. You may need to check your spam folder.</p>
+    <%= link_to "Resend Confirmation Instructions", "/#{@event_id}/confirmations/resend/#{@user_attendee.user_id}", class: "btn btn-primary btn-center mx-auto" %>
+  </div>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>

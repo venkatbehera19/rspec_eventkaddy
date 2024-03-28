@@ -1,0 +1,21 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = ['Account Code','First Name','Last Name','Email','Points','Badges Completed']
+
+  style = []
+
+  heads.each {|h| style << black_cell }
+
+  wb.add_worksheet(name: "Game Results Data") do |sheet|
+
+    sheet.add_row heads, :style => style
+
+    @attendees.each do |attendee|
+      sheet.add_row [attendee['account_code'],attendee['first_name'],attendee['last_name'],attendee['email'],attendee['points'],attendee['badges_completed']], :types => [:string]
+      sheet.column_widths 20,20,20,20,20,20
+    end
+  end
+end

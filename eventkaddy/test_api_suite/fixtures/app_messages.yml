@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  app_message_thread: one
+  attendee: realistic
+  content: MyText
+  msg_time: MyString
+
+two:
+  event: two
+  app_message_thread: two
+  attendee: two
+  content: MyText
+  msg_time: MyString

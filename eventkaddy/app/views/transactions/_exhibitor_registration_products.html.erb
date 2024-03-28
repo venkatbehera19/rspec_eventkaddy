@@ -1,0 +1,167 @@
+<div id="items">
+  <% @product_category_with_product.each do |category| %>
+    <p class="lead mb-2 text-center"><%= category.name %></p>
+    <% if category.iid == 'exhibitor_booth' %>
+      <%= render partial: "exhibitor_booth_product" %>
+    <% else %>
+      <div class="container py-5">
+        <% categories = category.products.order(:order) %>
+        <% categories.each do |product|%>
+          <% if product.is_product_available? %>
+            <div class="row justify-content-center mb-3" id="product-<%= product.id %>">
+              <div class="col-md-12 col-xl-10">
+                <div class="card shadow-0 border rounded-3">
+                  <div class="card-body">
+                    <div class="row">
+                      <% unless product.event_file.blank? %>
+                        <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                          <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                            <% url = product.event_file.return_authenticated_url%>
+                                <%= image_tag(url["url"], class: "w-100 h-100", size: "350x350") %>
+                            <a href="#!">
+                              <div class="hover-overlay">
+                                <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                              </div>
+                            </a>
+                          </div>
+                        </div>
+                      <% end %>
+                      <div class="col-md-6 col-lg-6 col-xl-6">
+                        <h4><%= product.name %></h4>
+                        <p class=" mb-4 mb-md-0">
+                          <%= product.description.html_safe %>
+                        </p>
+                      </div>
+                      <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                        <div class="d-flex flex-row align-items-center mb-1">
+                          <h4 class="mb-1 me-1">
+                            $<%= sprintf "%.2f", product.price %>
+                          </h4>
+                        </div>
+                        <div class="d-flex mt-4">
+                          <% if product.product_category.is_single_select_product? %>
+                            <% if @cart.is_single_category_product_available?(product) %>
+                              <button 
+                                class="btn btn-outline-danger btn-sm mt-2 mr-2 add-to-cart product-category-<%= category.id %>"
+                                data-product="<%= product.id %>" 
+                                data-type="remove" 
+                                data-cart="<%= @cart.id %>"
+                                data-category="<%= category.id %>"
+                                id="product-btn-<%= product.id %>"
+                                 >
+                                Remove
+                              </button>
+                            <% else %>
+                              <button 
+                              class="btn btn-outline-primary btn-sm mt-2 mr-2 add-to-cart product-category-<%= category.id %>"
+                              data-product="<%= product.id %>" 
+                              data-type="add" 
+                              data-cart="<%= @cart.id %>"
+                              data-category="<%= category.id %>"
+                              id="product-btn-<%= product.id %>"
+                              <%= check_able_to_buy_products(product, @cart) ? 'disabled' : '' %>
+                               >
+                                Add
+                              </button>
+                            <% end %>
+                          <% else %>
+                            <button 
+                              class="btn btn-outline-primary btn-sm mt-2 add-to-cart" 
+                              data-product="<%= product.id %>" 
+                              data-type="decrease" 
+                              data-cart="<%= @cart.id %>"
+                              data-category="<%= category.id %>" 
+                            >-
+                            </button>
+                            <p class="btn mt-1" id="product-quantity-<%= product.id %>">
+                              <%= @cart.cart_item_quantity_by_product(product) %>
+                            </p>
+                            <button 
+                              class="btn btn-outline-primary btn-sm mt-2 add-to-cart product-category-<%= category.id %>" 
+                              data-product="<%= product.id %>" 
+                              data-type="increase" 
+                              data-cart="<%= @cart.id %>"
+                              data-category="<%= category.id %>" 
+                              <%= check_able_to_buy_products(product, @cart) ? 'disabled' : '' %>
+                            >+
+                            </button>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<div class="accordion" id="accordionExample">
+  <button id="topBtn" title="Cart" data-toggle="modal" data-target="#cartModal" >
+    <i class="fa fa-shopping-cart" aria-hidden="true">
+    </i>
+    <span class="badge badge-warning" id="lblCartCount"><%= @cart.cart_items.reduce(0){|sum,item| sum+=item.quantity}%></span>
+  </button>
+  <div style="text-align: center;">
+    <%= link_to 'Proced To Cart', "/#{params[:event_id]}/exhibitor_registrations/cart/#{@cart.id}", class: "btn btn-outline-primary"%>
+
+  </div>  
+</div>
+
+<style>
+  .sponsor-description {
+    height: 7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .show-more-less p {
+      font-size: 11px;
+      color: #2fa4e7;
+      cursor: pointer;
+  }
+  #topBtn {
+     display: none;
+     position: fixed;
+     bottom: 66px;
+     right: 30px;
+     z-index: 99;
+     font-size: 25px;
+     border: none;
+     outline: none;
+     background-color: black;
+     color: white;
+     cursor: pointer;
+     padding: 15px;
+     border-radius: 4px;
+  }
+
+  span#lblCartCount {
+      font-size: 14px;
+      background: #2FA4E7;
+      color: #fff;
+      padding: 0 5px;
+      vertical-align: top;
+      margin-left: -6px;
+  }
+</style>
+
+<script>
+
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+      var mybutton = document.getElementById("topBtn");
+      if(mybutton){
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+          mybutton.style.display = "block";
+        } else {
+          mybutton.style.display = "none";
+        }
+      }
+    }
+
+</script>

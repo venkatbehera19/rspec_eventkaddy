@@ -1,0 +1,9 @@
+= form_for @speaker_portal_settings, :html => { :method => :post }, :url => '/settings/update_speaker_portal_settings' do |f|
+    %h4 Select Program Type
+    .form-group
+        = f.select :program_types, options_for_select(ProgramType.all.pluck(:name), selected: @speaker_portal_settings.program_types), {}, :multiple => true, :validate => true, :class => "form-control session-select"
+    = f.submit 'Update Speaker Portal Settings', class:'btn btn-primary'
+:css
+    .session-select{
+        height: 200px !important;
+    }

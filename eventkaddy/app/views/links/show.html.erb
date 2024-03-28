@@ -1,0 +1,23 @@
+<%= link_to 'Back', links_path,class:"btn show" %>
+<%= link_to 'Edit', edit_link_path(@link) ,class:"btn edit" %>
+
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @link.name %>
+</p>
+
+<p>
+  <b>Link type:</b>
+  <%= @link.link_type_id %>
+</p>
+
+<p>
+  <b>Filename:</b>
+  <%= @link.filename %>
+</p>
+
+

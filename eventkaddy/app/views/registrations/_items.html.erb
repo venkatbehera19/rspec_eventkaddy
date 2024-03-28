@@ -1,0 +1,263 @@
+<% if @settings.is_list_view %>
+  <div id="items">
+    <% product_category_with_product.each do |category| %>
+      <p class="lead mb-2 text-center"><%= category.name %></p>
+      <p class="mb-2 text-center"> 
+        <%= list_category(category) ? "if you choose #{category.name} category products then can not choose #{list_category(category)} products." : "" %>
+      </p>
+      <section style="background-color: #eee;">
+        <div class="container py-5">
+          <% categories = category.products.order(:order) %>
+          <% categories.each do |product|%>
+            <% if !product.deleted && product.start_date && product.start_date.to_time != product.end_date.to_time && product.start_date != nil && product.end_date != nil && (Time.now >= product.start_date.to_time && Time.now <= product.end_date.to_time) && product.available_qantity > 0 %>
+              <div class="row justify-content-center mb-3">
+                <div class="col-md-12 col-xl-10">
+                  <div class="card shadow-0 border rounded-3">
+                    <div class="card-body">
+                      <div class="row">
+                        <% unless product.event_file.blank? %>
+                          <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                            <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                              <% url = product.event_file.return_authenticated_url%>
+                              <%= image_tag(url["url"], class: "w-100 h-100", size: "350x350") %>
+                              <a href="#!">
+                                <div class="hover-overlay">
+                                  <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                                </div>
+                              </a>
+                            </div>
+                          </div>
+                        <% end %>
+                        <div class="col-md-6 col-lg-6 col-xl-6">
+                          <h4><%= product.name %></h4>
+                          <p class=" mb-4 mb-md-0">
+                            <%= product.description.html_safe %>
+                          </p>
+                        </div>
+                        <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                          <div class="d-flex flex-row align-items-center mb-1">
+                            <% if current_user.present? %>
+                              <h4 class="mb-1 me-1">
+                                $<%= sprintf "%.2f", current_user.is_member ? product.member_price : product.price %>
+                                <span class="text-danger">
+                                  <s>$<%= sprintf "%.2f", !current_user.is_member ? product.member_price : product.price %></s>
+                                </span>
+                              </h4>
+                            <% else %>
+                              <h4 class="mb-1 me-1">
+                                $<%= sprintf "%.2f", user.is_member ? product.member_price : product.price %>
+                              </h4>
+                              <span class="text-danger">
+                                <s>$<%= sprintf "%.2f", !user.is_member ? product.member_price : product.price %></s>
+                              </span>
+                            <% end %>
+                          </div>
+                          <div class="d-flex mt-4">
+                            <% if current_user.present? %>
+                              <% if product.product_category.single_product %>
+                                <% if single_category_check_product(product, @cart) %>
+                                  <%= form_tag("/#{current_user.attendee.event_id}/registrations/update_cart/#{cart.id}", method: :put, remote: true) do %>
+                                    <%= hidden_field_tag :product_id, product.id %>
+                                    <%= hidden_field_tag :user_id, @user.id %>
+                                    <%= hidden_field_tag :type, 'remove' %>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm mt-2 mr-2" <%= check_product(product, @cart)-1 < 0 ? 'disabled' : '' %>>
+                                      Remove
+                                    </button>
+                                    <% if product.has_sizes %>
+                                      <% size = @cart.cart_items.where(item_id: product.id) %>
+                                      <%= select_tag :size, options_for_select(Product::SIZES, size.present? ? size.first.size : "XS" ), class: "form-control", style: "margin-top:6px;position:relative;top:0;left:-8px" %>
+                                    <% end %>
+                                  <% end %>
+                                  
+                                <% else %>
+                                  <%= form_tag("/#{current_user.attendee.event_id}/registrations/update_cart/#{cart.id}", method: :put, remote: true) do %>
+                                    <%= hidden_field_tag :product_id, product.id %>
+                                    <%= hidden_field_tag :user_id, @user.id %>
+                                    <%= hidden_field_tag :type, 'add' %>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm mt-2 mr-2" <%= check_quantity(product, @cart) ? 'disabled' : '' %>>
+                                      Add
+                                    </button>
+                                    <% if product.has_sizes %>
+                                      <% size = @cart.cart_items.where(item_id: product.id) %>
+                                      <%= select_tag :size, options_for_select(Product::SIZES, size.present? ? size.first.size : "XS" ), class: "form-control", style: "margin-top:6px;position:relative;top:0;left:-8px" %>
+                                    <% end %>
+                                  <% end %>
+                                <% end %>
+                              <% else %>
+                                <%= button_to '-', "/#{current_user.attendee.event_id }/registrations/update_cart/#{cart.id}", method: :put, 
+                                    class: "btn btn-outline-primary btn-sm mt-2", 
+                                    params: { 
+                                      product_id: product, 
+                                      quantity: check_product(product, @cart)-1, 
+                                      user_id: @user
+                                    }, 
+                                    disabled: check_product(product, @cart)-1 < 0, 
+                                    remote: true  %>
+                                <p class="btn mt-1"><%= check_product(product, cart) %></p>
+                                <%= form_tag("/#{current_user.attendee.event_id }/registrations/update_cart/#{cart.id}", method: :put, remote: true) do %>
+                                  <%= hidden_field_tag :product_id, product.id %>
+                                  <%= hidden_field_tag :user_id, @user.id %>
+                                  <%= hidden_field_tag :quantity, check_product(product, @cart)+1 %>
+                                  <button type="submit" class="btn btn-outline-primary btn-sm mt-2" <%= check_quantity(product, @cart) ? 'disabled' : '' %>>
+                                    +
+                                  </button>
+                                  <% if product.has_sizes %>
+                                    <% size = @cart.cart_items.where(item_id: product.id) %>
+                                    <%= select_tag :size, options_for_select(Product::SIZES, size.present? ? size.first.size : "XS" ), class: "form-control", style: "margin-top:6px;position:relative;top:0;left:-48px" %>
+                                  <% end %>
+                                <% end %>
+                              <% end %>
+                            <% else %>
+                              <% if product.product_category.single_product %>
+                                <% if single_category_check_product(product, @cart) %>
+                                  <%= form_tag("/#{params[:event_id] ? params[:event_id] :current_user.attendee.event_id}/registrations/update_cart/#{cart.id}", method: :put, remote: true) do %>
+                                    <%= hidden_field_tag :product_id, product.id %>
+                                    <%= hidden_field_tag :user_id, @user.id %>
+                                    <%= hidden_field_tag :type, 'remove' %>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm mt-2 mr-2" <%= check_product(product, @cart)-1 < 0 ? 'disabled' : '' %>>
+                                      Remove
+                                    </button>
+                                    <% if product.has_sizes %>
+                                      <% size = @cart.registration_form_cart_items.where(item_id: product.id) %>
+                                      <%= select_tag :size, options_for_select(Product::SIZES, size.present? ? size.first.size : "XS" ), class: "form-control", style: "margin-top:6px;position:relative;top:0;left:-8px" %>
+                                    <% end %>
+                                  <% end %>
+                                <% else %>
+                                  <%= form_tag("/#{params[:event_id] ? params[:event_id] :current_user.attendee.event_id }/registrations/update_cart/#{cart.id}", method: :put, remote: true) do %>
+                                    <%= hidden_field_tag :product_id, product.id %>
+                                    <%= hidden_field_tag :user_id, @user.id %>
+                                    <%= hidden_field_tag :type, 'add' %>
+                                    <%= hidden_field_tag :quantity, check_product(product, @cart) + 1 %>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm mt-2" <%= check_quantity(product, @cart) ? 'disabled' : '' %>>
+                                      Add
+                                    </button>
+                                    <% if product.has_sizes %>
+                                      <% size = @cart.registration_form_cart_items.where(item_id: product.id) %>
+                                      <%= select_tag :size, options_for_select(Product::SIZES, size.present? ? size.first.size : "XS" ), class: "form-control", style: "margin-top:6px;position:relative;top:0;left:-8px" %>
+                                    <% end %>
+                                  <% end %>
+                                <% end %>
+                              <% else %>
+                                <%= button_to '-', "/#{params[:event_id] ? params[:event_id] :current_user.attendee.event_id}/registrations/update_cart/#{cart.id}", method: :put, 
+                                    class: "btn btn-outline-primary btn-sm mt-2", 
+                                    params: { 
+                                      product_id: product, 
+                                      quantity: check_product(product, @cart)-1, 
+                                      user_id: @user
+                                    }, 
+                                    disabled: check_product(product, @cart)-1 < 0, 
+                                    remote: true  %>
+                                <p class="btn mt-1"><%= check_product(product, cart) %></p>
+
+                                <%= form_tag("/#{params[:event_id] ? params[:event_id] :current_user.attendee.event_id }/registrations/update_cart/#{cart.id}", method: :put, remote: true) do %>
+                                  <%= hidden_field_tag :product_id, product.id %>
+                                  <%= hidden_field_tag :user_id, @user.id %>
+                                  <%= hidden_field_tag :quantity, check_product(product, @cart) + 1 %>
+                                  <button type="submit" class="btn btn-outline-primary btn-sm mt-2" <%= check_quantity(product, @cart) ? 'disabled' : '' %>>
+                                    +
+                                  </button>
+                                  <% if product.has_sizes %>
+                                    <% size = @cart.registration_form_cart_items.where(item_id: product.id) %>
+                                    <%= select_tag :size, options_for_select(Product::SIZES, size.present? ? size.first.size : "XS" ), class: "form-control", style: "margin-top:6px;position:relative;top:0;left:-48px" %>
+                                  <% end %>
+                                <% end %>
+
+                              <% end %>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+<% else %>
+  <div id="items">
+    <% product_category_with_product.each do |category| %>
+      <p class="lead mb-2"><%= category.name %></p>
+      <div class="row mb-2">
+        <% categories = category.products.order(:order) %>
+        <% categories.each do |product|%>
+          <% if !product.deleted && product.start_date && product.start_date.to_time != product.end_date.to_time && product.start_date != nil && product.end_date != nil && (Time.now >= product.start_date.to_time && Time.now <= product.end_date.to_time) && product.available_qantity > 0 %>
+            <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
+              <div class="card">
+                <div class="d-flex align-items-center justify-content-center">
+                  <% unless product.event_file.blank? %>
+                    <% url = product.event_file.return_authenticated_url%>
+                    <%= image_tag(url["url"], class: "card-img-top", size: "350x350") %>
+                  <% end %>
+                </div>
+                <div class="d-flex justify-content-between p-3">
+                  <p class="lead mb-0"><%= product.name %></p>
+                </div>
+                
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <p><%= product.description %></p>
+                  </div>
+                  <div class="d-flex justify-content-between mb-3">
+                    <p class="mb-0">Price</p>
+                    <p class="text-dark mb-0">$<%= sprintf "%.2f",product.price %></p>
+                  </div>
+                    <% if Time.now >= product.start_date.to_time && Time.now <= product.end_date.to_time %>
+                      <div class="d-flex">
+                        <% if current_user.present? %>
+                          <%= button_to '-', attendees_cart_item_path(0), method: :put, 
+                              class: "btn btn-outline-primary btn-sm mt-2", 
+                              params: { 
+                                product_id: product, 
+                                quantity: check_product(product, @cart)-1, 
+                                user_id: @user
+                              }, 
+                              disabled: check_product(product, @cart)-1 < 0, 
+                              remote: true  %>
+                          <p class="btn mt-1"><%= check_product(product, cart) %></p>
+                          <%= button_to '+', attendees_cart_item_path(0), method: :put, 
+                              class: "btn btn-outline-primary btn-sm mt-2", 
+                              params: { 
+                                product_id: product, 
+                                quantity: check_product(product, @cart)+1, 
+                                user_id: @user 
+                              }, 
+                              disabled: check_quantity(product, @cart), 
+                              remote: true %>
+                        <% else %>
+                          <%= button_to '-', "/#{params[:event_id] ? params[:event_id] :current_user.attendee.event_id}/registrations/update_cart/#{cart.id}", method: :put, 
+                              class: "btn btn-outline-primary btn-sm mt-2", 
+                              params: { 
+                                product_id: product, 
+                                quantity: check_product(product, @cart)-1, 
+                                user_id: @user
+                              }, 
+                              disabled: check_product(product, @cart)-1 < 0, 
+                              remote: true  %>
+                          <p class="btn mt-1"><%= check_product(product, cart) %></p>
+                          <%= button_to '+', "/#{params[:event_id] ? params[:event_id] :current_user.attendee.event_id }/registrations/update_cart/#{cart.id}", method: :put, 
+                              class: "btn btn-outline-primary btn-sm mt-2", 
+                              params: { 
+                                product_id: product, 
+                                quantity: check_product(product, @cart)+1, 
+                                user_id: @user 
+                              }, 
+                              disabled: check_quantity(product, @cart), 
+                              remote: true %>
+                        <% end %>
+                      </div>
+                    <% else %>
+                      <p> Product will be available after <%= product.start_date.to_date %> </p>
+                    <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

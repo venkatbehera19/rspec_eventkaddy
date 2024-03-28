@@ -1,0 +1,49 @@
+<%= form_for(@payment, :html => { :class => "form-horizontal well" }) do |f| %>
+  <% if @payment.errors.any? %>
+    <div class="alert alert-danger" role="alert">
+      <h5><%= pluralize(@payment.errors.count, "error") %> prohibited this mode of payment from being saved:</h2>
+      <ul>
+      <% @payment.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :client_key %>
+    <br>
+    *Publishable key incase of Stripe
+    <%= f.text_field :client_key ,class: "form-control", required: true, autocomplete: 'off'%>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :client_secret_key %>
+    <%= f.text_field :client_secret_key ,class: "form-control", required: true, autocomplete: 'off'%>
+  </div>
+
+  <% if @payment.iid == 'affinipay' %>
+
+    <div class="form-group">
+      <%= f.label :merchant_account_id %>
+      <%= f.text_field :merchant_account_id ,class: "form-control", required: true, autocomplete: 'off'%>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :merchant_partner_name %>
+      <%= f.text_field :merchant_partner_name ,class: "form-control", required: true, autocomplete: 'off'%>
+    </div>
+
+  <% end %>
+
+  <% is_stripe = @payment.name == 'Stripe' %>
+  <div class="form-group" style="<%= is_stripe ? 'display:  none' : ''%>">
+    <%= f.label :environment %>
+    <%= f.select :environment , ["sandbox", "live"], class: "form-control"%>
+  </div>
+
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

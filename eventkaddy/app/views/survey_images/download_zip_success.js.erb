@@ -1,0 +1,11 @@
+var downloadBtn = "download-btn-<%= @survey.id%>"
+downloadBtn = $(`#${downloadBtn}`);
+downloadBtn.text("Creating Zip...");
+downloadBtn.prepend('<span style="margin-right:10px;" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>');
+downloadBtn.addClass("disabled");
+
+var downloadBtnm = "download-btn-<%= @survey.id%>-m"
+downloadBtnm = $(`#${downloadBtnm}`);
+downloadBtnm.text("Creating Zip...");
+downloadBtnm.prepend('<span style="margin-right:10px;" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>');
+downloadBtnm.addClass("disabled");

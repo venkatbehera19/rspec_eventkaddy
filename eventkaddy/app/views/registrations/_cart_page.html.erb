@@ -1,0 +1,28 @@
+<div class="reg-section-container m-3">
+  <div class="d-flex justify-content-center">
+    <div class="col-md-7">
+      <div class="order-items">
+        <%= render "/registrations/order_cart", cart: @cart, total:@total, user: @user %>
+      </div>
+    </div>
+  </div>
+    <div class="d-flex justify-content-around">
+        <% if current_user.present? %>
+            <%= link_to 'Back to Shopping', attendees_products_path, class: "btn btn-primary"%>
+            <% if @cart.registration_form_cart_items.present? %>
+              <%= link_to 'Proceed to Checkout', attendees_orders_path, method: :post, class: "btn btn-primary"%>
+            <% end %>
+        <% else %>
+          <% if @is_registered_user %>
+            <%= link_to 'Back to Shopping', "/#{params[:event_id]}/registrations/#{@cart.user.id}/products", class: "btn btn-primary"%>
+          <% else %>
+            <%= link_to 'Back to Shopping', "/#{params[:event_id]}/registrations/#{@cart.registration_form.id}/products", class: "btn btn-primary"%>
+          <% end %>
+          <% if @cart.registration_form_cart_items.present? %>
+            <%= link_to 'Proceed to Checkout', "/#{params[:event_id]}/registrations/attendee/create_order_cart/#{@cart.id}", class: "btn btn-primary"%>
+          <% end %>
+        <% end %>
+    </div>
+
+  
+</div>

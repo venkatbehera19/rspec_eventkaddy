@@ -1,0 +1,13 @@
+.ek-heading
+    %h3 Select an image type
+
+.bg-light.custom-border.px-3.py-3
+    - @app_image_types.each do |type|
+        %ul.list-group.nav-pills
+            %li.list-group-item.nav-item
+                = link_to "#{type.name.titleize}s", app_images_path + '?app_image_type_id=' + type.id.to_s, class: "nav-link"
+                
+
+        
+
+

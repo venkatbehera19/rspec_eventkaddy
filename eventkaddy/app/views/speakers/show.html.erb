@@ -1,0 +1,139 @@
+<%= link_to 'Send Speaker Password Email', "/emails_queues/queue_email_password_for_speaker/#{@speaker.id}" ,class:"btn btn-primary", method: :post %>
+<!--
+<%= link_to "Download Speaker Files as Zip", "/speakers/download_zip/#{@speaker.id}", class:"btn" %>
+-->
+<% @s = @speaker %>
+
+<h4>Speaker Sessions</h4>
+
+*Published: Hide this session on the speaker's list of sessions. Does not unpublish the session.
+
+<table class="table well">
+	<thead>
+		<tr>
+			<th>Session Code</th>
+			<th>Published*</th>
+			<th>Title</th>
+			<th>Room Name</th>
+			<th>Date/Time</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<% @s.sessions.each do |session| %>
+            <% sessions_speaker = session.sessions_speakers.where(speaker_id:@speaker.id)[0] %>
+            <tr style="<%= sessions_speaker.unpublished ? "background-color:#D6D3CC;" : "" %>">
+		    	 <td><%= link_to session.session_code,"/sessions/#{session.id}",class:"btn" %></td>
+                 <td>
+                    <%= link_to "#{sessions_speaker.published?.to_s.capitalize} - Toggle",
+                         "/sessions_speakers/toggle_unpublished/#{sessions_speaker.id}", 
+                         class: "btn edit", :method => :post %>
+                </td>
+		    	 <td><%= session.title %></td>
+		    	 <% if (session.location_mapping!=nil) then %>
+		    	 	<td><%= session.location_mapping.name %></td>
+		    	 <% else %>
+		    	 	<td>N/A</td>
+		    	 <% end %>
+		    	 <% if (session.date!=nil && session.start_at!=nil) then %>
+		    	 	<td><%= "#{session.date.strftime("%m-%d-%Y")} | #{session.start_at.strftime("%H:%M")}" %></td>
+		    	 <% else %>
+		    	 	<td>Not Assigned</td>
+		    	 <% end %>
+		    	<!--  <td><%= link_to 'Show', event_session_path(session) ,class:"btn show" %></td>
+		    	 <td><%= link_to 'Edit', edit_event_session_path(session) ,class:"btn edit" %></td>
+		    	 <td><%= link_to 'Delete', event_session_path(session), :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td> -->
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<br/><br/>
+<%= form_for(@sessions_speaker, :html => { :multipart => false, :class => "form-horizontal well", method: 'post', action: "/sessions_speakers" }  ) do |f| %>
+
+  <h4>Add Session</h4>
+	<% if @sessions_speaker.errors.any? %>
+		<div id="error_explanation">
+			<h2><%= pluralize(@sessions_speaker.errors.count, "error") %> prohibited this record from being saved:</h2>
+
+			<ul>
+			<% @sessions_speaker.errors.full_messages.each do |msg| %>
+				<li><%= msg %></li>
+			<% end %>
+			</ul>
+		</div>
+	<% end %>
+	<div class="form-group">
+		<%= f.hidden_field :speaker_id, value: @speaker.id %>
+		<%= f.label :session_id, "Select Session" %>
+		<%= f.select :session_id, options_for_select(@sessions.map {|session| ["#{session.title}", session.id]}), 
+			{},	class: "custom-select" %>
+	</div>
+	<div class="form-group">
+		<%= f.label(:speaker_type_id, "Select Role") %>
+		<%= f.select(:speaker_type_id, options_for_select(@speaker_types.map { |speaker_type| ["#{speaker_type.speaker_type}" ,speaker_type.id] }),
+			{:multiple => false, :size=>20}, class: "custom-select") %>
+	</div>
+
+	<div class="field">
+		<%= f.submit "Add Session", class: "btn btn-primary" %>
+	</div>
+<% end %>
+<br>
+
+<h4>Speaker Details</h4>
+<%= link_to 'Back', speakers_path ,class:"btn btn-outline-secondary" %>
+<%= link_to 'Edit', edit_speaker_path(@speaker) ,class:"btn edit" %>
+
+<% if (@speaker.eventHasPortal(session[:event_id])) then %>
+ 	<%= link_to 'Edit Travel Details', "/speakers/edit_travel_detail/#{@speaker.id}" ,class:"btn btn-outline-success" %>
+	<%= link_to 'Edit Payment Details', "/speakers/edit_payment_detail/#{@speaker.id}" ,class:"btn btn-outline-success" %>
+	<%= link_to 'Set Portal Password', "/users/new_speaker_portal_user/#{@speaker.id}" ,class:"btn btn-outline-secondary" %>
+	<%= link_to 'Speaker PDFs', "/speaker_files/#{@speaker.id}/index" ,class:"btn btn-outline-secondary" %>
+
+<% end %>
+
+</br></br>
+<table class="table">
+	<% if (@s.event_file_photo!=nil) then %>
+		<% if @s.event_file_photo.cloud_storage_type_id.blank? %>
+			<tr><th>Photo</th><td><%= image_tag(@s.event_file_photo.path, :height=>'100') %></td></tr>
+		<% else %>
+			<tr><th>Photo</th><td><%= image_tag(@s.event_file_photo.return_authenticated_url()['url'], :height=>'100') %></td></tr>
+		<% end %>
+	<% end %>
+	<% if (@s.event_file_cv!=nil) then %>
+	<tr><th>CV</th><td><%= link_to(@s.event_file_cv.name, @s.event_file_cv.path) %></td></tr>
+	<% end %>
+	<tr><th>Name</th><td><%= "#{@s.honor_prefix} #{@s.first_name} #{@s.middle_initial} #{@s.last_name} #{@s.honor_suffix}" %></td></tr>
+	<tr><th>Title</th><td><%= @s.title %></td></tr>
+	<tr><th>Company</th><td><%= @s.company %></td></tr>
+	<tr><th>Email</th><td><%= @s.email %></td></tr>
+	<tr><th>Biography</th><td><%= @s.biography %></td></tr>
+	<tr><th>Notes</th><td><%= @s.notes %></td></tr>
+	<tr><th>Availability Notes</th><td><%= @s.availability_notes %></td></tr>
+	<tr><th>Address Line 1</th><td><%= @s.address1 %></td></tr>
+	<tr><th>Address Line 2</th><td><%= @s.address2 %></td></tr>
+	<tr><th>Address Line 3</th><td><%= @s.address3 %></td></tr>
+	<tr><th>City</th><td><%= @s.city %></td></tr>
+	<tr><th>State</th><td><%= @s.state %></td></tr>
+	<tr><th>Country</th><td><%= @s.country %></td></tr>
+	<tr><th>Zip</th><td><%= @s.zip %></td></tr>
+	<tr><th>Work Phone</th><td><%= @s.work_phone %></td></tr>
+	<tr><th>Mobile Phone</th><td><%= @s.mobile_phone %></td></tr>
+	<tr><th>Home Phone</th><td><%= @s.home_phone %></td></tr>
+	<tr><th>Fax</th><td><%= @s.fax %></td></tr>
+
+	<tr><th><i>Financial Disclosure Section</i></th><td</td></tr>
+	<tr><th>Financial Disclosure</th><td><%= @s.financial_disclosure %></td></tr>
+	<tr><th>Tax ID</th><td><%= @s.fd_tax_id %></td></tr>
+	<tr><th>Pay To</th><td><%= @s.fd_pay_to %></td></tr>
+	<tr><th>Street Address</th><td><%= @s.fd_street_address %></td></tr>
+	<tr><th>City</th><td><%= @s.fd_city %></td></tr>
+	<tr><th>State</th><td><%= @s.fd_state %></td></tr>
+	<tr><th>Zip</th><td><%= @s.fd_zip %></td></tr>
+
+
+
+
+</table>

@@ -1,0 +1,36 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Product Purchase Details</h4>
+      <div class="btn-toolbar my-2">
+				<div class="btn-group mr-2">
+					<%= link_to('Unordered Products List','/products/unorder', class: "btn btn-primary mb-3") %>
+        </div>
+        <div class="btn-group mr-2">
+          <%= link_to('Purchase Amount','/purchases/purchase_amount', class: "btn btn-primary mb-3") %>
+        </div>
+			</div>
+      <br>
+      <table class="table table-striped" id="event_ticket_table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Total Number of purchased</th>
+            <th>Total Number of success </th>
+            <th>Total Number of refund</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @result.each do |result| %>
+            <tr>
+              <td><%= result["name"] %></td>
+              <td><%= link_to("#{result["count"]}", product_path(result["products_id"])) %></td>
+              <td><%= link_to("#{result["paid_order_count"]}", success_product_path(result["products_id"])) %></td>
+              <td><%= link_to("#{result["refund_completed_order_count"]}", refunded_product_path(result["products_id"])) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

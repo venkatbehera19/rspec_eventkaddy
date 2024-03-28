@@ -1,0 +1,406 @@
+<% if @mode_of_payment.iid == 'affinipay' %>
+	<script src="https://cdn.affinipay.com/hostedfields/1.4.0/fieldGen_1.4.0.js">
+	</script>
+<% else %>
+	<script src="https://www.paypal.com/sdk/js?client-id=<%= @client_id %>"></script>
+	<script src="https://js.stripe.com/v3/"></script>
+<% end %>
+<div class="loading-wrapper">
+  <div id="loader" class="loader"></div>
+  <div id="loading-message" class="loading-message">
+    Your payment is being processed. Do not refresh or close this page.
+  </div>
+</div>
+<div class="timer">
+  <button class= "btn btn-outline-danger" id="timer-text"></button>
+</div>
+<div class="m-3">
+  <div class="row">
+    <div class="col-md-7">
+      <div class="order-items">
+        <ul class="list-group list-group-flush">
+          <% @cart.cart_items.each do |item| %>
+            <% if item.item_type == 'LocationMapping' %>
+              <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">Booth</h5>
+                  <% if item.discount_allocations.present? %>
+                    <span class="font-weight-bold p-3">$ <%= item.discount_allocations.first.amount %></span>
+                  <% else %>
+                    <span class="font-weight-bold p-3">$ <%= item.item.products.first.price %></span>
+                  <% end %>
+                </div>
+                <p class="mb-1"><%= item.item.name %></p>
+              </div>
+            <% elsif item.item_type == 'SponsorLevelType' %> 
+              <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1"><%= item.item.products.first.product_category.name %></h5>
+                  <span class="font-weight-bold p-3">$ <%= item.item.products.first.price %></span>
+                </div>
+                <p class="mb-1"><%= item.item.sponsor_type %></p>
+              </div>
+            <% elsif item.item_type == 'Product' %>
+              <% if item.item.product_category.iid == 'staff_members' %>
+                <div class="list-group-item list-group-item-action">
+                  <h5><%= item.item.product_category.name %></h5>
+                  <% if item.discount_allocations.present? && item.discount_allocations.first.discounted_count && item.discount_allocations.first.discounted_count > 0 %>
+                  <div class="d-flex w-100 justify-content-between">
+                    <p><%= item.item.name %>(Qty: <%= item.discount_allocations.first.discounted_count %>)(Discounted)</p>
+                      <span class="font-weight-bold p-3"><%= number_to_currency(item.discount_allocations.first.discounted_amount.to_i, unit: "$") %></span>
+                    </div>
+                  <% end %>
+                  <% if item.discount_allocations.present? && item.discount_allocations.first.full_count && item.discount_allocations.first.full_count > 0 %>
+                    <div class="d-flex w-100 justify-content-between">
+                      <p style="text-align: center;"><%= item.item.name %>(Qty: <%= item.discount_allocations.first.full_count %>)(Full)</p>
+                      <span class="font-weight-bold p-3"><%= number_to_currency(item.discount_allocations.first.full_amount.to_i, unit: "$") %></span>
+                    </div>	
+                  <% end %>
+                  <div class="d-flex w-100 justify-content-between">
+                    <p><%= item.item.name %>(Total Qty: <%= item.quantity %>)</p>
+                    <% if item.discount_allocations.present? %>
+                      <span class="font-weight-bold p-3"><%= number_to_currency(item.discount_allocations.first.amount.to_i, unit: "$") %></span>
+                    <% else %>
+                      <span class="font-weight-bold p-3"><%= number_to_currency(item.item.price * item.quantity, unit: "$") %></span>
+                    <% end %>
+                  </div>
+                </div>
+              <% else %>
+                <div class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><%= item.item.product_category.name %></h5>
+                    <span class="font-weight-bold p-3">$ <%= item.item.price * item.quantity %></span>
+                  </div>
+                  <p class="mb-1"><%= item.item.name %>(Qty: <%= item.quantity %>)</p>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+          <div class="list-group-item list-group-item-action">
+            <% if @settings.transaction_tax_value.present? %>
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"><%= @settings.transaction_tax_name.present? ? "#{@settings.transaction_tax_name} - #{@settings.transaction_tax_value.to_i}%" : 'tax' %></h5>
+                <% total_tax = (@total * @settings.transaction_tax_value.to_i)/100 %>
+                <span class="font-weight-bold p-3">
+                  $ <%= sprintf "%.2f", total_tax %>
+                </span>
+              </div>
+            <% end %>
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">Total</h5>
+              <span class="font-weight-bold p-3">$ <%= sprintf "%.2f", total_tax.present? ? @total+total_tax : @total %> </span>
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-5 p-5">
+      <% if @mode_of_payment.iid == 'affinipay' %>
+        <% if @total == 0.0 %>
+        <div class="zero-payment">
+          <form id="exhibitor-zero-payment">
+            <input id="zero-payment-btn" type="submit" value="Proceed To Checkout" class="btn btn-primary" />
+          </form>
+        </div>
+        <% else %>
+          <div class="form-information">
+            <h2 style="color: black !important;">Payment Information</h2>
+            <p class="ml-1" style="font-weight: normal !important; font-size: 17px;">Enter your payment information.</p>
+            <p class="ml-1" style="font-weight: normal !important;">All transactions are secure and encrypted.</p>
+          </div>
+          <form id="exhibitor-affinipay-form">
+            <div class="mb-2">
+              <label for="my_credit_card_field_id">Credit Card</label>
+              <div class="input-with-icon">
+                <div class="input-icon">
+                  <i class="fa fa-credit-card"></i>
+                </div>
+              </div>
+              <div id="my_credit_card_field_id" class="custom-input-field"></div>
+              <div id="credit_card_error" style="color: red;"></div>
+            </div>
+            <div class="form-row mb-2">
+              <div class="col-auto">
+                <label for="exp_month">Exp Month</label>
+                <select id="exp_month" name="exp_month" class="form-control" required>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                  <option value="05">05</option>
+                  <option value="06">06</option>
+                  <option value="07">07</option>
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option> 			
+                  <option value="12">12</option>
+                </select>
+              </div>
+              <div class="col-auto">
+                <label for="exp_year">Exp Year</label>
+                <select id="exp_year" name="exp_year" class="form-control" required>
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                  <option value="2029">2029</option>
+                  <option value="2030">2030</option>
+                  <option value="2031">2031</option>
+                  <option value="2032">2032</option>
+                </select>
+              </div>
+            </div>
+    
+            <div class="mb-2">
+              <label for="my_cvv_field_id">CVV</label>
+              <div class="input-with-icon">
+                <div class="input-icon">
+                  <i class="fa fa-key"></i>
+                </div>
+              </div>
+              <div id="my_cvv_field_id" class="custom-input-field"></div>
+              <div id="cvv_error" style="color: red;"></div>
+            </div>
+    
+            <div class="mb-2" style="max-width: 84% !important;">
+              <label for="address_1">Address 1</label>
+              <input id="address_1" type="text" name="address_1" class="form-control" required>
+            </div>
+    
+            <div class="form-row mb-2">
+              <div class="col-auto">
+                <label for="city">City</label>
+                <input id="city" type="text" name="city" class="form-control" required>
+              </div>
+              <div class="col-auto">
+                <label for="state">State</label>
+                <input id="state" type="text" name="state" class="form-control" required>
+              </div>
+            </div>
+    
+            <div class="form-row mb-2">
+              <div class="col-auto">
+                <label for="country">Country</label>
+                <input id="country" type="text" name="country" class="form-control" required>
+              </div>
+              <div class="col-auto">
+                <label for="postal_code">Zip Code</label>
+                <input id="postal_code" type="text" name="postal_code" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-check mt-3">
+              <input style="width:revert;" class="form-check-input" type="checkbox" id="termsCheckbox" required>
+              <div id="user_defined_header">
+                <%= @settings.payment_term_info.to_s.html_safe %>
+              </div>
+            </div>
+            <input id="primary-payment-btn" type="submit" value="Submit" class="btn btn-primary" style="max-width: 84% !important;" />
+          </form>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="success-modal" tabindex="-1" role="dialog" aria-labelledby="success-modal-label" aria-hidden="true">
+	<div class="modal-dialog payment" role="document">
+			<div class="modal-content">
+				<div id="user_defined_header">
+					<%= @settings.successful_modal_page_header.to_s.html_safe %>
+				</div>
+					<div class="modal-header">
+						<h5 class="modal-title" id="success-modal-label" style="width: 100%;display: flex;align-items: center;justify-content: center;"></h5>
+					</div>
+					<div class="modal-body">
+						<p id="thankyou_message" style="text-align: center;"></p>
+						<p id="email_info" style="text-align: center;"></p>
+						<table class="table table-bordered">
+							<tbody>
+								<tr>
+									<th>Order ID:</th>
+									<td id="user-id-cell"></td>
+								</tr>
+								<tr>
+									<th>Transaction ID:</th>
+									<td id="transaction-id-cell"></td>
+								</tr>
+								<tr>
+									<th>Amount:</th>
+									<td id="amount-cell"></td>
+								</tr>
+								<tr>
+									<th>Time:</th>
+									<td id="time-cell"></td>
+								</tr>
+								<tr>
+									<th>Email:</th>
+									<td id="email-cell"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+			</div>
+	</div>
+</div>
+<div class="modal fade" id="failed-modal" tabindex="-1" role="dialog" aria-labelledby="success-modal-label" aria-hidden="true">
+	<div class="modal-dialog payment" role="document">
+			<div class="modal-content">
+				<div id="user_defined_header">
+					<%= @settings.successful_modal_page_header.to_s.html_safe %>
+				</div>
+					<div class="modal-header">
+						<h5 class="modal-title" id="failed-modal-label" style="margin-left: 25%; color: #721C24;">Payment Failed</h5>
+					</div>
+					<div class="modal-body">
+						<p id="thankyou_message" style="text-align: center;"></p>
+						<p id="email_info" style="text-align: center;"></p>
+					</div>
+					<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+			</div>
+	</div>
+</div>
+
+<% if @mode_of_payment.iid == 'affinipay' %>
+  <style>
+    #afiniform, form {
+      margin: 0 auto;
+    }
+    #afiniform, form input, form iframe {
+      width: 100%;
+      margin: 5px;
+    }
+    #afiniform, form iframe {
+      border: none;
+      height: 30px;
+    }
+    .payment{
+      max-width: 66% !important;
+      margin: 10.75rem auto !important;
+    }
+
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      top: 20px;
+      left: 10px;
+      transform: translateY(-50%);
+    }
+
+    .input-icon i {
+      font-size: 18px; 
+      color: #4b4343; 
+    }
+
+    #my_credit_card_field_id {
+      border-radius: 4px; 
+      padding-left: 30px; 
+      width: 100%;
+      border: 1px solid #ced4da;
+      background-color: #f3f3f3;
+    }
+
+    #my_cvv_field_id {
+      border: 1px solid #ced4da;
+      border-radius: 4px; 
+      padding-left: 30px; 
+      background-color: #f3f3f3;
+    }
+
+    label[for="my_credit_card_field_id"], label[for="my_cvv_field_id"] {
+      display: block; 
+      margin-bottom: 5px; 
+    }
+
+    .custom-input-field {
+      border-radius: 4px;
+      padding-left: 30px;
+      width: 84% !important;
+    }
+  </style>
+  <script>
+    $(document).ready(function(){
+      var eventId            = "<%= params[:event_id] %>";
+      var order_id           = "<%= @order.id %>";
+      var email              = "<%= @cart.user.email %>";
+      var name               = "<%= @cart.user.full_name %>";
+      var cart_id            = "<%= @cart.id %>";
+      var payment_successful_modal_msg = "<%= @settings.payment_successful_modal_msg %>"
+      var payment_successful_modal_email_msg = "<%= @settings.payment_successful_modal_email_msg %>"
+
+      var clientKey = "<%= @mode_of_payment.client_key %>";
+      var total     = "<%= @total %>";
+      if (total == 0.0){
+        console.log('total', total)
+        zeroPay(eventId, transaction_id, cart_id);
+      }
+      else{
+        setupAffiniPay(clientKey, name, email, eventId, order_id, cart_id, payment_successful_modal_msg, payment_successful_modal_email_msg);
+      }
+    })
+  </script>
+<% end %>
+<style>
+  .loading-wrapper {
+    background-color: rgba(128, 128, 128, 0.6);
+    z-index: 999999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: none;
+}
+
+.loading-message {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: none;
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+<% if @timer %>
+	<script>startPaymentCountDown('<%= @timer %>');</script>
+<% elsif @timer.nil? %>
+	<script>$('.timer').css('display', 'none');</script>
+<% end %>

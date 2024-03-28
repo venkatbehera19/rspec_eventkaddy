@@ -1,0 +1,33 @@
+<%= link_to 'Back', trackowner_path(params[:trackowner_id]), class:"btn btn-link" %><br>
+
+<h4>New Session Association for <%= Trackowner.find(params[:trackowner_id]).full_name %></h4>
+
+<%= form_for(@sessions_trackowner,:html=>{:class=>"bg-light custom-border px-3 py-3"} ) do |f| %>
+  <% if @sessions_trackowner.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sessions_trackowner.errors.count, "error") %> prohibited this sessions_trackowner from being saved:</h2>
+
+      <ul>
+      <% @sessions_trackowner.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+   <div class="field">
+    <%= f.hidden_field :trackowner_id, :value => params[:trackowner_id] %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :session_code %>
+    <%= f.text_field :session_code, class: "form-control" %>
+  </div>
+
+
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>
+

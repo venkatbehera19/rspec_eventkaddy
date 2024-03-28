@@ -1,0 +1,169 @@
+<div class="chat-outer-container mt-3">
+  <div>
+    <h4 style="display:inline">Chat</h4>
+    <%= form_tag chats_enable_path, method: :put, style: "display:inline" do %>
+    <%= hidden_field_tag :enable_chat, @exhibitor.enable_chat %>
+    <div
+      class="btn-group"
+      role="group"
+      aria-label="Basic example"
+      style="display:inline;float:right"
+    >
+      <button
+        type="submit"
+        id="enable-chat-button"
+        class="btn btn-primary mr-2"
+      >
+        Enable Chat <i class="fa fa-unlock"></i>
+      </button>
+      <button
+        type="submit"
+        id="disable-chat-button"
+        class="btn btn-danger mr-2"
+      >
+        Disable Chat <i class="fa fa-lock"></i>
+      </button>
+      <button
+        type="button"
+        class=" btn btn-outline-warning mr-2"
+        onclick="clearChat()"
+      >
+        Clear Chat <i class="fa fa-eraser"></i>
+      </button>
+      <button type="button" class=" btn btn-outline-dark" onclick="downloadChat()">
+        Export Chat <i class="fa fa-angle-double-up"></i>
+      </button>
+    </div>
+    <% end %>
+  </div>
+  <br />
+
+  <div class="lv-row">
+    <div class="pseudo-table">
+      <%= hidden_field_tag :exhibitor, @exhibitor_details.to_json %>
+
+      <div>
+        <span id="chat-details" style="display:none;">
+          <button
+            type="submit"
+            form="chat-details-form"
+            id="save-chat-details"
+            class="save-chat-details btn btn-success"
+          >
+            Save
+          </button>
+          <button
+            id="cancel-edit-chat-details"
+            class="cancel-edit-chat-details btn btn-danger"
+          >
+            Cancel
+          </button>
+        </span>
+        <button id="edit-chat-details" class="edit-chat-details btn btn-outline-success">
+          Edit Chat Details <i class="fa fa-cog"></i>
+        </button>
+      </div>
+      <br />
+      <br />
+      <div class="disable_input">
+        <%= form_for(@exhibitor, :html => { :id => "chat-details-form" }, :url => {:action => "update"}, :method => :post) do |f| %>
+        <div class="form-group">
+          <%= f.label :contact_name, "Display Name" %>
+          <%= f.text_field :contact_name, class: 'form-control' %>
+        </div>
+        <div class="form-group">
+          <%= f.label :welcome_chat %>
+          <%= f.text_area :welcome_chat, class: 'form-control',rows: 2 %>
+        </div>
+        <div class="form-group">
+          <%= f.label :unavailable_chat%>
+          <%= f.text_area :unavailable_chat, class: 'form-control',rows: 2
+          %>
+        </div>
+        <% end %>
+      </div>
+      <div class="chat_and_video_container">
+        <%= render "chats/chats_components/chat" %>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .pseudo-table {
+    width: -webkit-fill-available;
+  }
+</style>
+<script>
+  $(function () {
+    $('.disable_input :input').prop('disabled', true)
+    let exhibitor = JSON.parse($('#exhibitor').val())
+    let enable_chat = $('#enable_chat')
+    
+    if (exhibitor.enable_chat) {
+      ChatSender.init(exhibitor, `<%=@event.chat_url%>`)
+      $('#chat-input').prop('disabled', false)
+      $('#enable-chat-button').hide()
+      $('#disable-chat-button').show()
+      $('#chat-log-disabled').hide()
+      $('#chat-log').show()
+      enable_chat.val(false)
+    } else {
+      $('#chat-input').prop('disabled', true)
+      $('#enable-chat-button').show()
+      $('#disable-chat-button').hide()
+      $('#chat-log').hide()
+      $('#chat-log-disabled').show()
+      enable_chat.val(true)
+    }
+
+    $('#edit-chat-details').click(function (e) {
+      $('.disable_input :input').prop('disabled', false)
+      $('#edit-chat-details').hide()
+      $('#chat-details').show()
+    })
+
+    $('#cancel-edit-chat-details').click(function (e) {
+      $('.disable_input :input').prop('disabled', true)
+
+      $('#chat-details').hide()
+      $('#edit-chat-details').show()
+    })
+  })
+  $(window).bind('beforeunload', function () {
+    let chats = $('.chat-log')
+    let chatLog = "chat" + <%=@exhibitor.id%>
+    localStorage.setItem(chatLog, chats[0].innerHTML)
+  })
+  function clearChat () {
+    let permission = confirm(
+      'Chats once cleared cannot be retrieved. You can cancel and export them before clearing everything.'
+    )
+    if (permission) {
+      let chats = $('.chat-log')
+      chats[0].innerHTML = ''
+      localStorage.setItem('chats', '')
+    }
+  }
+  function downloadChat () {
+    let chats = $('.chat-log')
+    let chatsData = chats[0].innerHTML
+    $.ajax({
+      type: 'POST',
+      url: '/chats/download',
+      contentType: 'application/json',
+      data: JSON.stringify({ chatsData: chatsData }),
+      success: function (data) {
+        var blob = new Blob([data])
+        var link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = 'chats.html'
+        link.click()
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+      }
+    })
+  }
+</script>

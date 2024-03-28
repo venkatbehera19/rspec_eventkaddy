@@ -1,0 +1,130 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+realistic: &realistic
+  event: one
+  first_name: Bob
+  last_name: Boblaws
+  honor_prefix: Mr.
+  honor_suffix:
+  title: Dr.
+  company: Fixit
+  biography: Mr. Boblaws always...
+  business_unit:
+  business_phone:
+  mobile_phone:
+  country:
+  state:
+  city:
+  email: hpkent@gmail.com
+  notes_email:
+  notes_email_pending: false
+  temp_photo_filename:
+  photo_filename:
+  photo_event_file_id:
+  account_code: KM021
+  iattend_sessions: Mycode201
+  assignment:
+  validar_url:
+  publish:
+  twitter_url:
+  facebook_url:
+  linked_in:
+  username: BBoblaws
+  password: secret123
+  attendee_type_id: one
+  messaging_opt_out: false
+  app_listing_opt_out: false
+  game_opt_out: false
+  first_run_toggle: false
+  video_portal_first_run_toggle: false
+  custom_filter_1:
+  custom_filter_2:
+  custom_filter_3:
+  token: 11111
+  tags_safeguard:
+  speaker_biography:
+  pn_filters:
+  custom_fields_1:
+  survey_results:
+  travel_info:
+  table_assignment:
+
+barebones:
+  event: one
+  first_name: Bob
+  last_name:
+  honor_prefix:
+  honor_suffix:
+  title:
+  company:
+  biography:
+  business_unit:
+  business_phone:
+  mobile_phone:
+  country:
+  state:
+  city:
+  email:
+  notes_email:
+  notes_email_pending: false
+  temp_photo_filename:
+  photo_filename:
+  photo_event_file_id:
+  account_code: KM0212
+  iattend_sessions:
+  assignment:
+  validar_url:
+  publish:
+  twitter_url:
+  facebook_url:
+  linked_in:
+  username: Bob
+  password: secret
+  attendee_type_id: two
+  messaging_opt_out: false
+  app_listing_opt_out: false
+  game_opt_out: false
+  first_run_toggle: false
+  video_portal_first_run_toggle: false
+  custom_filter_1:
+  custom_filter_2:
+  custom_filter_3:
+  token:
+  tags_safeguard:
+  speaker_biography:
+  pn_filters: test
+  custom_fields_1:
+  survey_results:
+  travel_info:
+  table_assignment:
+
+leaf:
+  <<: *realistic
+  first_name: leaf
+  account_code: KM011
+  username: leaf
+  password: secret123
+
+nonleaf:
+  <<: *realistic
+  first_name: nonleaf
+  account_code: KM0222
+  username: nonleaf
+  password: secret123
+
+need_id:
+  <<: *realistic
+  id: 7
+  account_code: KM222
+  first_name: leaf
+  username: leaf
+  password: secret123
+
+for_distance_travelled_calc:
+  <<: *realistic
+  event: fifty
+  account_code: KM999
+  first_name: Fred
+  username: Penner
+  password: secret555
+

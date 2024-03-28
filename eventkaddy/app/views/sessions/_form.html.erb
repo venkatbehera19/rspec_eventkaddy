@@ -1,0 +1,208 @@
+<% settings = Setting.return_cms_settings session[:event_id] %>
+<% unless settings.method("hide_session_form_next_previous_buttons").call %>
+    <% next_session     = @session.next_session %>
+    <% previous_session = @session.previous_session %>
+
+    <%= link_to "Next: [#{next_session.session_code}] #{next_session.title}", "/sessions/#{next_session.id}/edit", class: "btn btn-link" %>
+    <br><br>
+    <%= link_to "Previous: [#{previous_session.session_code}] #{previous_session.title}", "/sessions/#{previous_session.id}/edit", class: "btn btn-link" %>
+    <br><br>
+<% end %>
+
+<h4>Editing Session</h4>
+
+<% if current_user.role?(:client || :super_admin) %>
+  <%= link_to 'Add Link', "/links/new/#{@session.id}",class:"btn btn-primary" %><br><br>
+<% end %>
+
+<%= form_for(@session, :html => { :multipart => true, :class=>"form-horizontal well" }, :url => event_session_path ) do |f| %>
+  <% if @session.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@session.errors.count, "error") %> prohibited this session from being saved:</h2>
+
+      <ul>
+      <% @session.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% text_field = ->(col, label, options={}) {
+      unless settings.method("hide_session_form_#{col}").call
+        "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}<br><br></div>".html_safe
+      end
+  } %>
+
+  <% cktext_area = ->(col, label, options={}) {
+      unless settings.method("hide_session_form_#{col}").call
+        "<div class='form-group'>#{f.label col, label}#{f.cktext_area col, options}<br><br></div>".html_safe
+      end
+  } %>
+
+  <% check_box = ->(col, label) {
+      unless settings.method("hide_session_form_#{col}").call
+        f.label(col) { f.check_box(col) + " #{label}" } + "<br>".html_safe
+      end
+  } %>
+
+  <% select = -> (col, label, items, options={}) {
+      unless settings.method("hide_session_form_#{col}").call
+        "<div class='field'>#{f.label col, label}#{f.select col, items, options}<br><br></div>".html_safe
+      end
+  } %>
+
+  <%= text_field[:session_code,     "Session Code", class: "form-control"] %>
+  <%= text_field[:title,            "Title", class: "form-control"] %>
+  <%= check_box[:session_cancelled, "Session Cancelled"] %>
+  <%= check_box[:is_poster,         "Poster Session?"] %>
+  <%= check_box[:sold_out,          "Sold Out?"] %>
+  <%= check_box[:published,         "Published"] %>
+  <%= check_box[:unpublished,       "Unpublished"] %>
+  <%= check_box[:qa_enabled,        "Session Q/A Enabled"] %>
+  <%= check_box[:feedback_enabled,  "Feedback Enabled"] %>
+  <%= check_box[:premium_access,    "Premium Access"] %>
+  <%= check_box[:on_demand,         "On Demand"] %>
+  <br>
+  <%= select[:wvctv,                "Record", ["Yes", "No", "Blank"], prompt: "Please Select"] %>
+
+  <%= cktext_area[:description, "Description", class: "form-control", ckeditor:{toolbar: "Full"}] %>
+
+  <%= text_field[:embedded_video_url, "Embedded Video URL (For Video Portal)", class: "form-control"] %>
+
+  <% unless settings.method("hide_session_form_thumbnail_event_file").call %>
+      <table>
+      <% if (@session.thumbnail_event_file!=nil) then %>
+        <tr><td><%= image_tag(@session.thumbnail_event_file.path, :height=>'100') %></td></tr>
+        <tr><td>
+          <div class="field">
+            <%= label_tag :thumbnail_file, "Current Thumbnail" %><br>
+            <%= file_field_tag :thumbnail_file %>
+          </div><br>
+        </td></tr>
+      <% else %>
+          <tr><td>
+            <div class="field">
+              <%= label_tag :thumbnail_file, "Choose a Thumbnail" %><br>
+              <%= file_field_tag :thumbnail_file %>
+            </div><br>
+          </td></tr>
+      <% end %>
+      </table>
+  <% end %>
+
+  <%= cktext_area[:learning_objective, "Learning Objective", ckeditor:{toolbar: "Simple"}] %>
+
+  <% if /CinemaCon/.match(@session.event.name) == nil %>
+    <%= text_field[:video_ipad, "Sponsor Logo URL", class: "form-control"] %>
+  <% end %>
+
+  <%= text_field[:credit_hours, "Credit Hours", class: "form-control ml-2", style:"width:30%; display: inline;"] %>
+
+  <% unless settings.method("hide_session_form_program_type").call %>
+      <div class="form-group">
+        <%= f.label :program_type %>
+        <%= f.collection_select(:program_type_id, ProgramType.all, :id, :name, {}, class: "custom-select") %>
+      </div>
+  <% end %>
+
+  <% unless settings.method("hide_session_form_date").call %>
+      <div class="form-inline mb-3">
+        <%= f.label :date, class: "mr-2" %>
+        <%= f.date_select :date, {:include_blank => true, :default => nil}, {class: "custom-select"}  %>
+      </div>
+  <% end %>
+
+  <% unless settings.method("hide_session_form_start_at").call %>
+      <div class="form-inline mb-3">
+        <%= f.label :start_at, class: "mr-2" %>
+        <%= f.time_select :start_at, {:include_blank => true, :default => nil, ampm: true}, {class: "custom-select"}  %>
+      </div>
+  <% end %>
+
+  <% unless settings.method("hide_session_form_end_at").call %>
+      <div class="form-inline mb-3">
+        <%= f.label :end_at, class: "mr-2" %>
+        <%= f.time_select :end_at, {:include_blank => true, :default => nil, ampm: true}, {class: "custom-select"}  %>
+      </div>
+  <% end %>
+
+  <% unless settings.method("hide_session_form_sessions_speakers").call %>
+      <div class="form-group">
+          <%= label_tag(:add_speakers, "Add Speakers:") %>
+          <%= select_tag(:speaker_ids, options_for_select(@speakers.map { |speaker| ["#{speaker.honor_prefix} #{speaker.first_name} #{speaker.last_name}" ,speaker.id] },@speaker_list),:multiple => true, :size=>15, class: "custom-select") %> <br>
+          <small>Deselecting already added speakers will not remove them. Use <%= link_to "Session Speakers", "/sessions/#{@session.id}/session_speakers/", class:'btn-link' %> instead to remove speakers.</small>
+      </div> 
+  <% end %>
+
+  <!--get location_mappings for this event -->
+  <% unless settings.method("hide_session_form_location_mapping_id").call %>
+      <div class="field">
+        <%= label_tag(:select_location_mapping, "Room:") %>
+        <%= f.collection_select(:location_mapping_id, @location_mappings, :id, :name) %> <br> <br>
+      </div>
+  <% end %>
+
+  <% if /CinemaCon/.match(Event.find(session[:event_id]).name)!=nil %>
+      <h5>Client-Specific Fields</h5>
+      <%= text_field[:video_thumbnail, "Logo 1 URL", style:"width:60%"] %>
+      <%= text_field[:video_android,   "Logo 2 URL", style:"width:60%"] %>
+      <%= text_field[:video_ipad,      "Logo 3 URL", style:"width:60%"] %>
+  <% else %>
+      <%= text_field[:video_thumbnail, "Video Thumbnail", style:"width:60%"] %>
+      <%= text_field[:video_android,   "Video Android",   style:"width:60%"] %>
+      <%# this is sponsor logo; old hack not sure if we can change %>
+      <%# <%= text_field[:video_ipad,      "Video iPad",      style:"width:60%"] %1> %>
+      <%= text_field[:video_iphone,    "Video iPhone",      style:"width:60%"] %>
+  <% end %>
+
+  <%= text_field[:price, "Price", style:"width:10%"] %>
+
+  <%= select[:ticketed, "Ticket Required", ["Yes", "No"], prompt: "Please Select"] %>
+
+  <%= text_field[:capacity, "Room Capacity", style:"width:10%"] %>
+
+  <%= select[:race_approved, "CE Approved", ["Yes", "No", "Pending"], prompt: "Please Select"] %>
+
+  <%= text_field[:poster_number,     "Poster Number",     style:"width:40%"] %>
+  <%= text_field[:tag_twitter,       "Tag Twitter",       style:"width:40%"] %>
+  <%= text_field[:timezone_offset,   "Timezone Offset",   style:"width:40%"] %>
+
+  <% unless settings.method("hide_session_form_record_type").call %>
+      <div class="field">
+          <%= label_tag(:select_record_type, "Record Type:") %>
+          <%= f.collection_select(
+              :record_type,
+              RecordType.all, :id, :record_type
+          ) %> 
+          <br> <br>
+      </div>
+  <% end %>
+
+  <% unless settings.method("hide_session_form_video_duration").call %>
+      <div class="field">
+          <%= f.label 'Video Duration' %>
+          <%= f.time_select( :video_duration, { default: nil } ) %>
+          <br><br>
+      </div>
+  <% end %>
+
+  <%= text_field[:track_subtrack,    "Track Subtrack",    style:"width:40%"] %>
+  <%= text_field[:session_file_urls, "Session File URLs", style:"width:40%"] %>
+  <%= text_field[:survey_url,        "Survey URL",        style:"width:40%"] %>
+  <%= text_field[:poll_url,          "Poll URL",          style:"width:40%"] %>
+  <%= text_field[:custom_fields,     "Custom Fields",     style:"width:40%"] %>
+  <%= text_field[:tags_safeguard,    "Tags Safeguard",    style:"width:40%"] %>
+  <%= text_field[:custom_filter_1,   "Custom Filter 1",   style:"width:40%"] %>
+  <%= text_field[:custom_filter_2,   "Custom Filter 2",   style:"width:40%"] %>
+  <%= text_field[:custom_filter_3,   "Custom Filter 3",   style:"width:40%"] %>
+
+  <%= text_field[:promotion,         "Promotion",         style:"width:40%"] %>
+  <%= text_field[:keyword,           "Keyword",           style:"width:40%"] %>
+  <%= text_field[:video_file_location, "Video File Location"] %>
+  <%= text_field[:encoded_videos, "Encoded Videos"] %>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

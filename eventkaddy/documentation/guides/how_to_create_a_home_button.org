@@ -1,0 +1,56 @@
+#+TITLE: How to Create a Home Button
+
+* Step 1: Update home_button_types in generatetypes.rb and run script
+[[../../ek_scripts/generatetypes.rb][Generate Types script]]
+
+#+NAME: rake command
+#+BEGIN_SRC sh
+        bundle exec ruby ./ek_scripts/generatetypes.rb
+#+END_SRC
+
+* Step 2: Update Rabbit Home Button Groups
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/views/hbgroup-view.js][hbgroup view]]
+
+* Step 3: Add Controller
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/controllers/][bb controllers]]
+
+* Step 4: Update Route
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/app-core/core-bb-routing.js][routing]]
+- local storage render variable
+- router initialize
+- divlookup
+
+* Step 5: Add Views
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/views/][bb views]]
+
+* Step 6: Add Templates
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/index.html][index.html]]
+
+* Step 7: Update Content Containers
+index.html:
+#+NAME: index.html
+#+BEGIN_SRC html
+3717             <div id="content">
+3718 
+3719                 <div id="hbgroup-list" class="main-page"></div>
+#+END_SRC
+
+* Step 8: Include Script Links in index.html
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/index.html][index.html]]
+
+* Step 9: Update bb-view Loader
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/bb-view-loader.js][View Loader]]
+
+* Step 10: Update app.js
+[[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/app-core/App.js][App js]]
+
+javascripts/app-core/App.js:
+#+NAME: App.js
+#+BEGIN_SRC html
+17     this.pageDivList = ['hbgroup-list','sessions','exhibitors','attendees','favourites','ce-sessions','notifications','settings','attendee-profile','speakers','socials','custom-lists','notes','messages','maps','map-item-detail','surveys','scavenger-hunts','game','flare','attendee-scans','recommendations', "session-attendance-qr-scanner", "exhibitor-leads-qr-scanner"];
+
+356     localStorage["session-attendance-qr-scanner-render"] = "false";
+357     localStorage["exhibitor-leads-qr-scanner-render"]    = "false";
+#+END_SRC
+
+

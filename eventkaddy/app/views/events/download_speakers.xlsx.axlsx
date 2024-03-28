@@ -1,0 +1,37 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = ['Speaker Code','Honor Prefix','First Name','Middle Initial','Last Name','Honor Suffix','Title','Company','Biography','Home Phone','Work Phone','Mobile Phone','Email','Fax','City','State','Country','ZIP','Address','Speaker ID']
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Speaker Data") do |sheet|
+	  sheet.add_row heads, :style => style
+
+    speakers = Speaker.where(event_id:@event_id)
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: speakers.length)
+      @job.write_to_file
+    end
+
+		speakers.find_each do |speaker|
+
+			if speaker.speaker_code.blank?
+				speaker_code = speaker.id
+			else
+				speaker_code = speaker.speaker_code
+			end
+
+  		sheet.add_row [speaker_code,speaker.honor_prefix,speaker.first_name,speaker.middle_initial,speaker.last_name,speaker.honor_suffix,speaker.title,speaker.company,speaker.biography,speaker.home_phone,speaker.work_phone,speaker.mobile_phone,speaker.email,speaker.fax,speaker.city,speaker.state,speaker.country,speaker.zip,speaker.address1,speaker.custom_filter_1]
+      @job.plus_one_row if @job
+  		sheet.column_widths 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20
+		end
+	end
+end

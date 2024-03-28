@@ -1,0 +1,6 @@
+#+TITLE: Extra Reports
+* List of Non Standard Reports
+
+- [[https://olympus-cms.eventkaddy.net/reports/basic_session_favourite_info/208/2019-08-02][Basic Session Favourite Info]]
+- [[https://avmaproxy.eventkaddy.net/fish_iattend_debug_2?date=2018-07-14][Fish Debug]]
+

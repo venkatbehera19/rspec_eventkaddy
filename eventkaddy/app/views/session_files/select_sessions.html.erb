@@ -1,0 +1,31 @@
+<%= form_for(@session_file, :html => { :multipart => true, :class=>"form-horizontal well", method: "post" }, :url => {:action => "update_select_sessions"} ) do |f| %>
+  <% if @session_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@session_file.errors.count, "error") %> prohibited this event from being saved:</h2>
+
+      <ul>
+      <% @session_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <% if @sessions!=nil %>  
+  	<div class="field">
+    	<%= label_tag(:add_sessions, "Select Sessions:") %>
+      	<%= select_tag(:session_ids, options_for_select(@sessions.map { |session| ["#{session.session_code} #{session.title}" ,session.id] },@sessions),:multiple => true, :size=>30, class: "custom-select", required: true) %><br /><br />
+  	</div>  
+
+  <% else %>
+  	<div class="field">
+    	<%= label_tag(:add_sessions, "Select Sessions:") %>
+      	<%= select_tag(:session_ids, options_for_select(@sessions.map { |session| ["#{session.session_code session.title}" ,session.id] }),:multiple => true, :size=>30, class: "custom-select", required: true) %><br /><br />
+  	</div>  
+  <% end %>
+
+   <div class="actions">
+    <%= f.submit "Add Notes to Selected Sessions",class:"btn btn-primary"   %>
+  </div>
+<% end %>

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  survey: first_survey
+  order: 1
+  heading: MyString
+  subheading: MyText
+
+two:
+  event: two
+  survey: two
+  order: 1
+  heading: MyString
+  subheading: MyText

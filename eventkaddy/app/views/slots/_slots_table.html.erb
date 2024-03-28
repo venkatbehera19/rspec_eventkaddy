@@ -1,0 +1,18 @@
+<%= link_to 'Generate New Slot', new_slot_path, class: "btn btn-primary pull-right" %>
+<div class="time-slots-container mt-2">
+  <% @date_slots.each do |date, slots| %>
+    <% d = date.strftime("%A, %B %d %Y").to_s.split(',') %>
+    <h5><%= d[0] %></h5>
+    <h6><%= d[1] %></h6>
+    <hr class="mb-0">
+    <div class="time-slots mb-4">
+      <% slots.each do |slot| %>
+        <% if slot.attendee_id.blank? %>
+          <%= link_to "#{slot.start_time.localtime(@event.utc_offset).strftime("%I:%M %p").to_s + ' - ' + slot.end_time.localtime(@event.utc_offset).strftime("%I:%M %p").to_s}", slot_path(slot.id), class: "btn btn-success slots-link-btn", "data-toggle":"tooltip", "data-placement":"bottom", "title":"Available" %>
+        <% else %>
+          <%= link_to "#{slot.start_time.localtime(@event.utc_offset).strftime("%I:%M %p").to_s + ' - ' + slot.end_time.localtime(@event.utc_offset).strftime("%I:%M %p").to_s}", slot_path(slot.id), class: "btn btn-warning slots-link-btn", "data-toggle":"tooltip", "data-placement":"bottom", "title":"Booked" %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

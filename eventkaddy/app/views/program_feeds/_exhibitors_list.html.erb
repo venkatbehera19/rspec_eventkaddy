@@ -1,0 +1,97 @@
+<% if exhibitors.present? %>
+	<% exhibitors.each do |exhibitor| %>
+		<div class="col-lg-4 col-md-5 col-sm-6 col-12 my-2">
+			<%= link_to "/#{params[:event_id]}/program/exhibitor/#{exhibitor.id}", class: "exhibitor-card d-flex py-2 px-2" do %>
+				<div class="exhibitor-image mt-1" style="height: fit-content;">
+					<% url = exhibitor.logo_path %>
+					<% if url %>
+						<%= image_tag '/defaults/avatar.png', alt: "Profile pic", data: {original: url}, class: "exhibitor-profile-pic mt-3 lazyloaded" %>
+					<% else %>
+						<%= image_tag '/defaults/avatar.png', alt: "Profile pic", class: "exhibitor-profile-pic mt-3" %>
+					<% end %>
+				</div>
+				<div class="exhibitor-basic-info ml-2">
+					<div class="mt-5"><b><%= exhibitor.company_name %></b></div>
+					<div class="mt-1"><%= exhibitor.location_name ? "Booth: #{exhibitor.location_name}" : nil %></div>
+					<span class="speaker-company mt-1"><%= exhibitor.sponsor_level_type ? "#{exhibitor.sponsor_level_type.sponsor_type}" : nil %></span>	
+				</div>
+			<% end %>
+			<% if @current_attendee %>
+				<div class="exhibitor-favourite">
+					<% if exhibitor_favorite(exhibitor.id) %>
+						<i class="fa fa-star text-danger make-favourite" aria-hidden="true" data-exhibitor="<%= exhibitor.id %>" data-favourite="true"></i>
+					<% else %>
+						<i class="fa fa-star-o make-favourite" aria-hidden="true" data-exhibitor="<%= exhibitor.id %>" data-favourite="false"></i>
+					<% end %>
+				</div>
+			<% end %>
+		</div>
+	<% end %>
+<% else %>
+		<div class="no-record">
+			<p class="display-4 text-secondary font-italic">No exhibitor Found</p>
+		</div>
+<% end %>
+
+<%= hidden_field_tag :total_pages, @total_pages %>
+
+<button onclick="topFunction()" id="topBtn" title="Go to top"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+
+
+<style type="text/css">
+	.exhibitor-image canvas {
+		height: 8rem;
+		width: 8rem;
+		border-radius: 50%;
+	}
+
+	.see_more {
+		display: none;
+	}
+
+	.exhibitor-card {
+		height: 14rem !important;
+	}
+
+	.exhibitor-favourite{
+    position: absolute;
+    right: 30px;
+    font-size: 20px;
+    top: 30px;
+	}
+  .make-favourite {
+    cursor: pointer;
+  }
+
+	@media (min-width: 1000px) and (max-width: 1100px) {
+		.more_info{
+			display: none;
+		}
+	}
+
+/*	@media (min-width: 1200px) and (max-width: 1300px) {
+		.exhibitor-card {
+			min-height: 265px;
+		}
+	}
+
+	@media (min-width: 1100px) and (max-width: 1200px) {
+		.exhibitor-card {
+			min-height: 275px;
+		}
+	}*/
+
+/*
+	@media (min-width: 575px) and (max-width: 1170px) {
+		.exhibitor-card {
+			min-height: 310px;
+		}*/
+/*		.exhibitor-detail-item {
+			display: none;
+		}
+		.see_more{
+			display: block;
+		} */
+	}
+
+</style>

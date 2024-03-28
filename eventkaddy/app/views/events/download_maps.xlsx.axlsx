@@ -1,0 +1,30 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+
+	heads = ['Location Name','Map Filename','X Coordinate','Y Coordinate','Map Type']
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Map Data") do |sheet|
+	  sheet.add_row heads, :style => style
+
+		@maps.each do |map|
+
+			if map.event_map!=nil && map.event_map.event_file!=nil
+				map_filename = map.event_map.event_file.name
+				map_type     = map.event_map.map_type.map_type
+		  end
+
+		  sheet.add_row [map.name,map_filename,map.x,map.y,map_type], :height => 15, :types => [:string]
+
+		end
+	end
+end

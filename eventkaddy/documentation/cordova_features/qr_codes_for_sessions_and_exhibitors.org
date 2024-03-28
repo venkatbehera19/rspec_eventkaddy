@@ -1,0 +1,273 @@
+#+TITLE: QR Codes for Sessions and Exhibitors
+
+* Moderator Scan Story
+
+#+NAME: Moderator Scan Story
+#+BEGIN_SRC text
+                                                                        
+ +-----------------+                                                    
+ |                 |                                                    
+ |   Login Page    |                                                    
+ |                 |                                                    
+ +--------+--------+                                                    
+          |                                                             
+          | Press Login Button                                          
+          |                                                             
+          v                                                             
+ +-----------------+                                                    
+ |  Auth Request   |                                                    
+ |      POST       |                                                    
+ +-----------------+                                                    
+          |                                                             
+          |                                                             
+          |                                                             
+          v                                                             
+ +-----------------+                    +-----------------------+       
+ |  Auth Request   |                    | set attendee type to  |       
+ |    Callback     +--------------------+ moderator if attendee |       
+ |                 |                    | is moderator          |       
+ +-----------------+                    +-----------------------+       
+          |                                                             
+          |                                                             
+          |                                                             
+          v                                                             
+ +-----------------+                    +-----------------------+       
+ |                 |                    | if attendee is of     |       
+ |   Home Screen   +--------------------+ type moderator or     |       
+ |                 |                    | admin, they can see   |       
+ +-----------------+                    | moderator type home   |       
+          |                             | buttons               |       
+          | click sessions scan         +-----------------------+       
+          | home button                                                 
+          v                                                             
+ +-----------------+                                                    
+ | Moderator Scan  |                                                    
+ |      View       |                                                    
+ |                 |                                                    
+ +-----------------+                                                    
+          |                                                             
+          | Click Select Room                                           
+          |                                                             
+          v                                                             
+ +----------------+                   +------------------------+        
+ |                |                   | populated by sqlite    |        
+ | Room List View +-------------------+ database (as sessions  |        
+ |                |                   | are not always in      |        
+ +----------------+                   | memory)                |        
+         |                            +------------------------+        
+         |                                                              
+         | Select Room From List                                        
+         |                                                              
+         v                                                              
+ +----------------+                   +--------------------------+      
+ | Moderator Scan |                   | On return to moderator   |      
+ |      View      +-------------------+ scan view, room and      |      
+ |                |                   | session fields flash     |      
+ +----------------+                   | green to tell user they  |      
+         |                            | have made an update.     |      
+         |                            | The session is automati  |      
+         | Click Select Session       | cally set to the one     |      
+         |                            | nearest the current time |      
+         |                            +--------------------------+      
+         |                                                              
+         v                                                              
+ +----------------+                   +----------------------------+    
+ |  Session List  |                   | Sessions belonging to the  |    
+ |      View      +-------------------+ selected room are shown,   |    
+ |                |                   | with indications about how |    
+ +----------------+                   | long from now, or how long |    
+          |                           | ago it is/was.             |    
+          | Select Session From List  | They are in order from     |    
+          |                           | date and begin time.       |    
+          v                           | The currently selected one |    
+ +-----------------+                  | is automatically scrolled  |    
+ | Moderator Scan  |                  | to, and highlighted green  |    
+ |      View       |                  | for easy ability to see    |    
+ |                 |                  | it and the upcoming few    |    
+ +-----------------+                  | sessions                   |    
+          |                           +----------------------------+    
+          |                                                             
+          | Click Start Scanner                                         
+          |                                                             
+          v                                                             
+    Scan Attendee                                                       
+          |                                                             
+          |                                                             
+          v                                                             
+ +-----------------+                    +----------------------------+  
+ |  POST iattend   |                    | attendee iattend is        |  
+ |      scan       |--------------------+ updated and a row          |  
+ |                 |                    | is added to attendee       |  
+ +-----------------+                    | scans table                |  
+          |                             | On success can choose      |  
+          |                             | restart scanner immediately|  
+          |                             +----------------------------+  
+          v                                                             
+ +-----------------+                                                    
+ | Moderator Scan  |                                                    
+ |      View       |                                                    
+ |                 |                                                    
+ +-----------------+                                                    
+
+#+END_SRC text
+
+* Exhibitor Lead Survey Story
+
+# ditaa :file foo.png Is possible to output a graphic of below chart
+#+NAME: Exhibitor Lead Survey Story
+#+BEGIN_SRC text
+
+                                                                        
+ +-----------------+                                                    
+ |                 |                                                    
+ |   Login Page    |                                                    
+ |                 |                                                    
+ +--------+--------+                                                    
+          |                                                             
+          | Press Login Button                                          
+          |                                                             
+          v                                                             
+ +-----------------+                                                    
+ |  Auth Request   |                                                    
+ |      POST       |                                                    
+ +-----------------+                                                    
+          |                                                             
+          |                                                             
+          |                                                             
+          v                                                             
+ +-----------------+                    +-----------------------+       
+ |  Auth Request   |                    | attendee type set;    |       
+ |    Callback     +--------------------+ exhibitor code set;   |       
+ |                 |                    | exhibitor id set;     |       
+ +-----------------+                    | must be booth owner   |       
+          |                             | to receive exhibitor  |       
+          |                             | code                  |       
+          |                             +-----------------------+       
+          |                                                             
+          |                                                             
+          |                                                             
+          |                                                             
+          v                                                             
+ +-----------------+                    +-----------------------+       
+ |                 |                    | if attendee is of     |       
+ |   Home Screen   +--------------------+ type exhibitor or     |       
+ |                 |                    | admin, they can see   |       
+ +-----------------+                    | exhibitor type home   |       
+          |                             | buttons               |       
+          | click exhibitor scan        +-----------------------+       
+          | home button                                                 
+          v                                                             
+ +-----------------+                                                    
+ | Exhibitor Scan  |                                                    
+ |      View       |                                                    
+ |                 |                                                    
+ +-----------------+                                                    
+          |                                                             
+          | Click Start Scanner                                         
+          |                                                             
+          v                                                             
+    Scan Attendee                                                       
+          |                                                             
+          |                                                             
+          v                                                             
+ +-----------------+                    +-----------------------+       
+ |   Show Survey   |                    | first lead survey for |       
+ |      View       +--------------------+ exhibitor selected    |       
+ |                 |                    | automatically;        |       
+ +-----------------+                    | target attendee set   |       
+          |                             +-----------------------+       
+          | Submit Survey                                               
+          |                                                             
+          v                                                             
+ +-----------------+                                                    
+ | Exhibitor Scan  |                                                    
+ |      View       |                                                    
+ |                 |                                                    
+ +-----------------+                                                    
+          |                                                             
+          | Click Send Report                                           
+          |                                                             
+          v                                                             
+ +-----------------+                   +------------------------+       
+ |  XSLX file of   |                   | attendee notes_email   |       
+ | survey reports  +-------------------+ updated                |       
+ |     sent to     |                   |                        |       
+ | provided email  |                   |                        |       
+ +-----------------+                   +------------------------+       
+
+
+#+END_SRC
+
+
+* Requirements for Lead Survey
+
+- Exhibitor attendee has attendee_type_id exhibitor (TODO: I don't think this is being set in xlsx import)
+- Exhibitor attendee has booth owner association to an exhibitor
+- Exhibitor has survey_exhibitors association to survey
+- Exhibitor has an exhibitor_code (TODO: xlsx import doesn't currently have exhibitor codes)
+
+* Exhibitor Lead Surveys Structural Outline
+** Survey Type "Exhibitor Lead Survey"
+SurveyType.where(name:"Exhibitor Lead Survey").first # #<SurveyType id: 6, name: "Exhibitor Lead Survey", created_at: "2018-08-14 14:48:36", updated_at: "2018-08-14 14:48:36">
+
+Referring to a survey that a booth_owner attendee makes about any other attendee
+
+** Table survey_exhibitors
+SurveyExhibitor.columns.map &:name # ["id", "event_id", "survey_id", "exhibitor_id", "created_at", "updated_at"]
+
+This table determines what Lead Surveys an exhibitor will see when they scan an attendee. Confusingly, in the future it may refer to surveys an attendee could fill out about an exhibitor. In any case, it states the relationship between the survey itself (not the response) and the exhibitor.
+
+Currently SurveySession is used in the sessions data endpoint to add survey_id to the sessions table, effectively making it a one to one association even though it would be possible for multiple surveys to be made associated to a session in the database. survey_exhibitors will instead use CONCAT for the exhibitor's mobile data endpoint to make a comma delimited list of all survey_ids, which will then have to be filtered in the cordova app based on survey_type.
+
+** Table survey_responses
+SurveyResponse.columns.map &:name # ["id", "event_id", "attendee_id", "attendee_account_code", "target_attendee_id", "session_id", "survey_id", "gps_location", "time_taken", "created_at", "updated_at"]
+
+Add target_attendee_id; We should expect one of session_id or target_attendee_id to be populated, or neither. Both would be an error, as there is no concept of a session that is both about an attendee and a speaker. It is possible in the future we might have a survey about a speaker and a session, but we should resist that change as it makes the design more complicated. We would need a more sophisticated design, in anycase, to handle it.
+
+* API Changes
+** Attendee#full_name
+added convenience method for concating name
+** AttendeesController#authenticate_attendee
+attendee type and exhibitor info now being sent down
+** AttendeesController#push_attendee_scan_data
+handle lead survey scan and moderator session iattend scan
+** HomeButtonsController#mobile_data
+receives attendee type in params and filters home buttons based on it
+** ExhibitorsController#mobile_data
+Concat survey_ids AS survey_ids
+Instead of thinking about how to determine the survey types in the query, that will be done in the app
+Also added exhibitor_code
+** SurveysApiController#survey_responses_mobile_data
+Add target_attendee_id in join
+** SurveysApiController#lead_survey_attendee_names_for_attendee
+Add route for getting attendee names for an attendee's lead surveys
+** UpdateSurveyResponses#survey_responses
+Add target attendee id to query
+
+* Commandlog
+
+#+NAME: Commandlog
+#+BEGIN_SRC sh
+        rails g model SurveyExhibitor event_id:integer survey_id:integer exhibitor_id:integer
+        rails g migration AddTargetAttendeeIdToSurveyResponses target_attendee_id:integer:index
+        bundle exec ruby ./ek_scripts/generatetypes.rb
+        rake db:migrate
+#+END_SRC
+
+
+* Changelog
+- added moderator and admin attendee_types. admin to have access to all home buttons
+- added attendee_type to authenticateattendee endpoint
+- added attendee_type_id to home_button table (for filtering home buttons an attendee can use)
+- added attendee_type_id to home_button api endpoint
+- home_button_endpoint filters based on attendee_type
+- home_button form can edit what attendee type it is for
+- home_button import export can edit attendee type
+- ability.js for providing templates with methods to determine visibility of elements
+- added new home buttons for session and exhibitor scanners
+- added plumbing for controller / view setup of above home buttons
+- added iattend_update and exhibitor_lead_survey attendee_scan_types
+- new survey type "Exhibitor Lead Survey"
+- new table "survey_attendees"
+- update survey wizard to handle exhibitor survey type (and add associations)
+

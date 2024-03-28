@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+first_survey_response:
+  event: one
+  attendee: realistic
+  attendee_account_code: KM021
+  session: realistic
+  survey: first_survey
+  gps_location: 9.99
+  time_taken: 1
+
+second_survey_response:
+  event: two
+  attendee: two
+  attendee_account_code: MyString
+  session: two
+  survey: two
+  gps_location: 9.99
+  time_taken: 1

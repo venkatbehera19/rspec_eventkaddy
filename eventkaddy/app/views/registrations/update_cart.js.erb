@@ -1,0 +1,8 @@
+<% if @is_payment_page %>
+  $('#order_cart').replaceWith("<%= escape_javascript render('/registrations/order_cart', cart: @cart, total: @total, user: @user ) %>")
+<% else %>
+  $('#items').replaceWith("<%= escape_javascript render('/registrations/items', product_category_with_product: @product_category_with_product, cart: @cart, user: @user ) %>")
+  $('#cart_box').replaceWith("<%= escape_javascript render('/registrations/cart', cart: @cart ) %>")
+  $('#cart_counter').replaceWith("<%= escape_javascript render('/registrations/cart_counter', cart: @cart.registration_form_cart_items.reduce(0){|sum,item| sum+=item.quantity} ) %>")
+  $('#cart_counter_header').replaceWith("<%= escape_javascript render('/registrations/cart_counter_header', cart: @cart.registration_form_cart_items.reduce(0){|sum,item| sum+=item.quantity} ) %>")
+<% end %>

@@ -1,0 +1,30 @@
+<%= form_for(@user,:html=>{:class=>"form-horizontal well"}, :url => {:action => "create_speaker_portal_user"}) do |f| %>
+
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <%= hidden_field_tag :speaker_id, @speaker.id %>
+ 
+  <p><%= f.label :email %></p>
+  <p><%= f.text_field :email %></p>
+
+  <p><%= f.label :password %></p>
+  <p><%= f.password_field :password %></p>
+ 
+  <p><%= f.label :password_confirmation %></p>
+  <p><%= f.password_field :password_confirmation %></p>
+ 
+  <p><%= f.submit "Set Portal Password", class:"btn btn-primary"    %></p>
+
+<% end %>
+

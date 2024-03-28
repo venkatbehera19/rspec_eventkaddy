@@ -1,0 +1,28 @@
+<%= form_for(@session_av_requirement, :html => { :multipart => true, :class=>"form-horizontal well" }, :url => {:action => "create_laptop"} ) do |f| %>
+  
+  <% if @session_av_requirement.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@session_av_requirement.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+      <ul>
+      <% @session_av_requirement.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+    <%= f.hidden_field :session_id, :value => @session_id %>
+  </div>
+  
+  <div class="field">
+    <%= label_tag(:select_laptop, "Select Laptop:") %><br />
+    <%= select_tag(:select_laptop,options_for_select([['Conference PC','Conference PC'],['Your Windows PC',"User's Windows PC"],['Your Mac',"User's Mac"],['Your Linux Computer',"User's Linux Computer"]],'Conference PC')) %>  
+  </div>   
+
+  <div class="actions">
+    <%= f.submit "Submit", class:"btn btn-primary"   %>
+  </div>
+<% end %>

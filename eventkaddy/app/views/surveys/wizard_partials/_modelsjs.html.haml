@@ -1,0 +1,230 @@
+-# Now contained in non_pipeline_assets
+
+-# :javascript
+
+
+-#     // saving one model or collection at a time is not actually all that great for this use case.
+-#     // I should just throw most of this out and simply have one thing that will save everything. It doesn't matter
+-#     // if it updates multiple records in a single query... at worst, I could add a prop called "sync_pending" that
+-#     // would update all models which have been modified. In fact, that may be the best, since I can still update on
+-#     // a model by model basis, and I can even make the survey automatically
+-#     // save as you work so that you never lose your work
+-#     // but that would have to listen to changes in the form, which I'm not doing. Currently the only way that anything ever knows you have made a change is if you hit the save button... but maybe since I do have listeners which update the preview constantly, I can just change those listeners to send updates as well, or set sync_pending to save unsynced models every 20 seconds?
+
+-#     var WizardModel = function() {
+-#     };
+
+-#     var WizardCollection = function() {
+-#         this.collection = [];
+-#     };
+
+-#     WizardModel.prototype = {
+
+-#         get_url: function() { return '/survey_wizard/get_' + this.table + '?id=' + this.data.id; },
+-#         post_url: function() { return '/survey_wizard/save_' + this.table; },
+-#         delete_url: function() { return '/survey_wizard/delete_' + this.table + '?id=' + this.data.id; },
+
+-#         updateLocalData: function(key, value) {
+-#             this.data[key] = value;
+-#         },
+
+-#         populateData: function() {
+
+-#             var that = this;
+
+-#             return $.get(this.get_url(), function(data) {
+-#                 that.data = data.status===false ? alert('An error occured.') : data.survey;
+-#             });
+-#         },
+
+-#         destroy: function() {
+-#             function success(response) {
+-#                 console.log(response);
+-#             }
+
+-#             function failure() {
+-#                 alert('An error occured while trying to delete and the process was aborted.');
+-#             }
+
+-#             var model = this;
+
+-#             return $.ajax({
+-#                url: this.delete_url(),
+-#                type: 'DELETE',
+-#                success: function(response) {
+-#                     if (SurveyWizard[model.table + 's']) {
+-#                         SurveyWizard[model.table + 's'].removeModel(model);
+-#                     }
+-#                },
+-#                error: function() { failure() }
+-#             });
+-#         },
+
+-#         save: function() {
+
+-#             function failure() {
+-#                 alert('An error occured while trying to save.')
+-#             }
+
+-#             var model = this;
+
+-#             return $.post(this.post_url(), this.data, function(response) {
+-#                 model.updateLocalData('id', response['id']);
+-#                 console.log(response);
+-#             }).fail(function(response) {
+-#                 failure();
+-#             });
+-#         }
+-#     };
+
+-#     WizardCollection.prototype = {
+
+-#         firstWhere: function(values) {
+
+-#             function all_equal(values, data) {
+-#                 for (var key in values) { if (data[key]!==values[key]) return false; }
+-#                 return true;
+-#             }
+
+-#             for (var i=0;i < this.collection.length;i++) {
+-#                 if (all_equal(values, this.collection[i].data)) return this.collection[i];
+-#             }
+-#         },
+
+-#         where: function(values) {
+
+-#             function all_equal(values, data) {
+-#                 for (var key in values) { if (data[key]!==values[key]) return false; }
+-#                 return true;
+-#             }
+
+-#             var result = [];
+-#             for (var i=0;i < this.collection.length;i++) {
+-#                 if (all_equal(values, this.collection[i].data)) result.push(this.collection[i]);
+-#             }
+-#             return result;
+-#         },
+
+-#         removeModel: function(model) {
+-#             var i = this.collection.indexOf(model);
+-#             if (i > -1) this.collection.splice(i, 1);
+
+-#             for (i;i<this.collection.length;i++) {
+-#                 this.collection[i].data.order --;
+-#             }
+-#         },
+
+-#         addOne: function(model) {
+-#             this.collection.push(model);
+-#         }
+-#     };
+
+-#     var SurveyModel = function(data) {
+-#         this.data  = data || {id:'',order:'', title: '', description: '', begins: '', ends: '', survey_type_id:''};
+-#         this.table = 'survey';
+-#     };
+
+-#     var SurveySectionModel = function(data) {
+-#         this.data  = data || {id:'',order:'', survey_id: '', heading: '', subheading: ''};
+-#         this.table = 'survey_section';
+-#     };
+
+-#     var QuestionModel = function(data) {
+-#         this.data  = data || {id:'',order:'', survey_section_id: '', survey_id: '', question_type_id: '', question: ''};
+-#         this.table = 'question';
+-#     };
+
+-#     var AnswerModel = function(data) {
+-#         this.data  = data || {id: '', question_id: '', order: '', answer: '', correct: ''};
+-#         this.table = 'answer';
+-#     };
+
+-#     var HintModel = function(data) {
+-#         this.data  = data || {id: '', question_id: '', order: '', hint: ''};
+-#         this.table = 'hint';
+-#     };
+
+-#     var SurveySectionsCollection = function(survey_id) {
+
+-#         this.populateCollection = function() {
+
+-#             var collection = this;
+
+-#             return $.get(this.get_url, function(data) {
+-#                 if (!(data.status===false)) {
+-#                     $.each(data, function(i, v) {
+-#                         var survey_section = new SurveySectionModel(v.survey_section);
+-#                         collection.collection.push(survey_section);
+-#                     });
+-#                 }
+-#             });
+-#         };
+-#         this.get_url = '/survey_wizard/get_survey_sections?survey_id=' + survey_id;
+-#     };
+
+-#     var QuestionsCollection = function(survey_id) {
+
+-#         this.populateCollection = function() {
+
+-#             var collection = this;
+
+-#             return $.get(this.get_url, function(data) {
+-#                 if (!(data.status===false)) {
+-#                     $.each(data, function(i, v) {
+-#                         var question = new QuestionModel(v.question);
+-#                         collection.collection.push(question);
+-#                     });
+-#                 }
+-#             });
+-#         };
+-#         this.get_url = '/survey_wizard/get_questions?survey_id=' + survey_id;
+-#     };
+
+-#     var AnswersCollection = function(survey_id) {
+
+-#         this.populateCollection = function() {
+
+-#             var collection = this;
+
+-#             return $.get(this.get_url, function(data) {
+-#                 if (!(data.status===false)) {
+-#                     $.each(data, function(i, v) {
+-#                         var answer = new AnswerModel(v.answer);
+-#                         collection.collection.push(answer);
+-#                     });
+-#                 }
+-#             });
+-#         };
+
+-#         this.get_url = '/survey_wizard/get_answers?survey_id=' + survey_id;
+-#     };
+
+-#     var HintsCollection = function(survey_id) {
+
+-#         this.populateCollection = function() {
+
+-#             var collection = this;
+
+-#             return $.get(this.get_url, function(data) {
+-#                 if (!(data.status===false)) {
+-#                     $.each(data, function(i, v) {
+-#                         var hint = new HintModel(v.hint);
+-#                         collection.collection.push(hint);
+-#                     });
+-#                 }
+-#             });
+-#         };
+
+-#         this.get_url = '/survey_wizard/get_hints?survey_id=' + survey_id;
+-#     };
+
+-#     SurveyModel.prototype              = new WizardModel();
+-#     SurveySectionModel.prototype       = new WizardModel();
+-#     QuestionModel.prototype            = new WizardModel();
+-#     AnswerModel.prototype              = new WizardModel();
+-#     HintModel.prototype                = new WizardModel();
+-#     SurveySectionsCollection.prototype = new WizardCollection();
+-#     QuestionsCollection.prototype      = new WizardCollection();
+-#     AnswersCollection.prototype        = new WizardCollection();
+-#     HintsCollection.prototype          = new WizardCollection();
+

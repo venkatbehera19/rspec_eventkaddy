@@ -1,0 +1,59 @@
+<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" />
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet"/>
+<%= stylesheet_link_tag params[:controller] %>
+<div class="forms_container">
+  <ul class="nav col-sm-8 mx-auto nav-tabs d-flex justify-content-around" role="tablist" >
+    <li class="nav-item">
+      <a class="nav-link-anchors nav-link <%='active' if @form_type=='ios'%>" id="ios-tab" data-toggle="tab" data-target="#ios" role="tab" aria-controls="ios" aria-selected="true">
+        <i class="fa fa-apple fa-2x"></i>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link-anchors nav-link <%='active' if @form_type=='android'%>" id="android-tab" data-toggle="tab" data-target="#android" role="tab" aria-controls="android" aria-selected="true">
+        <i class="fa fa-android fa-2x"></i>
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content pt-3" id="myTabContent">
+    <div class="tab-pane  <%='show active' if @form_type=='ios'%>" id="ios" role="tabpanel" aria-labelledby="ios-tab">
+      <% if @is_ios_new_record%>
+        <%= render partial: "form" , locals: { app_submission_form: @app_submission_form_ios, store_name: "App Store", form_html_id: "app_submission_form_ios", new_record: true } %>
+      <%else%>
+        <%= render partial: "download_button", locals: { app_submission_form: @app_submission_form_ios, store_name: "App Store", new_record: false, job_status: @job_status_ios, error_message: @error_message_ios, form_id: @form_id_ios }%>
+        <%= render partial: "form" , locals: { app_submission_form: @app_submission_form_ios, store_name: "App Store", form_html_id: "app_submission_form_ios", new_record: false } %>
+      <%end%>
+    </div>
+    <div class="tab-pane  .mx-auto <%='show active' if @form_type=='android'%>" id="android" role="tabpanel" aria-labelledby="android-tab">
+      <% if @is_android_new_record%>
+        <%= render partial: "form" , locals: { app_submission_form: @app_submission_form_android, store_name: "Play Store", form_html_id: "app_submission_form_android", new_record: true } %>
+      <%else%>
+        <%= render partial: "download_button", locals: { app_submission_form: @app_submission_form_android, store_name: "Play Store", new_record: false, job_status: @job_status_android, error_message: @error_message_android, form_id: @form_id_android  }%>
+        <%= render partial: "form" , locals: { app_submission_form: @app_submission_form_android, store_name: "Play Store", form_html_id: "app_submission_form_android", new_record: false } %>
+      <%end%>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  var event_id                = <%= session[:event_id]%>
+  var is_android_new_record   = <%= @is_android_new_record%>
+  var is_ios_new_record       = <%= @is_ios_new_record%>
+  var controller_name         = "<%= controller.controller_name %>"
+  var action_name             = "<%= controller.action_name %>"
+  var show_ios_images_on_fail = <%= instance_variable_defined?("@show_ios_images_on_fail") ? @show_ios_images_on_fail : false %>
+  var show_android_images_on_fail = <%= instance_variable_defined?("@show_android_images_on_fail") ? @show_android_images_on_fail : false%>
+</script>
+<script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+<script src="https://unpkg.com/jquery-filepond/filepond.jquery.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-validate-size/dist/filepond-plugin-image-validate-size.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-resize/dist/filepond-plugin-image-resize.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-metadata/dist/filepond-plugin-file-metadata.js"></script>
+<script type="text/javascript" src="https://milankyncl.github.io/jquery-copy-to-clipboard/jquery.copy-to-clipboard.js"></script>
+<%= javascript_include_tag params[:controller]%>

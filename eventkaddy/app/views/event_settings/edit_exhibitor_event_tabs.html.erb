@@ -1,0 +1,41 @@
+<script src='/assets/unordered-files/sortandrename.js' type="text/javascript"> </script>
+
+<h4>Exhibitor Tabs Configuration</h4>
+
+<div id="stable-height"><div id="response"></div></div>
+
+<table id="tabstable" class="tabstable">
+    <thead>
+        <tr>
+            <th>
+                <h3>Enabled</h3>
+            </th>
+            <th>
+                <h3>Disabled</h3>
+            </th>
+        </tr>
+    </thead>
+    <tr>
+        <td>
+            <ul id="enabled" class="connectedSortable">
+                <% @tabs.each do |tab| %>
+                    <% if tab.enabled %>
+                        <li id="<%=tab.tab_type_id%>" class="ui-state-default"><input value="<%=tab.name%>"></input>Default: <%=tab.tab_type.default_name%> <br style="line-height:30px;">
+                            <%= link_to 'Edit Header and Footer', edit_tab_path(tab) ,class:"btn edit pull-right" %><br style="line-height:30px;"></li>
+                    <% end %>
+                <% end %>
+
+            </ul>
+        </td>
+        <td>
+            <ul id="disabled" class="connectedSortable">
+                <% @tabs.each do |tab| %>
+                    <% if !tab.enabled %>
+                        <li id="<%=tab.tab_type_id%>" class="ui-state-default"><input value="<%=tab.name%>"></input>Default: <%=tab.tab_type.default_name%> <br style="line-height:30px;">
+                            <%= link_to 'Edit Header and Footer', edit_tab_path(tab) ,class:"btn edit pull-right" %><br style="line-height:30px;"></li>
+                    <% end %>
+                <% end %>
+            </ul>
+        </td>
+    </tr>
+</table>

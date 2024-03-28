@@ -1,0 +1,24 @@
+<%# Just include CSRF and application.js/css for pages which are not really %>
+<%# part of the CMS or portals %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EventKaddy</title>
+        <%= stylesheet_link_tag    "application" %>
+        <%= javascript_include_tag "application" %>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%= csrf_meta_tag %>
+    </head>
+
+    <body>
+        <% if notice %>
+            <p class="alert alert-info"><%= notice %></p>
+        <% end %>
+
+        <% if alert %>
+            <p class="alert alert-danger"><%= alert %></p>
+        <% end %>
+
+        <%= yield %>
+    </body>
+</html>

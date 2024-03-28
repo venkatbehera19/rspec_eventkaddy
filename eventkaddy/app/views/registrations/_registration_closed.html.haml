@@ -1,0 +1,13 @@
+%body
+  - if @settings.standby_screen_text.blank?
+    %header#registration-page-header.d-flex.align-items-center
+      .container.d-flex.flex-column.align-items-center
+        %h1= @event.name
+        %h2 Registration portal is closed
+  - else
+    - if @settings.dark_bg_theme
+      .dark-themed-container
+        = @settings.standby_screen_text.to_s.html_safe
+    - else
+      = @settings.standby_screen_text.to_s.html_safe
+

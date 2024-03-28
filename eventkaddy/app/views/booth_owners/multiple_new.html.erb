@@ -1,0 +1,24 @@
+<%= form_tag("/booth_owners/update_multiple_new", method: "post", :html => {:class=>"form-horizontal well" }) do |f| %>
+
+
+  <div class="field">
+      Hold the ctrl key on Windows, or Apple button on Mac to select multiple attendees. Deselect attendees to have the associations removed.
+      <br><br>
+      Only attendees whose company name matches an exhibitor's company name will be shown in this list. It is possible to create booth owners through the exhibitor excel sheet import on the Import / Export page by listing their account codes under the Attendee Codes field in a comma delimited list, as an alternative to the method on this page which does not require matching company names.
+  </div>
+
+  <div class="field">
+
+    <%= label_tag(:add_attendees, "Select Attendees to be Booth Owners:") %>
+    <%= select_tag(:attendee_ids, options_for_select(@attendees.map { |attendee| ["#{attendee.full_name.to_s} - #{attendee.company.to_s}, Business Unit: #{attendee.business_unit}", attendee.id] }, @selected), :multiple => true, :size=>30, class: "custom-select") %>
+
+    <br>
+    <br>
+
+  </div>
+
+   <div class="actions">
+    <%= submit_tag "Add Booth Owner Associations", class:"btn btn-primary" %>
+  </div>
+<% end %>
+

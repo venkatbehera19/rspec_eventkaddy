@@ -1,0 +1,75 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+sessions        = Session.select('id, session_code, title')
+                          .where("sessions.session_code IS NOT NULL AND sessions.event_id=#{session[:event_id]}")
+iattend_sessions = Attendee.select('iattend_sessions')
+                          .where("attendees.iattend_sessions IS NOT NULL AND attendees.event_id=#{session[:event_id]}")
+sessions_hash = {}
+sessions.each do |session|
+  !!session.session_code && (sessions_hash[session.session_code] = session.as_json.merge(checkin_count: 0, page_view_count: 0, video_view_count: 0))
+end
+
+iattend_sessions.each do |iattend|
+  iattend_array = iattend.iattend_sessions.split(',')
+  iattend_array.uniq.each do |ele|
+    sessions_hash[ele] && sessions_hash[ele][:checkin_count] += 1
+  end
+end
+
+page_views = @reporting_db.query(
+  "SELECT count(session_code) AS session_code_count,
+  id,
+  event_id,
+  attendee_id,
+  session_code
+FROM reporting.video_views
+WHERE event_id=#{session[:event_id]}
+GROUP BY session_code")
+
+page_views.each do |pv|
+  sessions_hash[pv["session_code"]] && sessions_hash[pv["session_code"]][:page_view_count] = pv["session_code_count"]
+end
+
+video_views = VideoView.find_by_sql(
+  "SELECT count(vv.session_id) AS session_id_count,
+    vv.event_id,
+    vv.attendee_id,
+    s.session_code AS session_code
+  FROM #{@primary_db}.video_views AS vv
+  LEFT JOIN #{@primary_db}.sessions AS s ON s.id=vv.session_id
+  WHERE vv.event_id=#{session[:event_id]}
+  GROUP BY vv.session_id")
+
+video_views.each do |vv|
+  sessions_hash[vv["session_code"]] && sessions_hash[vv["session_code"]][:video_view_count] = vv["session_id_count"]
+end
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	heads = ['Session Code', 'Session Title', 'Ce Check-ins', 'Page Views', 'Video Views']
+
+	style =  []
+
+  long_text_style  = s.add_style :alignment => { :horizontal=> :left, :word_wrap => true }
+  short_text_style = s.add_style :alignment => { :horizontal=> :center, :word_wrap => true }
+
+	heads.each do |h|
+		style << black_cell
+	end
+	wb.add_worksheet(name: "Video Views Report") do |sheet|
+	  sheet.add_row heads, :style => style
+
+	  sessions_hash.each do |key, session|
+      sheet.add_row [
+        session["session_code"], 
+        session["title"], 
+        session[:checkin_count], 
+        session[:page_view_count], 
+        session[:video_view_count]
+      ], :height => 15, :style => [long_text_style,long_text_style,short_text_style,short_text_style, short_text_style]
+    	sheet.column_widths 20,50, 20, 20, 20
+    end
+	end
+end

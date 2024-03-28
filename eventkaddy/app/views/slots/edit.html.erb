@@ -1,0 +1,8 @@
+<h1>Editing Slot</h1>
+
+<%= render 'form', slot: @slot %>
+
+<%= link_to 'Show&nbsp;&nbsp;<i class="fa fa-eye"></i>'.html_safe,  @slot, class:'btn btn-success' %>
+<%= link_to 'Back&nbsp;&nbsp;<i class="fa fa-arrow-left"></i>'.html_safe, slots_path, class:'btn btn-secondary' %>
+<%= stylesheet_link_tag "slots", :media => "all" %>
+

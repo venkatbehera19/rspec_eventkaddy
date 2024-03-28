@@ -1,0 +1,72 @@
+<h4>Tags for Attendee: <%= @attendee.first_name %>  <%= @attendee.last_name %></h4>
+
+<%= link_to 'Back to Attendee', attendee_path(@attendee) ,class:"btn btn-link" %>
+<br/><br/>
+
+
+<%= form_tag("/attendees/#{@attendee.id}/update_attendee_tags", :method => "post", :remote => false, :multipart => false, :id=>"update_attendee_tags_form", :class=>"bg-light custom-border py-3 px-2") do %>
+
+        <%= hidden_field_tag :tag_groups_count, @tag_groups.length %>
+        <%= hidden_field_tag :tag_type_id, @tagType.id %>
+        <%= submit_tag "Save", class:"btn btn-primary" %></br></br>
+
+        <% @tag_groups.each_with_index do |tag_group,i| %>
+            <div class="col-md-9">
+            <% tag_group.each_with_index do |tag,j| %>                
+                <%= text_field_tag "tag_#{i}_#{j}",@tag_groups[i][j], class: "form-control" %>
+            <% end %>
+            </div>
+            <br/><br/>
+        <% end %>
+
+
+
+
+        <%= submit_tag "Save", class:"btn btn-primary" %>
+
+<% end %>
+
+<script type="text/javascript">
+$(function() {
+    <% @tag_groups.each_with_index do |tag_group,i| %>
+
+        <% tag_group.each_with_index do |tag,j| %>
+            $('#tag_<%=i%>_<%=j%>').autocomplete({
+                minLength: 2,
+                source: '<%= "/attendees/tags_autocomplete" %>',
+                focus: function(event, ui) {
+                    $('#tag_<%=i%>_<%=j%>').val(ui.item.tag.name);
+                    return false;
+                },
+                select: function(event, ui) {
+                    $('#tag_<%=i%>_<%=j%>').val(ui.item.tag.name);
+                    return false;
+                }
+            })
+            .data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+              return $( "<li>" )
+                .append( "<a>" + item.tag.name + "</a>" )
+                .appendTo( ul );
+            };
+        <% end %>
+    <% end %>
+});
+</script>
+
+<style>
+  .ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  * html .ui-autocomplete {
+    height: 200px;
+  }
+</style>
+
+
+
+
+
+
+

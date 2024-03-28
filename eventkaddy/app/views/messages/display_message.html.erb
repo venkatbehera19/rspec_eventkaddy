@@ -1,0 +1,10 @@
+<% if (current_user.role? :exhibitor) then %>
+  <%= link_to 'Back', "/exhibitor_portals/messages" ,class:"btn btn-link" %><br/><br/>
+<% elsif (current_user.role? :speaker) %>
+  <%= link_to 'Back', "/speaker_portals/messages" ,class:"btn btn-link" %><br><br>
+<% else %>
+  <%= link_to 'Back', "/event_settings/show_messages" ,class:"btn btn-link" %><br><br>
+<% end %>
+
+<h1> <%=@message.title%> </h1><hr style='color:black;'>
+<%=sanitize @message.content, tags: %w(h1 h2 h3 h4 b i p u a pre div span br ul ol li em strong strike img), attributes: %w(style src)%>

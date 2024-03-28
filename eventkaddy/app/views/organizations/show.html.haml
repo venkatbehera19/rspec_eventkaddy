@@ -1,0 +1,63 @@
+%h4 Organization Details for #{@organization.name}
+
+= link_to 'Edit Organization Name', edit_organization_path(@organization), class:"btn edit"
+
+%br
+%br
+
+%h4 Registered Organization Domains
+%table.table.table-striped
+	%thead
+		%tr
+			%th Event Name
+			%th.d-none.d-md-table-cell Type
+			%th Domain
+			%th Subdomain
+	%tbody
+		- @domains.each do |d|
+			%tr
+				%th= d.event_name
+				%th.d-none.d-md-table-cell= d.type_name
+				%th= d.domain
+				%th= d.subdomain
+
+%h4 Event Entries
+= link_to 'New Event', "/events/new/#{@organization.id}", class:"btn btn-primary"
+
+%br
+%br
+
+%table.table.table-striped.table-bordered
+	%tr
+		%th ID
+		%th Name
+		%th.d-none.d-md-table-cell Description
+		%th Start At
+		%th.d-none.d-md-table-cell End At
+		%th.d-none.d-md-table-cell Exhibitors
+		%th.d-none.d-md-table-cell Enhanced Listings
+		%th.d-none.d-md-table-cell Sponsorship
+		%th
+
+	- @events.each do |event|
+		%tr
+			%td= event.id
+			%td= event.name
+			%td.d-none.d-md-table-cell= event.description
+			%td= event.event_start_at
+			%td.d-none.d-md-table-cell= event.event_end_at
+			%td.d-none.d-md-table-cell= event.exhibitors
+			%td.d-none.d-md-table-cell= event.enhanced_listings
+			%td.d-none.d-md-table-cell= event.sponsorship
+			%td.table-actions
+				.btn-group.d-flex
+					= link_to 'Show', event, class:"btn btn-outline-info"
+					= link_to 'Edit', edit_event_path(event), class:"btn btn-outline-success"
+					= link_to 'Delete', event, data:{:confirm => 'Are you sure?'}, :method => :delete, class:"btn btn-outline-danger"
+				.dropdown
+					%a.ellipse-style(data-toggle="dropdown")
+						%i.fa.fa-ellipsis-v
+					.dropdown-menu
+						= link_to 'Show', event, class:"btn dropdown-item text-info"
+						= link_to 'Edit', edit_event_path(event), class:"btn dropdown-item text-success"
+						= link_to 'Delete', event, data:{:confirm => 'Are you sure?'}, :method => :delete, class:"btn dropdown-item text-danger"

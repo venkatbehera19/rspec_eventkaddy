@@ -1,0 +1,41 @@
+<%= form_for(@event_file) do |f| %>
+  <% if @event_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event_file.errors.count, "error") %> prohibited this event_file from being saved:</h2>
+
+      <ul>
+      <% @event_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :event_id %>
+    <%= f.text_field :event_id %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :name %>
+    <%= f.text_field :name %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :size %>
+    <%= f.text_field :size %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :mime_type %>
+    <%= f.text_field :mime_type %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :path %>
+    <%= f.text_field :path %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :event_file_type_id %>
+    <%= f.text_field :event_file_type_id %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

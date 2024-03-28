@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  message: MyString
+  filename: MyString
+  line_number: 1
+  column_number: 1
+  stack: MyText
+  local_time: MyString
+  device: MyString
+  reported_on_first_attempt: false
+  event_id: 1
+  attendee_id: 1
+  attendee_email: MyString
+
+two:
+  message: MyString
+  filename: MyString
+  line_number: 1
+  column_number: 1
+  stack: MyText
+  local_time: MyString
+  device: MyString
+  reported_on_first_attempt: false
+  event_id: 1
+  attendee_id: 1
+  attendee_email: MyString

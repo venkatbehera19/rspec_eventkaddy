@@ -1,0 +1,10 @@
+<div class="card" style="margin:auto; padding-bottom:10px">
+  <div class="card-body">
+    <h2 class="card-title">Message</h2>
+    <p class="card-text" style="font-size:18px"><%= @message %></h4>
+    <% if @verified %>
+        <%= link_to "View Event", "/#{params[:eid]}/event_registrations/show/#{@attendee.slug}", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>
+<br/>

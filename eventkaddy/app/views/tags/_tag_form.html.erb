@@ -1,0 +1,245 @@
+<div id="edit_tags_area"></div>
+
+<style>
+
+.tag_group {
+    display:          inline-block;
+    background-color: #D7F5F4;
+    padding:          5px;
+    vertical-align:   top;
+}
+
+.tag_item {
+    background-color: white;
+    padding:          5px;
+}
+
+.isSelected {
+    background-color: #BDF8C5;
+}
+
+</style>
+
+<script>
+
+// tags would need a name and id
+// otherwise searches would have to be
+// done by name to try to find appropriate tag.
+// All the controller really wants to be submitted
+// are the bottom level tag ids. As those imply the
+// entire chain.
+
+// hide everything in the scope of a function to prevent collisions
+// probably can just be a jquery ready function
+$(function() {
+
+    var tags = renderTags( getTags() );
+
+    function setTagClickHandler() {
+        // add a handler to rendered tags
+        // probably use this function inside renderTags
+    }
+
+    function getTags() {
+        // id, name, isSelected
+        // this may need to include something like the
+        // tag_type_id, or at least the request should send up
+        // the tag_type_id based on a class variable shared from the controller.
+        return [
+            // first level
+            {id:1, name:'Level1a'},
+
+            // second level
+            {id:2, name:'Level2a', parent_id: 1},
+            {id:5, name:'Level2b', parent_id: 1},
+
+            // third level
+            {id:3, name:'Level3a', parent_id: 2},
+            {id:4, name:'Level3b', parent_id: 2},
+            {id:6, name:'Level3aa', parent_id: 5},
+            {id:7, name:'Level3bb', parent_id: 5},
+        ];
+    }
+
+    function appendTag( $group_el, tags ) {
+        return function appendTagR1( tag ) {
+            var select_status = tag.isSelected ? 'isSelected' : '';
+            var $tag_el = $(
+                '<div class="tag_item ' + select_status + '" data-tag-id="' + tag.id + '">' + tag.name + '</div>'
+            );
+            $group_el.append( $tag_el );
+
+            each( 
+                function() {
+                    $group_el.append($('<div class="tag_item">test</div>'))
+                },
+                filter( isChildOf( tag.id ), tags )
+            )
+
+            // I need some recursion here to fill out the rest of the tree
+            // each( 
+            //     appendTag( $group_el ),
+            //     filter( isChildOf( tag.id ), tags )
+            // )
+            return $tag_el;
+        }
+    }
+
+    function appendTagChain( $tag_area_el, tags, $last_group ) {
+        return function appendTagChainR1( tag ) {
+            // each group is a column; grouped by parent id, not by tagset
+
+            // only add the top level tags this way
+            if ( !tag.parent_id ) {
+                var $group_el_a = $('<div class="tag_group"></div>');
+                $tag_area_el.append( $group_el_a ); 
+                appendTag( $group_el_a, tags )( tag );
+            }
+
+            var child_tags = filter( isChildOf( tag.id ), tags );
+
+            // only add a group b if there is something to fill it with
+            if (child_tags.length > 0) {
+                var $group_el_b = $('<div class="tag_group"></div>');
+
+                // this should really be nested inside of group_a
+                // somehow; Or I need to add blank spaces in group_a
+                // to show which tags are part and which ones are not
+                //
+                // Blank spaces was close to a solution, but doesn't work
+                // exactly when two groups should have the same parent
+                // group. I may need to give the groups a data-parent-id
+                // attribute and connect them like that. Then at least I 
+                // don't have to do so much roundabout filtering
+                //
+                // The trouble is really I want groups themselves to display
+                // as blocks, but associated groups to display inline to
+                // one another. Probably just need to spend some time drawing
+                // it out on paper, since I have a good fundamental understanding
+                // of the mechanics, I just don't have a clear plan
+                $tag_area_el.append( $group_el_b );
+            }
+
+            each( appendTag( $group_el_b, tags ), child_tags )
+
+            // recursive
+            each( appendTagChain( $tag_area_el, tags ),  child_tags )
+
+            return $group_el_a;
+        }
+    }
+
+    function filter(pred, xs) {
+        var new_array = [];
+        each( 
+            function(x) {
+                if (pred(x)) new_array.push(x); 
+            },
+            xs
+        )
+        return new_array;
+    }
+
+    function each(fn, xs) {
+        for ( var i=0;i<xs.length;i++ ) fn( xs[i] );
+        return xs;
+    }
+
+    function isChildOf( tag_id ) {
+        return function isChildOfR1( tag ) {
+            return tag.parent_id == tag_id;
+        }
+    }
+
+    function notAChild(tag) {
+        return !tag.parent_id;
+    }
+
+    // function renderTag($group_el, tag) {
+
+    //     var select_status = tag.isSelected ? 'isSelected' : '';
+    //     var $tag_el = $(
+    //         '<br><div class="tag_item ' + select_status + '" data-tag-id="' + tag.id + '">' + tag.name + '</div>'
+    //     );
+    //     $group_el.append( $tag_el );
+    // }
+
+    // function renderTagGroup($tag_area_el, group) {
+    //     var $group_el = $('<div class="tag_group"></div>');
+    //     $tag_area_el.append( $group_el );
+    //     for (var i=0; i < group.length; i++) {
+    //         renderTag($group_el, group[i] );
+    //     }
+    // }
+
+    // there's a problem in my reasoning here, or at least in the way
+    // I've organized the data. What I really want to do is just display
+    // the first tag of each non-selected group. If the tag is selected,
+    // then I want to display the next options, but not any deeper except
+    // for the option that is selected
+    //
+    // As it stands, I'm rendering each chain. Probably I should be giving
+    // each tag a children attribute, instead of repeating top level tags
+    // as I have done. Naturally that will make the ruby side of this a little
+    // more complex to get data into that structure. I could just replicate
+    // the parent_id structure instead of using an array, and simply filter
+    // the list for selected parent_ids.
+    function renderTags(tags) {
+        // this should redisplay all tags; if it is imperceptible, I'd rather
+        // not do any finer grained rendering and just rerender everything every
+        // time; This would be used on load and as a click callback
+        var $tag_area_el = $('#edit_tags_area');
+
+        $tag_area_el.empty();
+
+        each(
+            appendTagChain($tag_area_el, tags),
+            filter( notAChild, tags ) 
+        )
+
+        return tags;
+    }
+
+    // function submitTags(tags, tag_type_id) {
+    //     // instead of doing a regular form submit, it might be easiest
+    //     // to do it via JS, so that I can prepare just the leaf tags
+    //     // Otherwise that step could be filtered on the ruby side,
+    //     // which is maybe more sensible since I will have to do
+    //     // validation with the database anyway to keep things from breaking.
+    // }
+
+    function isValidTags(tags) {
+        // onClick handler for submit button to make sure there are no
+        // partially complete tags.
+        var isValid = true;
+        return isValid;
+    }
+
+    function updateTagIsSelectedStatus(isSelectedStatus, tag_id, tags) {
+        // part of a click callback that would happen before renderTags
+        // should return the tags and be composable with getTags
+        return tags;
+    }
+
+    function getCurrentTagStatus() {
+        // probably a css class
+    }
+
+    function getTagId() {
+        // probably a css data-attribute
+    }
+
+    function tagClickCallback() {
+        // some code to get the current status, then feed it into updateTag
+        // tagClickCallback also needs to get at the current status of tags
+        // which probably must be stored as a variable in the scope of the
+        // encompassing function. No need to really make that anymore complex
+        // than it has to be just to avoid state
+        renderTags(
+            updateTagIsSelectedStatus() 
+        );
+    }
+
+});
+
+</script>

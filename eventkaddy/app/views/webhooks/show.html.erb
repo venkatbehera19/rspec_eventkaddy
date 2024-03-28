@@ -1,0 +1,51 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content" class="container">
+      <h4>Transactions Details</h4>
+      <table class="table table-bordered">
+        <tr>
+          <td><strong>Email</strong></td>
+          <td><%= @webhook.email %></td>
+        </tr>
+        <tr>
+          <td><strong>Event Id</strong></td>
+          <td><%= @webhook.event_id %></td>
+        </tr>
+        <tr>
+          <td><strong>Event Type</strong></td>
+          <td><%= @webhook.event_type %></td>
+        </tr>
+        <tr>
+          <td><strong>Amount</strong></td>
+          <td><%= number_to_currency(@webhook.amount / 100, unit: "$") %></td>
+        </tr>
+        <tr>
+          <td><strong>Transaction Id</strong></td>
+          <td><%= @webhook.transaction_id %></td>
+        </tr>
+        <tr>
+          <td><strong>Status</strong></td>
+          <td><%= @webhook.status %></td>
+        </tr>
+        <tr>
+          <td><strong>Created At</strong></td>
+          <td><%= @webhook.created_at.strftime("%B %d, %Y %I:%M:%S %p") %></td>
+        </tr>
+        <tr>
+          <td><strong>Updated At</strong></td>
+          <td><%= @webhook.updated_at.strftime("%B %d, %Y %I:%M:%S %p") %></td>
+        </tr>
+        <tr>
+          <td><strong>Refund</strong></td>
+          <td>
+            <% if @webhook.status == 'COMPLETED' %>
+              <%= link_to 'Refund', "/webhooks/refund/#{@webhook.transaction_id}" , data: {:confirm => 'Are you sure?'}, :method => :post, class: 'btn btn-outline-info' %>
+            <% else %>
+              <%= button_to 'N/A', '#', class: 'btn btn-outline-danger', :disabled => true %>
+            <% end %>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

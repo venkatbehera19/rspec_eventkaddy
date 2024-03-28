@@ -1,0 +1,115 @@
+<% 
+    def prop prop
+        @exhibitor.send(prop.gsub(/\s/, '_').downcase)
+    end 
+
+    def labeled_prop prop, label
+        prop = prop(prop)
+        html = "".html_safe
+        unless prop.blank?
+            html << "#{label}: #{prop}" 
+            html << "<br>".html_safe
+            html
+        else
+            html
+        end
+    end
+
+    def url prop, label
+        url = prop(prop)
+        html = "".html_safe
+        unless url.blank?
+            html << "<div style='display:block;margin-bottom:5px'>".html_safe
+            html << "#{label}: "
+            html << link_to(url, url, style:"color:blue;")
+            html << "</div>".html_safe
+            html
+        else
+            html
+        end
+    end
+%>
+
+<p class="alert alert-info">
+    This is a preview of your exhibitor information for the purposes of review. It is not a direct reflection of formatting in the application.
+</p>
+
+<%= image_tag @exhibitor.logo_path, :style=>'height:100px' if @exhibitor.event_file %>
+<br><br>
+
+<% unless @exhibitor_files.empty? %>
+   <h4>Exhibitor Files</h4>
+<% end %>
+<% @exhibitor_files.each do |exhibitor_file| %>
+   <%= exhibitor_file.title %><br><br>
+   <%= link_to exhibitor_file.event_file.path do %>
+     <%= image_tag("/defaults/icons/pdflogo.png", width:40)%>
+   <%end%>
+   <br><br>
+<% end %>
+<h4>
+    <%= prop "Company Name" %>
+</h4>
+
+<%= labeled_prop "Location Name", "Booth" %>
+<br>
+
+<% @exhibitor.tags.map { |leaf_tag| %>
+     <% (( leaf_tag.get_all_parents.map(&:name) ) << leaf_tag.name).join(' -> ') %>
+<% }.each {|tag_set| %>
+    <%= tag_set %>
+    <br>
+<% } %>
+
+<br><br>
+
+<%# Raw here is a little risky since it's user_data and could have %>
+<%# javascript in it. ck_editor does filter out javascript though, and %>
+<%# the exhibitor can only hurt themselves doing that. %>
+<% unless prop("Message").blank? %>
+    <h4>Message</h4>
+    <div class="bg-light custom-border mt-2 px-3">
+        <%= raw prop( "Message" ) %>
+    </div>
+<% end %>
+
+<% unless prop("Description").blank? %>
+    <h4>Description</h4>
+    <div class="bg-light custom-border mt-2 px-3">
+        <%= raw prop( "Description" ) %>
+    </div>
+    <br>
+<% end %>
+
+<h4>Contact</h4>
+
+<div class="bg-light custom-border mt-2 px-3">
+    <%= prop "Address Line1" %> <%= prop "Address Line2" %>
+    <br>
+    <%= "#{prop "City"} #{prop "State"} #{prop "Zip"}" %>
+    <br>
+    <%= prop "Country" %>
+    <br><br>
+
+    <%= labeled_prop "Contact Name", "Name" %>
+    <%= labeled_prop "Contact Title", "Title" %>
+
+    <% unless prop("Phone").blank? %>
+        Tel: <a href="tel:<%= prop "Phone" %>"><%= prop "Phone" %></a>
+        <br>
+    <% end %>
+
+    <%= labeled_prop "Fax", "Fax" %>
+
+    <% unless prop("Email").blank? %>
+        Email: <a href="mailto:<%= prop "Email" %>"><%= prop "Email" %></a>
+        <br><br>
+    <% end %>
+
+    <%= url "URL Web", "Web" %>
+    <%= url "URL Twitter", "Twitter" %>
+    <%= url "URL Facebook", "Facebook" %>
+    <%= url "URL Linkedin", "Linkedin" %>
+    <%= url "URL RSS", "RSS" %>
+</div>
+

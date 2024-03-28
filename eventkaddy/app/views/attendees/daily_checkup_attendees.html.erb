@@ -1,0 +1,44 @@
+<h4>Daily Health Checkup Reports</h4>
+<div id="filer_form" class="d-flex">
+  <div class="col-10 row">
+    <div class="col-md-3 form-group">
+      <%= label_tag(:search, "Search Attendee") %>
+      <div class="d-flex">
+        <%= text_field_tag(:search, nil, class: "form-control filters col-10 px-0", placeholder: "SEARCH") %>
+        <div class="col-2 px-0">
+          <button class="btn btn-outline-primary" type="button"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="form-group col-md-3">
+      <%= label_tag(:dates, "Choose Date") %>
+      <%= select_tag(:dates, options_for_select(@dates), class: "custom-select filters") %>
+    </div>
+    <div class="form-group col-md-3">
+      <%= label_tag(:survey, "Choose Survey") %>
+      <%= select_tag(:survey, options_from_collection_for_select(@surveys, :id, :title), class: "custom-select filters") %>
+    </div>
+    <div class="custom-control custom-switch col-md-2 pt-4 ml-3">
+      <input type="checkbox" class="custom-control-input filters" id="attendance_status" checked>
+      <label class="custom-control-label" for="attendance_status">Completed</label>
+    </div>
+  </div>
+  <div class="dropdown col-3 px-0">
+    <a class="btn report-dropdown dropdown-toggle mt-3 mr-md-4 pull-right" data-toggle="dropdown">
+      View
+    </a>
+    <div class="dropdown-menu">
+      <%= link_to 'Attendees', attendees_path, class: "dropdown-item" %>
+    </div>
+  </div>
+</div>
+<br/>
+<div class="survey-responses-container col-md-9 ml-md-2" style="min-height: 500px;"></div>
+<div class="pagination-buttons col-4 text-center mx-auto">
+  <button class="btn btn-outline-primary filters" type="button" id="prev_btn_report">
+    <i class="fa fa-angle-left"></i> Prev
+  </button>
+  <button class="btn btn-outline-primary filters" type="button" id="next_btn_report">
+    <i class="fa fa-angle-right"></i> Next
+  </button>
+</div>

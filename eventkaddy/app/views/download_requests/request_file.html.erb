@@ -1,0 +1,75 @@
+
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content">
+      <h4>Requests</h4>
+      <div class="btn-toolbar my-2">
+        <div class="btn-group mr-2">
+          <%= link_to 'Initiate Download', '#downloadModal', data: { toggle: 'modal' }, class: 'btn btn-primary' %>
+				</div>
+			</div>
+      <br>
+
+      <table class="table table-striped" id="products_table">
+        <thead>
+          <tr>
+            <th>Request Type</th>
+            <th>Status</th>
+            <th>Job Id</th>
+            <th>Message</th>
+            <th>Requested Date</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @request_files.each do |request_file| %>
+            <tr>
+              <td><%= request_file.request_type %></td>
+              <td><%= request_file.status %></td>
+              <td><%= request_file.job_id %></td>
+              <% if request_file.error_message.present? %>
+                <td><%= truncate(request_file.error_message, length: 50, omission: nil) %></td>
+              <% else %>
+                <td></td>
+              <% end %>
+              <td><%= request_file.created_at %></td>
+              <% if request_file.path %>
+              <td><%= link_to 'Download ZIP', ReturnZipAWSUrl.new(request_file).call, target: '_blank' %></td>
+              <% else %>
+                <td>N/A</td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="downloadModalLabel">Initiate Download Request</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(url: download_requests_path, method: :post) do |form| %>
+          <%= form.hidden_field :event_id, value: @event.id %>
+          <div class="form-group">
+            <%= form.label :file_type, 'File Type' %>
+            <%= form.select :request_type, options_for_select(DownloadRequest.request_types.map { |key, value| [value, key] }), {}, class: 'form-control' %>
+          </div>
+          <%= form.submit 'Initiate Download', class: 'btn btn-primary' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+

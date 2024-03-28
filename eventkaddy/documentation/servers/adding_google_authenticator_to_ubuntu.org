@@ -1,0 +1,19 @@
+#+TITLE: Adding Google Authenticator to Ubuntu
+
+* Explanation
+
+To increase security on the duplicate fiserv servers, we added google authenticator. This process worked in Ubuntu 16.04 and Ubuntu 14.04. 
+
+* Steps
+1. Update the server: sudo apt-get update
+2. Ad the package: sudo apt-get install libpam-google-authenticator
+3. Open the program and answer the questions (depends on security needs). Make sure to save the key and codes produced at this step: google-authenticator
+4. Open the sshd file: sudo nano /etc/pam.d/sshd
+5. Add the following line to the bottom of this file: auth required pam_google_authenticator.so
+6. No open the sshd_config file: sudo nano /etc/ssh/sshd_config
+7. Find the term ChallengeResponseAuthentication and set its value to yes. Also find the term PasswordAuthentication and comment it out. 
+8. Restart ssh: sudo service ssh restart
+9. Download the google authenticator app on your phone and create a new entry with the key provided in step 3. 
+10. Try logging in using a new tab (don't close your current tab yet in case there are issues!)
+
+

@@ -1,0 +1,1 @@
+VideoVisitsReport.new @event_id,@exhibitor_id, xlsx_package, @job, @primary_db, @email_not_showed

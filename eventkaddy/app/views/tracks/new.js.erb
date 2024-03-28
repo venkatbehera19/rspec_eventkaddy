@@ -1,0 +1,14 @@
+console.log("ajax response for new track request loaded");
+
+//show form
+$('#hide-form-link').show();
+$('#new-form-link').hide();
+$('#new-track-form').slideDown(200);
+
+//make the hide functionality work
+$('#hide-form-link').click(function () {
+ 	$('#hide-form-link').hide();
+ 	$('#new-track-form').slideUp(200);
+	$('#new-form-link').show();
+		 
+ });

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  scavenger_hunt: one
+  event_file: one
+  exhibitor: one
+  name: MyString
+  description: MyString
+  answer: MyString
+
+two:
+  event: one
+  scavenger_hunt: two
+  event_file: two
+  exhibitor: two
+  name: MyString
+  description: MyString
+  answer: MyString

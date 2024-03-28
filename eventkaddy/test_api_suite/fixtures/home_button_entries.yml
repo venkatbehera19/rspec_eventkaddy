@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  group: one
+  event_file: one
+  render_url: MyString
+  name: MyString
+  icon_entry: MyString
+  content: MyText
+  position: 1
+  home_button_entry_type: one
+
+two:
+  group: two
+  event_file: two
+  render_url: MyString
+  name: MyString
+  icon_entry: MyString
+  content: MyText
+  position: 1
+  home_button_entry_type: two

@@ -1,0 +1,59 @@
+<%= hidden_field_tag 'page-type', params[:sel]  %>
+<%= render partial: 'topbar' %>
+<div class="exhibitors-list">
+  <% if @settings.show_sponsored_exhibitor %>
+    <%= render partial: 'sponsored_exhibitor'%>
+  <% else %>
+    <%= render partial: 'alphabet_filter', locals: {type: 'getExhibitors'}%>
+  <% end %>
+  <div class="row py-3" id="exhibitor-cards">
+    <%= render partial: 'exhibitors_list', locals: {exhibitors: @exhibitors} %>
+  </div>
+  <div class="pagination-buttons col-4 text-center mx-auto">
+    <button class="btn btn-outline-primary exhibitor-pagination" type="button" id="prev_exhibitors">
+      <i class="fa fa-angle-left"></i> Prev
+    </button>
+    <button class="btn btn-outline-primary exhibitor-pagination" type="button" id="next_exhibitors">
+      <i class="fa fa-angle-right"></i> Next
+    </button>
+  </div>
+</div>
+<div class="exhibitor-info">
+  <div class="load-more" style="display: none;text-align: center;margin-top: 50px">
+    <div class="loading08 display-4">
+      <span data-text="L">L</span>
+      <span data-text="O">O</span>
+      <span data-text="A">A</span>
+      <span data-text="D">D</span>
+      <span data-text="I">I</span>
+      <span data-text="N">N</span>
+      <span data-text="G">G</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('.lazyloaded').lazyload({
+    load : function() {
+      crop(this.src, 1).then((canvas) => {
+        if(!$(this.parentElement).find('canvas')[0]){
+          $(this.parentElement).prepend(canvas)
+          $(this).hide()
+        }  
+      });
+    }
+  });
+
+  $('body').on("click",".exhibitor-card", function(){
+    event.preventDefault()
+    url = this.href
+    $.ajax({
+      type: "get",
+      url: url,
+      beforeSend: function(){
+        $(".exhibitors-list").hide()
+        $('.load-more').show()
+      }
+    });
+  })
+</script>

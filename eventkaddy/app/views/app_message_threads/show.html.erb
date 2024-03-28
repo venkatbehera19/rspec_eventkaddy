@@ -1,0 +1,49 @@
+<%= link_to "Back", "/app_message_threads", class: "btn" %>
+<br><br>
+<div class='well'>
+    <h4><%= @app_message_thread.title %></h4>
+
+    <%= link_to(
+      'Hide For All',
+      "/app_message_threads/hide/#{@app_message_thread.id}",
+      confirm: 'Are you sure?',
+      method:  :post,
+      class:   "btn delete",
+      style:   "color:#A10000;border-color:#A10000;"
+    ) %>
+
+    <%= link_to(
+      'Unhide For All',
+      "/app_message_threads/unhide/#{@app_message_thread.id}",
+      confirm: 'Are you sure? Attendees who deleted this message from their inbox will see it again.',
+      method:  :post,
+      class:   "btn delete",
+      style:   "color:#A10000;border-color:#A10000;"
+    ) %>
+
+    <h3>Deleted Or Hidden?</h3>
+
+    <% @app_message_thread.attendees_app_message_threads.each do |a| %>
+        <% next unless a.attendee %> <%# next if abandoned record %>
+        <%= a.attendee.full_name %>: <%= a.permanent_hide ? "Yes" : "No" %>
+        <br>
+    <% end %>
+
+    <h3>Attendees Involved</h3>
+
+    <% @app_message_thread.attendees.each do |a| %>
+        <%= link_to a.full_name, "/attendees/#{a.id}" %>
+        <br>
+    <% end %>
+
+    <h3>Message Chain</h3>
+
+    <% @app_message_thread.app_messages.each do |m| %>
+        <b><%= m.attendee.full_name %></b>
+        <br>
+        <%= m.content %>
+        <br>
+        <br>
+    <% end %>
+
+</div>

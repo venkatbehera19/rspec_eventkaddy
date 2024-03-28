@@ -1,0 +1,65 @@
+INSTALL INSTRUCTIONS
+
+	setup rvm + apache + mod_passenger
+	bundle install
+	rails plugin install rails_datatables (manual download files from git, put in vendor/plugin folder
+	rails plugin install habtml_checkboxes git://github.com/jtrupiano/habtm_checkboxes.git
+	create database on server
+	configure project database.yml file
+	rake db:migrate
+	chmod 777 public/event_data
+	copy application.html.erb to Application.html.erb (weirdness)
+	run ek_scripts/bootstrap-eventkaddy-tables.rb
+	in browser go to web root, setup the admin user
+	login, everything should be good to go
+
+
+EXTRA TWEAKS
+	
+	bundle update rake
+	
+	
+	
+
+(original notes from May 2011)
+
+PROD CONFIG
+	mysqladmin password NEWPASSWORD
+	grant select,insert,update,delete,create,drop ON eventkaddy_cms_dev.* TO ekuser@"%" identified by 'wigglewort';
+	GRANT ALL ON *.* TO 'ekuser'@'localhost' IDENTIFIED BY 'pass1';
+	flush privileges
+	
+	
+	RAILS_ENV=production rake db:create db:load
+	rake db:setup RAILS_ENV=production
+	
+	run on Ubuntu Server: ln -s /var/run/mysqld/mysqld.sock /tmp/mysql.sock
+	
+	NOTE:
+		issue with getting rails (rake) to create the development db, migrations work fine)
+	
+	rails server -e production
+	note:
+	
+	APP-SPECIFIC COMMANDS TO RUN
+		chmod 777 public/event_data
+		copy application.html.erb to Application.html.erb (weirdness)
+
+RAILS_DATATABLES
+	rails plugin install rails_datatables (manual download files from git, put in vendor/plugin folder
+	
+		
+HABTM_CHECKBOXES
+	rails plugin install habtml_checkboxes git://github.com/jtrupiano/habtm_checkboxes.git
+
+	
+REMOTIPART
+
+	gem install remotipart
+	rails g remotipart
+		
+JQUERY RAILS
+	gem 'jquery-rails', '>= 0.2.6'
+	And run this command (add --ui if you want jQuery UI):
+		bundle install
+		rails generate jquery:install

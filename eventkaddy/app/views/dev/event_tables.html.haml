@@ -1,0 +1,46 @@
+:css
+
+    td:nth-child(odd) { text-align: right !important; }
+.well
+    %h1 Events Tables
+
+    ( For debugging purposes, a large number of queries detailing information about the database. )
+
+    %h3 Speaker and Speaker Associated
+
+    - @speaker_ids = Speaker.where(event_id: @event_id).pluck(:id)
+
+    - def get_count(model)                ; model.where(event_id: @event_id).count                                                                  ; end
+    - def get_count_speaker_id(model)     ; model.where(speaker_id: @speaker_ids).count                                                             ; end
+    - def get_count_event_file_type(name) ; EventFile.where(event_id: @event_id, event_file_type_id: EventFileType.where(name:name).first.id).count ; end
+
+    %table.table.table-condensed.table-striped.table-bordered
+        %thead
+        %tbody
+            %tr 
+                %td Speakers
+                %td= get_count Speaker
+            %tr
+                %td SpeakerPaymentDetails
+                %td= get_count_speaker_id SpeakerPaymentDetail
+            %tr
+                %td SpeakerTravelDetails
+                %td= get_count_speaker_id SpeakerTravelDetail
+            %tr
+                %td SessionsSpeakers
+                %td= get_count_speaker_id SessionsSpeaker 
+            %tr
+                %td SpeakerFiles ( Signed copy stuff )
+                %td= get_count_speaker_id SpeakerFile
+            %tr
+                %td Event Files ( SpeakerPhotos )
+                %td= get_count_event_file_type 'speaker_photo'
+            %tr
+                %td Event Files ( SpeakerCVs )
+                %td= get_count_event_file_type 'speaker_cv'
+            %tr
+                %td Event Files ( SpeakerFDs )
+                %td= get_count_event_file_type 'speaker_fd'
+            %tr
+                %td Event Files ( SpeakerFiles )
+                %td= get_count_event_file_type 'speaker_pdf'

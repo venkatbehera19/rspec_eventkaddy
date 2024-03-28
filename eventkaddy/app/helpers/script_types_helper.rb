@@ -1,0 +1,2 @@
+module ScriptTypesHelper
+end

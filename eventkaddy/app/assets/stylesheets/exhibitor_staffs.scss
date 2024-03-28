@@ -1,0 +1,17 @@
+// Place all the styles related to the ExhibitorStaffs controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+.photo-upload-container {
+  margin: auto;
+}
+.photo-upload-container img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: block;
+  margin: auto;
+}
+.photo-upload {
+  display: block;
+  margin: auto;
+}

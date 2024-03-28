@@ -1,0 +1,688 @@
+
+# Survey.find(224).questions.map(&:answers).flatten.map(&:to_yaml)
+# let g:yaml_num = 0
+
+# fu! YamlNum()
+#   let g:yaml_num = g:yaml_num + 1
+#   return g:yaml_num
+# endfu
+1:
+  id: 6248
+  event_id: 205
+  question_id: 2349
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:00:28.000000000 Z
+  updated_at: 2019-02-20 17:00:28.000000000 Z
+
+2:
+  id: 6249
+  event_id: 205
+  question_id: 2349
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:00:33.000000000 Z
+  updated_at: 2019-02-20 17:00:33.000000000 Z
+
+3:
+  id: 6250
+  event_id: 205
+  question_id: 2349
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:00:38.000000000 Z
+  updated_at: 2019-02-20 17:00:38.000000000 Z
+
+4:
+  id: 6251
+  event_id: 205
+  question_id: 2349
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:00:45.000000000 Z
+  updated_at: 2019-02-20 17:00:45.000000000 Z
+
+5:
+  id: 6252
+  event_id: 205
+  question_id: 2350
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:00:59.000000000 Z
+  updated_at: 2019-02-20 17:00:59.000000000 Z
+
+6:
+  id: 6253
+  event_id: 205
+  question_id: 2350
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:01:03.000000000 Z
+  updated_at: 2019-02-20 17:01:03.000000000 Z
+
+7:
+  id: 6254
+  event_id: 205
+  question_id: 2350
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:01:07.000000000 Z
+  updated_at: 2019-02-20 17:01:07.000000000 Z
+
+8:
+  id: 6255
+  event_id: 205
+  question_id: 2350
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:01:15.000000000 Z
+  updated_at: 2019-02-20 17:01:15.000000000 Z
+
+9:
+  id: 6256
+  event_id: 205
+  question_id: 2351
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:03:53.000000000 Z
+  updated_at: 2019-02-20 17:03:53.000000000 Z
+
+10:
+  id: 6257
+  event_id: 205
+  question_id: 2351
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:03:55.000000000 Z
+  updated_at: 2019-02-20 17:03:55.000000000 Z
+
+11:
+  id: 6258
+  event_id: 205
+  question_id: 2351
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:04:00.000000000 Z
+  updated_at: 2019-02-20 17:04:00.000000000 Z
+
+12:
+  id: 6259
+  event_id: 205
+  question_id: 2351
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:04:06.000000000 Z
+  updated_at: 2019-02-20 17:04:06.000000000 Z
+
+13:
+  id: 6260
+  event_id: 205
+  question_id: 2352
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:04:21.000000000 Z
+  updated_at: 2019-02-20 17:04:21.000000000 Z
+
+14:
+  id: 6261
+  event_id: 205
+  question_id: 2352
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:04:26.000000000 Z
+  updated_at: 2019-02-20 17:04:26.000000000 Z
+
+15:
+  id: 6262
+  event_id: 205
+  question_id: 2352
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:04:30.000000000 Z
+  updated_at: 2019-02-20 17:04:30.000000000 Z
+
+16:
+  id: 6263
+  event_id: 205
+  question_id: 2352
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:04:35.000000000 Z
+  updated_at: 2019-02-20 17:04:35.000000000 Z
+
+17:
+  id: 6264
+  event_id: 205
+  question_id: 2353
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:05:02.000000000 Z
+  updated_at: 2019-02-20 17:05:02.000000000 Z
+
+18:
+  id: 6265
+  event_id: 205
+  question_id: 2353
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:05:10.000000000 Z
+  updated_at: 2019-02-20 17:05:10.000000000 Z
+
+19:
+  id: 6266
+  event_id: 205
+  question_id: 2353
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:05:12.000000000 Z
+  updated_at: 2019-02-20 17:05:12.000000000 Z
+
+20:
+  id: 6267
+  event_id: 205
+  question_id: 2353
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:05:18.000000000 Z
+  updated_at: 2019-02-20 17:05:18.000000000 Z
+
+21:
+  id: 6268
+  event_id: 205
+  question_id: 2354
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:05:31.000000000 Z
+  updated_at: 2019-02-20 17:05:31.000000000 Z
+
+22:
+  id: 6269
+  event_id: 205
+  question_id: 2354
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:05:36.000000000 Z
+  updated_at: 2019-02-20 17:05:36.000000000 Z
+
+23:
+  id: 6270
+  event_id: 205
+  question_id: 2354
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:05:40.000000000 Z
+  updated_at: 2019-02-20 17:05:40.000000000 Z
+
+24:
+  id: 6271
+  event_id: 205
+  question_id: 2354
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:05:46.000000000 Z
+  updated_at: 2019-02-20 17:05:46.000000000 Z
+
+25:
+  id: 6272
+  event_id: 205
+  question_id: 2355
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:08:26.000000000 Z
+  updated_at: 2019-02-20 17:08:26.000000000 Z
+
+26:
+  id: 6273
+  event_id: 205
+  question_id: 2355
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:08:30.000000000 Z
+  updated_at: 2019-02-20 17:08:30.000000000 Z
+
+27:
+  id: 6274
+  event_id: 205
+  question_id: 2355
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:08:35.000000000 Z
+  updated_at: 2019-02-20 17:08:35.000000000 Z
+
+28:
+  id: 6275
+  event_id: 205
+  question_id: 2355
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:08:41.000000000 Z
+  updated_at: 2019-02-20 17:08:41.000000000 Z
+
+29:
+  id: 6276
+  event_id: 205
+  question_id: 2356
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:08:58.000000000 Z
+  updated_at: 2019-02-20 17:08:58.000000000 Z
+
+30:
+  id: 6277
+  event_id: 205
+  question_id: 2356
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:09:03.000000000 Z
+  updated_at: 2019-02-20 17:09:03.000000000 Z
+
+31:
+  id: 6278
+  event_id: 205
+  question_id: 2356
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:09:07.000000000 Z
+  updated_at: 2019-02-20 17:09:07.000000000 Z
+
+32:
+  id: 6279
+  event_id: 205
+  question_id: 2356
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:09:16.000000000 Z
+  updated_at: 2019-02-20 17:09:16.000000000 Z
+
+33:
+  id: 6280
+  event_id: 205
+  question_id: 2357
+  order: 1
+  answer: Strongly Agree
+  correct: false
+  created_at: 2019-02-20 17:09:50.000000000 Z
+  updated_at: 2019-02-20 17:09:50.000000000 Z
+
+34:
+  id: 6281
+  event_id: 205
+  question_id: 2357
+  order: 2
+  answer: Agree
+  correct: false
+  created_at: 2019-02-20 17:09:56.000000000 Z
+  updated_at: 2019-02-20 17:09:56.000000000 Z
+
+35:
+  id: 6282
+  event_id: 205
+  question_id: 2357
+  order: 3
+  answer: Disagree
+  correct: false
+  created_at: 2019-02-20 17:10:02.000000000 Z
+  updated_at: 2019-02-20 17:10:02.000000000 Z
+
+36:
+  id: 6283
+  event_id: 205
+  question_id: 2357
+  order: 4
+  answer: Strongly Disagree
+  correct: false
+  created_at: 2019-02-20 17:10:10.000000000 Z
+  updated_at: 2019-02-20 17:10:10.000000000 Z
+
+37:
+  id: 6284
+  event_id: 205
+  question_id: 2358
+  order: 1
+  answer: Strongly Agree
+  correct: false
+  created_at: 2019-02-20 17:10:24.000000000 Z
+  updated_at: 2019-02-20 17:10:24.000000000 Z
+
+38:
+  id: 6285
+  event_id: 205
+  question_id: 2358
+  order: 2
+  answer: Agree
+  correct: false
+  created_at: 2019-02-20 17:10:28.000000000 Z
+  updated_at: 2019-02-20 17:10:28.000000000 Z
+
+39:
+  id: 6286
+  event_id: 205
+  question_id: 2358
+  order: 3
+  answer: Disagree
+  correct: false
+  created_at: 2019-02-20 17:10:33.000000000 Z
+  updated_at: 2019-02-20 17:10:33.000000000 Z
+
+40:
+  id: 6287
+  event_id: 205
+  question_id: 2358
+  order: 4
+  answer: Strongly Disagree
+  correct: false
+  created_at: 2019-02-20 17:10:49.000000000 Z
+  updated_at: 2019-02-20 17:10:49.000000000 Z
+
+41:
+  id: 6288
+  event_id: 205
+  question_id: 2359
+  order: 1
+  answer: Strongly Agree
+  correct: false
+  created_at: 2019-02-20 17:11:01.000000000 Z
+  updated_at: 2019-02-20 17:11:01.000000000 Z
+
+42:
+  id: 6289
+  event_id: 205
+  question_id: 2359
+  order: 2
+  answer: Agree
+  correct: false
+  created_at: 2019-02-20 17:11:06.000000000 Z
+  updated_at: 2019-02-20 17:11:06.000000000 Z
+
+43:
+  id: 6290
+  event_id: 205
+  question_id: 2359
+  order: 3
+  answer: Disagree
+  correct: false
+  created_at: 2019-02-20 17:11:10.000000000 Z
+  updated_at: 2019-02-20 17:11:10.000000000 Z
+
+44:
+  id: 6291
+  event_id: 205
+  question_id: 2359
+  order: 4
+  answer: Strongly Disagree
+  correct: false
+  created_at: 2019-02-20 17:11:19.000000000 Z
+  updated_at: 2019-02-20 17:11:19.000000000 Z
+
+45:
+  id: 6292
+  event_id: 205
+  question_id: 2360
+  order: 1
+  answer: Strongly Agree
+  correct: false
+  created_at: 2019-02-20 17:11:34.000000000 Z
+  updated_at: 2019-02-20 17:11:34.000000000 Z
+
+46:
+  id: 6293
+  event_id: 205
+  question_id: 2360
+  order: 2
+  answer: Agree
+  correct: false
+  created_at: 2019-02-20 17:11:39.000000000 Z
+  updated_at: 2019-02-20 17:11:39.000000000 Z
+
+47:
+  id: 6294
+  event_id: 205
+  question_id: 2360
+  order: 3
+  answer: Disagree
+  correct: false
+  created_at: 2019-02-20 17:11:44.000000000 Z
+  updated_at: 2019-02-20 17:11:44.000000000 Z
+
+48:
+  id: 6295
+  event_id: 205
+  question_id: 2360
+  order: 4
+  answer: Strongly Disagree
+  correct: false
+  created_at: 2019-02-20 17:11:51.000000000 Z
+  updated_at: 2019-02-20 17:11:51.000000000 Z
+
+49:
+  id: 6296
+  event_id: 205
+  question_id: 2361
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:13:03.000000000 Z
+  updated_at: 2019-02-20 17:13:03.000000000 Z
+
+50:
+  id: 6297
+  event_id: 205
+  question_id: 2361
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:13:08.000000000 Z
+  updated_at: 2019-02-20 17:13:08.000000000 Z
+
+51:
+  id: 6298
+  event_id: 205
+  question_id: 2361
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:13:13.000000000 Z
+  updated_at: 2019-02-20 17:13:13.000000000 Z
+
+52:
+  id: 6299
+  event_id: 205
+  question_id: 2361
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:13:21.000000000 Z
+  updated_at: 2019-02-20 17:13:21.000000000 Z
+
+53:
+  id: 6300
+  event_id: 205
+  question_id: 2362
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:13:34.000000000 Z
+  updated_at: 2019-02-20 17:13:34.000000000 Z
+
+54:
+  id: 6301
+  event_id: 205
+  question_id: 2362
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:13:38.000000000 Z
+  updated_at: 2019-02-20 17:13:38.000000000 Z
+
+55:
+  id: 6302
+  event_id: 205
+  question_id: 2362
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:13:43.000000000 Z
+  updated_at: 2019-02-20 17:13:43.000000000 Z
+
+56:
+  id: 6303
+  event_id: 205
+  question_id: 2362
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:13:53.000000000 Z
+  updated_at: 2019-02-20 17:13:53.000000000 Z
+
+57:
+  id: 6304
+  event_id: 205
+  question_id: 2363
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:14:10.000000000 Z
+  updated_at: 2019-02-20 17:14:10.000000000 Z
+
+58:
+  id: 6305
+  event_id: 205
+  question_id: 2363
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:14:15.000000000 Z
+  updated_at: 2019-02-20 17:14:15.000000000 Z
+
+59:
+  id: 6306
+  event_id: 205
+  question_id: 2363
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:14:21.000000000 Z
+  updated_at: 2019-02-20 17:14:21.000000000 Z
+
+60:
+  id: 6307
+  event_id: 205
+  question_id: 2363
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:14:29.000000000 Z
+  updated_at: 2019-02-20 17:14:29.000000000 Z
+
+61:
+  id: 6308
+  event_id: 205
+  question_id: 2364
+  order: 1
+  answer: Excellent
+  correct: false
+  created_at: 2019-02-20 17:14:47.000000000 Z
+  updated_at: 2019-02-20 17:14:47.000000000 Z
+
+62:
+  id: 6309
+  event_id: 205
+  question_id: 2364
+  order: 2
+  answer: Good
+  correct: false
+  created_at: 2019-02-20 17:14:52.000000000 Z
+  updated_at: 2019-02-20 17:14:52.000000000 Z
+
+63:
+  id: 6310
+  event_id: 205
+  question_id: 2364
+  order: 3
+  answer: Fair
+  correct: false
+  created_at: 2019-02-20 17:14:57.000000000 Z
+  updated_at: 2019-02-20 17:14:57.000000000 Z
+
+64:
+  id: 6311
+  event_id: 205
+  question_id: 2364
+  order: 4
+  answer: Poor
+  correct: false
+  created_at: 2019-02-20 17:15:04.000000000 Z
+  updated_at: 2019-02-20 17:15:04.000000000 Z
+
+65:
+  id: 6312
+  event_id: 205
+  question_id: 2365
+  order: 1
+  answer: 'Yes'
+  correct: false
+  created_at: 2019-02-20 17:15:17.000000000 Z
+  updated_at: 2019-02-20 17:15:17.000000000 Z
+
+66:
+  id: 6313
+  event_id: 205
+  question_id: 2365
+  order: 2
+  answer: 'No'
+  correct: false
+  created_at: 2019-02-20 17:15:22.000000000 Z
+  updated_at: 2019-02-20 17:15:22.000000000 Z
+
+67:
+  id: 6314
+  event_id: 205
+  question_id: 2367
+  order: 1
+  answer: 'Yes'
+  correct: false
+  created_at: 2019-02-20 17:15:45.000000000 Z
+  updated_at: 2019-02-20 17:15:45.000000000 Z
+
+68:
+  id: 6315
+  event_id: 205
+  question_id: 2367
+  order: 2
+  answer: 'No'
+  correct: false
+  created_at: 2019-02-20 17:15:54.000000000 Z
+  updated_at: 2019-02-20 17:15:54.000000000 Z
+

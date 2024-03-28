@@ -1,0 +1,172 @@
+<%= form_for(@m[:app_badge], :html => { :multipart => true, class: "px-3" }) do |f| %>
+
+    <% if @m[:app_badge].errors.any? %>
+
+        <div id="error_explanation">
+
+            <h2>
+                <%= pluralize(@m[:app_badge].errors.count, "error") %> prohibited this attendee from being saved:
+            </h2>
+
+            <ul>
+                <% @m[:app_badge].errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <%= f.hidden_field :app_game_id, :value => @m[:app_game_id] %>
+
+    Image will be resized to 300x300, so please choose a square image.
+    <br>
+    <br>
+    <table>
+        <% if @m[:app_badge].event_file!=nil %>
+            <tr>
+                <td><%= image_tag(@m[:app_badge].event_file.path, :height=>'100') %></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="field">
+                        <%= label_tag :image_file, "Current Image Selection" %>
+                        <br>
+                        <%= file_field_tag :image_file %>
+                    </div>
+                    <br>
+                </td>
+            </tr>
+        <% else %>
+            <tr>
+                <td>
+                    <div class="field">
+                        <%= label_tag :image_file, "Choose an Image" %>
+                        <br>
+                        <%= file_field_tag :image_file %>
+                    </div>
+                    <br>
+                </td>
+            </tr>
+        <% end %>
+    </table>
+
+    <div class="form-group">
+        <%= f.label :name %>
+        <%= f.text_field :name, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+        <%= f.label :description %>
+        <%= f.text_field :description, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+        <%= f.label :details %>
+        <%= f.text_field :details, class: "form-control" %>
+    </div>
+
+    <div class="form-inline">
+        <%= f.label :min_badge_tasks_to_complete, "Min Badge Tasks to Complete (Set to 0 to Ignore this Requirement)" %>
+        <%= f.number_field :min_badge_tasks_to_complete, min:0, placeholder:0, class: "form-control ml-md-2" %>
+    </div>
+    <br>
+    <div class="form-inline">
+        <%= f.label :min_points_to_complete, "Min Points to Complete (Set to 0 to Ignore this Requirement)"  %>
+        <%= f.number_field :min_points_to_complete, min:0, placeholder:0, class: "form-control ml-md-2"%>
+    </div>
+
+    <br>
+
+    <div class="field"> <%= hidden_field_tag :json %> </div>
+
+    <%= label_tag "Position" %>
+    <ul id="position" class="connectedSortable ml-md-3">
+        <li id="new" class="highlighted ui-state-default py-2 d-flex">
+            <span class="up-down-btns">
+            <button type="button" class="pos-btn" role="up">
+                <i class="fa fa-angle-up"></i>
+            </button> <br>
+            <button type="button" class="pos-btn" role="down">
+                <i class="fa fa-angle-down"></i>
+            </button>
+            </span>
+            <div class="item-text"> New App Badge </div>
+        </li>
+        <% @m[:app_badges].each do |badge| %>
+            <li id="<%= badge.id %>" class="ui-state-default py-2 d-flex <%= ((@m[:app_badge].id.eql? badge.id) ? "highlighted" : "") %>">
+            <span class="up-down-btns">
+                <button type="button" class="pos-btn" role="up">
+                <i class="fa fa-angle-up"></i>
+                </button> <br>
+                <button type="button" class="pos-btn" role="down">
+                <i class="fa fa-angle-down"></i>
+                </button>
+            </span>
+            <div class="item-text"><%= badge.name %></div>
+            </li>
+        <% end %>
+    </ul>
+
+    <script>
+<%# lifted from home buttons form; old scrappy code that should be cleaned up
+    (extracted and written more clearly) if there is time. %>
+window.onload = function () {
+    //Don't show new entry sortable unless on new page
+    updateJson();
+    if (/edit/i.test(window.location)) { $("#new").remove(); }
+
+    $(function () {
+        $("#position").sortable({
+            connectWith: ".connectedSortable",
+            update: updateJson
+        })
+    });
+
+    if ($("#app_badge_name").val()!=="") { $("#new .item-text").text($("#app_badge_name").val()) }
+    $("#app_badge_name").blur(function () { 
+        $("#new .item-text").text(this.value);
+        updateJson(); 
+    });
+    /* Repositioning through button controls */
+  $('.pos-btn').on('click', function(event){
+    event.stopPropagation();
+    let btn = $(this);
+    let currentItem = btn.parents('li');
+    if (btn.attr('role') === 'up'){
+      let prevItem = currentItem.prev();
+      if (prevItem.length !== 0){
+        currentItem.after(prevItem);
+      } 
+    } else if(btn.attr('role') === 'down'){
+      let nextItem = currentItem.next();
+      if (nextItem.length !== 0){
+        currentItem.before(nextItem);
+      }
+    }
+    updateJson();
+  });
+};
+function updateJson() {
+    var newstatus = [];
+    $('#position').children().each(function () {
+        var column, id, name, order;
+        column = $(this).parent().attr("id");
+        id     = $(this).attr("id");
+        name   = $(this).html();
+        order  = $(this).index();
+        return newstatus.push({
+            id:     id,
+            column: column,
+            name:   name,
+            order:  order
+        });
+    });
+    $("#json").empty().attr("value", JSON.stringify(newstatus));
+}
+    </script>
+
+    <div class="actions">
+        <%= f.submit "Update App Badge", class: "btn btn-primary" %>
+    </div>
+<% end %>

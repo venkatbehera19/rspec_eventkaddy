@@ -1,0 +1,252 @@
+<%= form_for(@m[:app_badge_task], :html => { :multipart => true, :class => "px-2" }) do |f| %>
+
+    <% if @m[:app_badge_task].errors.any? %>
+
+        <div id="error_explanation">
+
+            <h2>
+                <%= pluralize(@m[:app_badge_task].errors.count, "error") %> prohibited this attendee from being saved:
+            </h2>
+
+            <ul>
+                <% @m[:app_badge_task].errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <%= f.hidden_field :app_badge_id, :value => @m[:app_badge_id] %>
+
+    Image will be resized to 300x300, so please choose a square image.
+    <br>
+    <br>
+    <table>
+        <% if @m[:app_badge_task].event_file!=nil %>
+            <tr>
+                <td><%= image_tag(@m[:app_badge_task].event_file.path, :height=>'100') %></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="field">
+                        <%= label_tag :image_file, "Current Image Selection" %>
+                        <br>
+                        <%= file_field_tag :image_file %>
+                    </div>
+                    <br>
+                </td>
+            </tr>
+        <% else %>
+            <tr>
+                <td>
+                    <div class="field">
+                        <%= label_tag :image_file, "Choose an Image" %>
+                        <br>
+                        <%= file_field_tag :image_file %>
+                    </div>
+                    <br>
+                </td>
+            </tr>
+        <% end %>
+    </table>
+
+    <div class="form-group">
+        <%= f.label :name %>
+        <%= f.text_field :name, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= label_tag :select_task_type, "Task Type:" %>
+      <%= f.collection_select :app_badge_task_type_id, @m[:possible_types], :id, :name, {}, class: "custom-select" %>
+    </div>
+
+    <div id="scavenger_hunt_item_form_container" class="form-group" style="display:<%= @m[:app_badge_task].scavenger_hunt_item_id ? 'block;' : 'none;'; %>">
+        <%= label_tag :select_scavenger_hunt_item, "Scavenger Hunt Item:" %>
+        <%= f.collection_select :scavenger_hunt_item_id, @m[:hunt_items], :id, :name, {}, class: "custom-select" %>
+    </div>
+
+    <script>
+        $(function() {
+            // fixes bug where on refresh original type selected
+            // could override cached form and not show scavenger hunt items
+            if ($("#app_badge_task_app_badge_task_type_id option:selected").text()==="Scavenger Hunt Item Badge Task") { $("#scavenger_hunt_item_form_container").show(); }
+
+            $("#app_badge_task_app_badge_task_type_id").change(function() {
+                if ($("#app_badge_task_app_badge_task_type_id option:selected").text()==="Scavenger Hunt Item Badge Task") {
+                    $("#scavenger_hunt_item_form_container").show();
+                } else {
+                    $("#scavenger_hunt_item_form_container").hide();
+                }
+            });
+        });
+    </script>
+
+    <div id="survey_form_container" class="form-group" style="display:<%= @m[:app_badge_task].survey_id ? 'block;' : 'none;'; %>">
+        <%= label_tag :select_survey_id, "Select a Survey:" %>
+        <%= f.collection_select :survey_id, @m[:surveys], :id, :title, {}, class: "form-control" %>
+    </div>
+
+    <script>
+        $(function() {
+            // fixes bug where on refresh original type selected
+            // could override cached form and not show scavenger hunt items
+
+            var badge_task_type_name = $(
+                "#app_badge_task_app_badge_task_type_id option:selected"
+            ).text();
+
+            if (badge_task_type_name==="Session Survey Badge Task" ||
+                badge_task_type_name==="CE Session Survey Badge Task" ||
+                badge_task_type_name==="Survey Participation Badge Task" ||
+                badge_task_type_name==="Quiz Badge Task" ||
+                badge_task_type_name==="Single Session Survey Badge Task") 
+            {
+                $("#survey_form_container").show(); 
+            }
+
+            $("#app_badge_task_app_badge_task_type_id").change(function() {
+
+                var badge_task_type_name = $(
+                    "#app_badge_task_app_badge_task_type_id option:selected"
+                ).text();
+
+                if (badge_task_type_name==="Session Survey Badge Task" ||
+                    badge_task_type_name==="CE Session Survey Badge Task" ||
+                    badge_task_type_name==="Survey Participation Badge Task" ||
+                    badge_task_type_name==="Quiz Badge Task" ||
+                    badge_task_type_name==="Single Session Survey Badge Task") 
+                {
+                    $("#survey_form_container").show();
+                } else {
+                    $("#survey_form_container").hide();
+                }
+            });
+        });
+    </script>
+    <div class="form-group">
+        <%= f.label :description %>
+        <%= f.text_field :description, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+        <%= f.label :details %>
+        <%= f.text_field :details, class: "form-control" %>
+    </div>
+
+    <div class="form-inline">
+        <%= f.label :points_per_action, "Points Per Action" %>
+        <%= f.number_field :points_per_action, min:0, placeholder:0, class: "form-control ml-md-2" %>
+    </div> <br>
+
+    <div class="form-inline">
+        <%= f.label :max_points_per_action, "Max Points Per Action" %>
+        <%= f.number_field :max_points_per_action, min:0, placeholder:0, class: "form-control ml-md-2" %>
+    </div> <br>
+
+    <div class="form-inline">
+        <%= f.label :points_to_complete, "Points to Complete"  %>
+        <%= f.number_field :points_to_complete, min:0, placeholder:0, class: "form-control ml-md-2" %>
+    </div> <br>
+
+    <div class="form-inline">
+        <%= f.label :max_points_allotable, "Max Points Allotable"  %>
+        <%= f.number_field :max_points_allotable, min:0, placeholder:0, class: "form-control ml-md-2" %>
+    </div>
+
+    <br>
+
+    <div class="field"> <%= hidden_field_tag :json %> </div>
+
+    <%= label_tag "Position" %>
+    <ul id="position" class="connectedSortable ml-md-3">
+        <li id="new" class="highlighted ui-state-default py-2 d-flex">
+            <span class="up-down-btns">
+            <button type="button" class="pos-btn" role="up">
+                <i class="fa fa-angle-up"></i>
+            </button> <br>
+            <button type="button" class="pos-btn" role="down">
+                <i class="fa fa-angle-down"></i>
+            </button>
+            </span>
+            <div class="item-text"> New App Badge Task</div>
+        </li>
+        <% @m[:app_badge_tasks].each do |task| %>
+            <li id="<%= task.id %>" class="ui-state-default py-2 d-flex <%= ((@m[:app_badge_task].id.eql? task.id) ? "highlighted" : "") %>">
+            <span class="up-down-btns">
+                <button type="button" class="pos-btn" role="up">
+                <i class="fa fa-angle-up"></i>
+                </button> <br>
+                <button type="button" class="pos-btn" role="down">
+                <i class="fa fa-angle-down"></i>
+                </button>
+            </span>
+            <div class="item-text"><%= task.name %></div>
+            </li>
+        <% end %>
+    </ul>
+
+    <script>
+<%# lifted from home buttons form; old scrappy code that should be cleaned up
+    (extracted and written more clearly) if there is time. %>
+window.onload = function () {
+    updateJson();
+    //Don't show new entry sortable unless on new page
+    if (/edit/i.test(window.location)) { $("#new").remove(); }
+
+    $(function () {
+        $("#position").sortable({
+            connectWith: ".connectedSortable",
+            update: updateJson
+        })
+    });
+
+    if ($("#app_badge_task_name").val()!=="") { $("#new .item-text").text($("#app_badge_task_name").val()); }
+    $("#app_badge_task_name").blur(function () { 
+        $("#new .item-text").text(this.value);
+        updateJson();
+     });
+    
+    /* Repositioning through button controls */
+    $('.pos-btn').on('click', function(event){
+        event.stopPropagation();
+        let btn = $(this);
+        let currentItem = btn.parents('li');
+        if (btn.attr('role') === 'up'){
+        let prevItem = currentItem.prev();
+        if (prevItem.length !== 0){
+            currentItem.after(prevItem);
+        } 
+        } else if(btn.attr('role') === 'down'){
+        let nextItem = currentItem.next();
+        if (nextItem.length !== 0){
+            currentItem.before(nextItem);
+        }
+        }
+        updateJson();
+    });
+};
+
+function updateJson() {
+    var newstatus = [];
+    $('#position').children().each(function () {
+        var column, id, name, order;
+        column = $(this).parent().attr("id");
+        id     = $(this).attr("id");
+        name   = $(this).html();
+        order  = $(this).index();
+        return newstatus.push({
+            id:     id,
+            column: column,
+            name:   name,
+            order:  order
+        });
+    });
+    $("#json").empty().attr("value", JSON.stringify(newstatus));
+}
+    </script>
+
+    <div class="actions">
+        <%= f.submit "Update App Badge", class: "btn btn-primary" %>
+    </div>
+<% end %>

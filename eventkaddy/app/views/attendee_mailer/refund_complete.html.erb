@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+  	<p>Hi <%= @attendee.first_name %>,</p>
+		<p>Your refund in the amount of $ <%= sprintf "%.2f", @transaction.amount %> has been successfully processed and credited to your account.Thank you for your prompt attention.</p>
+    <p>Have a great day!</p>
+  </body>
+</html>

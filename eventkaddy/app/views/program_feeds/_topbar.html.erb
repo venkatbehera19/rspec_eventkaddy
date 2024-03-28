@@ -1,0 +1,43 @@
+<% settings = Setting.return_program_feed_booleans params[:event_id] %>
+
+<div class="mt-4 top-filters d-flex justify-content-between nav-tabs">
+  <ul class="nav">
+    <% if params["sel"] == 'favourite' %>
+      <li class="nav-item">
+        <%= link_to "Schedule", "/#{params[:event_id]}/program?sel=favourite", class: "nav-link #{params['action'] == 'index' ? 'active' : ''}",  :style=>'font-size: 15px;', id:"top-filters", data_tab_type: "schedule" %>
+      </li>
+      <% if settings.sessions_by_exhibitor %>
+        <li class="nav-item">
+          <%= link_to "Exhibitors", "/#{params[:event_id]}/program_exhibitor?sel=favourite", class: "nav-link #{['by_exhibitors', ''].include?(params['action']) ? 'active' : ''}", :style=>'font-size: 15px;', id:"top-filters", data_tab_type: "exhibitor"%>
+        </li>
+      <% end %>
+    <% else %>
+      <li class="nav-item">
+        <%= link_to "Schedule", "/#{params[:event_id]}/program", class: "nav-link #{params['action'] == 'index' ? 'active' : ''}",  :style=>'font-size: 15px;', id:"top-filters", data_tab_type: "schedule" %>
+      </li>
+      <% if settings.sessions_by_speaker %>
+        <li class="nav-item">
+          <%= link_to "Speaker", "/#{params[:event_id]}/program_speaker", class: "nav-link #{['by_speakers', 'speaker_sessions_details'].include?(params['action']) ? 'active' : ''}", :style=>'font-size: 15px;', id:"top-filters", data_tab_type: "speaker"%>
+        </li>
+      <% end %>
+      <% if settings.sessions_by_exhibitor %>
+        <li class="nav-item">
+          <%= link_to "Exhibitors", "/#{params[:event_id]}/program_exhibitor", class: "nav-link #{['by_exhibitors', ''].include?(params['action']) ? 'active' : ''}", :style=>'font-size: 15px;', id:"top-filters", data_tab_type: "exhibitor"%>
+        </li>
+      <% end %> 
+    <% end %> 
+  </ul>
+  <div class="list-card-options p-2">
+    <% unless ['by_speakers', 'speaker_sessions_details', 'by_exhibitors'].include?(params['action']) %>
+      <i class="fa fa-list pr-1" aria-hidden="true" onclick="toListView()" data-toggle="tooltip" data-placement="top" title="List View"></i>
+      <i class="fa fa-th pl-1" aria-hidden="true" onclick="toCardView()" data-toggle="tooltip" data-placement="top" title="Card View"></i>
+    <% end %>
+  </div>
+
+  <% if action_name == 'speaker_sessions_details' %>
+<!--     <div class="">
+      <button type="button" class="btn btn-outline-info">Prev</button>
+      <button type="button" class="btn btn-outline-info">Next</button>
+    </div>   -->
+  <% end %>
+</div>

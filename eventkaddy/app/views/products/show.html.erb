@@ -1,0 +1,77 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <table class="table table-striped" id="event_ticket_table">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>email</th>
+            <th>event_id</th>
+            <th>Order Id</th>
+            <th>Item Id</th>
+            <th>Item Type</th>
+            <th>Item Name</th>
+            <th>Amount</th>
+            <th>Quantity</th>
+
+            
+            <th>Order Status</th>
+            <th>Order Created </th>
+            <th>Order Updated</th>
+            
+            <th>Registration Form ID</th>
+
+            <th>Coupon Id</th>
+            <th>Coupon Amount</th>
+            <th>Coupon Code</th>
+            <th>Coupon Name</th>
+
+            <th>External Fund Status</th>
+            <th>External Fund Amount</th>
+
+            <th>GL Code</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @result.each do |result| %>
+            <tr>
+              <td><%= result["first_name"].present? ? result["first_name"] : 'N/A'  %></td>
+              <td><%= result["last_name"].present? ? result["last_name"] : 'N/A' %></td>
+              <td><%= result["email"].present? ? result["email"] : 'N/A' %></td>
+              <td><%= result["event_id"].present? ? result["event_id"] : 'N/A' %></td>
+              <td><%= result["order_id"].present? ? result["order_id"] : 'N/A' %></td>
+
+              <td><%= result["order_item_id"].present? ? result["order_item_id"] : 'N/A' %></td>
+              <td><%= result["order_item_type"].present? ? result["order_item_type"] : 'N/A' %></td>
+              <td><%= result["order_item_name"].present? ? result["order_item_name"] : 'N/A' %></td>
+              <td><%= result["order_item_price"].present? ? result["order_item_price"] : 'N/A' %></td>
+              <td><%= result["order_item_quantity"].present? ? result["order_item_quantity"] : 'N/A' %></td>
+
+
+              <td><%= result["status"].present? ? result["status"] : 'N/A' %></td>
+              <td><%= result["created_at"].present? ? result["created_at"] : 'N/A' %></td>
+              <td><%= result["updated_at"].present? ? result["updated_at"] : 'N/A' %></td>
+              <td><%= result["registration_form_id"].present? ? result["registration_form_id"] : 'N/A' %></td>
+              <td><%= result["coupon_id"].present? ? result["coupon_id"] : 'N/A' %></td>
+              <td><%= result["coupon_amount"].present? ? result["coupon_amount"] : 'N/A' %></td>
+              <td><%= result["coupon_code"].present? ? result["coupon_code"] : 'N/A' %></td>
+              <td><%= result["coupon_name"].present? ? result["coupon_name"] : 'N/A' %></td>
+              <td><%= result["external_status"].present? ? result["external_status"] : 'N/A' %></td>
+              <td><%= result["amount"].present? ? result["amount"] : 'N/A' %></td>
+              <td><%= result["gl_code"].present? ? result["gl_code"] : 'N/A' %></td>
+              <td>
+                <% if result["order_id"].present? %>
+                  <%= link_to('Delete', "/orders/#{result["order_id"]}", data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn text-danger dropdown-item") %>
+                <% else %>
+                  "N/A"
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

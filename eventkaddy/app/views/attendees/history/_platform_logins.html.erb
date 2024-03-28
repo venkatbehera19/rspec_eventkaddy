@@ -1,0 +1,50 @@
+<div class="dropdown">
+  <div
+    class="btn report-dropdown dropdown-toggle"
+    data-toggle="dropdown"
+  >
+    Platform Logins Downloads
+  </div>
+  <div class="dropdown-menu report-dropdown-list">
+    <%= link_to "Export Platform Logins To Spreadsheet", "/attendees/#{@attendee.id}/platform_logins_report", class: "dropdown-item" %>
+  </div>
+</div>
+<br />
+<h4 class="view-title">Platform Logins</h4>
+<br />
+<br />
+
+<h5>Total logins:<%= @platform_logins.count %></h5>
+<br />
+ <table
+    id="cms-platform-logins-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped table-bordered"
+  >
+    <thead>
+    
+      <th>date</th>
+      <th>time</th>
+    </thead>
+  <% !@platform_logins.blank? && @platform_logins.each do |login| %>
+    <tr>
+
+      <td><%= login["created_at"].strftime('%Y-%m-%d') %></td>
+      <td><%= get_local_time(login["created_at"]) %></td>
+    </tr>
+    <% end %>
+  </table>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline'
+    })
+    $('#cms-platform-logins-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>"
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

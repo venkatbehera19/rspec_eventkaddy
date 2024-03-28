@@ -1,0 +1,58 @@
+= form_for @speaker_portal_settings, :html => { :method => :post }, :url => '/settings/update_speaker_portal_settings' do |f|
+    %h4 Hide Fields (cannot be shown to the speaker)
+    .field
+        = f.check_box :hide_abstract
+        Abstract
+    .field
+        = f.check_box :hide_learning_objectives
+        Learning Objectives
+    .field
+        = f.check_box :hide_tags
+        Tags
+    .field
+        = f.check_box :hide_other_tags
+        Other Tags
+    .field
+        = f.check_box :hide_keywords
+        Keyword
+    .field
+        = f.check_box :hide_other_keywords
+        Other Keyword
+
+    %h4 Required Fields
+    .field
+        = f.check_box :required_abstract
+        Abstract
+    .field
+        = f.check_box :required_learning_objectives
+        Learning Objectives
+    .field
+        = f.check_box :required_tags
+        Tags
+    .field
+        = f.check_box :required_other_tags
+        Other Tags
+    .field
+        = f.check_box :required_keywords
+        Keyword
+    .field
+        = f.check_box :required_other_keywords
+        Other Keyword
+
+    %h4 Session Settings
+    .form-group 
+        = f.check_box :create_session
+        = f.label :create_session, "Create Session Button"
+        %br
+    .form-group 
+        = f.check_box :speaker_sessions
+        = f.label :speaker_sessions, "Speaker Sessions Button"
+        %br
+    .form-group 
+        = f.check_box :printable_schedule
+        = f.label :printable_schedule, "Printable Schedule Button"
+        %br
+    .form-group 
+        = f.label :total_session, "Total Session"
+        = f.text_field :total_session, :class => "form-control", :value => @speaker_portal_settings&.total_session ? @speaker_portal_settings&.total_session : 2
+    = f.submit 'Update Speaker Portal Settings', class:'btn btn-primary'

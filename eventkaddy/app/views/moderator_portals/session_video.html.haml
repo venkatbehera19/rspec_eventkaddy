@@ -1,0 +1,26 @@
+.lv-row
+    .pseudo-table.row{style: "width: 100%"}
+        .chat_and_video_container.col-md-10.mx-auto.px-0
+            .embedded-video-container.box-shadow--4dp
+                / %iframe{:allowscriptaccess => "always", :allowFullScreen => "true", :frameborder => "0", :height => "430", :src => "#{@session.embedded_video_url}", :width => "640", style:'background-color:white;'}
+                - if @show_ondemand
+                    / aws authentication method
+                    / %iframe{:allowscriptaccess => "always", :allowFullScreen => "true", :frameborder => "0", :height => "430", :src => "#{@video_url['url']}", :width => "640", style:'background-color:white;', :allow=>"autoplay;"}
+                    / %video{:autoplay => "autoplay", :src => "#{@video_url['url']}", :width => "640", :height => "430", :controls => "true" , controls, :controlslist => "nodownload"}
+                    %video(id="myVideo" class="video_format" autoplay="autoplay" src = "#{@video_url['url']}" controls controlslist="nodownload")
+                        - unless @subtitles.blank?
+                            - @subtitles.each do |subtitle|
+                                %track(label="#{subtitle['label']}" kind="subtitles" srclang="#{subtitle['srclang']}" src="#{@path + subtitle['src']}" default= "#{subtitle['default']}")
+
+                - else
+                    / live stream video
+                    - if !@livestream.blank?
+                        .embed-responsive.embed-responsive-16by9
+                            %iframe{:allowscriptaccess => "always", :allowFullScreen => "true", :frameborder => "0", :src => "#{@livestream}", style:'background-color:white;', :allow=>"autoplay;", class: "embed-responsive-item"}
+                    - elsif !@ondemand.blank?
+                        .embed-responsive.embed-responsive-16by9
+                            %iframe{:allowscriptaccess => "always", :allowFullScreen => "true", :frameborder => "0", :srcdoc => "<h2 style='font-weight:600;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-align:center;margin-top:25%;color:#143a5f;'>Video is unavailable until #{@session.date.strftime '%A, %B %d'} at #{@session.start_at.strftime '%l:%M %p'} (#{@event_timezone}). <br>  Please refresh browser at start time.</h2>", style:'background-color:white;', :allow=>"autoplay;", class: "embed-responsive-item"}
+                    - else
+                        .embed-responsive.embed-responsive-16by9
+                            %iframe{:allowscriptaccess => "always", :allowFullScreen => "true", :frameborder => "0", :srcdoc => "<h2 style='font-weight:600;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;text-align:center;margin-top:25%;color:#143a5f;'>No video available for this session.</h2>", style:'background-color:white;', :allow=>"autoplay;", class: "embed-responsive-item"}
+            

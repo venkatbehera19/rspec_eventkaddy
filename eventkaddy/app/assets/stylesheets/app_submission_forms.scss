@@ -1,0 +1,187 @@
+// Place all the styles related to the AppSubmissionForms controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+
+$font-family: "Google Sans", Roboto, Helvetica, Arial, sans-serif;
+
+.form-control:focus {
+	box-shadow: none;
+	border-color: #307eb6;
+	// box-shadow: 0px 4px 4px -4px !important;
+}
+
+.form-control {
+	border: 2px solid #ced4da;
+	border-radius: 0 !important;
+	padding-left: 0 !important;
+	transition: border-color 0.7s linear;
+}
+.custom-form-control {
+	width: 60%;
+}
+
+.form-heading {
+	font-family: $font-family;
+}
+
+.form-details-card-text {
+	white-space: pre-wrap;
+	font-family: Roboto, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+	letter-spacing: 0.2px;
+	line-height: 20px;
+	color: #202124;
+	margin-top: 12px;
+}
+
+.form-details-card {
+	border-top: 12px solid #307eb6;
+	border-radius: 10px 10px 0 0 !important;
+}
+
+.form-element-title {
+	font-family: $font-family;
+	font-size: 16px;
+	letter-spacing: 0.1px;
+	line-height: 24px;
+	color: #202124;
+	font-weight: 400;
+	width: 100%;
+	word-break: break-word;
+}
+
+.nav-link-anchors {
+	font-size: 17px;
+	color: #307eb6 !important;
+	text-decoration: none;
+	background-color: transparent;
+}
+
+.nav-link.active {
+	color: #495057 !important;
+	background-color: #fff !important;
+	border-color: #dee2e6 #dee2e6 #fff !important;
+}
+
+.nav-tabs {
+	border-bottom: 2px solid rgb(222, 226, 230) !important;
+}
+
+.nav-tabs .nav-link {
+	border: 2px solid transparent;
+}
+
+.nav-tabs .nav-link.active {
+	box-shadow: 0px 4px 0px 0px white !important;
+}
+
+.form-button {
+	width: 105px !important;
+	padding: 0 24px !important;
+	color: #fff;
+	cursor: pointer;
+	font-family: "Google Sans", Roboto, Arial, sans-serif !important;
+	font-size: 14px !important;
+	font-weight: 500 !important;
+	letter-spacing: 0.25px !important;
+	line-height: 36px !important;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.filepond--root {
+	margin-bottom: 0;
+}
+
+// .filepond--credits {
+// 	display: none;
+// }
+
+.filepond--panel-root {
+	border-radius: 0;
+}
+
+svg path {
+	fill: none;
+	stroke: white;
+	stroke-width: 1px;
+}
+
+/* the icon color of the black action buttons */
+.filepond--file-action-button {
+	color: white;
+}
+
+/* the color of the focus ring */
+.filepond--file-action-button:hover,
+.filepond--file-action-button:focus {
+	background-color: black !important;
+	box-shadow: 0 0 0 0.125em rgba(255, 255, 255, 0.9);
+}
+.filepond--file-action-button {
+	background-color: black !important;
+}
+
+/* the text color of the file status and info labels */
+.filepond--file {
+	color: white;
+}
+
+.operationsBtn {
+	width: 150px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.btn-clipboard {
+	position: absolute;
+	top: 0.65rem;
+	right: 0.65rem;
+	z-index: 10;
+	display: block;
+	padding: 0.25rem 0.5rem;
+	font-size: 0.65em;
+	color: #307eb6;
+	background-color: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.125);
+	font-weight: 600;
+	border-radius: 0.25rem;
+	cursor: grab !important;
+}
+
+div.card button {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s, opacity 0.3s ease-in-out;
+}
+div.card:hover button {
+	visibility: visible;
+	opacity: 1;
+}
+div.card button:hover {
+	background-color: #f5f6f8;
+	opacity: 1;
+}
+
+.copy-icon {
+	width: 2em;
+	aspect-ratio: 1;
+}
+
+.btn:focus,
+.btn:active {
+	outline: none !important;
+	box-shadow: none;
+}
+
+.download-zip {
+	min-width: 160px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#download-btn {
+	pointer-events: none;
+}

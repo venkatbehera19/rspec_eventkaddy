@@ -1,0 +1,13 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   attendee_scan_type_id: 1
+#   initiating_attendee_id: 1
+#   target_attendee_id: 1
+
+# two:
+#   event_id: 1
+#   attendee_scan_type_id: 1
+#   initiating_attendee_id: 1
+#   target_attendee_id: 1

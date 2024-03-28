@@ -1,0 +1,23 @@
+<h1>Listing link_types</h1>
+<%= link_to 'New Link type', new_link_type_path,class:"btn btn-primary" %> <br/><br/>
+<table>
+  <tr>
+    <th>Link type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @link_types.each do |link_type| %>
+  <tr>
+    <td><%= link_type.link_type %></td>
+    <td><%= link_to 'Show', link_type ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_link_type_path(link_type) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', link_type, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

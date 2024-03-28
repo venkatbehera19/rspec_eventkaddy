@@ -1,0 +1,20 @@
+%h4 Mobile App Settings
+%br/
+.bg-light.custom-border.px-3.py-3{style:'min-height:500px;'}
+
+    = form_for @cordova_booleans, :html => { :multipart => true, :method => :post }, :url => '/settings/update_cordova_settings' do |f|
+        .field
+            = f.check_box :exhibitors_enabled
+            Exhibitors Enabled
+        .field
+            = f.check_box :ce_credits_enabled
+            CE Credits Enabled
+        .field
+            = f.check_box :iattend_enabled
+            I Attend Enabled
+
+        %br
+        = f.submit 'Update Cordova Settings', class:'btn btn-primary'
+
+:javascript
+    $('.jpicker').jPicker({});

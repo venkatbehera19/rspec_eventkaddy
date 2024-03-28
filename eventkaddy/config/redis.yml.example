@@ -1,0 +1,14 @@
+development:
+  host: 'redis://127.0.0.1:6379'
+  db: 0
+
+staging:
+  host: 'redis://127.0.0.1:6379'
+  db: 1
+
+production:
+  host: 'redis://127.0.0.1:6379'
+  db: 2
+
+sidekiq_username: kaddy
+sidekiq_password: lab@1234

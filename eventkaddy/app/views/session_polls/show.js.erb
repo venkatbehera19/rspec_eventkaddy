@@ -1,0 +1,9 @@
+$("#session_poll_chart").html("<%= j (render partial: 'session_polls_cms/show', locals: {session_poll: @session_poll}) %>");
+
+
+config = chartConfig()
+ctx = document.getElementById('polls_chart').getContext('2d');
+myChart = new Chart(
+  ctx,
+  config
+);

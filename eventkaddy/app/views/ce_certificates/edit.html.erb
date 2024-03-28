@@ -1,0 +1,234 @@
+<div class="bg-light custom-border px-3 py-3" style="min-height:500px;">
+  <h3>CE Certificate Edit</h3>
+
+  <%= link_to 'Cancel', ce_certificates_path,class:"btn btn-outline-danger" %>
+  <br />
+  <br />
+  <br />
+  <h4><%= @certificate.name %></h4>
+  <br />
+  <br />
+  <%= form_tag("/ce_certificates/#{@certificate.id}", :method => "put", :id => "ce_update_form", :name =>"ce_update_form", :multipart => true) do |f| %>
+    
+    <div class="form-group">
+      <%= label_tag :type_, "Certificate Type" %>
+      <%= select_tag :type, raw("<option value='default' selected='selected'>Default</option><option value='detailed'>Detailed</option>"), disabled: true, class: "custom-select" %>
+    </div>
+    <br />
+
+    <div class="field">
+      <%= label_tag :certificate_background, "Upload Certificate Background Image"%> <br>
+      <%= file_field_tag :certificate_background, accept: "image/*" %>
+    </div>
+    <br />
+    <br />
+
+    <div class="field" display="flex" flex-direction="column">
+      <label class="switch">
+        <%= check_box_tag :display_name, 'display_name', true, disabled: true %>
+        <span class="slider round"></span>
+      </label>
+      <span><h5 style="display:inline;">Attendee Name</h5></span>
+      <br>
+      <label id="display_name_data">
+        Position(x,y)
+        <%= number_field :json_data, :name_position_x, :value => @json_data["name_position_x"], :class => 'smaller-input'%>
+        <%= number_field :json_data, :name_position_y, :value => @json_data["name_position_y"], :class => 'smaller-input'%>
+        <br> <br> Font Size
+        <%= number_field :json_data, :name_font_size, :value => @json_data["name_font_size"], :class => 'small-input'%>
+        <br><br> Width
+        <%= number_field :json_data, :name_width, :value => @json_data["name_width"], :class => 'small-input'%>
+        <br><br> Include Honor Suffix in Name
+        <%= check_box_tag :include_suffix, @json_data["include_suffix"], @json_data["include_suffix"] %>
+      </label>
+    </div>
+    <br />
+    <br />
+
+    <div class="field">
+      <label class="switch">
+      <%= check_box_tag :display_company, @json_data["display_company"], @json_data["display_company"], onchange: "toggleCompanyPositionDisplay()" %>
+        <span class="slider round"></span>
+      </label>
+      <span><h5 style="display:inline;">Attendee Company</h5></span><br>
+      <label id="display_company_data">
+        Position(x,y)
+        <%= number_field :json_data, :company_position_x, :value => @json_data["company_position_x"], :class => 'smaller-input'%>
+        <%= number_field :json_data, :company_position_y, :value => @json_data["company_position_y"], :class => 'smaller-input'%>
+        <br> <br> Font Size
+        <%= number_field :json_data, :company_font_size, :value => @json_data["company_font_size"], :class => 'small-input'%>
+        <br><br> Width
+        <%= number_field :json_data, :company_width, :value => @json_data["company_width"], :class => 'small-input'%>
+      </label>
+    </div>
+    <br />
+    <br />
+
+    <div class="field">
+      <label class="switch">
+        <%= check_box_tag :display_total_hours, @json_data["display_total_hours"], @json_data["display_total_hours"] , onchange: "toggleTotalHoursPositionDisplay()" %>
+        <span class="slider round"></span>
+      </label>
+      <span><h5 style="display:inline;">Total Number of Hours</h5></span>
+      <label id="display_total_hours_data" style="display: block;">
+        Position(x,y)
+        <%= number_field :json_data, :total_hours_position_x, :value => @json_data["total_hours_position_x"], :class => 'smaller-input'%>
+        <%= number_field :json_data, :total_hours_position_y, :value => @json_data["total_hours_position_y"], :class => 'smaller-input'%>
+        <br><br> Font Size
+        <%= number_field :json_data, :total_hours_font_size, :value => @json_data["total_hours_font_size"], :class => 'small-input'%>
+        <br><br> width
+        <%= number_field :json_data, :total_hours_width, :value => @json_data["total_hours_width"], :class => 'small-input'%>
+        <br />
+        <br>
+        <div class="form-check-inline">
+          <%= label_tag(nil, :class => 'form-check-label') do %>
+            <%= radio_button(:json_data, :total_hours_type, "1",checked: @json_data["total_hours_type"] == 1, :class => 'form-check-input') %>
+            Credits Total With Round Off
+          <% end %>
+        </div>
+        <div class="form-check-inline">
+          <%= label_tag(nil, :class => 'form-check-label') do %>
+            <%= radio_button(:json_data, :total_hours_type, "2",checked: @json_data["total_hours_type"] == 2, :class => 'form-check-input') %>
+            Credits Total Without Round Off
+          <% end %>
+        </div>
+        <div class="form-check-inline">
+          <%= label_tag(nil, :class => 'form-check-label') do %>
+            <%= radio_button(:json_data, :total_hours_type, "3",checked: @json_data["total_hours_type"] == 3, :class => 'form-check-input') %>
+            Session Credit Hours Attended
+          <% end %>
+        </div>
+
+      </label>
+    </div>
+    <br />
+    <br />
+    <div class="field">
+      <label class="switch">
+      <%= check_box_tag :insert_table, @json_data["insert_table"], @json_data["insert_table"], onchange: "toggleTableDetails()" %>
+        <span class="slider round"></span>
+      </label>
+      <span><h5 style="display:inline;">Insert Details Table</h5></span>
+      <br />
+      <label id="display_table_details">
+        <%= label_tag :certificate_border, "Upload Certificate Border Image"%>
+        <%= file_field_tag :certificate_border, accept: "image/*" %>
+      </label>
+    </div>
+    <br/>
+  <br />
+  <hr />
+  <h3>Email template</h3>
+
+    <div class="form-group">
+      <%= label_tag :subject, "Email Subject"%>
+      <%= text_field :mailer_data, :subject, :value => @mailer_data["subject"], class: "form-control" %>
+    </div>
+
+  <div class="form-group">
+    <%= label :content, "Email Content"%>
+    <%= cktext_area :mailer_data, :content, :value => @mailer_data["content"], style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"} %>
+  </div>
+    <br />
+    <div class="actions">
+      <%= submit_tag("Update", :class => "btn btn-primary") %>
+    </div>
+  <% end %>
+
+  <br />
+  <br />
+
+</div>
+<style>
+  .radio-btn {
+    display: inline
+  }
+  .small-input {
+    width:60px;
+  }
+  .smaller-input {
+    width:50px;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 18px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: '';
+    height: 18px;
+    width: 18px;
+    left: 0;
+    bottom: 0;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+
+  input:checked + .slider {
+    background-color: #2196f3;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196f3;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+</style>
+<script>
+  $(function () {
+    if ($('#display_company').is(':checked')) $('#display_company_data').show()
+    else $('#display_company_data').hide()
+    if ($('#display_total_hours').is(':checked')) $('#display_total_hours_data').show()
+    else $('#display_total_hours_data').hide()
+    if ($('#insert_table').is(':checked')) $('#display_table_details').show()
+    else $('#display_table_details').hide()
+  })
+
+  function toggleCompanyPositionDisplay () {
+    if ($('#display_company').is(':checked')) $('#display_company_data').show()
+    else $('#display_company_data').hide()
+  }
+  function toggleTotalHoursPositionDisplay () {
+    if ($('#display_total_hours').is(':checked')) $('#display_total_hours_data').show()
+    else $('#display_total_hours_data').hide()
+  }
+  function toggleTableDetails () {
+    if ($('#insert_table').is(':checked')) $('#display_table_details').show()
+    else $('#display_table_details').hide()
+  }
+</script>

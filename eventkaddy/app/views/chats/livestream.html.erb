@@ -1,0 +1,160 @@
+<div class="chat-outer-container container mx-auto" id="moderator_chat">
+  <div class="session-title">
+    <h4>Chat</h4>
+    <h5 style="word-break: break-word;"><%=@session.title%></h5>
+  </div>
+  <div class="btn-toolbar">
+    <div class="notification_panel">
+      <%= form_for(@session, :html => { :id => "chat-details-form" }, :url => {:action => "enable_moderator_notification_sound"}, :method => :put) do |f| %>
+        <%= f.hidden_field :enable_notification_sound, :value => !@session.enable_notification_sound %>
+        <div class="btn-group mr-2">
+          <% if @session.enable_notification_sound %>
+
+            <button
+            type="submit"
+            id="disable-sound-button"
+            class="btn btn-warning"
+            style="margin-right:5px;"
+            >
+              Disable Notification Sound
+            </button>
+
+          <% else %>
+              <button
+              type="submit"
+              id="enable-sound-button"
+              class="btn btn-primary"
+              style="margin-right:5px;"
+            >
+              Enable Notification Sound
+            </button>
+          <% end %>
+        </div> 
+      <% end %>
+    </div>
+    <div
+      class="btn-group"
+      role="group"
+      aria-label="Basic example"
+      style="display:inline;float:right"
+    
+    >
+      <%= form_tag "/chats/enable_livestream/#{@session.id}", method: :put, id: 'enable-disbale-form', style: "display:inline" do %>
+        <%= hidden_field_tag :enable_chat, @session.chat_enabled %>
+        <button
+          type="button"
+          id="unsubscribeAll-button"
+          class="btn btn-primary"
+          style="margin-right:5px; display:none"
+        >
+        </button>
+        <button
+          type="submit"
+          id="enable-chat-button"
+          class="btn btn-primary"
+        >
+          Enable Chat
+        </button>
+        <button
+          type="submit"
+          id="disable-chat-button"
+          class="btn btn-warning"
+        >
+          Disable Chat
+        </button>
+        <button
+          type="button"
+          class=" btn btn-secondary"
+          onclick="clearChat()"
+        >
+          Clear Chat
+        </button>
+        <button type="button" class=" btn btn-info" onclick="downloadChat()">
+          Export Chat
+        </button>
+      <% end %>
+    </div>
+  </div>
+  <br />
+
+  <div class="lv-row">
+      <div class="chat_and_video_container">
+        <%= render "chats/chats_components/chat" %>
+      </div>
+  </div>
+</div>
+
+
+<script>
+  $(function () {
+    let enable_chat = $('#enable_chat')
+    if (enable_chat.val() === "true") {
+      $('#chat-input').prop('disabled', false)
+      $('#enable-chat-button').hide()
+      $('#disable-chat-button').show()
+      $('#chat-log-disabled').hide()
+      $('#chat-log').show()
+      enable_chat.val("false")
+      ChatSender.init({id: '', contact_name:'Moderator', company_name: `<%=@event.name.split[0...2].join(' ')%>..`},`<%=@event.chat_url%>`)
+    } else {
+      $('#chat-input').prop('disabled', true)
+      $('#enable-chat-button').show()
+      $('#disable-chat-button').hide()
+      $('#chat-log').hide()
+      $('#chat-log-disabled').show()
+      enable_chat.val("true")
+    }
+
+  })
+  $(window).bind('beforeunload', function () {
+    let chats = $('.chat-log')
+    let chatLog = "chat" + <%=@session.id%>
+    localStorage.setItem(chatLog, chats[0].innerHTML)
+  })
+  function clearChat () {
+    let permission = confirm(
+      'Chats once cleared cannot be retrieved. You can cancel and export them before clearing everything.'
+    )
+    if (permission) {
+      let chats = $('.chat-log')
+      chats[0].innerHTML = ''
+      localStorage.setItem('chats', '')
+    }
+  }
+
+  function downloadChat () {
+    let chats = $('.chat-log')
+    let filename = `<%=@session_title%>`
+    let chatsData = "<p>Session: "+  `<%=@session.session_code%>` + ' ' + `<%=@session.title%>` +"</p>" + chats[0].innerHTML
+    if(filename.length > 32){
+      filename = filename.substr(0,32) + '.html'
+    } else {
+      filename = filename + '.html'
+    }
+    $.ajax({
+      type: 'POST',
+      url: '/chats/download',
+      contentType: 'application/json',
+      data: JSON.stringify({ chatsData: chatsData }),
+      success: function (data) {
+        var blob = new Blob([data])
+        var link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = filename
+        link.click()
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+      }
+    })
+  }
+  // This doesn't work
+  $('form#enable-disbale-form').submit(function(e) {
+    if ( $('#enable_chat').val() === "false") {
+      $('#unsubscribeAll-button').click()
+    }
+    return true
+  })
+</script>

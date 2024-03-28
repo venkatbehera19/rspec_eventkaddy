@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  attendee: realistic
+  app_badge_task: one
+  app_badge_task_points_collected: 1
+  complete: false
+
+two:
+  event: two
+  attendee: two
+  app_badge_task: two
+  app_badge_task_points_collected: 1
+  complete: false

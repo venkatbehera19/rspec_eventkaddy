@@ -1,0 +1,118 @@
+%h4 Leaderboard Page Settings
+%br
+
+.bg-light.custom-border.px-4.py-4{style:'min-height:500px;'}
+
+  = form_for @guest_view_settings, :html => { :multipart => true, :method => :post }, :url => '/settings/update_guest_view_settings' do |f|
+
+    = link_to "View Guest Leaderboard Page (opens in new window)", "/leaderboard_for_projector/#{session[:event_id]}?desktop=true", class:"btn btn-link", target:"_blank"
+    %br
+    %br
+
+    .field
+      = f.check_box :leaderboard_disabled, name: "boolean_setting[leaderboard_disabled]"
+      Disable Guest View Leaderboard
+
+    .field
+      = f.check_box :leaderboard_show_attendee_code, name: "boolean_setting[leaderboard_show_attendee_code]"
+      Show Attendee Codes On Guest View Leaderboard
+
+    .field
+      = f.check_box :leaderboard_hide_tiebreaker_column, name: "boolean_setting[leaderboard_hide_tiebreaker_column]"
+      Hide Tiebreaker Column on Guest View Leaderboard
+
+    %hr
+    -# It's a string setting, but we treat it as a special case since
+    -# we need to do a little extra
+    .field
+      Guest View Leaderboard Logo
+      -# %br
+      -# Should be squarish as it will appear next to the session title.
+      %br
+      %br
+      %table
+        - banner_label = "Choose a Logo"
+        - if @guest_view_settings.leaderboard_logo_path
+          - banner_label = "Current Logo"
+          %tr
+            %td= image_tag(@guest_view_settings.leaderboard_logo_path, :height=>'100')
+        %tr
+          %td
+            .field
+              = label_tag :leaderboard_logo_path, banner_label
+              %br
+              = file_field_tag :leaderboard_logo_path
+              %br
+
+    :ruby
+      color_picker = ->(string_setting) {
+        text_field_tag( 
+          string_setting,
+          @guest_view_settings.send(string_setting),
+          class: "jpicker form-control d-inline",
+          style: "width: 85%;",
+          name:  "string_setting[#{string_setting}]"
+        )
+      }
+    %hr
+    .field
+      Guest View Leaderboard Google APIs Font
+      %br
+      %br
+      This font may be the name of anything appearing in google fonts
+      %a{:href => "https://fonts.google.com/"} https://fonts.google.com
+      %br
+      It must match the name exactly including capitals. Choose only one
+      font and leave no trailing spaces.
+      %br
+      %br
+      You may notice the font change on page load as it is downloaded
+      from the api. It will be cached by your browser and will not need to
+      load on subsequent views.
+      %br
+      %br
+      = text_field_tag :leaderboard_google_apis_font, @guest_view_settings.leaderboard_google_apis_font, name: "string_setting[leaderboard_google_apis_font]", placeholder: "Examples: Oswald, Open Sans, Monstserrat, Raleway", class: "form-control"
+
+    %hr
+
+    .form-group
+      Guest View Leaderboard Header Text
+      %br
+      = text_field_tag :leaderboard_header_text, @guest_view_settings.leaderboard_header_text, name: "string_setting[leaderboard_header_text]", placeholder: "Leaderboard For #{@event_name}", class: "form-control"
+
+    .form-group
+      Guest View Leaderboard Footnote Text
+      %br
+      = text_field_tag :leaderboard_footnote_text, @guest_view_settings.leaderboard_footnote_text, name: "string_setting[leaderboard_footnote_text]", class: "form-control"
+
+
+
+    .form-group
+      Guest View Leaderboard Background Color
+      %br
+      = color_picker.call :leaderboard_background_colour
+
+    .form-group
+      Guest View Leaderboard Header Text Color
+      %br
+      = color_picker.call :leaderboard_header_text_colour
+
+    .form-group
+      Guest View Leaderboard Table Background Color One
+      %br
+      = color_picker.call :leaderboard_table_background_colour_one
+
+    .form-group
+      Guest View Leaderboard Table Background Color Two
+      %br
+      = color_picker.call :leaderboard_table_background_colour_two
+
+    .form-group
+      Guest View Leaderboard Table Text Color
+      %br
+      = color_picker.call :leaderboard_table_text_colour
+
+    = f.submit 'Update Guest View Settings', class:'btn btn-primary'
+
+:javascript
+  $('.jpicker').jPicker({});

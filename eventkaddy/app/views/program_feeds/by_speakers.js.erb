@@ -1,0 +1,29 @@
+$("#speaker-cards").html("<%= j (render partial: 'speakers_list', locals: {speakers: @speakers}) %>");
+$("#keynote-speaker-cards").html("<%= j (render partial: 'speakers_list', locals: {speakers: @keynote_speakers}) %>");
+
+$('.speaker-pagination').removeAttr("disabled");
+$('#total_pages_keynote').val("<%= @total_pages_keynote%>")
+$('.keynote-speakers-pagination').removeAttr("disabled");
+
+if (sel_filter.speakerPage <= 1)
+	$("#prev_speakers").attr("disabled", "disabled");
+if (sel_filter.speakerPage >= parseFloat($("#total_pages").val()))
+	$("#next_speakers").attr("disabled", "disabled");
+
+if (sel_filter.speakerKeynotePage <= 1)
+	$("#prev_keynote_speakers").attr("disabled", "disabled");
+if (sel_filter.speakerKeynotePage >= parseFloat($("#total_pages_keynote").val()))
+	$("#next_keynote_speakers").attr("disabled", "disabled");
+
+topFunction()
+
+$('.lazyloaded').lazyload({
+	load : function() {
+	  	crop(this.src, 1).then((canvas) => {
+        if(!$(this.parentElement).find('canvas')[0]){
+          $(this.parentElement).prepend(canvas)
+          $(this).hide()
+        }
+	  });
+	}
+});

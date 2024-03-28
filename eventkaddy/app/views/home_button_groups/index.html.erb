@@ -1,0 +1,49 @@
+<h4>Listing home button groups for:<b> <%= session[:event_name] %></b></h4>
+
+<%= link_to 'New Home Button Group', new_home_button_group_path,class:"btn btn-primary" %> <br/><br/>
+
+<table id="home_button_groups" cellpadding="0" cellspacing="0" border="0" class="table table-striped">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Icon Image</th>
+    <th>Position</th>
+    <th></th>
+  </tr>
+  </thead>
+
+  <tbody>
+<% @home_button_groups.each do |home_button_group| %>
+  <tr>
+    <td><%= home_button_group.name %></td>
+	  <% if (home_button_group.event_file!=nil) then %>
+      <td><%= image_tag(home_button_group.event_file.path, :height=>'50') %></td>
+    <% else %>
+      <td>N/A</td>
+    <% end %>
+    <td><%= home_button_group.position %></td>
+    <td class="table-actions text-center">
+      <div class="btn-group d-flex">
+        <%= link_to 'Show', home_button_group ,class:"btn btn-outline-info" %>
+        <%= link_to 'Edit', edit_home_button_group_path(home_button_group) ,class:"btn btn-outline-success" %>
+        <%= link_to 'Delete', home_button_group, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+      </div>
+      <div class="dropdown">
+        <a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+          <i class="fa fa-ellipsis-v"></i>
+        </a>
+        <div class="dropdown-menu">
+          <%= link_to 'Show', home_button_group ,class:"btn dropdown-item text-info" %>
+          <%= link_to 'Edit', edit_home_button_group_path(home_button_group) ,class:"btn dropdown-item text-success" %>
+          <%= link_to 'Delete', home_button_group, :confirm => 'Are you sure?', :method => :delete ,class:"btn dropdown-item text-danger" %>
+        </div>
+      </div>
+    </td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+<br />
+
+

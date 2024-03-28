@@ -1,0 +1,79 @@
+<div>
+  <div id="user_defined_header">
+    <% if (@current_tab!=nil && @current_tab.header_text!=nil && @current_tab.header_text.length > 0) %>
+      <%=@current_tab.header_text.html_safe %>
+    <% end %>
+  </div>
+  <% @settings = Setting.return_registration_portal_settings(session[:event_id]) %>
+  <div class ="registered-attendee-table <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+    <% if  !@settings.json.blank? && @settings.enable_profile_message_display %>
+      <h4 class="alert alert-info"><%=  @settings.message_to_display %></h4>
+    <% end %>
+    <h2>Profile</h2>
+    <div class="pull-right btn-group mb-2">
+      <%= link_to "Edit Profile", "/attendee_portals/edit_profile", class: "btn btn-primary btn-sm" %>
+      <%  if !@settings.json.blank? && @settings.launch_virtual_portal && !@settings.landing.blank? %>
+        <%= link_to "Launch Virtual Portal", "#{@event.virtual_portal_url}#{@settings.landing}", :target=>"_blank", class: "btn btn-primary btn-sm" %>
+      <% end %>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover">
+          <tbody>
+          <% text_field = ->(col, label, attendee_col, options={}) {
+              if(@settings.respond_to?(col) &&  @settings.method("#{col}").call())
+                "<tr><td>#{label}</td><td>#{@attendee.method("#{attendee_col}").call}</td></tr>".html_safe
+              end
+          } %>
+          <%= text_field["locked_email",    "Email",                    "email"] %>
+          <%= text_field["first_name",      "First Name",               "first_name"] %>
+          <%= text_field["last_name",       "Last Name",                "last_name"] %>
+          <%= text_field["honor_prefix",    "Honor Prefix",             "honor_prefix"] %>
+          <%= text_field["honor_suffix",    "Honor Suffix",             "honor_suffix"] %>
+          <%= text_field["business_unit",   "Business Unit",            "business_unit"] %>
+          <%= text_field["title",           "Title",                    "title"] %>
+          <%= text_field["business_phone",  "Business Phone",           "business_phone"] %>
+          <%= text_field["mobile_phone",    "Mobile Phone",             "mobile_phone"] %>
+          <%= text_field["company",         "Company",                  "company"] %>
+          <%= text_field["twitter_url",     "Twitter URL",              "twitter_url"] %>
+          <%= text_field["facebook_url",    "Facebook URL",             "facebook_url"] %>
+          <%= text_field["linked_in",       "Linked In",                "linked_in"] %>
+          <%= text_field["biography",       "Biography",                "biography"] %>
+          <%= text_field["country",         "Country",                  "country"] %>
+          <%= text_field["state",           "State",                    "state"] %>
+          <%= text_field["city",            "City",                     "city"] %>
+          <%= text_field["custom_fields_1", "Custom Fields 1",          "custom_fields_1"] %>
+          <%= text_field["custom_fields_2", "Custom Fields 2",          "custom_fields_2"] %>
+          <%= text_field["custom_fields_3", "Custom Fields 3",          "custom_fields_3"] %>
+        </tbody>
+      </table>
+    </div>
+    <div class="pull-right btn-group mb-2">
+      <%= link_to "Edit Survey data", "/attendee_portals/edit_survey", class: "btn btn-primary btn-sm" %>
+    </div>
+    <div>
+      <table class="table table-hover">
+        <% if @attendee.custom_fields %>
+          <% JSON.parse(@attendee.custom_fields).each do |question| %>
+            <% if question["type"] == 'text' || question["type"] == 'textarea'  %>
+              <tr><th><%= question["label"].html_safe %></th> <td><%= question["value"] %></td> </tr>
+            <% elsif question['type'] == 'checkbox-group'%>
+              <tr>
+                <th><%= question["label"].html_safe %></th> 
+                <td>
+                  <%=  question["value"].blank? ? 'N/A' : question["value"].reduce('') { |init, new| init += new + "," }.split(',').join(',') %>
+                </td> 
+              </tr>
+            <% else %>
+              <tr><th><%= question["label"].html_safe %></th> <td><%= question["value"] %></td> </tr>
+            <% end %>
+          <% end %>
+        <% end %>
+      </table>
+    </div>
+  </div>
+  <div id="user_defined_footer">
+    <% if @current_tab!=nil && @current_tab.footer_text!=nil && @current_tab.footer_text.length > 0 %>
+      <%= @current_tab.footer_text.html_safe %>
+    <% end %>
+  </div>
+</div>

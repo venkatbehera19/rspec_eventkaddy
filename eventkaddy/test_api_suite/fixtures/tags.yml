@@ -1,0 +1,53 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.ht
+leaf_tag: &leaf_tag
+  name: MyString
+  # level: 1
+  leaf: true
+  # parent_id: 1
+  event: one
+  tag_type: 
+  meta_data: MyText
+  custom_filter_1: MyText
+  custom_filter_2: MyText
+  custom_filter_3: MyText
+
+nonleaf_tag: &nonleaf_tag
+  name: MyString
+  # level: 1
+  leaf: false
+  # parent_id: 1
+  event: one
+  tag_type: 
+  meta_data: MyText
+  custom_filter_1: MyText
+  custom_filter_2: MyText
+  custom_filter_3: MyText
+
+
+exhibitor_leaf_tag:
+  <<: *leaf_tag
+  tag_type: exhibitor 
+
+exhibitor_nonleaf_tag:
+  <<: *nonleaf_tag
+  tag_type: exhibitor 
+
+attendee_leaf_tag:
+  <<: *leaf_tag
+  tag_type: attendee 
+
+attendee_nonleaf_tag:
+  <<: *nonleaf_tag
+  tag_type: attendee
+
+session_leaf_tag:
+  <<: *leaf_tag
+  tag_type: session
+
+session_nonleaf_tag:
+  <<: *nonleaf_tag
+  tag_type: session
+ 
+
+
+

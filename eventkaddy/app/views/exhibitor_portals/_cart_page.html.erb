@@ -1,0 +1,118 @@
+<div class="reg-section-container m-3">
+  <div class="d-flex justify-content-center">
+    <div class="col-md-7">
+      <div class="order-items">
+        <div id="order_cart">
+          <ul class="list-group list-group-flush">
+            <% @cart.cart_items.each do |item| %>
+              <div class="list-group-item list-group-item-action">
+                <% if item.item_type == 'LocationMapping' %>
+                  <div class="d-flex w-100 justify-content-between align-items-center">
+                    <h5 class="mb-1">Booth </h5>
+                    <span class="font-weight-bold p-3"><%= number_to_currency(item.item.products.first.price.to_i, unit: "$", precision: 2) %> </span>
+                  </div>
+                  <p class="mb-1">
+                    <%= item.item.name %>
+                  </p>
+                  <p class="mb-1">
+                     <%= item.item.products.first.name %>
+                  </p>
+                  <% if item.discount_allocations.present? %>
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                      <p class="mb-1 text-danger">Discount Price</p>
+                      <span class="font-weight-bold p-3"><%= number_to_currency(item.discount_allocations.last.amount.to_i, unit: "$", precision: 2) %></span>
+                    </div>
+                  <% end %>
+                  <div class="d-flex">
+                    <%= 
+                      button_to 'delete', 
+                      exhibitors_cart_item_path(item.id), 
+                      method: :delete, class: "btn btn-outline-danger btn-sm mt-2", 
+                      params: { product_id: item.item, cart_id: @cart.id, item: item, event_id: params[:event_id] }
+                    %>
+                  </div>
+                <% else %>
+                  <div class="d-flex w-100 justify-content-between align-items-center">
+                    <h5 class="mb-1"><%= item.item.product_category.name %></h5>
+                    <span class="font-weight-bold p-3">$ <%= sprintf "%.2f", current_user&.is_member ? item.item.member_price * item.quantity : item.item.price * item.quantity %></span>
+                  </div>
+                  <p class="mb-1">
+                    <%= item.item.name %>
+                  </p>
+                  <p class="mb-1">
+                    Qty: <%= item.quantity %>
+                  </p>
+                  <% if item.size? %>
+                    <p class="mb-1">
+                      Size: <%= item.size %>
+                    </p>
+                  <% end %>
+                  <% if item.discount_allocations.present? %>
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                      <p class="mb-1 text-danger">Discount Price</p>
+                      <span class="font-weight-bold p-3"><%= number_to_currency(item.discount_allocations.last.amount.to_i, unit: "$", precision: 2) %></span>
+                    </div>
+                  <% end %>
+                  <div class="d-flex">
+                    <% if !item.item.product_category.single_product.present? %>
+                      <%= button_to '+', exhibitor_portals_cart_item_path(item.id), method: :put, 
+                          class: "btn btn-outline-primary btn-sm mt-2", 
+                          params: { 
+                            product_id: item.item, 
+                            quantity: check_product(item.item, @cart)+1, 
+                            cart_id: @cart.id,
+                            event_id: params[:event_id]
+                          }
+                      %>
+                      
+                      <%= button_to '-', exhibitor_portals_cart_item_path(item.id), method: :put, 
+                          class: "btn btn-outline-primary btn-sm mt-2", 
+                          params: { 
+                            product_id: item.item, 
+                            quantity: check_product(item.item, @cart)-1, 
+                            cart_id: @cart.id,
+                            event_id: params[:event_id]
+                          }, 
+                          disabled: check_product(item.item, @cart)-1 < 0
+                      %>
+                    <% end %>
+
+                    <%= 
+                      button_to 'delete', 
+                      exhibitor_portals_cart_item_path(item.id), 
+                      method: :delete, class: "btn btn-outline-danger btn-sm mt-2", 
+                      params: { product_id: item.item, cart_id: @cart.id, item: item, event_id: params[:event_id] }
+                    %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+            <div class="list-group-item list-group-item-action">
+              <% if @cart.cart_items.length != 0 %>
+                <% if @settings.transaction_tax_value.present? %>
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><%= @settings.transaction_tax_name.present? ? "#{@settings.transaction_tax_name} - #{@settings.transaction_tax_value.to_i}%" : 'tax' %></h5>
+                    <% total_tax = (@total * @settings.transaction_tax_value.to_i)/100 %>
+                    <span class="font-weight-bold p-3">
+                      $ <%= sprintf "%.2f", total_tax %>
+                    </span>
+                  </div>
+                <% end %>
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">Total</h5>
+                  <span class="font-weight-bold p-3">
+                    $ <%= sprintf "%.2f", total_tax.present? ? @total+total_tax : @total %>
+                  </span>
+                </div>
+              <% else %>
+              <div class="d-flex w-100 justify-content-between">
+                <h3 class="mb-1">Cart is Empty</h3>
+              </div>
+              <% end %>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

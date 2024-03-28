@@ -1,0 +1,13 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event: 
+#   survey_response: 
+#   answer: 
+#   response: MyText
+
+# two:
+#   event: 
+#   survey_response: 
+#   answer: 
+#   response: MyText

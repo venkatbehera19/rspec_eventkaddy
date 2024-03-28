@@ -1,0 +1,42 @@
+<%= form_for(@slot) do |form| %>
+  <%= form.hidden_field :event_id %>
+  <%= form.hidden_field :exhibitor_staff_id %>
+  <%= form.hidden_field :slot_duration %>
+  <% if slot.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(slot.errors.count, "error") %> prohibited this slot from being saved:</h2>
+
+      <ul>
+        <% slot.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <br/>
+  <div class="field">
+    <strong><%= form.label :organizer, "Organizer (Email)" %></strong>
+    <%= form.text_field :organizer, value: current_user.email, required:true, class: "form-control avg-width" %>
+  </div>
+  <div class="row d-flex">
+    <div class="col-sm-3 col-xs-6 mt-4">    
+      <label class="custom-select-label"> Select Date &nbsp; <i class="fa fa-calendar"></i> </label>
+      <%= form.select :slot_day, options_for_select(@date_range, @slot.start_time.blank? ? '' : @slot.start_time.localtime(@event.utc_offset).strftime("%A, %B %d %Y").to_s),{}, {:class => "custom-select", required:true, :size=>6} %>
+    </div>
+    <div class="col-sm-2 col-xs-6 mt-4">
+      <label class="custom-select-label"> Select Time &nbsp; <i class="fa fa-clock-o"></i> </label>
+      <%= form.select :start_time, options_for_select(@time_range, @slot.start_time.blank? ? '' : @slot.start_time.localtime(@event.utc_offset).strftime("%I:%M %p").to_s),{:include_hidden => false}, {:multiple => @slot.id.blank?, :class => "custom-select", required:true, :size=>6} %>
+
+    </div>
+    <div class="col-sm-7 col-xs-6 mt-4">
+      <label class="custom-select-label"> Meeting Description &nbsp; <i class="fa fa-check-circle"></i> </label>
+      <%= form.cktext_area :meeting_description, :style => "width:100%",  :required => true, :ckeditor => {:toolbar => "Full"} %>
+    </div>
+  </div>
+
+  <br>
+  <div class="row d-flex mt-4 mb-2">
+      <%= button_tag "Save Slot &nbsp;&nbsp;<i class='fa fa-plus'></i>".html_safe ,class:"btn btn-primary form-control avg-width btn-center", type:"submit"%>
+  </div>
+
+<% end %>

@@ -1,0 +1,38 @@
+<%= link_to 'Back', event_files_path,class:"btn" %> 
+<%= link_to 'Edit', edit_event_file_path(@event_file) ,class:"btn edit" %> 
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Event:</b>
+  <%= @event_file.event_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @event_file.name %>
+</p>
+
+<p>
+  <b>Size:</b>
+  <%= @event_file.size %>
+</p>
+
+<p>
+  <b>Mime type:</b>
+  <%= @event_file.mime_type %>
+</p>
+
+<p>
+  <b>Path:</b>
+  <%= @event_file.path %>
+</p>
+
+<p>
+  <b>Event file type:</b>
+  <%= @event_file.event_file_type_id %>
+</p>
+
+
+

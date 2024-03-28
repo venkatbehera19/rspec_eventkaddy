@@ -1,0 +1,194 @@
+<%= javascript_include_tag 'unordered-files/jquery.form.js' %>
+<%= javascript_include_tag 'unordered-files/image_upload.js' %>
+
+<h4>Member Welcome Template</h4>
+<br/>
+<div class="bg-light custom-border px-4 py-4" style="min-height:500px;">
+    <%= form_tag  settings_upload_email_template_image_organization_path, method: :post, multipart: true, style: "display:inline" do %>
+        <div>
+            <div>
+                <div id="uploadedImages"></div><br>
+                <div class="field">
+                    <%= label_tag :event_file, "Upload an Image for email template. Image will appear on Available Images box below" %> <br>
+                    <%= file_field_tag :event_file %>
+                </div>
+                <input type="button" value="Upload" id="SubmitUpload" /><br /><br />
+            </div>
+        </div>
+    <% end %>
+
+    <%= form_for @template, :html => { :multipart => true, :method => :post }, :url => organization_email_templates_path do |f| %>
+
+        <h5>Preview HTML</h5>
+
+        <div class="px-3 py-3 custom-border" style="min-height:100px;background-color:white;">
+            <% begin %>
+                <%# This is a decent solution, but since we're duplicating this in multiple places... we shouldn't do it inline %>
+                <%# Why not make an Example.speaker_email_template? %>
+                <%= @template.render([Example.speaker, Example.user, {extras: {password:'jiwef83'}}, Event.find(session[:event_id])]) {|content|
+                    content.gsub(/{{event_file\((.*?)\)\.?(.*?)}}/) {|match|
+                        image_tag EventFile.find($1).path
+                    }
+                } %>
+            <% rescue => e %>
+                An error occurred while trying to render the template.<br><br>
+                <%= e.message %><br><br>
+                Try removing some of the {{special_code}} to find which part is broken.
+            <% end %>
+        </div>
+        <br>
+        <h5>Preview Text</h5>
+
+        <button data-toggle="collapse" data-target="#preview-text" type='button' class="btn btn-secondary mb-2">Toggle</button>
+        <div id="preview-text" class="px-3 py-3 custom-border collapse" style="min-height:100px;background-color:white;">
+            <% begin %>
+                <%= EmailTemplate.remove_html_tags( @template.render([Example.speaker, Example.user, {extras: {password:'jiwef83'}}, Event.find(session[:event_id])]) {|content|
+                    content.gsub(/{{event_file\((.*?)\)\.?(.*?)}}/) {|match|
+                        image_tag OrganizationFile.find($1).path
+                    }
+                } ).gsub("\r", "<br>").html_safe %>
+            <% rescue => e %>
+                An error occurred while trying to render the template.<br><br>
+                <%= e.message %><br><br>
+                Try removing some of the {{special_code}} to find which part is broken.
+            <% end %>
+        </div>
+
+        <h5>Available Images</h5>
+        <button data-toggle="collapse" data-target="#images_for_email" type='button' class="btn btn-secondary mb-2">Toggle</button>
+        <div id='images_for_email' class="custom-border px-3 py-3 collapse" style="min-height:100px;background-color:white;">
+            <div id="gallery" style="height:unset">
+              <% if @org_files!=nil %>
+                  <% @org_files.each do |file| %>
+                  <div class="float">
+                    <% url = file.file_path(session[:event_id])["url"] %>
+                    <%= image_tag(url, id: file.id) %>
+
+                    <p><%= link_to "Delete", {:controller => :organization_email_templates, :action => :destroy_organization_email_file, :id => file.id}, { :method => :delete, :remote => true, :class =>'deleter btn delete'}   %></p>
+
+                  </div>
+                  <% end %>
+              <% end %>
+            </div>
+        </div>
+        <div class="form-group mt-2">
+            <%= f.label :email_subject, "Email Subject (no templating)" %>
+            <%= f.text_field :email_subject, class: "form-control" %>
+        </div>
+
+        <div class="form-group">
+            <%= f.label :content, "Content" %>
+            <%= f.cktext_area :content, cols: 3, class: 'form-control', :ckeditor => {:toolbar => "Full"}, required: true %>
+        </div>
+
+        <%= f.hidden_field :organization_id %>
+        <%= f.hidden_field :template_type_id %>
+
+        
+        <div class="form-group">
+            <h5>Select Recipients</h5>
+            <%= select_tag :user_id, options_for_select(@members.map{|member| ["#{member.first_name} #{member.last_name}", member.id]}), multiple: true, class: "custom-select"%>
+            <br>
+            * If recipients selected, e-mails will be sended after saving the template
+        </div>
+        <div class="form-group">
+            <%= check_box_tag :deliver_later, 1 , nil, onchange: "showDeliverOptions()" %>&nbsp;<strong>Deliver Later</strong>
+            &nbsp;<i class="fa fa-clock"></i>
+            <br>
+            <br>
+            Please leave it unchecked if you want the email to be delivered now.
+        </div>
+        <br/>
+
+        <div class="form-group" id="deliver_later_data">
+            <h5>Wait Until</h5>
+                <div class="datepicker-control" style="position:relative">
+                <%= text_field_tag :active_time, Time.now, id:"active_time", class: "form-control" %>
+                </div>
+                <div class="form-group mt-2">
+                    <%= label_tag :timezone%>
+                    <%= select_tag :timezone, options_for_select(ActiveSupport::TimeZone.all.sort_by(&:name).map{|e| ["#{e.name}(GMT#{e.now.formatted_offset})", e.name]}, "Eastern Time (US & Canada)"), { :class => "form-control", required: "required" } %>
+                </div>
+            <br/>
+        </div>
+        <hr/>
+
+        <div class="form-group" id="calendar_invite">
+            <%= check_box_tag :attach_calendar_invite, 1 , nil, onchange: "showCalenderOptions()" %>&nbsp;<strong>Attach Calendar Invitation</strong>
+            &nbsp;<i class="fa fa-calendar"></i>
+            <br>
+            <br>
+        </div>
+
+        <div id="calender_invite_data">
+            <h5>Calender Invite</h5>
+            <div class="row">
+                <div class="form-group col-md-4" >
+                    <%= label_tag :calendar_invite_start%>
+                    <%= text_field_tag :calendar_invite_start, Time.now, id:"calendar_invite_start", class: "form-control", autocomplete: false %>
+                </div>
+                <div class="form-group col-md-4">
+                    <%= label_tag :calendar_invite_end%>
+                    <%= text_field_tag :calendar_invite_end, Time.now, id:"calendar_invite_end", class: "form-control", autocomplete: 'off' %>
+                </div>               
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12" >
+                    <%= label_tag :calendar_invite_filename %>
+                    <%= text_field_tag :calendar_invite_filename, '', class: "form-control" %>
+                </div>
+                <div class="form-group col-md-12">
+                    <%= label_tag :calendar_invite_organizer %>
+                    <%= text_field_tag :calendar_invite_organizer, '', class: "form-control" %>
+                </div>
+                <div class="form-group col-md-12">
+                    <%= label_tag :calendar_invite_desciption %>
+                    <%= cktext_area_tag :calendar_invite_desciption %>
+                </div>               
+            </div>
+        </div>
+
+        <br/>
+
+
+        <%= f.submit 'Send Mail or Update Template', class:'btn btn-primary' %>
+    <% end %>
+
+</div>
+
+<script>
+    function showDeliverOptions () {
+        if ($('#deliver_later').is(':checked')) $('#deliver_later_data').show()
+        else $('#deliver_later_data').hide()
+    }
+
+    function showCalenderOptions() {
+        if ($('#attach_calendar_invite').is(':checked')) $('#calender_invite_data').show()
+        else $('#calender_invite_data').hide()
+    }
+    $(document).ready(function() {
+        $('#user_id').multiselect({
+            includeSelectAllOption:true,
+        });
+        if ($('#deliver_later').is(':checked')) $('#deliver_later_data').show()
+        else $('#deliver_later_data').hide()
+        $('#active_time').datetimepicker();
+
+        if ($('#attach_calendar_invite').is(':checked')) $('#calender_invite_data').show()
+        else $('#calender_invite_data').hide()
+
+        $('#calendar_invite_start').datetimepicker();
+        $('#calendar_invite_end').datetimepicker({
+            useCurrent: false,
+            timeZone: 'America/Los_Angeles'
+        });
+
+        $("#calendar_invite_start").on("dp.change", function (e) {
+            $('#calendar_invite_end').data("DateTimePicker").minDate(e.date);
+        });
+        $("#calendar_invite_end").on("dp.change", function (e) {
+            $('#calendar_invite_start').data("DateTimePicker").maxDate(e.date);
+        });
+        
+    })
+</script>

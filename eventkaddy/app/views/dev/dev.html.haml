@@ -1,0 +1,243 @@
+:css
+
+    .dev-link {
+        font-size:15px;
+        text-decoration:underline;
+    }
+
+    .dev-explanation {
+        color:#4E5352;
+        text-style:italic;
+        font-size:14px;
+        margin-bottom:10px;
+        margin-top:20px;
+        border-top:1px solid black;
+        padding-top:10px;
+    }
+
+    #job_status{
+        font-size: 0.9rem;
+        font-weight: bolder;
+    }
+
+.bg-light.custom-border.px-3.py-3
+
+    - unless @event_id
+
+        .alert
+            You are not signed into an event; some of the below links may have unexpected behaviour.
+
+    - else
+        .alert.alert-info
+            You are signed into
+            = Event.select('name').find(@event_id).name
+            ( id:
+            = @event_id
+            )
+
+    %h2 Links to Pages Not Yet in Portal Proper
+
+    .dev-explanation
+        Lists out all tags for the current event, for debugging.
+    = link_to 'Tags List', '/tags', class:'dev-link'
+
+    %br
+    %br
+    %br
+
+    %h2 Special Forms
+
+    .dev-explanation
+        Event Settings; edit values in the events table, such as notification keys and master url.
+        Different from the event_settings table, which was primarily useful for the speaker portal.
+    = link_to 'Event Settings Form', 'events/edit_event_settings', class:'dev-link'
+
+    .dev-explanation
+        Edit hidden events; Hide events from the change event dropdown to reduce
+        time wasted looking through events that are no longer relevant.
+    = link_to 'Hidden Events Form', 'events/hidden_events', class:'dev-link'
+
+    .dev-explanation
+        Edit hidden in app events; Hide events from the cordova app, such as events that are very old.
+
+    = link_to 'Hide in App Events Form', 'events/hide_in_app_events', class:'dev-link'
+
+    .dev-explanation
+        Send Hidden Notifications like "EK_FORCE_LOGOUT" which have a special
+        effect in the app.
+    = link_to 'Hidden Notifications Form', 'notifications/hidden_notification', class:'dev-link'
+
+    .dev-explanation
+        Manage emails queues. Create email queues, such as sending all attendees their password, and view the progress of said queue. Cancel queued emails in case of error, view status of cron script.
+    = link_to 'Emails Queue', 'emails_queues/show_all', class:'dev-link'
+
+    .dev-explanation
+        Create and manage integration scripts and other scripts
+    =link_to 'Manage Scripts', 'scripts/', class:'dev-link' 
+
+    %br
+    %br
+    %br
+
+    %h2 Special Actions
+
+    .dev-explanation
+        Use to create secure files on mobile site. For changing pdf links in session_file_urls to amazon links and inserting them into session.custom_fields_2
+
+    = form_tag("/custom_adjustments/session_file_urls_to_secure_field", :method => "post") do
+        = submit_tag("Create Amazon Aws Links For Session Files", :confirm => 'Are you sure?', :class=>"btn btn-primary text-wrap")
+
+    .dev-explanation
+        For removing all session and exhibitor recommendation data. AFFECTS ALL ATTENDEES.
+
+    = form_tag("/attendees/delete_all_recommendations", :method => "delete") do
+        = submit_tag("Delete All Recommendations", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+    .dev-explanation
+        For removing all data in attendees.iattend_sessions (ce credits). AFFECTS ALL ATTENDEES.
+
+    = form_tag("/attendees/delete_all_iattend_data", :method => "delete") do
+        = submit_tag("Delete All iAttend Data", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+    .dev-explanation
+        For removing all demo attendee game data and survey data
+
+    = form_tag("/attendees/delete_all_demo_attendees_game_and_survey_data", :method => "delete") do
+        = submit_tag("Delete Demo Attendee's Game and Survey Data", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+    .dev-explanation
+        For removing tags that do not have an associated session, exhibitor or attendee. Any non-leaf tag is removed unless it has a decendent leaf with an association.
+
+    = form_tag("/events/delete_abandoned_tags", :method => "delete") do
+        = submit_tag("Delete Unused Tags", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+    .dev-explanation
+        For adding the first tag group to the track_subtrack field of the sessions table.
+
+    = form_tag("/custom_adjustments/add_track_subtracks_to_sessions", :method => "post") do
+        = submit_tag("Add Track Subtracks To Sessions", :confirm => 'Are you sure?', :class=>"btn btn-primary text-wrap")
+
+    .dev-explanation
+        For adding the first and last names of speakers to the custom_fields column of the speaker table.
+
+    = form_tag("/custom_adjustments/add_speaker_names_to_sessions", :method => "post") do
+        = submit_tag("Add Speaker Names To Sessions", :confirm => 'Are you sure?', :class=>"btn btn-primary text-wrap")
+
+    = form_tag("/custom_adjustments/add_speaker_names_to_sessions_new", :method => "post") do
+        = submit_tag("Add Speaker Names To Sessions New Field", :confirm => 'Are you sure?', :class=>"btn btn-primary text-wrap")
+
+
+    .dev-explanation
+        Update all attendees pn_filters for the current event, adding and removing automated filters as necessary.
+
+    = form_tag("/custom_adjustments/add_automated_notification_filters_to_attendees", :method => "post") do
+        = submit_tag("Add Automated Notification Filters to Attendees", :confirm => 'Are you sure?', :class=>"btn btn-primary text-wrap")
+    .dev-explanation
+        For removing all session files, versions, and associated event_files, and nulling the session_file_urls field for the current event. Note: You should probably make a copy of the database before doing this in case of mistakes.
+
+    = form_tag("/custom_adjustments/remove_all_session_files", :method => "post") do
+        = submit_tag("Remove All Session Files", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+
+    .dev-explanation
+        Speakers and their associated rows will be deleted. Tables that contain those associated rows are event_files (photo_event_file, cv_event_file, fd_event_file), sessions_speakers (but not sessions) speaker_travel_details, speaker_payment_details, session_av_requirements.
+        %br
+        NOTE: Users with same email address will remain. A user whose role is speaker and has no remaining associated speaker across all events will become useless.
+
+    = form_tag("/custom_adjustments/remove_all_speakers_and_associations", :method => "post") do
+        = submit_tag("Remove All Speakers And Their Associations", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+    .dev-explanation
+        Speakers without sessions and their associated rows will be deleted. Tables that contain those associated rows are event_files (photo_event_file, cv_event_file, fd_event_file), sessions_speakers (but not sessions) speaker_travel_details, speaker_payment_details, session_av_requirements.
+        %br
+        NOTE: Users with same email address will remain. A user whose role is speaker and has no remaining associated speaker across all events will become useless.
+
+    = form_tag("/custom_adjustments/remove_all_speakers_without_sessions_and_associations", :method => "post") do
+        = submit_tag("Remove All Speakers Without Sessions And Their Associations", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+    .dev-explanation
+        Sessions without embedded_video_url will be destroyed and their associated rows, then speakers without sessions and their associated rows will be deleted.
+        %br
+        NOTE: Users with same email address will remain. A user whose role is speaker and has no remaining associated speaker across all events will become useless.
+
+    = form_tag("/custom_adjustments/remove_all_sessions_without_video_urls_and_abandoned_speakers", :method => "post") do
+        = submit_tag("Remove All Sessions Without Embedded Video URLs and Abandoned Speakers Without Sessions And Their Associations", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+
+    .dev-explanation
+        All attendees passwords will be updated for the current event.
+        %br
+
+    = form_tag("/custom_adjustments/update_attendee_passwords_for_event", :method => "post") do
+        = submit_tag("Update Attendee Passwords for Event", :confirm => 'Are you sure?', :class=>"btn btn-danger text-wrap")
+    
+    .dev-explanation
+        Update meta-data field of the tags table for the current event
+        %br/
+    .row
+        .col-sm-3
+            = button_tag 'Add Meta Data', class: "btn btn-primary", id: 'add-meta-data'
+        .col-sm-4
+            #job_status_container
+            %h6.mt-0 Status
+            - if  @session_meta_data_job.blank?
+                %div#job_status Not Initiated
+                %span#job_msg
+            - else
+                - if @session_meta_data_job.status.eql? 'done'
+                    %div#job_status(style="color: green;") Done
+                    %span#job_msg
+                        Last Update at
+                        = @session_meta_data_job.updated_at.to_date
+                - elsif @session_meta_data_job.status.eql? 'in_progress'
+                    %div#job_status(style="color: #2fa4e7;") In Progress..
+                    %span#job_msg
+                    = hidden_field_tag :job_status_field, @session_meta_data_job.status
+                - elsif @session_meta_data_job.status.eql? 'failed'
+                    %div#job_status(style="color: #c71c22;") Failed
+                    %span#job_msg
+                        = @session_meta_data_job.fail_message 
+
+
+
+    %br
+    %br
+    %br
+
+    %br
+    %br
+    %br
+
+    %h2 Dev Only Links
+
+    .dev-explanation
+        May be made available to clients, but for now sticking it in dev.
+
+    = link_to 'Emails Queue Index', '/emails_queues/show_all', class:'dev-link'
+
+    .dev-explanation
+        See currently active events, upcoming events, and past events. Take admin only notes on events for recording special considerations. Primarily a way for our team to quickly check if there is an event running before updating servers or databases.
+
+    = link_to 'Events Summary', '/dev/events_summary', class:'dev-link'
+
+    .dev-explanation
+        This page returns various details about fields in the database which need to be filled in for certain functions to operate, to help troubleshoot problems before we dive into code and logs.
+
+    = link_to 'Event Status', '/dev/event_status', class:'dev-link'
+
+    .dev-explanation
+        This page has some information about tables and their row counts for the current event, that can be helpful for debugging.
+
+    = link_to 'Event Tables', '/dev/event_tables', class:'dev-link'
+
+    .dev-explanation
+        Just a table of the most result user bulk actions, in case D.B. needs to 
+        at it on his phone when he cannot access Sequel Pro.
+
+    = link_to 'Action History', '/dev/action_history', class:'dev-link'
+
+    .dev-explanation
+        For viewing, adding and updating domains in the domains table.
+
+    = link_to 'Domains', domains_path, class:'dev-link'
+
+

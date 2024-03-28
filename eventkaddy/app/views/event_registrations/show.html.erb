@@ -1,0 +1,29 @@
+<div class="container">
+  <% if @settings.registration_open %>
+    <div class="simple_registration_heading" style="margin: 0 auto">
+      <%= @settings.simple_registration_heading1.to_s.html_safe %>  
+    </div>
+    <h2 style="text-align:center; font-weight:normal;">You're Registered!</h2>
+    <div class="simple_registration_subheading">
+      <%= @settings.simple_registration_subheading1.to_s.html_safe %>
+    </div>
+    <%= @settings.simple_registration_duration1.to_s.html_safe %>   
+    <div class="dropdown">
+      <button
+        class="btn <%= @settings.reg_button_class.blank? ? (@settings.dark_bg_theme ? 'btn-outline-light' : 'btn-outline-dark') : @settings.reg_button_class %>"
+        data-toggle="dropdown"
+        class="dropdown-toggle"
+        type="button"
+      >
+        Add to Calendar &nbsp;<%= image_tag("/defaults/calendar_icons/calendar-plus-48.png", width:20)%>  <b class="caret"></b>
+      </button>
+      <ul class="dropdown-menu report-dropdown-list">
+        <%= link_to "#{image_tag('/defaults/calendar_icons/google-calendar-48.png', width:20)} Google".html_safe, "/auth/google_oauth2?event_id=#{params[:event_id]}&slug=#{params[:slug]}", class: "dropdown-item" %>
+        <%= link_to "#{image_tag('/defaults/calendar_icons/ical-50.png', width:20)} iCal".html_safe, "/#{params[:event_id]}/event_registrations/icalendar", class: "dropdown-item" %>
+        <%= link_to "#{image_tag('/defaults/calendar_icons/microsoft-outlook-64.png', width:20)} Outlook".html_safe, "/#{params[:event_id]}/event_registrations/icalendar?format=vcs", class: "dropdown-item" %>
+      </ul>
+    </div>
+    <br/>
+    <%= @settings.simple_registration_content1.to_s.html_safe %>   
+  <% end %> 
+</div>

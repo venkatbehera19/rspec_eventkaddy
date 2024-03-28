@@ -1,0 +1,82 @@
+%body
+  / ======= Banner ======= /
+  %nav.navbar.navbar-light.bg-light.reg-banner
+    = @settings.reg_banner.to_s.html_safe
+
+  / ======= Main ======= /
+  .container-fluid.d-flex.flex-column.mx-auto.reg-main
+
+    / ======= Header ======= /
+    .d-flex.reg-section-container.align-items-center.reg-header{style: ("background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_index_page)}
+      .row.mx-auto.d-flex.reg-row
+        .col-12.d-flex.reg-col
+
+          / ======= Nav ======= /
+          .row
+            %nav.navbar.navbar-expand-sm.navbar-light.full-width
+              %a.navbar-brand.text-wrap{ id:"registration-top-nav"}
+                - event_setting = EventSetting.select(:portal_logo_event_file_id).where(event_id:params[:event_id]).first_or_create
+                -if event_setting && event_setting.event_file_portal_logo
+                  = image_tag(event_setting.event_file_portal_logo.path, :class =>'photo_preview')
+                -else
+                  %img{:src => "/assets/ek_logo.png", :width => "100px"}/
+              %button.navbar-toggler.collapsed{type:"button", 'data-toggle':"collapse", 'data-target':".navbar-collapse", 'aria-expanded':"false" }
+                %span.navbar-toggler-icon
+              .collapse.navbar-collapse.justify-content-end
+                %ul.navbar-nav.ml-auto
+                  - if @settings.method("agenda").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations/agenda"}
+                        AGENDA
+                  - if @settings.method("speakers").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations/speakers"}
+                        SPEAKERS
+
+          / ======= Header Content ======= /
+          - if @settings.show_header_index_page
+            .row
+              .reg-header-content
+                -if !@settings.reg_header_content.blank?
+                  - efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(@settings.reg_header_content.to_i)
+                  - if efile.cloud_storage_type_id.blank?
+                    = image_tag(efile.path, :class=>'photo_preview')
+                  - else
+                    = image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview')
+                  %br/
+
+                  %br/
+    
+    / ======= Notice ======= /
+    - if notice
+      .alert.alert-info.shadow{:role => "alert", :style => "border-left:#178acc 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#178acc"} ×
+        .row
+          %i.fa.fa-check-circle-o.info-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px;color:#178acc !important;"}= notice
+    - if alert
+      .alert.alert-danger.shadow{:role => "alert", :style => "border-left:#721C24 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#721C24"} ×
+        .row
+          %i.fa.fa-exclamation-circle.danger-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px"}= alert
+    
+    - !!@settings.no_of_content_sections && @settings.no_of_content_sections.times do |i|
+      .d-flex.reg-section-container.align-items-center{id: "reg_section_container#{i+1}", style:(@settings.send("reg_section_container#{i+1}_style").to_s if @settings.respond_to?("reg_section_container#{i+1}_style"))}
+        .row.mx-auto.d-flex
+          .col-12.d-flex.p-0
+            .row.mx-auto.d-flex
+              - !!@settings.column_list && !!@settings.column_list[i+1] && @settings.column_list[i+1].times do |j|
+                .col-12.col-center{id: "reg_section_container#{i+1}_col#{j+1}", class: "col-md", style:(@settings.send("reg_section_container#{i+1}_col#{j+1}_style").to_s if @settings.respond_to?("reg_section_container#{i+1}_col#{j+1}_style"))}
+                  = @settings.send("reg_section_container#{i+1}_col#{j+1}").to_s.html_safe
+
+    = render "cart_page"
+    .d-flex.align-items-center.justify-content-center
+      = link_to 'Proced To Payment', "/#{params[:event_id]}/exhibitor_registrations/cart_order/#{@cart.id}", class: "btn btn-outline-primary"
+
+:css
+  .reg-header{
+    background-image: url("#{(!!@settings.reg_header_bg_img && @settings.show_header_index_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : ''}");
+  }

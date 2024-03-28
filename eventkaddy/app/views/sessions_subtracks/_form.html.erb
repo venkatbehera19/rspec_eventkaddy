@@ -1,0 +1,25 @@
+<%= form_for(@sessions_subtrack) do |f| %>
+  <% if @sessions_subtrack.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sessions_subtrack.errors.count, "error") %> prohibited this sessions_subtrack from being saved:</h2>
+
+      <ul>
+      <% @sessions_subtrack.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :subtrack_id %>
+    <%= f.text_field :subtrack_id %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :session_id %>
+    <%= f.text_field :session_id %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

@@ -1,0 +1,198 @@
+<%= link_to 'Send Attendee Password Email', "/emails_queues/queue_email_password_for_attendee/#{@attendee.id}" ,class:"btn btn-primary", method: :post %>
+
+<h4>Attendee Sessions</h4>
+
+<%= link_to 'Add Attendee Session', "/sessions_attendee/#{@attendee.id}/new" ,class:"btn btn-primary" %>
+<%= link_to 'Add Multiple Attendee Sessions', "/sessions_attendee/#{@attendee.id}/multiple_new" ,class:"btn btn-primary" %><br><br>
+
+<table class="table bg-light">
+	<thead>
+		<tr>
+			<th>Session Code</th>
+			<th>Session ID</th>
+			<th>Title</th>
+			<th>Date/Time</th>
+			<!-- <th></th> -->
+			<!-- <th></th> -->
+			<th></th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<% @attendee.sessions_attendees.each do |sessionat| %>
+			<% session=Session.where(event_id:@attendee.event_id,session_code:sessionat.session_code).first %>
+            <% next unless session %>
+		 	<tr>
+		 		<% if session %>
+		    	 <td><%= link_to session.session_code,"/sessions/#{session.id}",class:"btn btn-link" %></td>
+		    	 <%else%>
+		    	 <td><%=sessionat.session_code%></td>
+		    	 <%end%>
+		    	 <td><%= session.id %></td>
+		    	 <% if session %>
+		    	 <td><%= session.title %></td>
+		    	 <% if (session.date!=nil && session.start_at!=nil) then %>
+		    	 	<td><%= "#{session.date.strftime("%m-%d-%Y")} | #{session.start_at.strftime("%H:%M")}" %></td>
+		    	 <% else %>
+		    	 	<td>Not Assigned</td>
+		    	 <% end %>
+		    	 <% else %>
+		    	 <td>Not Available</td>
+		    	 <td>Not Available</td>
+		    	 <%end%>
+		    	<!-- <td><%= link_to 'Show', sessions_attendee_path(sessionat), class:"btn show" %></td> -->
+		    	 <!-- <td><%= link_to 'Edit', edit_sessions_attendee_path(sessionat), class:"btn edit" %></td> -->
+		    	 <td><%= link_to 'Delete', sessions_attendee_path(sessionat), :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<br/><br/>
+
+<h4 class="view-title">Attendee Details</h4>
+<%= link_to 'Back', attendees_path ,class:"btn btn-outline-secondary" %> 
+<%= link_to 'Edit', edit_attendee_path(@attendee) ,class:"btn edit" %> <%= link_to 'Attendee Tags',"/attendees/#{@attendee.id}/attendee/attendee_tags" ,class:"btn btn-link" %>
+<%= link_to 'View History', "/attendees/#{@attendee.id}/view_history" ,class:"btn btn-link" %>
+<div class="dropdown download-menu" style="margin-left:2px">
+    <div
+      class="btn report-dropdown dropdown-toggle"
+      data-toggle="dropdown"
+    >
+      Email Certificate
+    </div>
+    <ul class="dropdown-menu report-dropdown-list">
+    <% @certificates.each do |certificate| %>
+      <li class="dropdown-item">
+          <%= form_tag("/attendees/mailers/generate_ce_sessions_pdf_report", :method => "post", :class => "ce_mailer_form", :multipart => true) do |f| %>
+            <%= hidden_field_tag :event_id, session[:event_id] %>
+            <%= hidden_field_tag :email, @attendee.email %>
+            <%= hidden_field_tag :account_code,  @attendee.account_code %>
+            <%= hidden_field_tag :type, certificate.name.downcase.gsub(' ','_') %>
+            <%= hidden_field_tag :api_proxy_key, API_PROXY_KEY %>
+            <%= hidden_field_tag :send_email, true %>
+            <%= hidden_field_tag :certificate_id, certificate.id %>
+            <%= hidden_field_tag :local_request, true %>
+            <%= submit_tag(certificate.name, :class => "certificate_emailer") %>
+          <% end %>
+      </li>
+    <% end %>
+    </ul>
+  </div>
+<div class="dropdown download-menu">
+    <div
+      class="btn report-dropdown dropdown-toggle"
+      data-toggle="dropdown"
+    >
+      Generate Reports
+    </div>
+    <ul class="dropdown-menu report-dropdown-list">
+    <% @certificates = add_reports_to_certificate_dropdown(@certificates) %>
+    <% @certificates.each do |certificate| %>
+      <% if certificate.name == "Lead Survey Report" %>
+         <li>
+           <%= link_to certificate.name,
+           "/attendees/#{@attendee.account_code}/cms_generate_lead_surveys_report/#{@event_id}",  target: "_blank"%>
+         </li>
+       <% else %>
+         <li>
+           <%= link_to certificate.name,
+           "/ce_credits/event_#{@event_id}_generate_#{certificate.name.downcase.gsub(' ','_')}?id=#{certificate.id}&account_code=#{@attendee.account_code}",  target: "_blank"%>
+         </li>
+       <% end %>
+    <% end %>
+    </ul>
+  </div>
+<br><br>
+<!-- # <%= link_to 'Back', attendees_path %> -->
+
+<table class="table">
+    <% if (!@attendee.event_file_photo.blank?) then %>
+      <% e = EventFile.find(@attendee.photo_event_file_id) %>
+      <% if e.cloud_storage_type_id.blank? %>
+        <tr><th>Photo</th><td><%= image_tag(e.path, :height=>'100') %></td></tr>
+      <% else %>
+        <tr><th>Photo</th><td><%= image_tag(e.return_authenticated_url()['url'], :height=>'100') %></td></tr>
+      <% end %>
+    <% end %>
+    <tr><th>Registration ID</th><td><%= @attendee.account_code %></td></tr>
+    <tr><th>Honor Prefix</th><td><%= @attendee.honor_prefix %></td></tr>
+    <tr><th>First Name</th><td><%= @attendee.first_name %></td></tr>
+    <tr><th>Last Name</th> <td><%= @attendee.last_name %></td></tr>
+    <tr><th>Honor Suffix</th><td><%= @attendee.honor_suffix %></td></tr>
+    <tr><th>Business Unit</th><td><%= @attendee.business_unit %></td></tr>
+    <tr><th>Business Phone #</th><td><%= @attendee.business_phone %></td></tr>
+    <tr><th>Mobile Phone #</th> <td><%= @attendee.mobile_phone %></td></tr>
+    <tr><th>Email</th>  <td><%= @attendee.email %></td></tr>
+    <tr><th>Company</th>  <td><%= @attendee.company %></td></tr>
+    <tr><th>Assignment</th>  <td><%= @attendee.assignment %></td></tr>
+    <tr><th>Attendee Type</th>  <td><%= @attendee.custom_filter_1 %></td></tr>
+    <tr><th>Biography</th>  <td><%= @attendee.biography %></td></tr>
+    <tr><th>Travel Info</th>  <td><%= @attendee.travel_info %></td></tr>
+    <tr><th>Table Assignment</th>  <td><%= @attendee.table_assignment %></td></tr>
+    <tr><th>Custom Fields 1</th>  <td><%= @attendee.custom_fields_1 %></td></tr>
+    <tr><th>Custom Fields 2</th>  <td><%= @attendee.custom_fields_2 %></td></tr>
+    <tr><th>Custom Fields 3</th>  <td><%= @attendee.custom_fields_3 %></td></tr>
+
+    <tr><th>Messaging Opt Out</th>  <td><%= @attendee.messaging_opt_out %></td></tr>
+    <tr><th>App Listing Opt Out</th>  <td><%= @attendee.app_listing_opt_out %></td></tr>
+    <tr><th>Game Opt Out</th>  <td><%= @attendee.game_opt_out %></td></tr>
+    <tr><th>Premium Member</th>  <td><%= @attendee.premium_member %></td></tr>
+    <tr><th>Demo User</th>  <td><%= @attendee.is_demo %></td></tr>
+    <tr><th>Filters</th><td><%= JSON.parse(@attendee.pn_filters).join ', ' if @attendee.pn_filters %></td></tr>
+    <tr><th>Registered As</th><td><%= @attendee.member_type? if @attendee.member_type? %></td></tr>
+    <tr><th>Badge Name</th><td><%= @attendee.badge_name %></td></tr>
+    <tr><th>Meeting Scan QR Code</th><td><%= image_tag @attendee.qr_image %></td></tr>
+</table>
+
+<br><br>
+
+<h4 class='view-title'>Game and Survey Data</h4>
+
+<%= link_to(
+    'Delete Attendee\'s Game and Survey Data',
+    "/attendees/destroy_game_and_survey_data_for_attendee/#{@attendee.id}",
+    :confirm => 'Are you sure?',
+    :method  => :delete,
+    :class   => "btn delete"
+) %>
+<br>
+Note: This will delete other data the game uses to calculate score as well, such
+as attendee sessions.
+
+<br><br>
+
+<table class='table'>
+
+    <tr><th>App Badges</th><td><%= @attendee.attendees_app_badges.length %></td></tr>
+    <tr><th>Scavenger Hunt Items</th><td><%= @attendee.attendees_scavenger_hunt_item.length %></td></tr>
+    <tr><th>Surveys</th><td><%= @attendee.survey_responses.length %></td></tr>
+    <tr><th>Survey Questions</th><td><%= @attendee.responses.length %></td></tr>
+
+</table>
+<style>
+  .ce_mailer_form {
+    margin: 0;
+  }
+  . {
+    /* border: none; */
+  }
+ input.certificate_emailer {
+  background-color: white;
+  border: none;
+  font-family: verdana, arial, helvetica, sans-serif;
+  padding: 3px 20px; 
+  font-size: 13px;
+  width: 100%;
+  text-align: start;
+  color: #333333
+}
+
+/* Mozilla uses a pseudo-element to show focus on buttons, */
+/* but anchors are highlighted via the focus pseudo-class. */
+
+  input.certificate_emailer:hover {
+    background-color: rgb(47, 164, 231) !important;
+    color: white;
+  }
+</style>

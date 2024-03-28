@@ -1,0 +1,37 @@
+div#gallery {
+  height:600px;
+  border:1px solid #ccc;
+  overflow:auto;
+}
+
+div.float:before {    /* create a full-height inline block pseudo=element */
+
+    display: inline-block;
+    vertical-align: middle;  /* vertical alignment of the inline element */
+    height: 100%;
+}
+
+div.float {
+  position: relative;
+  float: left;
+  padding:0px 5px 0px 5px;
+  width:175px;
+  text-align: center;
+
+  }
+
+div.float img {
+	display: inline-block;
+	max-height:140px;
+	max-width:140px;
+	margin:auto auto;
+	border-style:solid;
+	border-width:2px;
+    vertical-align: middle;  /* vertical alignment of the inline element */
+}
+
+div.float p {
+	padding:5px;
+   text-align: center;
+
+   }

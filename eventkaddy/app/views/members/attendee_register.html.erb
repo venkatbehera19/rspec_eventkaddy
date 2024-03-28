@@ -1,0 +1,126 @@
+<div class="col-md-6 col-centered">
+  <h3>Register for An Event : <%= @event.name %></h3>
+
+  <% if @attendee.id %>
+    Already Registered for the event
+  <% else %>
+    <%= form_for(@attendee, :html => { :class => "form mt-5" }, :url => '/members/attendee_register_submit', :method => :post ) do |f| %>
+      <% if @attendee.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@attendee.errors.count, "error") %> prohibited this form from being saved:</h2>
+
+          <ul>
+          <% @attendee.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% text_field = ->(col, label, options={}) {
+          if(@settings.respond_to?(col) &&  @settings.method("#{col}").call())
+            "<div class='form-group attendee-profile-form-input'>#{f.label col, label, {:class => "registered-attendee-form-label #{'required-field' if !!@settings.send("required_#{col}") }"}}#{f.text_field col, options}</div>".html_safe
+          end
+      } %>
+
+      <%= f.hidden_field :event_id %>
+      <%= text_field["email", @settings.email_label || "Email", :readonly=>true, class: "form-control", required:!!@settings.required_email] %>
+
+      <% if @settings.password %>
+        <div class='form-group attendee-profile-form-input'>
+          <%= f.label :password, :class => "registered-attendee-form-label" %>
+          <%= f.password_field :password, class: "form-control", required: @settings.required_password %>
+        </div>
+        <div class='form-group attendee-profile-form-input'>
+          <%= f.label :password_confirmation, :class => "registered-attendee-form-label" %>
+          <%= f.password_field :password_confirmation, class: "form-control", required: @settings.required_password %>
+        </div>
+      <% end %>
+
+      <%= text_field["username", @settings.username_label || "Username", class: "form-control", required:!!@settings.required_username] %>
+
+      <%= text_field["first_name", @settings.first_name_label || "First Name", class: "form-control", required:!!@settings.required_first_name] %>
+
+      <%= text_field["last_name", @settings.last_name_label || "Last Name", class: "form-control", required:!!@settings.required_last_name] %>
+
+      <%= text_field["honor_prefix", @settings.honor_prefix_label || "Honor Prefix", class: "form-control", required:!!@settings.required_honor_prefix] %>
+
+      <%= text_field["honor_suffix", @settings.honor_suffix_label || "Honor Suffix", class: "form-control", required:!!@settings.required_honor_suffix] %>
+
+      <%= text_field["business_unit", @settings.business_unit_label || "Business Unit", class: "form-control", required:!!@settings.required_business_unit] %>
+
+      <%= text_field["title", @settings.title_label || "Title", class: "form-control", required:!!@settings.required_title] %>
+
+      <%= text_field["business_phone", @settings.business_phone_label || "Business Phone", class: "form-control", required:!!@settings.required_business_phone] %>
+
+      <%= text_field["mobile_phone", @settings.mobile_phone_label || "Mobile Phone", class: "form-control", required:!!@settings.required_mobile_phone] %>
+
+      <%= text_field["company", @settings.company_label || "Company", class: "form-control", required:!!@settings.required_company] %>
+
+      <%= text_field["twitter_url", @settings.twitter_url_label || "Twitter URL", class: "form-control", required:!!@settings.required_twitter_url] %>
+
+      <%= text_field["facebook_url", @settings.email_label || "Facebook URL", class: "form-control", required:!!@settings.required_facebook_url] %>
+
+      <%= text_field["linked_in", @settings.facebook_url_label || "Linked In", class: "form-control", required:!!@settings.required_linked_in] %>
+
+      <%= text_field["biography", @settings.biography_label || "Biography", class: "form-control", required:!!@settings.required_biography] %>
+
+      <%= text_field["country", @settings.country_label || "Country", class: "form-control", required:!!@settings.required_country] %>
+
+      <%= text_field["state", @settings.state_label || "State", class: "form-control", required:!!@settings.required_state] %>
+
+      <%= text_field["city", @settings.city_label || "City", class: "form-control", required:!!@settings.required_city] %>
+
+      <%= text_field["custom_filter_3", "Email (visible in attendee list)", class: "form-control"] %>
+
+      <%= text_field["custom_fields_1", "Custom Fields 1", class: "form-control"] %>
+
+      <%= text_field["custom_fields_2", "Custom Fields 2", class: "form-control"] %>
+
+      <%= text_field["custom_fields_3", "Custom Fields 3", class: "form-control"] %>
+
+      <div class="actions ">
+        <div class="row">
+          <div class="col-md-2 reg-btn">
+            <%= f.submit "Register", class:"btn btn-primary" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+
+<style>
+label.registered-attendee-form-label {
+  font-size: 1.2rem;
+}
+.required-field::after {
+  content: '*';
+  color: red;
+  margin-left: 2px;
+}
+</style>
+
+<script>
+$(document).ready(function(){
+  $('#attendee_password_confirmation').on('input', function(){
+      if($(this).val() !== $('#attendee_password').val()){
+          $(this).css('border', '1px solid red')
+      }else{
+          $(this).css('border', '1px solid green')
+          $(".round-btn.register").removeAttr('disabled')
+      }
+  })
+})
+
+$( ".form" ).submit(function( event ) {
+  if($('#attendee_password_confirmation').val() !== $('#attendee_password').val()){
+    $('#attendee_password_confirmation').css('border', '1px solid red')
+    event.preventDefault()
+    $('html, body').animate({
+        scrollTop: $("#attendee_password_confirmation").offset().top
+    }, 2000);
+  }
+});
+</script>

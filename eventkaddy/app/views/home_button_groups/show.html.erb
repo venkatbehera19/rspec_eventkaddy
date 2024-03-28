@@ -1,0 +1,79 @@
+<h4 class="view-title">Button Group Details</h4>
+<%= link_to 'Back', home_button_groups_path, class:"btn btn-link" %>  <%= link_to 'Edit', edit_home_button_group_path(@home_button_group) ,class:"btn btn-outline-success" %> <%= link_to 'Delete', @home_button_group, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %><br><br>
+
+<table class="table">
+<% if (@home_button_group.event_file!=nil) then %>
+	<tr><td><%= image_tag(@home_button_group.event_file.path, :height=>'50') %></td></tr>
+<% end %>
+<tr><th>Group Name</th><td><%= @home_button_group.name %></td></tr>
+<tr><th>Position</th> <td><%= @home_button_group.position %></td></tr>
+</table>
+
+<%= link_to 'Add Group Entry', "/home_button_entries/new/#{@home_button_group.id}",class:"btn btn-primary" %>
+
+<% if @home_button_entries!=nil %>
+	<h4 class="view-subtitle">Group Entries</h4>
+	<div class="table-responsive">
+	<table id="home_button_groups" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+
+	  <thead>
+	  <tr>
+	    <th>Name</th>
+	    <th>Type</th>
+	    <!-- <th>Icon</th> -->
+	    <th>Position</th>
+	    <!--<th>Render URL</th>-->
+		<th>Content</th>
+	    <th></th>
+	  </tr>
+	  </thead>
+
+	  <tbody>
+
+	<% @home_button_entries.each do |home_button_entry| %>
+	  <tr>
+	    <td><%= home_button_entry.name %></td>
+	    <% if (home_button_entry.home_button_entry_type!=nil) then %>
+	    <td><%= home_button_entry.home_button_entry_type.name %></td>
+	    <% else %>
+	    <td></td>
+	    <% end %>
+	    <% if (home_button_entry.event_file!=nil) then %>
+	   <!-- <td><%= image_tag(home_button_entry.event_file.path, :style=>"max-height:75px;") %></td> -->
+	    <% else %>
+	    <!-- <td>N/A</td> -->
+	    <% end %>
+	    <td><%= home_button_entry.position %></td>
+	    <!--<td><%= home_button_entry.render_url %></td>-->
+	    <td>
+	    	<% if !(home_button_entry.content.blank?) %>
+	    	  <%= home_button_entry.content.truncate(100) %>
+	    	<% end %>
+	    </td>
+	    <td class="table-actions">
+				<div class="btn-group d-flex">
+					<%= link_to 'Show', home_button_entry ,class:"btn btn-outline-info" %>
+					<%= link_to 'Edit', edit_home_button_entry_path(home_button_entry) ,class:"btn btn-outline-success" %>
+					<%= link_to 'Delete', home_button_entry, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+				</div>
+				<div class="dropdown">
+					<a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+						<i class="fa fa-ellipsis-v"></i>
+					</a>
+					<div class="dropdown-menu">
+						<%= link_to 'Show', home_button_entry ,class:"btn dropdown-item text-info" %>
+						<%= link_to 'Edit', edit_home_button_entry_path(home_button_entry) ,class:"btn dropdown-item text-success" %>
+						<%= link_to 'Delete', home_button_entry, :confirm => 'Are you sure?', :method => :delete ,class:"btn dropdown-item text-danger" %>
+					</div>
+				</div>
+			</td>
+	  </tr>
+
+	<% end %>
+	  </tbody>
+	</table>
+	</div>
+<% end %>
+
+
+

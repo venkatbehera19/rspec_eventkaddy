@@ -1,0 +1,120 @@
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<% if @attendee_badge_print_settings.portal_open %>
+  <div class="simple_registration_heading" style="margin:auto">
+    <%= @attendee_badge_print_settings.attendee_badge_portal_heading.html_safe %>
+  </div> 
+  <div class="simple_registration_subheading">
+    <%= @attendee_badge_print_settings.attendee_badge_portal_subheading.html_safe %>
+  </div>
+  <%= @attendee_badge_print_settings.attendee_badge_portal_duration.html_safe %>
+  <%= @attendee_badge_print_settings.attendee_badge_portal_content.html_safe %>
+  <div class="form-group col-md-4 p-0">
+    <select id="selected_device" class="form-control">
+      <option value="none">Choose Printer</option>
+    </select>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <% if @attendee_badge_print_settings.show_badge_search_field_for_attendee %>
+        <div class="form-group">
+          <ul class="list-group" style=" max-height: 15rem; overflow-y: auto; ">
+            <h5>Search For Attendee</h5>
+            <li class="list-group-item d-flex justify-content-between">
+              <input class="form-control" id="search-attendee" placeholder="<%= @attendee_badge_print_settings.search_attendee_by.titleize %>" data-type='attendee'>
+              <button class="btn btn-primary search-attendee-btn">Search</button>
+            </li>
+          </ul>  
+        </div>
+      <% end %>
+      <div class="attendee-listing">
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div id="reader"></div>
+      <p id='reader-text'></p>
+    </div>
+  </div>
+  <!-- Modal -->
+  <%= render partial: 'modal' %>
+<% else %>
+  <h2 style="text-align: center;">Portal Closed</h2>
+<% end %>
+
+<style>
+
+::-webkit-scrollbar {
+  display: block !important;
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 
+</style>
+
+<script>
+  $(document).ready(function(){
+    function onScanSuccess(decodedText, decodedResult) {
+      // handle the scanned code as you like, for example:
+      console.log(`Code matched = ${decodedText}`, decodedResult);
+      $('#reader-text').text(decodedText)
+      account_code = decodedText
+      attendeeType = 'attendee'
+      pathName = window.location.pathname.split('/').slice(0, 3).join('/')
+       $.ajax({
+          type: "get",
+          url: pathName + '/search_attendee',
+          data: {account_code, attendeeType},
+          success: function (data) {
+            if (data.use_pin){
+              ulEl = `<ul class="list-group" style=" max-height: 15rem; overflow-y: auto; ">`
+              data.attendees.forEach(el => {
+                liEl = `<li class="list-group-item d-flex justify-content-between"><span>${el.first_name} ${el.last_name}, ${el.company}</span> <a class="btn btn-primary btn-sm pin_modal" data-attendee='${el.id}' data-attendee-type='${attendeeType}' href="#" data-toggle="modal" data-target="#exampleModal">Print Badge</a></li>`
+                ulEl = ulEl + liEl
+              })
+              ulEl + `</ul>`
+            }else{
+              ulEl = `<ul class="list-group" style=" max-height: 15rem; overflow-y: auto; ">`
+              max_count = data.max_count === true ? 1 : data.max_count
+              data.attendees.forEach(el => {
+                idTobe = el.count >= max_count ? 'not-print' : 'print-badge-btn'
+                btnText = el.count >= max_count ? 'NA' : 'Print Badge'
+                dataSet = el.count >= max_count ? 'data-toggle="modal" data-target="#overRideModal"' : ''
+                liEl = `<li class="list-group-item d-flex justify-content-between">${el.first_name} ${el.last_name}, ${el.company} <a class="btn btn-primary btn-sm ${idTobe}" data-attendee='${el.id}' data-attendee-type='${attendeeType}' ${dataSet} href="#">${btnText}</a></li>`
+                ulEl = ulEl + liEl
+              })
+              ulEl + `</ul>`
+            }
+            $('.attendee-listing').html(ulEl)
+          },
+          error: function (data) {
+            $('.for-error').text(data.error)
+          }
+        });
+    }
+
+    function onScanFailure(error) {
+      // handle scan failure, usually better to ignore and keep scanning.
+      // for example:
+      console.log(`Code scan error = ${error}`);
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader",
+      { fps: 10, qrbox: {width: 500, height: 500} },
+      /* verbose= */ false);
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  })
+</script>

@@ -1,0 +1,107 @@
+<%= javascript_include_tag 'unordered-files/jquery.form.js' %>
+<%= javascript_include_tag 'unordered-files/image_upload.js' %>
+
+<h4>Calendar Invitation Email Template</h4>
+<br/>
+<div class="well" style="min-height:500px;">
+
+    <%= form_tag  settings_upload_email_template_image_path, method: :post, multipart: true, style: "display:inline" do %>
+        <div>
+            <div>
+                <div id="uploadedImages"></div><br>
+                <div class="field">
+                    <%= label_tag :event_file, "Upload an Image for email template. Image will appear on Available Images box below" %>
+                    <%= file_field_tag :event_file %>
+                </div>
+                <input type="button" value="Upload" id="SubmitUpload" /><br /><br />
+            </div>
+        </div>
+    <% end %>
+
+    <%= form_for @template, :html => { :multipart => true, :method => :post }, :url => '/settings/update_calendar_invitation_email_template' do |f| %>
+
+        <h5>Preview HTML</h5>
+
+        <div class="well" style="min-height:100px;background-color:white;">
+            <% begin %>
+                <%# This is a decent solution, but since we're duplicating this in multiple places... we shouldn't do it inline %>
+                <%# Why not make an Example.attendee_email_template? %>
+                <%= @template.render([Example.attendee, Event.find(session[:event_id])]) {|content|
+                    content.gsub(/{{event_file\((.*?)\)\.?(.*?)}}/) {|match|
+                        image_tag EventFile.find($1).path
+                    }
+                } %>
+            <% rescue => e %>
+                An error occurred while trying to render the template.<br><br>
+                <%= e.message %><br><br>
+                Try removing some of the {{special_code}} to find which part is broken.
+            <% end %>
+        </div>
+
+        <br>
+        <h5>Preview Text</h5>
+
+        <button data-toggle="collapse" data-target="#preview-text" type='button' class="btn btn-primary">Toggle</button>
+        <div id="preview-text" class="well collapse" style="min-height:100px;background-color:white;">
+            <% begin %>
+                <%= EmailTemplate.remove_html_tags( @template.render([Example.attendee, Event.find(session[:event_id])]) {|content|
+                    content.gsub(/{{event_file\((.*?)\)\.?(.*?)}}/) {|match|
+                        image_tag EventFile.find($1).path
+                    }
+                } ).gsub("\r", "<br>").html_safe %>
+            <% rescue => e %>
+                An error occurred while trying to render the template.<br><br>
+                <%= e.message %><br><br>
+                Try removing some of the {{special_code}} to find which part is broken.
+            <% end %>
+        </div>
+        <br>
+        <br>
+        <h5>Available Images</h5>
+        <button data-toggle="collapse" data-target="#images_for_email" type='button' class="btn btn-primary">Toggle</button>
+        <div id='images_for_email' class="well collapse" style="min-height:100px;background-color:white;">
+            <div id="gallery" style="height:unset">
+                <% if @event_files!=nil %>
+                <% @event_files.each do |file| %>
+                <div class="float">
+                    <%= image_tag(file.path, id: file.id) %>
+
+                    <p><%= link_to "Delete", {:controller => :event_files, :action => :destroy, :id => file.id}, { :method => :delete, :remote => true, :class =>'deleter btn delete'}   %></p>
+
+                </div>
+                <% end %>
+                <% end %>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="field">
+            <%= f.label :email_subject, "Email Subject (no templating)" %>
+            <%= f.text_field :email_subject, class:"form-control" %>
+            <br>
+            <br>
+        </div>
+
+        <div class="field">
+            <%= f.label :content, "Content"%>
+            <%= f.cktext_area :content, :ckeditor => {:toolbar => "Full"} %>
+            <br>
+        </div>
+
+        <%= f.submit 'Update Calendar Invitation Email Template', class:'btn btn-primary' %>
+    <% end %>
+
+    <% if current_user.role? :superadmin or current_user.role? :client %>
+        <div class='well'>
+            <%= form_tag '/settings/send_test_email' do %>
+                <div class='alert'>Please save changes in form above first.</div>
+                <%= hidden_field_tag :type, "calendar_invitation_email_template" %>
+                <div class='field'>
+                    <%= submit_tag 'Send test email to:', class:'btn btn-primary' %>
+                    <%= text_field_tag :email, '', placeholder: 'email', style: 'width:200px;margin-left: 20px;' %>
+                </div>
+            <% end %>
+        </div>
+    <% end %>
+
+</div>

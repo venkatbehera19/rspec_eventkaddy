@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  exhibitor: one
+  qr_code_id: '123'
+  product_image: one
+  name: MyString
+  description: MyText
+  qr_content: dummy
+  product_url: MyString
+  youtube_url: MyString
+
+two:
+  event: two
+  exhibitor: two
+  qr_code_id: '111'
+  product_image: two
+  name: MyString
+  description: MyText
+  qr_content: MyString
+  product_url: MyString
+  youtube_url: MyString

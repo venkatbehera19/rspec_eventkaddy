@@ -1,0 +1,9 @@
+(saturday at 8:05am each week)
+5 8 * * 6 /usr/local/rvm/bin/ruby-1.9.3-p194@ekcharlie-dev /home/deploy/ek-dev-cms-charlie/ek_scripts/requirementsReminder.rb > /home/deploy/cron-debug.txt 2>&1
+* * * * * /usr/local/rvm/bin/ruby-1.9.3-p194@ekcharlie-dev /home/deploy/ek-dev-cms-charlie/ek_scripts/notificationCheck.rb > /home/deploy/cron-debug.txt 2>&1
+
+
+0,30 * * * * /usr/local/rvm/gems/ruby-2.0.0-p353@avma2014-speaker-portal/wrappers/ruby /home/deploy/lodestar-avma-dev/eventkaddy/ek_scripts/messageCheck.rb > /home/deploy/cron-debug.txt 2>&1
+
+
+0 * * * * /usr/local/rvm/bin/ruby-1.9.3-p194@ekcharlie-dev /home/deploy/ek-dev-cms-charlie/ek_scripts/external-api-imports/import-attendees-wvc2013.rb 1 > /home/deploy/cron-debug2.txt 2>&1

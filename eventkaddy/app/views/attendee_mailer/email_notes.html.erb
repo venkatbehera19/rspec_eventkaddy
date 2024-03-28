@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<% convert_line_breaks = ->(text) { %>
+    <% return "" unless text %>
+    <% text.split(/[\n\r]/).each do |line| %>
+        <%= line %><br>
+    <% end %>
+<% } %>
+
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+      Hi <%= @email %>,
+
+      Here are your notes from <%= @event.name %>.
+
+      <h4>Session Notes </h4>
+
+      <% if @session_notes.length === 0 then %>
+         You have not taken any Session Notes.
+      <% else %>
+         <% @session_notes.each do |sn| %>
+            <h5 style="margin-left:5px;"> <%= sn.title %> </h5>
+
+            <p style="margin-left:10px;"> <% convert_line_breaks[ sn.text ] %> </p>
+
+
+         <% end %>
+      <% end %>
+
+      <h4> Exhibitor Notes </h4>
+
+      <% if @exhibitor_notes.length === 0 then %>
+         You have not taken any Exhibitor Notes.
+      <% else %>
+         <% @exhibitor_notes.each do |en| %>
+            <h5 style="margin-left:5px;"> <%= en.title %> </h5>
+
+            <p style="margin-left:10px;"> <% convert_line_breaks[ en.text ] %> </p>
+
+
+         <% end %>
+      <% end %>
+
+      <h4> Attendee Notes </h4>
+
+      <% if @attendee_notes.length === 0 then %>
+         You have not taken any Attendee Notes.
+      <% else %>
+         <% @attendee_notes.each do |an| %>
+            <h5 style="margin-left:5px;"> <%= an.title %> </h5>
+
+                <% if @show_contact_info %>
+                    <h5 style="margin-left:5px;"> Contact Info </h5>
+                    <br>
+                    <% unless an.email.blank? %>
+                        <div style="margin-left:10px;">Email: <%= an.email %> </div>
+                    <% end %>
+                    <% unless an.mobile_phone.blank? %>
+                        <div style="margin-left:10px;">Mobile Phone: <%= an.mobile_phone %> </div>
+                    <% end %>
+                    <% unless an.business_phone.blank? %>
+                        <div style="margin-left:10px;">Business Phone: <%= an.business_phone %> </div>
+                    <% end %>
+                    <% if [an.email, an.mobile_phone, an.business_phone].all? {|item| item.blank?} %>
+                        <div style="margin-left:10px;">Contact info unavailable.</div>
+                    <% end %>
+                    <br>
+                <% end %>
+
+            <p style="margin-left:10px;"> <% convert_line_breaks[ an.text ] %> </p>
+
+
+         <% end %>
+      <% end %>
+
+      <h4> General Notes </h4>
+
+      <% if @general_notes.length === 0 then %>
+         You have not taken any General Notes.
+      <% else %>
+         <% @general_notes.each do |gn| %>
+            <h5 style="margin-left:5px;"> <%= gn.title %> </h5>
+
+            <p style="margin-left:10px;"> <% convert_line_breaks[ gn.text ] %></p>
+
+
+         <% end %>
+      <% end %>
+
+  </body>
+</html>

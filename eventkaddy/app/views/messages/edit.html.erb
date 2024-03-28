@@ -1,0 +1,7 @@
+<h4>Editing Message</h4>
+<%= link_to 'Back', '/event_settings/show_messages', class:"btn btn-link" %>
+<%= link_to 'Show', "/messages/display_message/#{@message.id}" ,class:"btn btn-outline-info" %>
+<br><br>
+
+
+<%= render 'form' %>

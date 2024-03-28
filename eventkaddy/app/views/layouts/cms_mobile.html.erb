@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EventKaddy CMS</title>
+        <%= stylesheet_link_tag "application" %>
+        <%= javascript_include_tag "application" %>
+        <script type="text/javascript" src="/non_pipeline_assets/mobile.js"></script>
+        <link href="/non_pipeline_assets/mobile.css" media="all" rel="stylesheet" type="text/css"/>
+        <%= csrf_meta_tag %>
+        <%= yield :head %>
+    </head>
+
+    <script>
+        $(function() {
+            var $eventsMenu = mobileMenu(
+                <%= Menus.events_menu_items( current_user ).to_json.html_safe %>,
+                "Events"
+            );
+
+            var $mainMenu = mobileMenu(
+                <%= Menus.cms_menu_items( session[:event_id] ).to_json.html_safe %>,
+                "<div style='margin-left:5px; text-align:center;' class='logo'> \
+                    <a href='/'> \
+                        <img src='/assets/defaults/ek_logo.png' width='90px' height='31px'> \
+                    </a> \
+                </div>"
+            );
+
+            $('.dropdown').click( function() { displayMenu( $eventsMenu ) } );
+            $('.mobile_menu').click( function() { displayMenu( $mainMenu ) } );
+        })
+    </script>
+    <body>
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="masthead">
+                    <div class="pull-left logo">
+                        <a href="/"><img src="/assets/defaults/ek_logo.png" width="90px" height="31px"></a>
+                    </div>
+                    <% if current_user.role? :super_admin %>
+                        <div class="pull-left btn dev-container">
+                            <a class="dev-menu-link" href="/dev">D</a>
+                        </div>
+                        <div class="pull-left btn dev-container">
+                            <a class="dev-menu-link" href="/settings/cms">C</a>
+                        </div>
+                    <% end %>
+
+                    <br>
+
+                    <ul class="nav nav-pills pull-right">
+                        <li><a href="#" class='mobile_menu'>Menu</a></li>
+                    </ul>
+
+                    <%# This can be extracted into its own subview (menu for events) %>
+                    <ul class="nav nav-pills pull-right">
+                        <% if session[:event_id] && session[:event_name] %>
+                            <li><%= link_to session[:event_name], "/events/configure/#{session[:event_id]}" %></li>
+                            <li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle">Change Event<b class="caret"></b></a>
+                                    <div class="dropdown-menu mobile_side_menu"></div>
+                                </li>
+                            </li>
+                        <% end %>
+                        <% if user_signed_in? %>
+                            <li><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete %></li>
+                        <% else %>
+                            <li><%= link_to "Speaker Portal", "/users/sign_in" %></li>
+                            <li><%= link_to "Manager Login", "/users/sign_in" %></li>
+                        <% end %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div>
+            <div>
+                <div id="content">
+                    <%= link_to "Use Desktop Mode", request.original_url.gsub(/mobile=true/, 'mobile=false') %>
+                    <br><br>
+                    <% if notice %>
+                        <p class="alert alert-info"><%= notice %></p>
+                    <% end %>
+                    <% if alert %>
+                        <p class="alert alert-danger"><%= alert %></p>
+                    <% end %>
+
+                    <%= content_for?(:content) ? yield(:content) : yield %>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <hr>
+
+        <div class="footer">
+            <div class="footer-text">
+                Questions?  Email support@eventkaddy.com
+            </div>
+        </div>
+
+
+    </body>
+</html>

@@ -1,0 +1,52 @@
+
+<%= form_for(current_user, :remote => true, :url => update_general_user_path(id: current_user.id), :html => { :method => :post }) do |f| %>
+  <div class="row">
+    <div class="col-12 col-sm-6 mb-3">
+
+      <div class="card-header mb-4" style="background-color: #fff;">
+        <b>General</b>
+      </div>
+
+      <div class="row">
+        <div class="col" id="generalErrorsDiv">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <%= f.label :email, "Email" %><br />
+            <%= f.email_field :email, :class => 'form-control', readonly: true%>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <%= f.label :first_name,"First Name"%><br />
+            <%= f.text_field :first_name, :class => 'form-control',:placeholder => 'Enter First Name'%>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <%= f.label :last_name,"Last Name"%><br />
+            <%= f.text_field :last_name, :class => 'form-control',:placeholder => 'Enter Last Name'%>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col d-flex justify-content-end">
+          <div class="form-group">
+            <button class="btn btn-primary" type="submit">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+<%end%>

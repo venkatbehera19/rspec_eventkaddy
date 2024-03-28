@@ -1,0 +1,48 @@
+.outer-div {
+  min-width: 350px;
+  overflow-y: hidden;
+  height: 80px;
+  position: relative;
+  overflow-x: scroll;
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    li {
+      float: left;
+      margin: 10px;
+      height: 100px;
+      width: 50px;
+      font-family: 'arial';
+      font-size: 16px;
+      text-align: center;
+      transition: all 0.5s ease-in-out;
+      span {
+        display: block;
+        color: #8d8d8d;
+        font-family: 'arial';
+        font-size: 14px;
+      }
+      &.active {
+        font-size: 20px;
+        width: 80px;
+        span {
+          display: block;
+          color: rgb(48, 126, 182);
+          font-size: 25px;
+        }
+      }
+    }
+  }
+  &::-webkit-scrollbar {
+    display: block;
+    width: 7px;
+    background: rgb(182, 204, 213);
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgb(48, 126, 182);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  }
+}

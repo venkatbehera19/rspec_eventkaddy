@@ -1,0 +1,57 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+	
+	wb.add_worksheet(name: "Speakers Summary") do |sheet|
+	  sheet.add_row ['Speaker_ID', 'Title','First Name','Initial', 'Last Name', 'Degree W. Diploma Status', 'Email', 'SS#', 'Pay to Line', 'Pay to Line 2', 'Direct Bill Travel', 'Direct Bill Housing', 'Eligible Housing Nights', 'Payment Type', 'Eligible Payment Rate', 'Total Honorarium', 'Total Per Diem', 'Approved Arrival Date', 'Approved Departure Date', 'Actual Arrival Date', 'Actual Departure Date', 'Hotel Name', 'Hotel Confirmation Number', 'Hotel Cost', 'Hotel Reimbursement', 'Airfare Cost', 'Airfare Reimbursement', 'Mileage', 'Comments', 'Organization', 'Address 1', 'Address 2', 'Address 3', 'City', 'State', 'Zip', 'Country', 'Work', 'Fax', 'Mobile', 'Home', 'Biography', 'Speaker Files', 'Speaker Photo Path'], :style => [black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell,black_cell]
+	  #36 column cells
+
+	  #
+
+		@speakers.each do |speaker|
+
+			puts speaker.id
+			speakers = ''
+			speaker_emails = ''
+			speaker_files = ''
+			speaker_photo = ''
+
+			speaker.speaker_files.each do |file|
+				speaker_files += "Title: #{file.title} URL: eventkaddy.net#{file.event_file.path} | "
+			end
+
+			if (speaker.event_file_photo!=nil) then
+				speaker_photo += "eventkaddy.net"+speaker.event_file_photo.path+""
+			end
+			
+			# speakers.each do |speaker|	
+			# 	speakers += "#{speaker.honor_prefix} #{speaker.first_name} #{speaker.last_name} #{speaker.honor_suffix} | "
+			# 	speaker_emails += "#{speaker.email} | "
+		 #  	end
+			
+			
+	  		#session_file_versions_count = session_file.session_file_versions.length
+        
+       #  	if (session_file.session_file_versions.length > 0 && 
+   				# session_file.session_file_versions.order('updated_at DESC').first.event_file!=nil) then
+   				# latest_url = "http://wvcspeakers.eventkaddy.net#{session_file.session_file_versions.order('created_at DESC').first.event_file.path}\""
+   				# #latest_url = "=HYPERLINK(\"http://wvcspeakers.eventkaddy.net#{session_file.session_file_versions.order('updated_at DESC').first.event_file.path}\""
+
+       #  	else
+       #  		latest_url = "No File Available"
+       #  	end
+
+       		
+       		if (!(speaker.speaker_travel_detail.nil?) && !(speaker.speaker_payment_detail.nil?)) then
+	  			sheet.add_row [speaker.id,speaker.honor_prefix,speaker.first_name,speaker.middle_initial,speaker.last_name,speaker.honor_suffix,speaker.email,speaker.speaker_payment_detail.social_security_number,speaker.speaker_payment_detail.pay_to_line1,speaker.speaker_payment_detail.pay_to_line2,speaker.speaker_payment_detail.direct_bill_travel,speaker.speaker_payment_detail.direct_bill_housing,speaker.speaker_payment_detail.eligible_housing_nights,speaker.speaker_payment_detail.payment_type,speaker.speaker_payment_detail.eligible_payment_rate,speaker.speaker_payment_detail.total_honorarium,speaker.speaker_payment_detail.total_per_diem,speaker.speaker_travel_detail.approved_arrival_date,speaker.speaker_travel_detail.approved_departure_date,speaker.speaker_travel_detail.actual_arrival_date,speaker.speaker_travel_detail.actual_departure_date,speaker.speaker_travel_detail.hotel_name,speaker.speaker_travel_detail.hotel_confirmation_number,speaker.speaker_travel_detail.hotel_cost,speaker.speaker_travel_detail.hotel_reimbursement,speaker.speaker_travel_detail.airfare_cost,speaker.speaker_travel_detail.airfare_reimbursement,speaker.speaker_travel_detail.mileage,speaker.speaker_travel_detail.comments,speaker.company,speaker.address1,speaker.address2,speaker.address3,speaker.city,speaker.state,speaker.zip,speaker.country,speaker.work_phone,speaker.fax,speaker.mobile_phone,speaker.home_phone,speaker.biography,speaker_files,speaker_photo]
+	  		elsif (!(speaker.speaker_travel_detail.nil?)) then
+				sheet.add_row [speaker.id,speaker.honor_prefix,speaker.first_name,speaker.middle_initial,speaker.last_name,speaker.honor_suffix,speaker.email,"Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available",speaker.speaker_travel_detail.approved_arrival_date,speaker.speaker_travel_detail.approved_departure_date,speaker.speaker_travel_detail.actual_arrival_date,speaker.speaker_travel_detail.actual_departure_date,speaker.speaker_travel_detail.hotel_name,speaker.speaker_travel_detail.hotel_confirmation_number,speaker.speaker_travel_detail.hotel_cost,speaker.speaker_travel_detail.hotel_reimbursement,speaker.speaker_travel_detail.airfare_cost,speaker.speaker_travel_detail.airfare_reimbursement,speaker.speaker_travel_detail.mileage,speaker.speaker_travel_detail.comments,speaker.company,speaker.address1,speaker.address2,speaker.address3,speaker.city,speaker.state,speaker.zip,speaker.country,speaker.work_phone,speaker.fax,speaker.mobile_phone,speaker.home_phone,speaker.biography,speaker_files,speaker_photo]
+       		elsif (!(speaker.speaker_payment_detail.nil?)) then
+	  			sheet.add_row [speaker.id,speaker.honor_prefix,speaker.first_name,speaker.middle_initial,speaker.last_name,speaker.honor_suffix,speaker.email,speaker.speaker_payment_detail.social_security_number,speaker.speaker_payment_detail.pay_to_line1,speaker.speaker_payment_detail.pay_to_line2,speaker.speaker_payment_detail.direct_bill_travel,speaker.speaker_payment_detail.direct_bill_housing,speaker.speaker_payment_detail.eligible_housing_nights,speaker.speaker_payment_detail.payment_type,speaker.speaker_payment_detail.eligible_payment_rate,speaker.speaker_payment_detail.total_honorarium,speaker.speaker_payment_detail.total_per_diem,"Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available",speaker.company,speaker.address1,speaker.address2,speaker.address3,speaker.city,speaker.state,speaker.zip,speaker.country,speaker.work_phone,speaker.fax,speaker.mobile_phone,speaker.home_phone,speaker.biography,speaker_files,speaker_photo]
+	  		else
+	  			sheet.add_row [speaker.id,speaker.honor_prefix,speaker.first_name,speaker.middle_initial,speaker.last_name,speaker.honor_suffix,speaker.email,"Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available","Not available",speaker.company,speaker.address1,speaker.address2,speaker.address3,speaker.city,speaker.state,speaker.zip,speaker.country,speaker.work_phone,speaker.fax,speaker.mobile_phone,speaker.home_phone,speaker.biography,speaker_files,speaker_photo]
+	  		end
+		end
+	end
+end

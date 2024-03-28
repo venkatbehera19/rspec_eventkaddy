@@ -1,0 +1,95 @@
+<div class="row">
+  <div class="col-md-9 mx-auto bg-light custom-border">
+    <h4>New Client Attendee</h4>
+    <div class="alert alert-info" role="alert">You do not currently have an attendee to send messages on your behalf. Please create one here.</div>
+
+    <%= form_for(@attendee, :html => { :class => "form-horizontal well" }, :url => {:action => "create_client_attendee"} ) do |f| %>
+      <% if @attendee.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@attendee.errors.count, "error") %> prohibited this attendee from being saved:</h2>
+
+          <ul>
+          <% @attendee.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="field">
+        <%= f.hidden_field :event_id, :value => session[:event_id] %>
+      </div>
+
+      <h5>Important Info</h5>
+      
+      <div class="form-group">
+        <%= f.label "Registration ID" %>
+        <%= f.text_field :account_code, class: "form-control" %>
+      </div>
+
+    <div class="form-group">
+        <%= f.label :username %>
+        <%= f.text_field :username, class: "form-control" %>
+      </div>
+    <div class="form-group">
+        <%= f.label :password %>
+        <%= f.text_field :password, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :first_name %>
+        <%= f.text_field :first_name, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :last_name %>
+        <%= f.text_field :last_name, class: "form-control" %>
+      </div>
+
+      <h5>Extra Details (can be skipped)</h5>
+
+      <div class="form-group">
+        <%= f.label :honor_prefix %>
+        <%= f.text_field :honor_prefix, class: "form-control" %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :honor_suffix %>
+        <%= f.text_field :honor_suffix, class: "form-control" %>
+      </div>
+      
+      <div class="form-group">
+        <%= f.label :business_unit %>
+        <%= f.text_field :business_unit, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :title %>
+        <%= f.text_field :title, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :business_phone %>
+        <%= f.text_field :business_phone, class: "form-control"%>
+      </div>
+      <div class="form-group">
+        <%= f.label :mobile_phone %>
+        <%= f.text_field :mobile_phone, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :email %>
+        <%= f.text_field :email, class: "form-control" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :company %>
+        <%= f.text_field :company, class: "form-control" %>
+      </div>
+    <div class="form-group">
+        <%= f.label "Attendee Type" %>
+        <%= f.text_field :custom_filter_1, class: "form-control" %>
+      </div>
+      <div class="actions">
+        <%= f.submit class:"btn btn-primary"   %>
+      </div>
+    <% end %>
+
+  </div>
+</div>

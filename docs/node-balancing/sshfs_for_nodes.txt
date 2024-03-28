@@ -1,0 +1,76 @@
+echo "running event_data rsync"
+/usr/bin/rsync -avh deploy@192.168.131.97:/home/deploy/ek-cms-prod/public/event_data /home/deploy/ek-cms-prod/public/
+
+
+
+
+http://fuse.sourceforge.net/sshfs.html
+
+mount
+	sshfs 173.230.132.66:/home/deploy/lodestar-prod/eventkaddy/public/event_data /home/deploy/lodestar-prod/eventkaddy/public/event_data
+
+unmount
+	fusermount -u directory-name
+
+
+
+To run on boot, nodes have to be setup to login to apollo with ssh keys.
+
+
+	First log in on A as user a and generate a pair of authentication keys. Do not enter a passphrase:
+
+	a@A:~> ssh-keygen -t rsa
+	Generating public/private rsa key pair.
+	Enter file in which to save the key (/home/a/.ssh/id_rsa): 
+	Created directory '/home/a/.ssh'.
+	Enter passphrase (empty for no passphrase): 
+	Enter same passphrase again: 
+	Your identification has been saved in /home/a/.ssh/id_rsa.
+	Your public key has been saved in /home/a/.ssh/id_rsa.pub.
+	The key fingerprint is:
+	3e:4f:05:79:3a:9f:96:7c:3b:ad:e9:58:37:bc:37:e4 a@A
+	Now use ssh to create a directory ~/.ssh as user b on B. (The directory may already exist, which is fine):
+
+	a@A:~> ssh b@B mkdir -p .ssh
+	b@B's password: 
+	Finally append a's new public key to b@B:.ssh/authorized_keys and enter b's password one last time:
+
+	a@A:~> cat .ssh/id_rsa.pub | ssh b@B 'cat >> .ssh/authorized_keys'
+	b@B's password: 
+	From now on you can log into B as b from A as a without password:
+
+	a@A:~> ssh b@B hostname
+	B
+	A note from one of our readers: Depending on your version of SSH you might also have to do the following changes:
+
+	Put the public key in .ssh/authorized_keys2
+	Change the permissions of .ssh to 700
+	Change the permissions of .ssh/authorized_keys2 to 640
+
+
+
+Put in /etc/init/event_data_share.conf
+
+	# Automatically mount Seedbox
+
+	description "automatically mount seedbox"
+	author "Me <myself@i.com>"
+
+	# Stanzas
+	# Stanzas control when and how a process is started and stopped
+	# See a list of stanzas here: 
+
+	# When to start the service
+	start on runlevel [2345]
+
+	# When to stop the service
+	stop on runlevel [016]
+
+	# Automatically restart process if crashed
+	respawn
+
+	# Essentially lets upstart know the process will detach itself to the background
+	expect fork
+
+	# Start the process
+	exec sshfs -o idmap=user {{USER}}@{{SERVER}}.whatbox.ca: ~/whatbox

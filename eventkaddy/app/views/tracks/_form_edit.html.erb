@@ -1,0 +1,42 @@
+<%= form_for (@track) do |f| %>
+  <% if @track.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@track.errors.count, "error") %> prohibited this track from being saved:</h2>
+
+      <ul>
+      <% @track.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  
+  <!--div class="field">
+  <%= jquery_color_picker("track[track_color]").html_safe %>  
+  </div-->
+	
+  <br />
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>
+<br />
+
+<script type="text/javascript">
+$(document).ready(function(){  
+    $('#track-color-picker').colorpicker({  
+        size: 20,  
+        scount: 10,
+        label: 'Track Color: ',  
+        hide: true 
+    });  
+});  
+
+</script>
+
+

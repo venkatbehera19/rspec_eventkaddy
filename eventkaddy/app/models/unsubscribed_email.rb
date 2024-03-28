@@ -1,0 +1,2 @@
+class UnsubscribedEmail < ApplicationRecord
+end

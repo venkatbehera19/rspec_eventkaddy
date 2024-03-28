@@ -1,0 +1,19 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   action_history_type_id: 1
+#   user_id: 1
+#   ip_address: MyString
+#   email: MyString
+#   action: MyString
+#   parameters: MyText
+
+# two:
+#   event_id: 1
+#   action_history_type_id: 1
+#   user_id: 1
+#   ip_address: MyString
+#   email: MyString
+#   action: MyString
+#   parameters: MyText

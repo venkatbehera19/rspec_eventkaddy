@@ -1,0 +1,41 @@
+<h4>Listing Education Managers for:<b> <%= session[:event_name] %></b></h4>
+
+<%= link_to 'New Education Manager', new_trackowner_path, class: "btn btn-primary" %><br><br>
+
+<table id="trackowners" cellpadding="0" cellspacing="0" border="0" class="table table-striped">
+	<thead>
+		<tr>
+		 <th>Name</th>
+		 <th>Email</th>
+		 <th></th>
+  	</tr>
+	</thead>
+
+	<tbody>
+		<% @trackowners.each do |trackowner| %>
+
+			<tr>
+				<td><%= trackowner.full_name %></td>
+				<td><%= trackowner.email %></td>
+				<td class="table-actions">
+					<div class="btn-group d-flex">
+						<%= link_to 'View', trackowner, class:"btn btn-outline-info" %>
+						<%= link_to 'Edit', edit_trackowner_path(trackowner) ,class:"btn btn-outline-success" %>
+						<%= link_to 'Delete', trackowner, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %>
+					</div>
+					<div class="dropdown">
+						<a data-toggle="dropdown" class="ellipse-style">
+							<i class="fa fa-ellipsis-v"></i>
+						</a>
+						<div class="dropdown-menu">
+							<%= link_to 'View', trackowner, class:"btn text-info dropdown-item" %>
+							<%= link_to 'Edit', edit_trackowner_path(trackowner) ,class:"btn text-success dropdown-item" %>
+							<%= link_to 'Delete', trackowner, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn text-danger dropdown-item" %>
+						</div>
+					</div>
+				</td>
+
+			</tr>
+		<% end %>
+	</tbody>
+</table>

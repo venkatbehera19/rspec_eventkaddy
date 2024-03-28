@@ -1,0 +1,212 @@
+<% settings = Setting.return_cms_settings session[:event_id] %>
+<div class="dropdown download-menu">
+    <div
+      class="btn report-dropdown dropdown-toggle"
+      data-toggle="dropdown"
+    >
+      Reports
+    </div>
+    <div class="dropdown-menu report-dropdown-list">
+			
+        <%= link_to "Export Survey Data To Spreadsheet",
+        "/reports/exhibitor_surveys_report/#{@exhibitor.id}", class: "dropdown-item"%>
+    
+      <%if session[:event_id]==240%>
+         
+           <%= link_to "Export Uncompleted Survey Data To Spreadsheet",
+           "/reports/exhibitor_uncompleted_surveys_report/#{@exhibitor.id}", class: "dropdown-item"%>
+        
+      <%end%>
+      
+        <%= link_to "Export Attendee Visits Data To Spreadsheet",
+        "/reports/video_visits_report/#{@exhibitor.id}", class: "dropdown-item"%>
+
+        <%= link_to "Export All Attendees Lead Survey Report",
+         "/reports/all_attendee_lead_report/#{@exhibitor.id}", class: "dropdown-item"%>
+    
+    </div>
+</div>
+
+<% content_for :event_sub_menu do %>
+	
+<!-- 		<li><%= link_to 'Add Coupon', "/coupons/new/#{@exhibitor.id}",class:"btn btn-primary" %></li>
+		<li><%= link_to 'Add Enhanced Listing', "/enhanced_listings/new/#{@exhibitor.id}",class:"btn btn-primary" %></li>
+		<li><%= link_to 'Add Exhibitor Link', "/exhibitor_links/new/#{@exhibitor.id}",class:"btn btn-primary" %></li>
+		<li><%= link_to 'Edit Sponsor Specification', "/sponsor_specifications/edit/#{@exhibitor.id}",class:"btn edit" %></li> -->
+	
+
+<% end %>
+
+<h4 class="view-title">Exhibitor Details
+</h4>
+<% if @exhibitor.is_demo %>
+	<p>(Demo Exhibitor)</p>
+<% end %>
+
+<%= link_to 'Send Exhibitor Password Email', "/emails_queues/queue_email_password_for_exhibitor/#{@exhibitor.id}" ,class:"btn btn-primary", method: :post %><br><br>
+<%= link_to 'Back', exhibitors_path ,class:"btn btn-outline-secondary" %> 
+<%= link_to 'Edit', edit_exhibitor_path(@exhibitor) ,class:"btn btn-outline-success" %> 
+<%= link_to 'Exhibitor Tags',"/exhibitors/#{@exhibitor.id}/exhibitor/exhibitor_tags" ,class:"btn btn-link" %> 
+<%= link_to 'Exhibitor Files',"/exhibitor_files/#{@exhibitor.id}/index" ,class:"btn btn-link" %>
+
+<% unless settings.method("hide_exhibitor_show_page_media_files").call %>
+   <%= link_to 'Media Files', "/media_files/exhibitors/#{@exhibitor.id}/index", class:"btn btn-link" %>
+<% end %>
+
+<% unless settings.method("hide_exhibitor_show_page_edit_custom_content").call %>
+   <%= link_to 'Exhibitor Page Content', "/exhibitors/edit_custom_content/#{@exhibitor.id}", class:"btn btn-link" %>
+<% end %>
+
+<% unless settings.method("hide_exhibitor_show_page_exhibitor_products").call %>
+   <%= link_to 'Exhibitor Product', "/exhibitors/exhibitor_products/#{@exhibitor.id}",class:"btn btn-link" %>
+<% end %>
+
+<%= link_to 'Booth Owners', "/booth_owners/exhibitor_booth_owner/#{@exhibitor.id}",class:"btn btn-link" %>
+<%= link_to 'Staffs', "/exhibitor_staffs/staffs/#{@exhibitor.id}", class: "btn btn-link" %>
+<%= link_to 'Files', "/exhibitors/files/#{@exhibitor.id}", class: "btn btn-link" %>
+
+<% if @exhibitor&.user&.orders.present? %>
+	<%= link_to 'Purchase History', purchase_history_exhibitor_path(@exhibitor), class: "btn btn-link"%>
+<% end %><br><br>
+
+<!--%= link_to 'Back', exhibitors_path %-->
+
+<table class="table">
+<% if (@exhibitor.event_file!=nil) then %>
+		<% e = EventFile.find(@exhibitor.event_file.id) %>
+		<% if e.cloud_storage_type_id.blank? %>
+			<tr>
+				<th>Logo</th>
+				<td><%= image_tag(@exhibitor.event_file.path, :height=>'100') %></td>
+			</tr>
+		<% else %>
+				<% e_url = e.return_authenticated_url() %>
+				<tr>
+					<th>Logo</th>
+					<td><%= image_tag(e_url['url'], :height=>'100') %></td>
+				</tr>
+		<% end %>
+<% end %>
+<tr><th>Logo URL</th><td><%= @exhibitor.logo %></td></tr>
+<tr><th>Company Name</th><td><%= @exhibitor.company_name %></td></tr>
+<tr><th>Description</th> <td><%= @exhibitor.description&.html_safe %></td></tr>
+<tr><th>Message</th><td><%= @exhibitor.message&.html_safe %></td></tr>
+<% if (@exhibitor.location_mapping!=nil) then %>
+<tr><th>Booth #</th><td><%= @exhibitor.location_mapping.name %></td></tr>
+<% else %>
+<tr><th>Booth #</th><td>Not Assigned</td></tr>
+<% end %>
+<tr><th>Is Sponsor</th> <td><%= @exhibitor.is_sponsor %></td></tr>
+<% if (@exhibitor.sponsor_level_type) then %>
+<tr><th>Sponsor Type</th> <td><%= @exhibitor.sponsor_level_type.sponsor_type %></td></tr>
+<% end %>
+<tr><th>Address Line 1</th>  <td><%= @exhibitor.address_line1 %></td></tr>
+<tr><th>Address Line 2</th>  <td><%= @exhibitor.address_line2 %></td></tr>
+<tr><th>City</th>  <td><%= @exhibitor.city %></td></tr>
+<tr><th>Zip</th>  <td><%= @exhibitor.zip %></td></tr>
+<tr><th>State</th><td><%= @exhibitor.state %></td></tr>
+<tr><th>Country</th>  <td><%= @exhibitor.country %></td></tr>
+<tr><th>Phone</th><td><%= @exhibitor.phone %></td></tr>
+<tr><th>Website</th>  <td><%= @exhibitor.url_web %></td></tr>
+<tr><th>Twitter</th> <td><%= @exhibitor.url_twitter %></td></tr>
+<tr><th>Facebook</th><td><%= @exhibitor.url_facebook %></td></tr>
+<tr><th>LinkedIn</th>  <td><%= @exhibitor.url_linkedin %></td></tr>
+<tr><th>Instagram</th>  <td><%= @exhibitor.url_instagram %></td></tr>
+<tr><th>YouTube</th>  <td><%= @exhibitor.url_youtube %></td></tr>
+<tr><th>RSS</th><td><%= @exhibitor.url_rss %></td></tr>
+<tr><th>Email</th><td><%= @exhibitor.email %></td></tr>
+<tr><th>Contact Email</th><td><%= @exhibitor.contact_email %></td></tr>
+<tr><th>Attendee Emails<td> 
+	<% @exhibitor.attendees.each do |a| %>
+ 		<%= a.email + " " %> 
+ 	<% end %>
+</td></tr>
+<% if @exhibitor.staffs.present? %>
+	<tr><th> Discount Staff Count </th><td><%= @exhibitor.staffs["discount_staff_count"] %></td></tr>
+	<tr><th> Complimentary Staff Count </th><td><%= @exhibitor.staffs["complimentary_staff_count"] %></td></tr>
+	<tr><th> Lead Retrival Count </th><td><%= @exhibitor.staffs["lead_retrieval_count"] %></td></tr>
+<% end %>
+</table>
+
+<% if (@coupons.count > 0) then %>
+	<h4 class="view-subtitle">Coupons</h4>
+	<table class="item-list">
+	  <tr>
+	    <th>Name</th>
+	    <th>Description</th>
+	    <th>Coupon Link</th>
+	    <th></th>
+	    <th></th>
+	  </tr>
+	
+	<% @coupons.each do |coupon| %>
+	  <tr>
+	    <td><%= coupon.coupon_name %></td>
+	    <td><%= coupon.coupon_description %></td>
+	    <td><%= coupon.coupon_link %></td>
+	  
+	    <td><%= link_to 'Edit', edit_coupon_path(coupon) ,class:"btn edit" %></td>
+	    <td><%= link_to 'Delete', "/coupons/#{coupon.id}", :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+	  </tr>
+	
+	<% end %>
+	</table>
+	<br /><br />
+<% end %>
+
+
+<% if (@enhanced_listings.count > 0) then %>
+	<h4 class="view-subtitle">Enhanced Listings</h4>
+	<table class="item-list">
+	  <tr>
+	    <th>Product Name</th>
+	    <th>Product Description</th>
+	    <th>Product Link</th>
+	    <th>Product Image</th>
+	    <th></th>
+	    <th></th>
+	  </tr>
+	
+	<% @enhanced_listings.each do |enhanced_listing| %>
+	  <tr>
+	    <td><%= enhanced_listing.product_name %></td>
+	    <td><%= enhanced_listing.product_description %></td>
+	    <td><%= enhanced_listing.product_link %></td>
+	  	<td><%= enhanced_listing.product_image %></td>
+	  
+	    <td><%= link_to 'Edit', edit_enhanced_listing_path(enhanced_listing) ,class:"btn edit" %></td>
+	    <td><%= link_to 'Delete', "/enhanced_listings/#{enhanced_listing.id}", :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+	  </tr>
+	
+	<% end %>
+	</table>
+	<br /><br />
+<% end %>
+
+
+<% if (@exhibitor_links.count > 0) then %>
+	<h4 class="view-subtitle">Exhibitor Links</h4>
+	<table class="item-list">
+	  <tr>
+	    <th>Name</th>
+	    <th>URL</th>
+	    <th></th>
+	    <th></th>
+	  </tr>
+	
+	<% @exhibitor_links.each do |exhibitor_link| %>
+	  <tr>
+	    <td><%= exhibitor_link.exhibitor_link_name %></td>
+	    <td><%= exhibitor_link.exhibitor_link_url %></td>
+	  
+	    <td><%= link_to 'Edit', edit_exhibitor_link_path(exhibitor_link) ,class:"btn edit" %></td>
+	    <td><%= link_to 'Delete', "/exhibitor_links/#{exhibitor_link.id}", :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+	  </tr>
+	
+	<% end %>
+	</table>
+	<br /><br />
+<% end %>
+
+
+

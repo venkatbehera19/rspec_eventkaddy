@@ -1,0 +1,51 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = ['Code',
+           'Program Area',
+           'Program Category',
+           'Title',
+           'Abstract',
+           'Speakers',
+           'Duration',
+           'Video Name']
+
+  style = []
+
+  heads.each {|h| style << black_cell }
+
+  wb.add_worksheet(name: "Session Data") do |sheet|
+
+    sheet.add_row heads, :style => style
+
+    Session.where("event_id=#{@event_id} AND session_cancelled!=1 OR
+                   event_id=#{@event_id} AND session_cancelled IS NULL").each do |session|
+
+      speakers = []
+
+      session.speakers.each do |s|
+        speakers << s.full_name
+      end
+      unless @event_id===68
+        tags = session.track_subtrack.split ' || '
+      else
+        tags = session.track_subtrack.split ':'
+      end
+
+      program_area     = tags.first
+      program_category = tags.last
+
+      sheet.add_row [session.session_code,
+                     program_area,
+                     program_category,
+                     session.title,
+                     session.description,
+                     speakers.join(', '),
+                     session.video_iphone,
+                     session.video_ipad]
+      sheet.column_widths 20,30,40,40,40,40,20,20
+    end
+  end
+end

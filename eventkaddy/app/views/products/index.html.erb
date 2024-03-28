@@ -1,0 +1,62 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div id="content">
+			<h4>Products</h4>
+			<div class="btn-toolbar my-2">
+				<div class="btn-group mr-2">
+					<a class="btn btn-primary" href="<%= new_product_path %>">New Product
+						<i class="fa fa-plus"></i>
+					</a>
+				</div>
+			</div>
+			<%= link_to('Reorder The Product','/reorder_product', class: "btn btn-primary mb-3") %>
+			<br>
+
+				<table class="table table-striped" id="products_table">
+					<thead>
+			      <tr>
+			        <th>Name</th>
+			        <th>Product Category</th>
+			        <th>Price</th>
+			        <th>Actions</th>
+			      </tr>
+					</thead>
+					<tbody>
+						<% @products.each do |product| %>
+							<tr>
+								<td><%= product.name %></td>
+								<td><%= product.product_category.name %></td>
+								<td><%= product.price %></td>
+								<td>
+									<div class="table-actions">
+										<div class="btn-group d-flex">
+											<%= link_to('Edit', edit_product_path(product), class: "btn btn-outline-success") %>
+											<% if product.deleted %>
+												<%= link_to('Add', add_product_path(product), data: {:confirm => 'Are you sure?'}, :method => :post ,class:"btn btn-outline-info") %>
+											<% else %>
+												<%= link_to('Delete', product_path(product), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger") %>
+											<% end %>		
+									</div>
+									<div class="dropdown">
+										<a data-toggle= 'dropdown' style="font-size:1.4rem; cursor: pointer;">
+											<i class="fa fa-ellipsis-v"></i>
+										</a>
+										<div class="dropdown-menu">
+												<%= link_to('Edit', edit_product_path(product), class: "btn text-info dropdown-item") %>
+												<% if product.deleted %>
+													<%= link_to('Add', add_product_path(product), data: {:confirm => 'Are you sure?'}, :method => :post ,class:"btn text-info dropdown-item") %>
+												<% else %>
+													<%= link_to('Delete', product_path(product), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn text-danger dropdown-item") %>
+												<% end %>
+											</div>
+										</div>
+									</div>
+								 </td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+		</div>
+	</div>
+</div>
+

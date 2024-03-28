@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Purchase Details</h4>
+      <br>
+        <table class="table table-striped" id="event_ticket_table">
+          <thead>
+            <tr>
+              <th>Attendee</th>
+              <th>Product</th>
+              <th>Membership ID</th>
+              <th>Transaction ID</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @attendee_products.each do |purchased| %>
+              <tr>
+                <td><%= purchased.attendee.full_name %></td>
+                <td><%= purchased.product.name %></td>
+                <td><%= purchased.membership_id %></td>
+                <td><%= purchased.order.external_transaction_id %></td>
+                <td><%= purchased.order.amount %></td>
+                <td><%= purchased.updated_at.strftime("%Y/%m/%d %I:%M %p") %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+

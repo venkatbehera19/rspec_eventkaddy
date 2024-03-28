@@ -1,0 +1,8 @@
+%h4 Product
+
+.form-group 
+  = f.label :product_categories_id, "Choose Registration Product Category" 
+  %br/
+  = f.collection_select :product_categories_ids, ProductCategory.where(event_id: session[:event_id]), :id, :name, {class: 'multiselect'}, {multiple: true}
+  %br/
+  %br/

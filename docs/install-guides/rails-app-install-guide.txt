@@ -1,0 +1,79 @@
+INSTALL INSTRUCTIONS
+
+	(General Flow)
+	
+	setup rvm + apache/nginx + passenger
+	bundle install (for rails 3 ek-cms app)
+	gem install spreadsheet nokogiri oauth roo mysql ruby-mysql google-spreadsheet-ruby #for external ruby scripts used by ek-cms
+	#ignore for now# rails plugin install rails_datatables (manual download files from git, put in vendor/plugin folder
+	#ignore for now# rails plugin install habtml_checkboxes git://github.com/jtrupiano/habtm_checkboxes.git
+	create database on server
+	configure project database.yml file
+	rake db:migrate
+	chmod 777 public/event_data
+	run ek_scripts/bootstrap-eventkaddy-tables.rb
+	in browser go to web root, setup the admin user
+	login, everything should be good to go
+
+
+EXTRA TWEAKS
+	
+	bundle update rake
+	
+
+PROD CONFIG
+	mysqladmin password NEWPASSWORD  #setup root user if necessary
+	
+	create database eventkaddy_cms_prod_v1build
+	create database eventkaddy_cms_dev_v1build
+	
+	CREATE USER 'ekuser'@'localhost' IDENTIFIED BY 'wigglewort';
+	
+	#remote privileges
+		grant select,insert,update,delete,create,drop ON eventkaddy_cms_dev_v1build.* TO ekuser@"%" identified by 'wigglewort';
+		grant select,insert,update,delete,create,drop ON eventkaddy_cms_prod_v1build.* TO ekuser@"%" identified by 'wigglewort';
+	
+	#local privileges
+		GRANT ALL ON *.* TO 'ekuser'@'localhost' IDENTIFIED BY 'wigglewort';
+	
+	flush privileges
+	
+	
+	RAILS_ENV=production #run this
+	rake db:setup RAILS_ENV=production # or try this instead
+	rake db:migrate RAILS_ENV=production # use this to populate the production database
+	
+	
+	run on Ubuntu Server: ln -s /var/run/mysqld/mysqld.sock /tmp/mysql.sock
+	
+	NOTE:
+		issue with getting rails (rake) to create the development db, migrations work fine)
+	
+	
+	APP-SPECIFIC COMMANDS TO RUN
+		chmod 777 public/event_data
+
+
+	rails server -e production #for manual testing of production environment
+
+
+(manual installs if necessary)
+
+RAILS_DATATABLES
+	rails plugin install rails_datatables (manual download files from git, put in vendor/plugin folder
+	
+		
+HABTM_CHECKBOXES
+	rails plugin install habtml_checkboxes git://github.com/jtrupiano/habtm_checkboxes.git
+
+	
+REMOTIPART
+
+	gem install remotipart
+	rails g remotipart
+		
+JQUERY RAILS
+	gem 'jquery-rails', '>= 0.2.6'
+	And run this command (add --ui if you want jQuery UI):
+		bundle install
+		rails generate jquery:install

@@ -1,0 +1,19 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   app_game_id: 1
+#   event_id: 1
+#   name: MyString
+#   description: MyString
+#   details: MyText
+#   num_tasks_to_complete: 1
+#   min_points_to_complete: 1
+
+# two:
+#   app_game_id: 1
+#   event_id: 1
+#   name: MyString
+#   description: MyString
+#   details: MyText
+#   num_tasks_to_complete: 1
+#   min_points_to_complete: 1

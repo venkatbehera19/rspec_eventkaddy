@@ -1,0 +1,167 @@
+<%= form_for(@event_setting, :html => { :multipart => true, :class => "bg-light custom-border py-3 px-3" }, :url => {:controller => "event_settings", :action => "update_requirements"}, :method => "put"   ) do |f| %>
+
+  <% if @event_setting.errors.any? %>
+    <div id="error_explanation">
+      <h4><%= pluralize(@event_setting.errors.count, "error") %> prohibited this event_setting from being saved:</h4>
+
+      <ul>
+      <% @event_setting.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  	<h4>Speakers Required Data</h4>
+
+    <div class="row">
+      <div class="col-sm-4">
+        <h5>General</h5>
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :company, 1, @requirements.where(requirement_types: { name: 'company' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :company, class: "custom-control-label" do %>
+            Company
+          <% end %>
+        </div>
+        <br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :biography, 1, @requirements.where(requirement_types: { name: 'biography' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :biography, class: "custom-control-label" do %>
+            Biography
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+        <%= check_box_tag :photo_event_file_id, 1, @requirements.where(requirement_types: { name: 'photo_event_file_id' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :photo_event_file_id, class: "custom-control-label" do %>
+            Speaker Photo
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :address1, 1, @requirements.where(requirement_types: { name: 'address1' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :address1, class: "custom-control-label" do %>
+            Address
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :city, 1, @requirements.where(requirement_types: { name: 'city' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :city, class: "custom-control-label" do %>
+            City
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :state, 1, @requirements.where(requirement_types: { name: 'state' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :state, class: "custom-control-label" do %>
+            State
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :country, 1, @requirements.where(requirement_types: { name: 'country' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :country, class: "custom-control-label" do %>
+            Country
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :zip, 1, @requirements.where(requirement_types: { name: 'zip' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :zip, class: "custom-control-label" do %>
+            Zip
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :work_phone, 1, @requirements.where(requirement_types: { name: 'work_phone' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :work_phone, class: "custom-control-label" do %>
+            Work Phone
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :mobile_phone, 1, @requirements.where(requirement_types: { name: 'mobile_phone' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :mobile_phone, class: "custom-control-label" do %>
+            Mobile Phone
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :fax, 1, @requirements.where(requirement_types: { name: 'fax' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :fax, class: "custom-control-label" do %>
+            Fax
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :cv_event_file_id, 1, @requirements.where(requirement_types: { name: 'cv_event_file_id' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :cv_event_file_id, class: "custom-control-label" do %>
+            CV File
+          <% end %>
+        </div><br>
+
+      </div>
+      <div class="col-sm-4">
+        <h5>Financial</h5>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :financial_disclosure, 1, @requirements.where(requirement_types: { name: 'financial_disclosure' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :financial_disclosure, class: "custom-control-label" do %>
+            Financial Disclosure
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :fd_tax_id, 1, @requirements.where(requirement_types: { name: 'fd_tax_id' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :fd_tax_id, class: "custom-control-label" do %>
+            FD Tax ID
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :fd_pay_to, 1, @requirements.where(requirement_types: { name: 'fd_pay_to' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :fd_pay_to, class: "custom-control-label" do %>
+            FD Pay To
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :fd_street_address, 1, @requirements.where(requirement_types: { name: 'fd_street_address' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :fd_street_address, class: "custom-control-label" do %>
+            FD Street Address
+          <% end %>        
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :fd_city, 1, @requirements.where(requirement_types: { name: 'fd_city' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :fd_city, class: "custom-control-label" do %>
+          FD City
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :fd_state, 1, @requirements.where(requirement_types: { name: 'fd_state' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :fd_state, class: "custom-control-label" do %>
+            FD State
+          <% end %>
+        </div><br>
+
+        <div class="custom-control custom-switch">
+          <%= check_box_tag :fd_zip, 1, @requirements.where(requirement_types: { name: 'fd_zip' }).first.required, class: "custom-control-input" %>
+          <%= label_tag :fd_zip, class: "custom-control-label" do %>
+            FD Zip
+          <% end %>
+        </div><br>
+
+      </div>
+    </div>
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+
+<% end %>
+
+
+<br />

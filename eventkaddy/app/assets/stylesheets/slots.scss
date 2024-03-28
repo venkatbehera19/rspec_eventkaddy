@@ -1,0 +1,82 @@
+// Place all the styles related to the slots controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+.ns_main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: inherit;
+  height: 210px;
+  margin-top: 4px;
+}
+.ns-header {
+  text-align: center;
+  color: #949191;
+  font-size: 28px;
+  line-height: normal;
+}
+
+@media (max-width: 288px) {
+  .ns-header {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 170px) {
+  .ns-header {
+    font-size: 16px;
+  }
+}
+
+/** Custom Select **/
+.custom-select option,
+.custom-select-label {
+  padding: 20px 0;
+  text-align: center;
+  display: block;
+  top: 100%;
+  left: 0;
+  right: 0;
+  min-width: 100%;
+  margin-top: 5px;
+  border: 1px solid #b5b5b5;
+  border-radius: 4px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.07);
+  background: #fff;
+  transition: all 0.4s ease-in-out;
+  transform: translateY(-15px);
+}
+
+.custom-select-label {
+  margin: 0;
+  background-color: dodgerblue;
+  color: whitesmoke;
+}
+
+.custom-select {
+  padding: 14px 0px;
+  padding-right: 0 !important;
+  outline: none !important;
+  border: none !important;
+}
+.custom-select .btn:focus {
+  outline: none !important;
+}
+
+.avg-width {
+  max-width: 474px;
+}
+
+.time-slots {
+  padding: 10px 0px;
+  margin-top: 10px;
+}
+.slots-col {
+  width: 160px;
+}
+.slots-link-btn {
+  width: 176px;
+  margin: 0px 5px 5px;
+  border-radius: 4px;
+}

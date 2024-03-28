@@ -1,0 +1,88 @@
+<div class ="row mt-3">
+  <div class="col-md-8 mx-auto bg-light custom-border">
+      <h4>Edit your profile</h4>
+
+      <%= form_for(@exhibitor_staff, :html => {:multipart => true, :class => "form well" }, :url => {:action => "update"}, :method => :put ) do |f| %>
+          <% if @exhibitor_staff.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@exhibitor_staff.errors.count, "error") %> prohibited this form from being saved:</h2>
+
+              <ul>
+              <% @exhibitor_staff.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+              </ul>
+            </div>
+          <% end %>
+          <div class="row">
+          <% if (@exhibitor_staff.event_file_photo == nil) %>
+            <div class="photo-upload-container">
+              <%= image_tag '/defaults/avatar.png', class: "staff_photo_file" %>
+            </div>
+          <% else %>
+            <div class="photo-upload-container">
+              <%= image_tag @exhibitor_staff.event_file_photo.path, class: "staff_photo_file" %>
+            </div>
+          <% end %>
+          <%= file_field_tag :photo_file, accept:"image/*", class: "photo-upload"%>
+        </div>
+        <% @settings = Setting.return_exhibitor_portal_settings(session[:event_id]) %>
+        <%
+          def visible? col 
+            !@settings.method("hide_staff_#{col}").call
+          end
+        %>
+        <% text_field = ->(col, label, options={class: "form-control"}) {
+          if visible?(col)
+            "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}</div>".html_safe
+          else
+            ""
+          end
+        } %>
+
+        <br>
+        <%= text_field["first_name",      "First Name"] %>
+        <%= text_field["last_name",       "Last Name"] %>
+        <%= text_field["title",           "Title"] %>
+        <%= text_field["email",           "Email"] %>
+        <%= text_field["business_phone",  "Business Phone"] %>
+        <%= text_field["mobile_phone",    "Mobile Phone"] %>
+        <%= text_field["url_twitter",     "Twitter URL"] %>
+        <%= text_field["url_facebook",    "Facebook URL"] %>
+        <%= text_field["url_linkedin",    "Linked In"] %>
+        <%= text_field["url_youtube",     "Youtube"] %>
+        <%= text_field["url_instagram",   "Instagram"] %>
+        <%= text_field["url_tiktok",      "Tik Tok"] %>
+        <%= text_field["biography",       "Biography"] %>
+        <%= text_field["interests",        "Interests"] %>
+
+        <% if !@settings.method("hide_staff_get_featured").call %>
+          <%= f.label :is_featured do %>
+            <%= f.check_box :is_featured %>
+              Get Featured
+          <% end %><br>
+        <% end %>
+
+        <div class="actions ">
+          <%= f.submit "Update Profile", class:"btn btn-secondary exhibitor-staff-button"   %>
+        </div>
+      <% end %>
+      <br>
+      <%= link_to 'Back', '/exhibitor_portals/staff_members', class: "btn btn-link" %>
+  </div>
+</div>
+
+<%= link_to 'Back', '/exhibitor_portals/staff_members' %>
+
+<script>
+  $("#photo_file").on("change", function() {
+    if (this.files && this.files[0]){
+      let reader = new FileReader();
+
+      reader.onload = function(e){
+        $(".staff_photo_file").attr('src', e.target.result);
+      }
+      reader.readAsDataURL(this.files[0]);
+    }
+  })
+</script>

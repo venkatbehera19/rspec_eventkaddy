@@ -1,0 +1,46 @@
+
+<%
+	#javascript "session_files_jsonly"
+%>
+
+<script>
+  EK.speakerList.reset(<%= @speakers.to_json.html_safe %>);
+</script>
+
+<%= link_to 'Show Conference Notes', "/trackowner_portals/session_files?type=conference note" ,class:"btn btn-outline-info" %>  <%= link_to 'Show PowerPoints', "/trackowner_portals/session_files?type=powerpoint" ,class:"btn btn-outline-info" %>
+<div id="lightbox" class="white_content"></div>
+<div id="fade" class="black_overlay"></div>
+
+<div class="dropdown btn-group pull-right">
+	<button class="btn btn-primary" data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></button>
+	<div class="dropdown-menu">
+		<%= link_to "Export To Session Notes to Spreadsheet", "/session_files/spreadsheet_summary.xlsx?type=conference note", class: "dropdown-item text-primary" %>
+    <%= link_to "Download All Session Files as Zip", "/trackowner_portals/session_files_zip", class: "dropdown-item text-primary" %>
+	</div>
+</div>
+
+<br><br>
+
+<table id="session_files_summary" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" data-source="<%= trackowner_portals_session_files_url(format: "json") %>">
+  <thead>
+    <tr>
+      <th class="hide-on-mobile">Session Code</th>
+      <th>Session Title</th>
+      <th class="hide-on-mobile">Speaker Name</th>
+      <th class="hide-on-mobile">Speaker Email</th>
+      <th class="hide-on-mobile">Number of Versions</th>
+      <th class="sorting-false">Latest File URL</th>
+      <% if ( current_user.role?(:client) || current_user.role?(:super_admin) ) then %>
+          <th class="sorting-false"></th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+
+  </tbody>
+
+</table>
+
+<br />
+

@@ -1,0 +1,82 @@
+<% event_data = ->(event) { %>
+    <hr>
+    <h5><%= event.name %></h5>
+    <b>ID:</b>
+    <%= event.id %>
+    <br>
+    <b>Organization:</b>
+    <%= event.organization.name unless event.organization.blank? %>
+    <br>
+    <b>Starts: </b>
+    <%= event.event_start_at.strftime('%D') %>
+    <br>
+    <b>Ends: </b>
+    <%= event.event_end_at.strftime('%D') %>
+    <br>
+    <b>First Session: </b>
+    <%= event.earliest_session && event.earliest_session.strftime('%D') %>
+    <%# clumsy n+1 query, but easier than trying to figure out the sql to do it in one %>
+    <% first_session = event.sessions.order("date, start_at ASC").first %>
+    <% if first_session && first_session.start_at && first_session.end_at %>
+        <%= first_session.start_at.strftime('%T') + ' to ' + first_session.end_at.strftime('%T') %>
+    <% end %>
+    <br>
+    <b>Last Session: </b>
+    <%= event.latest_session && event.latest_session.strftime('%D') %>
+    <%# clumsy n+1 query, but easier than trying to figure out the sql to do it in one %>
+    <% last_session = event.sessions.order("date, end_at ASC").last %>
+    <% if last_session && last_session.start_at && last_session.end_at %>
+        <%= last_session.start_at.strftime('%T') + ' to ' + last_session.end_at.strftime('%T') %>
+    <% end %>
+    <br>
+    <b>UTC Offset:</b>
+    <%= event.utc_offset %>
+    <br>
+    <b>Multievent?</b>
+    <%= !!event.multi_event_status %>
+    <br>
+    <br>
+    <br>
+
+    <%= form_for(event, url:'/dev/update_event_dev_notes') do |f| %>
+      <div class="form-group">
+          <%= f.hidden_field :id %>
+          <%= f.label :description %>
+          <%= f.text_area :description, :rows => 6, class: "form-control" %>
+      </div>
+      <div class="actions">
+          <%= f.submit "Update Event Description", class:"btn btn-primary" %>
+      </div>
+    <% end %>
+    <% return "" %>
+<% } %>
+
+<div class="bg-light custom-border px-3 py-3 mb-3">
+    <h3>Active Jobs</h3>
+    <% jobs = Job.where("status NOT IN('Completed','Failed','Cancelled')") %>
+    <% jobs.each {|j| %>
+        Event ID: <%= j.event_id %>
+        <br>
+        Name: <%= j.name %>
+        <br>
+        Status: <%= j.status %>
+        <br>
+        Row <%= j.row %> of <%= j.total_rows %>
+    <% } %>
+    <%= "No jobs currently running." if jobs.length == 0 %>
+</div>
+
+<div class="bg-light custom-border px-3 py-3 mb-3">
+    <h3>Active Events</h3>
+    <% Event.active_events.each {|e| event_data[ e ] } %>
+</div>
+
+<div class="bg-light custom-border px-3 py-3 mb-3">
+    <h3>Upcoming Events</h3>
+    <% Event.upcoming_events.each {|e| event_data[ e ] } %>
+</div>
+
+<div class="bg-light custom-border px-3 py-3">
+    <h3>Past Events</h3>
+    <% Event.past_events.each {|e| event_data[ e ] } %>
+</div>

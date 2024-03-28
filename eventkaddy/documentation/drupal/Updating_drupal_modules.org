@@ -1,0 +1,13 @@
+#+TITLE: Updating Drupal Modules
+
+* Explantion
+
+We use Drush to keep the Drupal site updated. Drush is a shell-based application used to control, manipulate, and administer Drupal sites. 
+* Steps
+1. Login to the drupal server - deploy@173.230.151.29, pw hint: BG!23
+2. Navigate to the folder sourceofknowledge.com from the home directory
+3. Run this command: 'drush ups' (Note: it is 'ups' not 'up')
+4. This may produce and update message, such as 'updates available for Backup and Migrate (backup_migrate)'. 
+5. Backup the database and commit any changes on the server. 
+6. Run 'drush up <lower_case_module_name>' e.g. 'drush up backup_migrate'. Note that 'up' is singular in this command. 
+

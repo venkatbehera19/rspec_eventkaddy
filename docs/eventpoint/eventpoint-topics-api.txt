@@ -1,0 +1,67 @@
+Topics
+
+http://api.eventpoint.com/n.n/program/topics
+
+Topics are wrapped in a result that specifies the topic results, current page, the page size, and the total number of topics returned. This service will let you query topics based on a variety of parameters, as noted below.
+
+Name	Description	Required
+page	The page to return. First page is 1.	No
+pagesize	Number of topics to return. Default is 100.	No
+keyword	Keyword filter for Code,Title, or Description	No
+categories	A comma delimited string of categories names or ids. For example: Windows,Architecture,Breakout	No
+speaker	A comma delimited list of speaker id's	No
+timeslot	A timeslot id	No
+day	A day. e.g., 8/29/2011	No
+start	a time. e.g. 8/29/2011 8:00 AM or simply 8:00 AM. if no date is specified, then the default will be the current day if during the event OR the first day of the event.	No
+finish	a time. e.g. 8/29/2011 8:00 AM or simply 8:00 AM. if no date is specified, then the default will be the current day if during the event OR the first day of the event.	No
+room	room id	No
+sort	Sort topics by code,title,start,finish	No
+Response data
+{
+    "total":470,
+    "pagesize":1000,
+    "page":1,
+    "topics":[
+        {
+            "id":"topic id",
+            "code":"CODE01",
+            "title":"Living the Lifestyle ",
+            "description":"No technology has impacted programming in recent years the way code has.",
+            "approvalstatus":"2",
+            "publishingstatus":"6",
+            "room":"",
+            "start":"\/Date(1289224800000)\/",
+            "finish":"\/Date(1289248200000)\/",
+            "categoryids":[
+                "category id 1",
+                "category id 2",
+                "category id 3"
+                ],
+            "speakerids":[
+                "speaker id 1"
+                ],
+            "sessions":[
+                    {
+                        "id":"session id",
+                        "roomId":"room id",
+                        "timeslotId":"timeslot id",
+                        "allowscheduling":false,
+                        "capacity":0
+                    }
+                ],
+            "related":[
+                    {
+                        "name":"Associated",
+                        "values":["id 1", "id 2"]
+                    }
+                ],
+            "info":[
+                    {
+                        "name":"extended_property",
+                        "value":"some value"
+                    }
+                ]
+        }
+    ]
+}
+    

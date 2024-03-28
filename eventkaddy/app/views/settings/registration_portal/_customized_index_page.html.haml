@@ -1,0 +1,35 @@
+%small Please note Event Details in General Configuraions and Banner uploaded in Portal Images will not be visible here.
+%br/
+%br/
+.form-group.custom-control.custom-switch
+    = f.check_box :show_header_index_page, class: "custom-control-input"
+    = f.label :show_header_index_page, class: "custom-control-label" do
+        Show Header
+%small Upload header and banner in Portal Images.
+
+-# .form-group.custom-control.custom-switch
+-#     = f.check_box :show_footer, class: "custom-control-input"
+-#     = f.label :show_footer, class: "custom-control-label" do
+-#         Show Footer
+- for_exhibitor = @registration_portal_settings.setting_type.name == 'exhibitor_registration_portal_settings'
+%h6= "No of Content Sections: #{@registration_portal_settings.no_of_content_sections.to_i}"
+- if @registration_portal_settings.no_of_content_sections.to_i < 9
+    = link_to 'Create New Section', "/registrations/create_section?for_exhibitor=#{for_exhibitor}", :confirm => 'Are you sure?', :method => :post, class:"btn btn-primary"
+- if @registration_portal_settings.no_of_content_sections.to_i > 0
+    = link_to 'Remove Last Section', "/registrations/remove_section?for_exhibitor=#{for_exhibitor}", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-warning"
+- !!@registration_portal_settings.no_of_content_sections && @registration_portal_settings.no_of_content_sections.times do |i|
+    %hr/
+    %h6
+        Section Container_#{i+1}
+    - if @registration_portal_settings.column_list.blank? || (@registration_portal_settings.column_list && @registration_portal_settings.column_list[i+1].to_i < 5)
+        = link_to "Create New Column for section #{i+1}", "/registrations/create_column/#{i+1}?for_exhibitor=#{for_exhibitor}", :confirm => 'Are you sure?', :method => :post, class:"btn btn-light"
+    - else
+        You can create at max 5 columns
+    - if @registration_portal_settings.column_list && @registration_portal_settings.column_list[i+1].to_i > 0
+        = link_to "Remove Last column for section #{i+1}", "/registrations/remove_column/#{i+1}?for_exhibitor=#{for_exhibitor}", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-warning"
+    %br/
+    %br/
+    - !!@registration_portal_settings.column_list && !!@registration_portal_settings.column_list[i+1] && @registration_portal_settings.column_list[i+1].times do |j|
+        .form-group
+            %label Section Container_#{i+1}_col_#{j+1}
+            = f.cktext_area "reg_section_container#{i+1}_col#{j+1}".to_sym, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}

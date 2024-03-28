@@ -1,0 +1,8 @@
+
+
+<%= link_to 'Back', notifications_path(mobile: @mobile), class:"btn btn-link  " %> <%= link_to 'Show', "/notifications/#{@notification.id}?mobile=#{@mobile}", class:"btn btn-outline-info" %> 
+
+
+<h4>Editing Notification</h4>
+
+<%= render 'form' %>

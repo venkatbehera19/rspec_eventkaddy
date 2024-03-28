@@ -1,0 +1,114 @@
+<h4>Exhibitor Permission PDFs</h4>
+<% if @pdf_files.length > 0 %>
+<table id="pdf-index" cellpadding="0" cellspacing="0" border="0" class="table table-bordered">
+  <thead>
+    <tr>
+        <th>Name</th>
+        <th>Original</th>
+        <th>Signed Copy</th>
+      </tr>
+  </thead>
+
+  <tbody>
+    <% @pdf_files.each do |pdf_file| %>
+      <% download_path = pdf_file.path %>
+      <% exhibitor_file = ExhibitorFile.where(exhibitor_id:@exhibitor.id,original_document_id:pdf_file.id) %>
+      <tr>
+        <td><%= pdf_file.name %></td>
+        <td><%= link_to 'Download', "#{download_path}",:target => '_blank',class:"btn btn-outline-info" %></td>
+        <td class="table-actions">
+          <div class="btn-group d-flex">
+            <% if exhibitor_file.length > 0 %>
+                <%= link_to 'Download', "#{exhibitor_file.first.event_file.path}",:target => '_blank',class:"btn btn-outline-info" %><br><br>
+                <%= link_to 'Delete', "/exhibitor_files/#{exhibitor_file.first.id}", data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %>
+            <% else %>
+              <span class="missing btn" style="cursor: alias;">Signed Copy Required</span>
+            <% end %>
+
+            <% if exhibitor_file.length < 1 %>
+              <%= link_to 'Upload Signed Copy', "/exhibitor_files/#{@exhibitor.id}/new/#{pdf_file.id}", class:"btn btn-primary"%>
+            <% else %>
+              <%= link_to 'Update Signed Copy', "/exhibitor_files/#{exhibitor_file.first.id}/edit", class:"btn btn-primary"%>
+            <% end %>
+          </div>
+
+          <div class="dropdown dropleft">
+            <a class="ellipse-style" data-toggle="dropdown">
+              <i class="fa fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu">
+              <% if exhibitor_file.length > 0 %>
+                  <%= link_to 'Download', "/exhibitor_portals/downloads/#{exhibitor_file.first.id}",:target => '_blank',class:"btn dropdown-item text-info" %>
+                  <%= link_to 'Delete', "/exhibitor_files/#{exhibitor_file.first.id}", data: {:confirm => 'Are you sure?'}, class:"btn dropdown-item text-danger" %>
+              <% else %>
+                <span class="missing dropdown-item-text">Signed Copy Required</span>
+              <% end %>
+              <% if exhibitor_file.length < 1 %>
+                <%= link_to 'Upload Signed Copy', "/exhibitor_files/#{@exhibitor.id}/new/#{pdf_file.id}", class:"btn dropdown-item text-primary"%>
+              <% else %>
+                <%= link_to 'Update Signed Copy', "/exhibitor_files/#{exhibitor_file.first.id}/edit", class:"btn dropdown-item text-primary"%>
+              <% end %>
+            </div>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<% else %>
+  <p class="font-weight-bold">No Permission PDFS Avaialble</p>
+<% end %>
+
+<% if @info_pdf_files.length > 0 %>
+  <h4>Informational PDFs for Download</h4>
+  <table id="pdf-index" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+		<thead>
+			<tr>
+					 <th>Name</th>
+					 <th></th>
+				</tr>
+		</thead>
+	
+		<tbody>
+	
+			<% @info_pdf_files.each do |pdf_file| %>
+				<% download_path = pdf_file.path %>
+				 <tr>
+						 <td><%= pdf_file.name %></td>
+						 <td><center><%= link_to 'Download', "#{download_path}",:target => '_blank',class:"btn btn-outline-info" %></center></td>
+					 </tr>
+			<% end %>
+		</tbody>
+	</table>
+<% end %>
+
+<% if @extra_event_files.length > 0 %>
+  <h4>Extra Files for Download</h4>
+  <table id="pdf-index" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+    <thead>
+			<tr>
+					 <th>Name</th>
+					 <th></th>
+				</tr>
+		</thead>
+    <tbody>
+	
+			<% @extra_event_files.each do |pdf_file| %>
+				<% exhibitor_file = ExhibitorFile.where(exhibitor_id:@exhibitor.id,original_document_id:pdf_file.id) %>
+				 <tr>
+						<td><%= pdf_file.name %></td>
+            <td class="table-actions">
+              <div class="btn-group d-flex">
+                <% if exhibitor_file.length > 0 %>
+                  <%= link_to 'Download', "#{exhibitor_file.first.event_file.path}",:target => '_blank',class:"btn dropdown-item text-info" %>
+                  <%= link_to 'Delete', "/exhibitor_files/#{exhibitor_file.first.id}?exhibitor_portals=true", data: {:confirm => 'Are you sure?'}, :method => :delete , class:"btn dropdown-item text-danger" %>
+                <% else %>
+                  <%= link_to "Upload File", "/exhibitor_files/#{@exhibitor.id}/new/#{pdf_file.id}?title=#{pdf_file.name}", class:"btn dropdown-item text-primary"%>
+                <% end %>
+              </div>
+            </td>
+					</tr>
+			<% end %>
+		</tbody>
+  </table>
+<% end %>

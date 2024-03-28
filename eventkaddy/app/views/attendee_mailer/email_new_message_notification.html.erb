@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+      Hi <%= @recipient_name %>,
+
+      You just received a new message from <strong><%= @sender_name.blank? ? @title : @sender_name %></strong>.
+
+      <br/>
+      <h4>Here is the message: </h4>
+
+      <p><b>Title:</b> <%= @title %></p>
+
+      <p><b>Content:</b> <%= @content %></p>
+
+      <p style="font-size:11px">To reply, click this <a href="<%=@event.cms_url%>/exhibitor_portals/messages" target="_blank">link</a> to log back in to the Exhibitor Portal.</p>
+      
+      <p style="font-size:11px">To disable notifications, please click this <a href="<%=@event.cms_url%>/exhibitor_messages/settings" target="_blank">link</a>.</p>
+  </body>
+</html>

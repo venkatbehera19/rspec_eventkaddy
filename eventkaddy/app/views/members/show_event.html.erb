@@ -1,0 +1,13 @@
+<header class="py-5 bg-light border-bottom mb-4">
+    <div class="container">
+        <div class="text-center my-5">
+            <h1 class="fw-bolder"><%= "Welcome to #{@event.name}"%></h1>
+            <p class="lead"><%= @event.event_start_at.strftime("%b %d, %Y") + " - " + @event.event_end_at.strftime("%b %d, %Y") %></p>
+            <% if @attendee %>
+                Registered
+            <% else %>
+                <p><%= link_to "Register", "/members/attendee_register/#{@event.id}", class: 'btn btn-primary btn-sm'%></p>
+            <% end %>    
+        </div>
+    </div>
+</header>

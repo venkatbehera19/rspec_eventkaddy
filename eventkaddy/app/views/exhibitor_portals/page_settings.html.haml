@@ -1,0 +1,79 @@
+%h4 Page Settings
+%br/
+.page-settings.mt-2
+  = form_for @exhibitor, :html => { :method => :post }, :url => 'update_page_settings' do |f| 
+    #accordion
+      %h4 Live-stream Booleans
+      .acc-div
+        .d-flex.flex-row.flex-nowrap.horizontal-scroll#cards-container
+          .card.card-body.settings-card
+            .custom-control.custom-switch
+              = f.check_box :old_layout, class: "custom-control-input"
+              = f.label :old_layout, "Switch to Old Layout", class: "custom-control-label"
+            = f.fields_for :portal_configs do |ff|
+              - @portal_configs.each do |key, val|
+                - if !@settings.respond_to?("exhibitor_#{key}") || @settings.send("exhibitor_#{key}")
+                  = ff.fields_for key do |fff|
+                    .custom-control.custom-switch
+                      = fff.check_box :disabled, value:1, checked: val[:disabled] == "1" ,class: "custom-control-input" 
+                      = fff.label :disabled, "Disable #{key} window", class: "custom-control-label"
+      %h4 Live-stream Windows Style
+      .acc-div
+        %br/
+        %p.text-info.ml-3 Leave input fields empty to use the default styles 
+        = f.fields_for :portal_style_configs do |ff|
+          = ff.fields_for ".window-header" do |fff|
+            .form-group.ml-3
+              = fff.label "background-color", "Windows Header Background Color"
+              %br/
+              = fff.text_field "background-color", value: @portal_style_configs && @portal_style_configs[".window-header"] ? @portal_style_configs[".window-header"]["background-color"] : "", class: "form-control jpicker d-inline", style:'width: 90%'
+            .form-group.ml-3
+              = fff.label "color", "Windows Header Text Color"
+              %br/
+              = fff.text_field "color", value: @portal_style_configs && @portal_style_configs[".window-header"] ? @portal_style_configs[".window-header"]["color"] : "", class: "form-control jpicker d-inline", style:'width: 90%'
+          = ff.fields_for ".draggable" do |fff|
+            .form-group.ml-3
+              = fff.label "background-color", "Windows Background"
+              %br/
+              = fff.text_field "background-color", value: @portal_style_configs && @portal_style_configs[".draggable"] ? @portal_style_configs[".draggable"]["background-color"] : "", class: "form-control jpicker d-inline", style:'width: 90%'
+            .form-group.ml-3
+              = fff.label "color", "Windows Content Text Color"
+              %br/
+              = fff.text_field "color", value: @portal_style_configs && @portal_style_configs[".draggable"] ? @portal_style_configs[".draggable"]["color"] : "", class: "form-control jpicker d-inline", style:'width: 90%'
+            .form-group.ml-3
+              = fff.label "shadow_color", "Shadow Color"
+              %br/
+              = fff.text_field "shadow_color", value: @portal_style_configs && @portal_style_configs[".draggable"] ? @portal_style_configs[".draggable"]["shadow_color"] : "", class: "form-control jpicker d-inline", style: 'width: 90%'
+              .text-info Leave this field blank to disable box shadow
+    = f.submit class: 'btn btn-primary mt-2'
+
+:javascript
+  $(document).ready(function(){
+    $( "#accordion" ).accordion({
+      heightStyle: "content",
+      collapsible: true
+    });
+    $('.jpicker').jPicker({
+      window:{
+        position:{x: $('body').innerWidth() / 4,
+          y: $('body').innerHeight() / 4},
+        alphaSupport:true
+      }
+      }, function (color, context) {
+        var all = color.val('all');
+        if (all.a != null) {
+          var c = calc_in_to_hex(all.a);
+            //embedding hex of Alpha with the original string of rgb Hex
+          $(this).val($(this).val() + c);
+        }
+      }
+
+    );
+  });
+
+  function calc_in_to_hex(color) {
+    var result = (color | 0).toString(16);
+    if (result.length == 1) result = ('0' + result);
+    return result.toLowerCase();
+  }
+  

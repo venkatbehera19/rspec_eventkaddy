@@ -1,0 +1,25 @@
+<%= form_tag("/mobile_web_settings/update_settings", :method => "post", :remote => false, :multipart => false, :id=>"update_settings_form", :class=>"form-horizontal well") do %>
+		
+        <%= submit_tag "Save",class:"btn btn-primary" %></br></br>
+
+		<div class="field">
+		<%= label_tag :title %>
+		<%= text_field_tag :title %><br />
+		</div>
+
+		<div class="field">
+		<%= label_tag :session_codes_enabled %>
+		<%= check_box_tag :session_codes_enabled %><br />
+		</div>
+
+	<div class="field">
+		<%= label_tag :background_image %>
+		<%= text_field_tag :background_image %><br />
+		</div>
+
+
+
+		<br><br>
+		<%= submit_tag "Save",class:"btn btn-primary" %>
+
+<% end %>

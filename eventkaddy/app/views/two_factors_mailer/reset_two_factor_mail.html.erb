@@ -1,0 +1,8 @@
+<p>Hello <%= @user.email %>!</p>
+
+<p>Someone has requested a link to reset your two-factor authentication. You can do this through the link below.</p>
+
+<p><%= link_to 'Reset 2FA', new_reset_two_factor_url(reset_two_factor_token: @user.reset_two_factor_token) ,class:"btn" %></p>
+
+<p>If you didn't request this, please ignore this email.</p>
+<p>Your 2FA won't reset until you access the link above and create a new one.</p>

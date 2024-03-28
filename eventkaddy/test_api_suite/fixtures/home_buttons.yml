@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  home_button_type: one
+  event_file: one
+  name: MyString
+  icon_button_name: MyString
+  position: 1
+  survey: one
+  enabled: true
+  login_required: false
+  web: false
+  external_link: MyString
+
+two:
+  event: one
+  home_button_type: two
+  event_file: two
+  name: MyString
+  icon_button_name: MyString
+  position: 1
+  survey: two
+  enabled: true
+  login_required: false
+  web: false
+  external_link: MyString

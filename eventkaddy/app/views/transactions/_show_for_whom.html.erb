@@ -1,0 +1,17 @@
+<div class="row">
+  <% if @attendee || @register_form %>
+    <div class="col-md-8 mx-auto px-5 pb-4 <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+      <%= @settings.reg_form_header.html_safe %>
+      <%= render partial: "products" %>
+      <div class="payment-merchant-form"></div>
+      <br/>
+    </div>
+  <% elsif @exhibitor %>
+    <div class="col-md-12 pl-5 pr-5 <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+      <%= @settings.reg_form_header.html_safe %>
+      <%= render partial: "exhibitor_registration_products"%>
+      <%= render partial: "cart" %>
+      <br/>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,64 @@
+%h4 Program Feed Booleans
+%br/
+.bg-light.custom-border.px-2.py-2.container-fluid
+    = form_for @program_feed_booleans, :html => { :method => :post,  :multipart => true}, :url => '/settings/update_program_feed_booleans' do |f| 
+        .alert{:class => "alert-info", :style=>"wdith:100%"}
+            %b Program Feed Url:
+            %a{ :href=> "#{@program_feed_booleans.event.cms_url}/#{@program_feed_booleans.event.id}/program", :target=>"_blank"}
+                ="#{@program_feed_booleans.event.cms_url}/#{@program_feed_booleans.event.id}/program"
+        .d-flex.flex-row#cards-container
+            .card.card-body.settings-card.mr-2
+                %h5 General Settings
+                .custom-control.custom-switch
+                    = f.check_box :program_feed, class: "custom-control-input"
+                    = f.label :program_feed, "Program Feed Enabled", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :load_banner_image, class: "custom-control-input"
+                    = f.label :load_banner_image,"Load Banner Image", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :enable_search_bar, class: "custom-control-input"
+                    = f.label :enable_search_bar,"Enable Search Bar", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :program_feed_twelve_hour_format, class: "custom-control-input"
+                    = f.label :program_feed_twelve_hour_format,"Twelve Hour Format(am/pm)", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :default_card_view, class: "custom-control-input"
+                    = f.label :default_card_view,"Default Card View", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :speakers_order_by_first_name, class: "custom-control-input"
+                    = f.label :speakers_order_by_first_name, "Filter By Speaker First Name", class: "custom-control-label"
+
+            .card.card-body.settings-card.ml-2
+                %h5 Filter Settings
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_tag, class: "custom-control-input"
+                    = f.label :sessions_by_tag, "Filter Sessions by Tag", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_speaker, class: "custom-control-input"
+                    = f.label :sessions_by_speaker, "Filter Sessions by Speakers", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_audience_tag, class: "custom-control-input"
+                    = f.label :sessions_by_audience_tag, "Filter Sessions by Audience Tag", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_exhibitor, class: "custom-control-input"
+                    = f.label :sessions_by_exhibitor, "Filter Sessions by Exhibitor", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :show_sponsored_exhibitor, class: "custom-control-input"
+                    = f.label :show_sponsored_exhibitor, "Showed Sponsored Exhibitor and Hide Alphabet Filter", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :show_featured_speaker, class: "custom-control-input"
+                    = f.label :show_featured_speaker, "Showed Keynote Speakers and Hide Alphabet Filter", class: "custom-control-label"
+
+
+        .d-flex.flex-row#cards-container.mt-2
+            .card.card-body.settings-card
+                %h5 Logo
+                - if (@event_setting.program_feed_banner_event_file_id!=nil)
+                    = image_tag(EventFile.where("id= ?",@event_setting.program_feed_banner_event_file_id).first.path, :size => 15*15)
+                    = label_tag :portal_banner_file, "Choose a New Program Feed Logo"
+                    = file_field_tag :portal_banner_file
+                - else
+                    = label_tag :portal_banner_file, "Choose a Program Feed Logo"
+                    = file_field_tag :portal_banner_file
+        %br
+        = f.submit 'Update Video Portal Settings', class:'btn btn-primary'

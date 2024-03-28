@@ -1,0 +1,6 @@
+# have to pass this in or axlsx doesn't work
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+survey_type_id = SurveyType.where(name:'Global Poll').first.id
+render :partial => 'survey_report_for_type', :locals => {wb: wb, :survey_type_id => survey_type_id, :event => @event, event_id: @event.id}

@@ -1,0 +1,36 @@
+.current-job-status {
+  background-color: #D5E4D3;
+  font-size:        14px;
+  min-height:       150px;
+  width:            100%;
+  border-radius:    10px;
+  padding:          10px;
+  display:          none;
+}
+
+.status-header {
+  font-weight: bold;
+  font-size:   18px;
+  display:     inline-block;
+}
+
+.row-progress {
+  background-color: transparent;
+  display:          inline-block;
+  padding:          5px;
+}
+
+.status {
+  font-weight: bold;
+  padding:     5px;
+}
+
+.cancel-job {
+  float: right;
+}
+
+.cancel-info {
+  margin-right: 5px;
+  float:        right;
+  font-size:    10px;
+}

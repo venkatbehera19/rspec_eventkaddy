@@ -1,0 +1,65 @@
+<div class="well">
+    <%= link_to "Back to Badges Index", @m[:badge_url], class: "btn btn-secondary" %>
+    <h2><%= @m[:name] %></h2>
+    (<%= @m[:type] %>)
+    <br>
+    <%= link_to "Edit", @m[:edit_url], class: "pull-right btn btn-outline-success mb-2" %>
+
+    <br>
+    <br>
+
+    <%= image_tag @m[:image] %>
+
+    <br>
+    <br>
+
+    <% if @m[:scavenger_hunt_item] %>
+        <b>Scavenger Hunt Item:</b>
+        <%= @m[:scavenger_hunt_item] %>
+        <br>
+        <br>
+    <% end %>
+
+    <% if @m[:survey_title] %>
+        <b>Survey</b>
+        <%= @m[:survey_title] %>
+        <br>
+        <br>
+    <% end %>
+
+    <b>Position</b>
+    <%= @m[:position] %>
+    <br>
+    <br>
+
+    <b>Description:</b>
+    <%= @m[:description] %>
+    <br>
+    <br>
+
+    <b>Details:</b>
+    <%= @m[:details] %>
+    <br>
+    <br>
+
+    <b>Points Per Action:</b>
+    <%= @m[:points_per_action] %>
+    <br>
+    <br>
+
+    <b>Max Points Per Action:</b>
+    <%= @m[:max_points_per_action] %>
+    <br>
+    <br>
+
+    <b>Points to Complete:</b>
+    <%= @m[:points_to_complete] %>
+    <br>
+    <br>
+
+    <b>Max Points Allotable:</b>
+    <%= @m[:max_points_allotable] %>
+    <br>
+    <br>
+
+</div>

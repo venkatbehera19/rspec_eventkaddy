@@ -1,0 +1,8 @@
+var downloadBtn = "download-btn-<%= @attendee.account_code%>"
+var reset_btn   = "reset-btn-<%=@attendee.account_code%>"
+downloadBtn = $(`#${downloadBtn}`);
+reset_btn   = $(`#${reset_btn}`);
+
+reset_btn.replaceWith('<a class="btn btn-outline-danger reset-btn" id="reset-btn-<%=@attendee.account_code%>" href="#">Reset</a>')
+
+downloadBtn.replaceWith('<a class="btn btn-outline-info download-btn" id="download-btn-<%= @attendee.account_code%>" data-remote="true" href="/surveys/download_attendee_survey_images?attendee=<%= @attendee.account_code%>">Create<i aria-hidden="true" class="fa fa-file-archive-o ml-1"></i></a>')

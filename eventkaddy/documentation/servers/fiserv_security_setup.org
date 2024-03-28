@@ -1,0 +1,19 @@
+#+TITLE: Setting up Security Features for Fiserv
+
+* Explanation
+
+Fiserv has request a more secure environment for their app and data. We are rolling this out in phases. The next phase involves a duplicate cms and api (referred to as Fiserv CMS and Fiserv API going forward) with: 
+1) An encrypted database on the Fiserv CMS
+2) Add google authenticator to SSH and the CMS
+
+Fiserv cms: Domain: fiservcms.eventkaddy.net, IP:45.79.193.104
+Fiserv api: Domain: fiservapi.eventkaddy.net, IP:173.230.131.105 
+
+* Steps
+
+1. Configure API: new url, new private IP, connect to Fiserv CMS. Created fiservapi AA record in linode, point to api server IP (173.230.131.105). Renamed fiserv cms url to fiservcms.
+2. Updated Nginx config for both servers
+3. Updated db file on api server. Ran into issue where api won't connect to db server. Looking for configuration. Searching hermes, galactic and db server for code that allows this. Looking for db internal address 192.168.132.217. My guess is that this has been white-listed somewhere. So it's the reverse, both cms and api need to connect to cms. Don't need api ip. 
+3. Updated cronjob on which server?
+2. Add google authenticator to SSH and CMS
+3. Test with app

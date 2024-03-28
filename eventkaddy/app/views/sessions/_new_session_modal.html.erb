@@ -1,0 +1,214 @@
+
+<!-- Begin Session Quick Add Modal -->
+
+<div id="quickAdd" class="modal hide fade" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content px-3 py-3 px-lg-5 py-lg-5">
+            <% @session = Session.new %>
+            <%= form_for(@session, :url => '/sessions') do |f| %>
+              <% settings = Setting.return_cms_settings session[:event_id] %>
+
+              <% text_field = ->(col, label, options={}) {
+                  unless settings.method("hide_session_form_#{col}").call
+                    "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}</div>".html_safe
+                  end
+              } %>
+
+              <% check_box = ->(col, label) {
+                  unless settings.method("hide_session_form_#{col}").call
+                    f.label(col) { f.check_box(col) + " #{label}" } + "<br>".html_safe
+                  end
+              } %>
+
+              <% select = -> (col, label, items, options={}, html_options={}) {
+                  unless settings.method("hide_session_form_#{col}").call
+                    "<div class='form-inline'>#{f.label col, label}#{f.select col, items, options, html_options}<br><br></div>".html_safe
+                  end
+              } %>
+            <div class="modal-header">
+                <h3 class="modal-title">Creating Session</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+
+            <div class="modal-header">
+                <div id='quick-add-successes'>Successfully Added Sessions:</div>
+            </div>
+
+            <div class="modal-body">
+
+
+              <div class="form-group">
+                  <%= f.label :session_code, "Session Code" %>
+                  <%= f.text_field :session_code, class:'clear-on-submit form-control' %>
+              </div>
+
+              <div class="form-group">
+                  <%= f.label :title %>
+                  <%= f.text_field :title, class:'clear-on-submit form-control' %>
+              </div>
+              <div class="form-group">
+                  <%= f.label :description %>
+                  <%= f.text_area :description, class:'clear-on-submit form-control', row: 3 %>
+              </div>
+
+              <div class="form-group">
+                  <%= f.label :date, "Date (yyyy/mm/dd)" %> <br>
+                  <%= f.date_select :date, {}, {:class => 'quick-add-date custom-select'}  %>
+              </div>
+
+              <div class="form-group">
+                  <%= f.label :start_at, "Start At (hh:mm)" %> <br>
+                  <div class="form-inline">
+                        <%= f.time_select :start_at, {ampm: true}, class: "custom-select"  %><br>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <%= f.label :end_at, "End At (hh:mm)" %> <br>
+                  <div class="form-inline">
+                      <%= f.time_select :end_at, {ampm: true}, class: "custom-select"  %><br>
+                  </div>
+              </div>
+              <a class="btn-link" data-toggle="collapse" href="#extra-fields" role="button">
+                Add more details to the Sessions <i class="fa fa-plus"></i>
+              </a> <br> <br>
+              <div class="collapse px-2" id="extra-fields">
+                  <%= check_box[:is_poster,        "Poster Session?"] %>
+                  <%= check_box[:sold_out,         "Sold Out?"] %>
+                  <%= check_box[:published,        "Published"] %>
+                  <%= check_box[:unpublished,      "Unpublished"] %>
+                  <%= check_box[:qa_enabled,       "Session Q/A Enabled"] %>
+                  <%= check_box[:feedback_enabled, "Feedback Enabled"] %>
+                  <%= check_box[:premium_access,   "Premium Access"] %>
+                  <%= check_box[:on_demand,         "On Demand"] %>
+                  <%= text_field[:embedded_video_url, "Embedded Video URL (For Video Portal)", {class: "form-control"}] %>
+                  <div class="form-group">
+                    <%= f.label :learning_objective %>
+                    <%= f.text_area :learning_objective, class: "form-control" %>
+                  </div>
+                  <div class="form-group">
+                    <%= label_tag :thumbnail_file, "Choose a Thumbnail" %><br>
+                    <%= file_field_tag :thumbnail_file %>
+                  </div>
+                  <a href="#sponser-prog-info" data-toggle="collapse" role="button" class="btn-link collapse-toggle">
+                    Add Sponsor and Program Information <i class="fa fa-plus"></i><br><br>
+                  </a>
+                  <div class="collapse px-2" id="sponser-prog-info">
+                    <% if /CinemaCon/.match(Event.find(session[:event_id]).name) == nil %>
+                      <%= text_field[:video_ipad, "Sponsor Logo URL", {class: "form-control"}] %>
+                    <% end %>
+                    <%= select[:race_approved, "CE Approved", ["Yes", "No", "Pending"], {prompt: "Please Select"}, {class: "custom-select ml-md-2"}] %>
+                    <br>
+                    <%= text_field[:credit_hours, "Credit Hours", class: "form-control ml-2", style:"width:30%; display: inline;"] %>
+
+                    <% unless settings.method("hide_session_form_program_type").call %>
+                        <div class="form-group">
+                          <%= f.label :program_type %>
+                          <%= f.collection_select(:program_type_id, ProgramType.all, :id, :name, {}, class: "custom-select") %>
+                        </div>
+                    <% end %>
+                  </div>
+                  
+                  <% unless settings.method("hide_session_form_sessions_speakers").call %>
+                    <% @speakers = Speaker.select('DISTINCT(speakers.id),first_name,last_name,honor_prefix').where("event_id= ?",session[:event_id]).order('last_name ASC') %>
+                    <a href="#select-speaker" data-toggle="collapse" role="button" class="btn-link collapse-toggle">
+                      Add Speakers <i class="fa fa-plus"></i><br><br>
+                    </a>
+                    <div class="collapse px-2" id="select-speaker">
+                      <div class="field">
+                          <%= label_tag(:add_speakers, "Add Speakers:") %>
+                          <span class="d-none d-lg-block text-info">Hold 'ctrl' to select and deselect multiple speakers</span>
+                          <%= select_tag(:speaker_ids, options_for_select(@speakers.map { |speaker| ["#{speaker.honor_prefix} #{speaker.first_name} #{speaker.last_name}", speaker.id] }, @speaker_list), :multiple => true, :size=>15, class: "custom-select") %>
+                      </div> 
+                    </div>
+                  <% end %>
+                  <% if /CinemaCon/.match(Event.find(session[:event_id]).name)!=nil %>
+                    <a href="#client-specific-data" data-toggle="collapse" role="button" class="btn-link collapse-toggle">
+                      Client-Specific Fields <i class="fa fa-plus"></i><br><br>
+                    </a>
+                    <div class="collapse px-2" id="client-specific-data">
+                      <%= text_field[:video_thumbnail, "Logo 1 URL", class: "form-control"] %>
+                      <%= text_field[:video_android,   "Logo 2 URL", class: "form-control"] %>
+                      <%= text_field[:video_ipad,      "Logo 3 URL", class: "form-control"] %>
+                    </div>
+                  <% else %>
+                    <a href="#video-urls" data-toggle="collapse" role="button" class="btn-link collapse-toggle">
+                      Add Video Thumnails <i class="fa fa-plus"></i><br><br>
+                    </a>
+                    <div class="collapse px-2" id="video-urls">
+                      <%= text_field[:video_thumbnail, "Video Thumbnail", class: "form-control"] %>
+                      <%= text_field[:video_android,   "Video Android",   class: "form-control"] %>
+                      <%# this is sponsor logo; old hack not sure if we can change %>
+                      <%# <%= text_field[:video_ipad,      "Video iPad",      style:"width:60%"] %1> %>
+                      <%= text_field[:video_iphone,    "Video iPhone",    class: "form-control"] %>
+                    </div>
+                  <% end %>
+                  <a href="#broadcast-promotion" data-toggle="collapse" role="button" class="btn-link collapse-toggle">
+                    Broadcast and Promotions <i class="fa fa-plus"></i>
+                    <br> <br>
+                  </a> 
+                  <div class="collapse px-2" id="broadcast-promotion">
+                    <%= select[:wvctv,               "Record", ["Yes", "No", "Blank"], {prompt: "Please Select"}, {class: "custom-select ml-md-2"}] %>
+                    <%= text_field[:price, "Price", class: "form-control"] %>
+
+                    <%= select[:ticketed, "Ticket Required", ["Yes", "No"], {prompt: "Please Select"}, {class: "custom-select ml-md-2"}] %>
+
+                    <%= text_field[:capacity, "Room Capacity", class: "form-control"] %>
+                    
+                    <%= text_field[:poster_number,     "Poster Number",     class: "form-control"] %>
+                    <%= text_field[:tag_twitter,       "Tag Twitter",       class: "form-control"] %>
+                    <%= text_field[:timezone_offset,   "Timezone Offset",   class: "form-control"] %>
+
+                    <% unless settings.method("hide_session_form_record_type").call %>
+                        <div class="form-inline">
+                            <%= label_tag(:select_record_type, "Record Type:") %>
+                            <%= f.collection_select(
+                                :record_type,
+                                RecordType.all, :id, :record_type, {},
+                                class: "custom-select ml-md-2") %>
+                        </div><br>
+                    <% end %>
+
+                    <% unless settings.method("hide_session_form_video_duration").call %>
+                        <div class="form-inline">
+                            <%= f.label 'Video Duration', class: "mr-2" %>
+                            <%= f.time_select( :video_duration, { default: nil }, class: "custom-select" ) %>
+                        </div><br>
+                    <% end %>
+
+                    <%= text_field[:track_subtrack,    "Track Subtrack",     class: "form-control"] %>
+                    <%= text_field[:session_file_urls, "Session File URLs",  class: "form-control"] %>
+                    <%= text_field[:survey_url,        "Survey URL",         class: "form-control"] %>
+                    <%= text_field[:poll_url,          "Poll URL",           class: "form-control"] %>
+                    <%= text_field[:custom_fields,     "Custom Fields",      class: "form-control"] %>
+                    <%= text_field[:tags_safeguard,    "Tags Safeguard",     class: "form-control"] %>
+                    <%= text_field[:custom_filter_1,   "Custom Filter 1",    class: "form-control"] %>
+                    <%= text_field[:custom_filter_2,   "Custom Filter 2",    class: "form-control"] %>
+                    <%= text_field[:custom_filter_3,   "Custom Filter 3",    class: "form-control"] %>
+
+                    <%= text_field[:promotion,         "Promotion",          class: "form-control"] %>
+                    <%= text_field[:keyword,           "Keyword",            class: "form-control"] %>
+                    <%= text_field[:video_file_location, "Video File Location", class: "form-control"] %>
+                    <%= text_field[:encoded_videos, "Encoded Videos", class: "form-control"] %>
+                  </div>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-danger" data-dismiss="modal" aria-hidden="true" type="button">Cancel</button> <%= f.submit id:"quick-add-submit",class:"btn btn-primary" %>
+              </div>
+            </div>
+            <% end %>
+        </div>
+    </div>
+</div>
+
+<script>
+$('.modal-header > .close').on('click', function() { location.reload(); })
+$('.modal-footer > .cancel').on('click', function() { location.reload(); })
+$('.collapse-toggle').each(function(){
+  let collapse_div_id = $(this).attr('href');
+  if ($(collapse_div_id).children().length === 0){
+    $(this).addClass('d-none');
+  }
+});
+</script>
+
+<!-- End Session Quick Add Modal -->

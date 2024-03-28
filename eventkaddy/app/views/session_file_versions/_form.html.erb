@@ -1,0 +1,39 @@
+<%= form_for(@session_file_version, :html => { :multipart => true, :class=>"bg-light custom-border px-4 py-4" } ) do |f| %>
+
+    <% if @session_file_version.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@session_file_version.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+            <ul>
+                <% @session_file_version.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+        <%= f.hidden_field :event_id, :value => session[:event_id] %>
+        <%= f.hidden_field :session_file_id, :value => @session_file_id %>
+    </div>
+
+    <div class="field">
+        <%= label_tag :event_file, "Choose a File" %><br />
+        <%= file_field_tag :event_file %>
+    </div><br />
+
+    <%# this may interfere with my unpublished code... final_version is meant to mark the selected version of a session file. So my query may need to be more sophisticated %>
+    <%# although it doesn't look like the original implementation handled this scenario either... so if we're not using final version at all, it's maybe not worth the time %>
+    <% if current_user.role?(:client) || current_user.role?(:super_admin) %>
+        <%= f.label :final_version do %>
+            <%= f.check_box :final_version %>
+            Final Version
+        <% end %><br>
+    <% end %>
+
+    <br/>
+
+    <div class="actions">
+        <%= f.submit "Submit", class:"btn btn-primary"   %>
+    </div>
+<% end %>

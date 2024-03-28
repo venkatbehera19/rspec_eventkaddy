@@ -1,0 +1,45 @@
+<h4>Exhibitor Files</h4>
+
+<%= link_to 'New File', "/exhibitor_files/#{@exhibitor_id}/new",class:"btn btn-primary" %>
+<br><br>
+
+<table id="exhibitor_files" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Download</th>
+      <th>Type</th>
+      <% if ( current_user.role?(:client) || current_user.role?(:trackowner) || current_user.role?(:super_admin) ) then %>
+      <th></th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @exhibitor_files.each do |exhibitor_file| %>
+      <tr>
+        <td><%= exhibitor_file.title %></td>
+        <td>
+          <% event_file = exhibitor_file.event_file %>
+          <% if event_file.cloud_storage_type.blank? %>
+            <%= link_to("Download",event_file.path, class: "btn-link")%>
+          <% else %>
+            <%= link_to  "Download", event_file.return_authenticated_url()['url'], class: 'btn-link' %>
+          <% end %>
+        </td>
+        <td>
+          <%= exhibitor_file.event_file.mime_type %>
+        </td>
+
+        <td class="btn-group">
+          <%= link_to edit_exhibitor_file_path(exhibitor_file) ,class:"btn btn-outline-warning mr-1" do %> <i class="fa fa-pencil"></i> <% end %>
+          <%= link_to exhibitor_file, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" do %> <i class="fa fa-trash"></i> <% end %>
+        </td>
+
+      </tr>
+    <% end %>
+  </tbody>
+
+</table>
+
+<br />

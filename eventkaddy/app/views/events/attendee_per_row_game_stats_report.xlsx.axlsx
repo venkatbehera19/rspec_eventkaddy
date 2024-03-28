@@ -1,0 +1,84 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+  black_cell = s.add_style(
+    :bg_color  => "00",
+    :fg_color  => "FF",
+    :sz        => 14,
+    :alignment => { :horizontal=> :center }
+  )
+
+  heads = [
+    'Code',
+    'Name',
+    "Email",
+    "Badge Name",
+    "First Participated",
+    "Last Participated",
+    "Completed",
+    "Tasks Completed",
+    "Points Collected",
+    "Prize Redeemed"
+  ]
+
+  wb.add_worksheet(name: "attendee_game_statistics") do |sheet|
+
+    sheet.add_row heads, :style => heads.map { |h| black_cell }
+    row_methods = heads.map {|h| h.downcase.split(' ').join('_') }
+
+    # will not work for half timezones.
+    event_offset = Event.find( @event_id ).utc_offset.to_i
+
+    # examples:
+    # '+05:00'.to_i # 5
+    # '-05:00'.to_i # -5
+    # '-05:30'.to_i  # -5
+    # nil.to_i # 0
+    # ''.to_i  # 0
+
+    # CONCAT_WS( separator, ... )
+    attendees = AttendeesAppBadge.
+      select(
+        "attendees.account_code AS code,
+         CONCAT_WS(
+           ' ',
+           attendees.honor_prefix,
+           attendees.first_name,
+           attendees.last_name,
+           attendees.honor_suffix
+         ) AS name,
+         attendees.email,
+         app_badges.name AS badge_name,
+         attendees_app_badges.created_at AS first_participated,
+         attendees_app_badges.updated_at AS last_participated,
+         attendees_app_badges.complete AS completed,
+         attendees_app_badges.num_app_badge_tasks_completed AS tasks_completed,
+         attendees_app_badges.app_badge_points_collected AS points_collected,
+         attendees_app_badges.prize_redeemed").
+      where(event_id: @event_id).
+      joins( 'LEFT OUTER JOIN attendees ON attendees_app_badges.attendee_id=attendees.id').
+      joins( 'LEFT OUTER JOIN app_badges ON attendees_app_badges.app_badge_id=app_badges.id')
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: attendees.length)
+      @job.write_to_file
+    end
+
+    attendees.each {|a|
+      sheet.add_row row_methods.map {|h|
+        case h
+        when 'first_participated', 'last_participated'
+          a.send( h ).in_time_zone(event_offset).strftime('%Y-%m-%d %H:%M:%S')
+        when 'completed'
+          a.send(h) ? 'Yes' : 'No'
+        when 'prize_redeemed'
+          a.send(h) ? 'Yes' : 'No'
+        else
+          a.send h
+        end
+      }
+      @job.plus_one_row if @job
+      sheet.column_widths 20,20,20,20,20,20,20,20,20
+    }
+  end
+end

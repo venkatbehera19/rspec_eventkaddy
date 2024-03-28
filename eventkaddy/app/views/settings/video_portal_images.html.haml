@@ -1,0 +1,41 @@
+%h4 Video Portal Images
+%br/
+.bg-light.custom-border.px-4.py-4{style:'min-height:500px;'}
+
+    .alert.alert-info Images edited will only be updated upon visiting the base url or login page of the video portal (due to the way this type of data is cached.)
+    - @video_portal_images.each do |vpi|
+
+        %hr
+
+        %h5= vpi.name
+        Links to:
+        = vpi.link ? link_to(vpi.link) : 'Not specified.'
+        %br
+        %br
+        = link_to('Delete', "/settings/destroy_video_portal_image/#{vpi.id}", data: {:confirm => 'Are you sure?'}, :method => :delete, class:"btn btn-outline-danger")
+        %br
+        %br
+        - if vpi.cloud_storage_type_id.blank?
+            = image_tag vpi.path, style: "max-width: 100%"
+        - else
+            - efile = EventFile.find vpi.event_file_id
+            = image_tag efile.return_authenticated_url['url'], style: "max-width: 100%"
+        %br
+        %br
+        %br
+
+    .custom-border.px-3.py-3
+        = form_tag '/settings/upload_video_portal_image', multipart: true do
+            .form-group
+                = label_tag :link, 'Link (on click)'
+                = text_field_tag :link, nil, class: "form-control"
+            .form-group
+                = label_tag :image_file, 'Image'
+                %br
+                = file_field_tag :image_file
+
+            .form-group
+                = label_tag :video_portal_image_type_id, 'Type'
+                = select_tag :video_portal_image_type_id, options_from_collection_for_select(@video_portal_image_types, "id", "name"), class: "custom-select"
+
+            = submit_tag 'Upload Video Portal Image', class:'btn btn-primary'

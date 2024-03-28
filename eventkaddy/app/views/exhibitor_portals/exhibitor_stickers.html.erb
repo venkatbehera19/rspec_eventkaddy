@@ -1,0 +1,173 @@
+<h3>Exhibitor Stickers</h3>
+<button type="button" class="btn btn-primary" id="new_sticker_trigger">
+  <i class="fa fa-plus"></i> <span class="d-none d-md-inline">New Sticker</span> 
+</button>
+<br><br>
+
+<div id="notify_save" class="text-success" style='display: none;'><p>Saved!</p></div>
+<table class='table'>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Image</th>
+      <th>Name</th>
+      <th class="d-none d-md-table-cell">Link</th>
+      <th class="text-center">Fixed on Live-steam</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody class="sortable">
+    <% @stickers.each do |sticker| %>
+      <tr id="<%= sticker.id %>" class="sticker-data">
+        <td class="drag-handle"><i class="fa fa-arrows" style="vertical-align: sub;"></i></td>
+        <td>
+          <%= image_tag sticker.event_file.path, style: "max-width: 2.5rem;", class: "sticker-img" %>
+        </td>
+        <td class="s-name" data-name="<%= sticker.name %>"> <%= sticker.name %> </td>
+        <td class="d-none d-md-table-cell s-link" data-link="<%= sticker.link %>"> 
+          <a href="<%= sticker.link %>" target="blank" %> <%= sticker.link %> </a> 
+        </td>
+        <td class="text-center">
+          <div class="custom-control custom-switch">
+            <%= check_box_tag 'sticker_' + sticker.id.to_s, 1, sticker.fixed_state, class: "toggle-fixed-state custom-control-input" %>
+            <label for="sticker_<%= sticker.id %>" class="custom-control-label"></label>
+          </div>
+        </td>
+        <td class="table-actions">
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline-success edit-sticker-trigger">
+              <i class="fa fa-pencil"></i>
+            </button>
+            <%= link_to  "/exhibitor_portals/delete_sticker/#{sticker.id}",
+              data: {confirm: "Are you sure to delete the sticker?"},class: "btn btn-outline-danger", method: :delete do %>
+              <i class="fa fa-trash"></i>
+            <% end %>
+          </div>
+          <div class="dropdown">
+            <a data-toggle="dropdown" class="ellipse-style edit-sticker-trigger"><i class="fa fa-ellipsis-v"></i></a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item text-success">Edit</a>
+              <%= link_to  "Delete", "/exhibitor_portals/delete_sticker/#{sticker.id}",
+                data: {confirm: "Are you sure to delete the sticker?"},class: "dropdown-item text-danger", method: :delete %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<div class="modal fade" id="sticker_modal">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <%= form_for :exhibitor_sticker, url: "", method: :post, html: {id: "sticker_form"} do |f| %>
+        <div class="modal-body">
+          <div class="form-group">
+            <%= f.label :sticker_file, class: "col-12 text-center" do %>
+              <div class="img-wrap">
+                <img src="" alt="sticker" id="preview_sticker">
+                <p class="hover-note">Click to change sticker</p>
+              </div>
+            <% end %>
+            <%= f.file_field :sticker_file, accept: "image/*", class: "d-none" %>
+          </div>
+          <div class="form-group">
+            <%= f.label :name %>
+            <%= f.text_field :name, class: "form-control", required: true %>
+          </div>
+          <div class="form-group">
+            <%= f.label :link %>
+            <%= f.text_field :link, class: "form-control" %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <input type="submit" value="Save" class="btn btn-primary">
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  let modal = $('#sticker_modal');
+  $('#new_sticker_trigger').on('click', function(){
+    modal.find('.modal-title').text("New Sticker");
+    modal.find('#preview_sticker').attr('src', '/defaults/default_sticker.png');
+    modal.find('#sticker_form').trigger('reset');
+    modal.find('#sticker_form').attr('action', '/exhibitor_portals/create_sticker');
+    modal.modal();
+  });
+
+  $('.edit-sticker-trigger').on('click', function(){
+    let row = $(this).parents('.sticker-data');
+    modal.find('.modal-title').text("Edit Sticker");
+    modal.find('#sticker_form').trigger('reset');
+    modal.find('#sticker_form').attr('action', '/exhibitor_portals/update_sticker/' + row.attr('id'));
+    modal.find('#preview_sticker').attr('src', row.find('.sticker-img').attr('src'));
+    modal.find("#exhibitor_sticker_name").val(row.find('.s-name').data('name'));
+    modal.find('#exhibitor_sticker_link').val(row.find('.s-link').data('link'));
+    modal.modal();
+  });
+
+  $('#exhibitor_sticker_sticker_file').on('change', function(){
+    const [file] = this.files;
+    if (file){
+      $('#preview_sticker').attr('src', URL.createObjectURL(file))
+    }
+  });
+
+  $('.sortable').sortable({
+    handle: $('.drag-handle'),
+    helper: fixWidthHelper,
+    update: function(){
+      let data = updatedStatus($(this));
+      $.post("/exhibitor_portals/reposition_stickers", {json: data},
+        function (data, textStatus, jqXHR) {
+          if (data.notice){
+            console.log('ok');
+            $('#notify_save').show().fadeOut(900);
+          }
+        }
+      ).fail(function(){ console.log("Not working"); });
+    }
+  });
+
+  function updatedStatus(body){
+    let newstatus = [], order, id;
+    let totalChildren = body.children().length;
+    body.children().each(function(){
+      order = totalChildren - $(this).index() - 1; //top element have max position value
+      id = $(this).attr('id');
+      newstatus.push({
+        id, order
+      });
+    });
+    return newstatus;
+  }
+
+  function fixWidthHelper(e, ui) {
+    ui.children().each(function() {
+        $(this).width($(this).width());
+    });
+    return ui;
+  }
+
+  $('.toggle-fixed-state').on('change', function(){
+    let elem = $(this);
+    $.post("/exhibitor_portals/update_sticker_fixed_status",
+      { sticker_id: elem.attr('id').replace('sticker_', ''), state: elem.is(':checked') },
+      function (data, textStatus, jqXHR) {
+        if (data.notice && data.notice === 'success'){
+          $('#notify_save').show().fadeOut(900);
+        }
+      }
+    ).fail(function(){
+      console.log('Opps! Something went wrong');
+    });;
+  });
+</script>

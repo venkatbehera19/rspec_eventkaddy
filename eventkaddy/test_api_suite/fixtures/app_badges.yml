@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  app_game: one
+  event_file: one 
+  alt_image_url: MyString
+  name: MyString
+  description: MyText
+  details: MyText
+  position: 1
+  min_badge_tasks_to_complete: 1
+  min_points_to_complete: 1
+
+two:
+  event: two
+  app_game: two
+  event_file: two 
+  alt_image_url: MyString
+  name: MyString
+  description: MyText
+  details: MyText
+  position: 1
+  min_badge_tasks_to_complete: 1
+  min_points_to_complete: 1

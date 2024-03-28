@@ -1,0 +1,14 @@
+Hi <%= @recipient_name %>,
+
+You just received a new message from <%= @sender_name %>.
+
+
+Here is the message:
+
+Title: <%= @title %>
+
+Content: <%= @content %>
+
+To reply, click this link: <%=@event.cms_url%>/exhibitor_portals/messages to log back in to the Exhibitor Portal.
+
+To disable notifications, please click this link: <%=@event.cms_url%>/exhibitor_messages/settings .

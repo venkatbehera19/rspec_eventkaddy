@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  attendee: realistic
+  session: realistic
+  flag: MyString
+  session_code: Mycode201
+
+two:
+  attendee: two
+  session: two
+  flag: MyString
+  session_code: MyString

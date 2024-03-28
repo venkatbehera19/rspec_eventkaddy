@@ -1,0 +1,45 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div id="content">
+			<h4>Attendee Badge Printed</h4>
+			<div class="btn-toolbar my-2">
+				<div class="btn-group mr-2">
+					<a class="btn btn-danger" href="/event_tickets/new">Delete</a>
+				</div>
+			</div>
+			<br>
+
+				<table class="table table-striped" id="event_ticket_table">
+					<thead>
+			      <tr>
+			        <th>Name</th>
+			        <th>Printed By</th>
+			        <th>Last Printed At</th>
+			        <th>Count</th>
+			      </tr>
+					</thead>
+					<tbody>
+						<% @attendees.each do |attendee| %>
+							<tr>
+								<td><%= link_to attendee.full_name , "/attendees/#{attendee.id}"%></td>
+								<td><% attendee.attendee_badge_prints.each do |print| %>
+										<li><%= print.printed_by_id == attendee.id ? 'Self' : 'Client' %></li>
+									<% end%>
+								</td>
+								<td>
+									<% attendee.attendee_badge_prints.each do |print| %>
+										<li><%= print.updated_at %></li>
+									<% end%>
+								</td>
+								<td><% attendee.attendee_badge_prints.each do |print| %>
+										<li><%= print.count %></li>
+									<% end%>
+								</td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,29 @@
+#+TITLE: MySql Encryption at Rest
+
+* Explanation
+MySql 5.7 offers new encryption-at-rest features. We are exploring this mainly to provide additional sercurity to meet Fiserv requirements. There are two layers of encryption - the tablespace keys and the master keys. Here is the guide: https://dev.mysql.com/doc/refman/5.7/en/innodb-data-encryption.html. The first attempt was with the Keyring File file-based plugin. 
+
+* Steps
+1. Check the mysql version (mysql -V), to make sure it is 5.7 or more. 
+2. Navigate to my.cnf in /etc/mysql/
+3. Edit the file to include: 
+[mysqld]
+early-plugin-load=keyring_file.so
+#this loads the plugin
+4. Save the file and stop then start mysql - ‘sudo systemctl stop mysql’ then ‘sudo systemctl start mysql’
+5. Open the mysql shell - usr/bin/mysql -u root -p
+6. Look for your plugin - 
+
+mysql> SELECT PLUGIN_NAME, PLUGIN_STATUS
+       FROM INFORMATION_SCHEMA.PLUGINS
+       WHERE PLUGIN_NAME LIKE 'keyring%';
+7. If you see it Select the database (USE database_name), then encrypt your first table -
+
+ALTER TABLE attendees ENCRYPTION='Y';
+
+8. Continue encrypting all the tables. I found that when I exported the database, the encypted table was missing, which showed that it worked. 
+
+* Next Steps
+The next steps will be to configure the key ring using KWS, amazon's key management solution. For this, we need an IAM user account and separate fiserv amazon account. 
+https://docs.aws.amazon.com/kms/latest/developerguide/overview.html
+https://dev.mysql.com/doc/refman/5.7/en/keyring-aws-plugin.html

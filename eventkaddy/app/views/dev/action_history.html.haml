@@ -1,0 +1,20 @@
+.table-responsive
+  %table.table.table-condensed.table-striped.table-bordered
+    %thead
+      %tr
+        %th "Type"
+        %th "Email"
+        %th "IP"
+        %th "Action"
+        %th "Params"
+        %th "Updated At"
+
+    %tbody
+      - @action_histories.each do |h|
+        %tr 
+          %td= h.type_name
+          %td= h.email
+          %td= h.ip_address
+          %td= h.action
+          %td= h.parameters.truncate(15)
+          %td= h.updated_at

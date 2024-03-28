@@ -1,0 +1,18 @@
+<%= link_to 'Back', sessions_subtracks_path,class:"btn" %> 
+<%= link_to 'Edit', edit_sessions_subtrack_path(@sessions_subtrack) ,class:"btn edit" %> 
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Subtrack:</b>
+  <%= @sessions_subtrack.subtrack_id %>
+</p>
+
+<p>
+  <b>Session:</b>
+  <%= @sessions_subtrack.session_id %>
+</p>
+
+
+

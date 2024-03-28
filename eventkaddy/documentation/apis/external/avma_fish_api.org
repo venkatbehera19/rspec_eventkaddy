@@ -1,0 +1,172 @@
+#+TITLE: AVMA Fish API
+#+Author: EventKaddy
+#+OPTIONS: ^:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="read_the_org/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="read_the_org/readtheorg.css"/>
+
+#+HTML_HEAD: <script src="read_the_org/jquery.min.js"></script>
+#+HTML_HEAD: <script src="read_the_org/bootstrap.min.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="read_the_org/jquery.stickytableheaders.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="read_the_org/readtheorg.js"></script>
+
+* Fish - Eventkaddy API Key
+csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i
+
+* About "custom_fields_2"
+Due to the many companies co-operating with AVMA, attendees have more than one unique identifier. In an effort to be transparent and to save some time, the internal field named "custom_fields_2" is used in this documentation and in the API requests. In a previous version of this documentation, "account_code" was used, but refered to an identifier it turned out FISH does not have access to. In short, "custom_fields_2" is where we happen to store the Badge ID identifier, and "account_code" is where we store the attendee id from another integration partner (and of course we have an "id" column of our own). "account_code" will no longer be valid, so please use badge ids, under the key "custom_fields_2".
+
+** Arbitrary Selection of badge_ids
+You can use these codes to confirm you have matching data in your system. These are from our "custom_fields_2" column.
+
+["53432865", "53433765", "53434600", "53434645", "53434715", "53434725", "53434950", "53435035", "53435460", "53437590", "53438210", "53439475", "53439710", "53439780", "53439920", "53441515", "53441860", "53442505", "53443735", "53446345"]
+
+* Push Session "I Attend" For Attendee
+"I Attend" defines a set of sessions which are used to determine an attendee's Continuing Education credits.
+
+URL: https://avmaproxy.eventkaddy.net/push_iattend
+
+Example using Kaddy attendee ( which we often use for test purposes ) and a real session selected arbitarily.
+#+NAME: curl example
+#+BEGIN_SRC sh
+curl -H "Content-Type: application/json" --data '{"proxy_key":"csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i","json_data":{"attendees":[{"custom_fields_2":"ourcode268416", "session_code":"2234_4"}]} }' https://avmaproxy.eventkaddy.net/push_iattend
+#+END_SRC
+
+That same --data argument in a more human readable form:
+#+NAME: curl example
+#+BEGIN_SRC javascript
+{
+  "proxy_key":"csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i",
+  "json_data": {
+    "attendees":[
+      {"custom_fields_2":"ourcode268416", "session_code":"2234_4"}
+    ]
+  }
+}
+#+END_SRC
+
+
+You may note the _4 appending the session code. Our integration partner, goeshow, stores session_codes that can point to multiple sessions with the same title, but which occur on different days. This year goeshow stores this value in a field called class_code which you may have access to. If not, you can determine the number to append by counting from 1 the chronological order of the session date, from earliest to latest. Internally we do not save the first session as _1, but you may send it to us with or without this suffix. ie: 2234_1 or 2234 are acceptable, but sessions 2234_2, 2234_3 and 2234_4 would need to be sent with the suffix.
+
+Ideally, we would like to be sent as many favourites in a single push as possible, rather than one request per attendee, for greater efficiency.
+
+If an invalid custom_fields_2 is sent, or an invalid session_code is sent, or in some way the data is malformed, some error handling is provided to help you build your service. In addition to that, you will be able to review changes to attendee i_attend fields from the following link which lists all attendees having a non-null i_attend value:
+
+https://avmaproxy.eventkaddy.net/fish_iattend_debug
+
+User: avma
+
+Pass: 1634
+
+** Test Data
+You can use this data while you develop your api call. I've provided a large number of session codes, since once you add a session_code you will get a message that it has already been added thereafter. We currently don't provide a way to remove them for Fish.
+*** Attendees
+Test attendees created for Fish testing purposes. "fish01" will already have one session code, from my own test.
+
+["fish01", "fish02", "fish03", "fish04"]
+
+
+*** Sessions
+Real sessions codes taken arbitrarily from production database (where credit hours > 0.0)
+
+["1857", "1723", "1815", "1656", "1792", "1986", "1888", "1960", "1951", "1070", "1477", "1383", "1699", "1870", "1147", "1146", "1275", "1448", "2289", "1929", "1541", "1235", "1214", "1696", "1930", "1945", "1346", "2234", "1854", "1002"]
+
+* Push Session Recommendations for Attendees
+Session Recommendations are links to sessions that an attendee may be interested in, which they can view from a special page in the EventKaddy app.
+
+URL: https://avmaproxy.eventkaddy.net/push_session_suggestions
+
+Example using Kaddy attendee ( which we often use for test purposes ) and some real sessions selected arbitrarily.
+#+NAME: curl example
+#+BEGIN_SRC sh
+curl -H "Content-Type: application/json" --data '{"proxy_key":"csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i","json_data":{"attendees":[ {"custom_fields_2":"ourcode268416", "session_codes":[ "2234_1", "2234_2", "2234_3" ]}], "active_date":"2018-01-01"} }' https://avmaproxy.eventkaddy.net/push_session_suggestions_v2
+#+END_SRC
+
+That same --data argument in a more human readable form:
+#+NAME: curl example
+#+BEGIN_SRC javascript
+{
+  "proxy_key":"csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i",
+  "json_data":{
+    "attendees":[
+      {"custom_fields_2":"ourcode268416", "session_codes":[ "2234_1", "2234_2", "2234_3" ]}
+    ],
+    "active_date":"2018-05-30"
+  }
+}
+#+END_SRC
+
+You may note the _3 appending a session code. Our integration partner, goeshow, stores session_codes that can point to multiple sessions with the same title, but which occur on different days. This year goeshow stores this value in a field called class_code which you may have access to. If not, you can determine the number to append by counting from 1 the chronological order of the session date, from earliest to latest. Internally we do not save the first session as _1, but you may send it to us with or without this suffix. ie: 2234_1 or 2234 are acceptable, but sessions 2234_2, 2234_3 and 2234_4 would need to be sent with the suffix.
+
+You may send a maximum 500 attendees per push.
+
+Please note the active_date key. It's value must be a string in the form "YYYY-MM-DD". This will allow you to specify the date the recommendation should appear, regardless of the current date. It's meaning is relative to the location of the event.
+
+If an invalid custom_fields_2 is sent, or an invalid session_code is sent, or in some way the data is malformed, some error handling is provided to help you build your service. In addition to that, you will be able to review changes to attendee session recommendations from the following link which lists recommendations for all attendees. This page is intended for initial debugging and integration, and may become slow at production scale.
+
+https://avmaproxy.eventkaddy.net/fish_session_recommendations_debug
+
+User: avma
+
+Pass: 1634
+
+** Test Data
+You can use this data while you develop your api call. I've provided a large number of session codes, since once you add a session_code you will get a message that it has already been added thereafter. We currently don't provide a way to remove them for Fish.
+*** Attendees
+Test attendees created for Fish testing purposes.
+
+["fish01", "fish02", "fish03", "fish04"]
+
+
+*** Sessions
+Real sessions codes taken arbitrarily from production database.
+
+["1857", "1723", "1815", "1656", "1792", "1986", "1888", "1960", "1951", "1070", "1477", "1383", "1699", "1870", "1147", "1146", "1275", "1448", "2289", "1929", "1541", "1235", "1214", "1696", "1930", "1945", "1346", "2234", "1854", "1002"]
+* Push Exhibitor Recommendations for Attendees
+Exhibitor Recommendations are links to exhibitors that an attendee may be interested in, which they can view from a special page in the EventKaddy app. AVMA frequently calls these exhibitors "Sponsors," however this documentation will refer to them as exhibitors as that is our internal language at EventKaddy.
+
+URL: https://avmaproxy.eventkaddy.net/push_exhibitor_suggestions
+
+Example using Kaddy attendee ( which we often use for test purposes ) and some real exhibitors selected arbitrarily.
+#+NAME: curl example
+#+BEGIN_SRC sh
+curl -H "Content-Type: application/json" --data '{"proxy_key":"csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i","json_data":{"attendees":[ {"custom_fields_2":"ourcode268416", "exhibitor_codes":[ "18C9A3E8-37A5-E711-80C8-001B21A3B7C5", "C9BD48AE-8F98-E711-80C8-001B21A3B7C5"]}], "active_date":"2018-01-01"} }' https://avmaproxy.eventkaddy.net/push_exhibitor_suggestions_v2
+#+END_SRC
+
+That same --data argument in a more human readable form:
+#+NAME: curl example
+#+BEGIN_SRC javascript
+{
+  "proxy_key":"csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i",
+  "json_data":{
+    "attendees":[
+      {"custom_fields_2":"ourcode268416", "exhibitor_codes":[ "18C9A3E8-37A5-E711-80C8-001B21A3B7C5", "C9BD48AE-8F98-E711-80C8-001B21A3B7C5"]}
+    ],
+    "active_date":"2018-05-30"
+  }
+}
+#+END_SRC
+
+You may send a maximum 500 attendees per push.
+
+Please note the active_date key. It's value must be a string in the form "YYYY-MM-DD". This will allow you to specify the date the recommendation should appear, regardless of the current date. It's meaning is relative to the location of the event.
+
+If an invalid custom_fields_2 is sent, or an invalid exhibitor_code is sent, or in some way the data is malformed, some error handling is provided to help you build your service. In addition to that, you will be able to review changes to attendee exhibitor recommendations from the following link which lists recommendations for all attendees. This page is intended for initial debugging and integration, and may become slow at production scale.
+
+https://avmaproxy.eventkaddy.net/fish_exhibitor_recommendations_debug
+
+User: avma
+
+Pass: 1634
+
+** Test Data
+You can use this data while you develop your api call. I've provided a large number of exhibitor codes, since once you add a exhibitor_code you will get a message that it has already been added thereafter. We currently don't provide a way to remove them for Fish.
+*** Attendees
+Test attendees created for Fish testing purposes.
+
+["fish01", "fish02", "fish03", "fish04"]
+
+
+*** Exhibitors
+Real exhibitors codes taken arbitrarily from production database.
+
+["18C9A3E8-37A5-E711-80C8-001B21A3B7C5", "C9BD48AE-8F98-E711-80C8-001B21A3B7C5", "77F9F742-579D-E711-80C8-001B21A3B7C5", "0A739E98-1E9A-E711-80C8-001B21A3B7C5", "E98FC49E-78A7-E711-80C8-001B21A3B7C5", "97744D56-1EA2-E711-80C8-001B21A3B7C5", "7F339EDE-B4C8-E711-80C9-001B21A3B7C5", "FC5E7B2A-2DCA-E711-80C9-001B21A3B7C5", "E725E360-22A5-E711-80C8-001B21A3B7C5", "763B5C73-369A-E711-80C8-001B21A3B7C5", "945863B5-DA94-E711-80C8-001B21A3B7C5", "54E7775A-B694-E711-80C8-001B21A3B7C5", "71DAE8BF-CC9E-E711-80C8-001B21A3B7C5", "6FE3FEE1-429D-E711-80C8-001B21A3B7C5", "4C2A930F-0A8C-E711-80C8-001B21A3B7C5", "67D84491-1FB0-E711-80C8-001B21A3B7C5", "008B06DC-429D-E711-80C8-001B21A3B7C5", "1AA9D186-12B0-E711-80C8-001B21A3B7C5", "2A4D218E-36BF-E711-80C8-001B21A3B7C5", "E332EA21-40A5-E711-80C8-001B21A3B7C5"]

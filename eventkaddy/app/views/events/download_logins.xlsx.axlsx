@@ -1,0 +1,46 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = [ 'Honor Prefix', 'First Name', 'Last Name',
+    'Honor Suffix', 'Title', 'Company',
+    'Email', 'Registration ID', 'Attendee type ID', 'Attendee type', 'Attendee type ID', 'Logins Count'
+  ]
+
+  wb.add_worksheet(name: "Login Data") do |sheet|
+    sheet.add_row heads, :style => heads.map { |h| black_cell }
+
+    attendees = Attendee
+      .select('
+        honor_prefix, first_name, last_name, honor_suffix,
+        title, company, email, attendee_type_id, custom_filter_1, custom_filter_3, account_code,
+        COUNT(
+          CASE WHEN
+            attendee_logins.attendee_id=attendees.id
+          THEN
+            1
+          END
+        ) AS logins_count')
+      .where(event_id:@event_id)
+      .joins('LEFT OUTER JOIN attendee_logins
+              ON attendee_logins.attendee_id = attendees.id')
+      .group('attendees.id')
+      .order('logins_count DESC')
+
+      if @job
+        @job.update!( status: "Processing Rows", total_rows: attendees.length)
+        @job.write_to_file
+      end
+
+      attendees.each do |a|
+        sheet.add_row [
+          a.honor_prefix, a.first_name, a.last_name,
+          a.honor_suffix, a.title, a.company,
+          a.email, a.account_code, a.attendee_type_id, a.custom_filter_1, a.custom_filter_3, a.logins_count
+        ]
+        @job.plus_one_row if @job
+        sheet.column_widths 20,20,20,20,20,20,20,20,20,20,20,20
+      end
+  end
+end

@@ -1,0 +1,43 @@
+<div style="max-width: 1280px;">
+  <%= form_for @setting, :html => {:method => :post }, :url => '/settings/update_slots_config' do |f| %>
+
+    <div class="custom-control custom-switch">
+      <%= f.check_box :enable_slotbookings, class: "custom-control-input" %>
+      <%= f.label :enable_slotbookings, "Enable Slot Bookings", class: "custom-control-label" %>
+    </div>
+    <br>
+
+    <div class="field">
+      <%= f.label :duration, 'Meeting Duration' %>
+      <%= f.select :duration, Slot.options_for_durations, {} ,{ :class => "form-control", required: "required" } %>
+    </div>
+
+    <div class="field">
+      <%= f.label :date_range, 'Availability' %>
+      <%= f.text_field :date_range, class:"form-control", id:"slots_daterange", required:true %>
+    </div>
+
+    <div class="field" style="position:relative">
+      <%= f.label :start_time, 'Timeslots begin each day at' %>
+      <%= f.text_field :start_time, class:"form-control timepicker", id:"slots_daterange", required:true %>
+    </div>
+        <div class="field" style="position:relative">
+      <%= f.label :end_time, 'Timeslots end each day at' %>
+      <%= f.text_field :end_time, class:"form-control timepicker", id:"slots_daterange", required:true %>
+    </div>
+    <div class="actions">
+      <%= f.submit "Update" ,class:"btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#slots_daterange').daterangepicker();
+  $('.timepicker').datetimepicker({
+      format: 'LT'
+  });
+});
+</script>

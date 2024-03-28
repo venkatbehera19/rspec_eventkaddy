@@ -1,0 +1,3 @@
+$("#imagesListingContainer").html("<%= j (render partial: 'survey_images', locals: {attendee_responses: @attendee_responses}) %>");
+
+$("#heading-count-span").html("<%=@images_count%>");

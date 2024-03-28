@@ -1,0 +1,300 @@
+<%# This page is not fully in sync with moderator portals qa feed; I can do a better %>
+<%# job of keeping them together when I fix the asset pipeline compile time %>
+
+<%# Or I can just use a partial for now %>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=<%=@google_apis_font.split(' ').join('+') %>">
+
+<% if @enabled %>
+
+    <style>
+
+        body {
+            background-color: <%= @background_colour %>;
+        }
+
+        #text_upload_container {
+            width:  100%;
+        }
+
+        .question_container {
+            margin-bottom:    10px;
+            background-color: <%= @question_background_colour %> !important;
+            border-color:     <%= @question_background_colour %> !important;
+            text-shadow:      none !important;
+            color:            <%= @question_text_colour %> !important;
+            font-family: '<%= @google_apis_font %>', courier;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+    </style>
+
+    <% show_header = !!(!@hide_session_title || @banner) %>
+
+    <% if show_header %>
+        <div class="qa-header-container clearfix" style="background-color:<%= @title_background_colour %>;padding:5px;border-radius:2px;margin-bottom:20px;height:25vh;color:<%= @title_text_colour %>;font-family: '<%= @google_apis_font %>', courier;">
+            <div style="display:inline-block;width:auto;height:100%;float:left;padding-right: 20px;">
+                <%= @banner ? image_tag(@banner, style:"height:100%;display:inline-block;") : "" %>
+            </div>
+            <% unless @hide_session_title %>
+                <%= @session.title %> Questions Feed
+            <% end %>
+        </div>
+    <% end %>
+
+    <% if @single_question_mode || @whitelist_mode %>
+        <%# <button id="refresh-questions" class="btn show" style="margin-bottom:20px;">
+            Refresh Now!
+        </button>
+
+        <button id="toggle-refresh" class="btn show" style="margin-bottom:20px;">
+            Auto-Refresh On
+        </button>
+
+        <div id="refreshed" style="border:1px solid #5cad62;border-radius:3px;padding:5px;color:#5cad62;display:none;font-weight:bold;float:right;">
+            Refreshed!
+        </div> %>
+    <% end %>
+    <br>
+
+    <div id="text_upload_container"></div>
+
+    <script>
+
+    var single_question_mode = <%= @single_question_mode %>;
+
+    var hide_attendee_name = <%= @hide_attendee_name %>;
+    var hide_session_title = <%= @hide_session_title %>;
+    var no_questions_header = "<%= @no_questions_header %>";
+    var no_questions_content = "<%= @no_questions_content %>";
+    var show_header = <%= show_header %>;
+    var session_id = <%= @session.id %>;
+    console.log(session_id)
+    var attendee_text_upload_question_ids = [];
+
+    var getQuestionsSuccessFunction = function(data) {
+        $.each(data.text_uploads, function(index,value) {
+            var t_u = value
+
+            // Just for purposes of ajax post
+            attendee_text_upload_question_ids.push(
+                t_u.id
+            );
+
+            if (single_question_mode) {
+                var hide_btn = '';
+            } else {
+                var hide_btn = "<button type='button' class='close' onClick='$(this).parent().fadeOut(700);'>Hide</button>";
+            }
+
+            if (hide_attendee_name) {
+                var attendee_name = "";
+            } else {
+                var attendee_name = "<span style='font-weight:700;'>" + 
+                    _.escape(t_u.first_name) + " " + _.escape(t_u.last_name) + 
+                    " asked... </span>";
+            }
+            var line_break = ((hide_btn + attendee_name).length == 0) ? "" : "<br>";
+
+            var answerVal = t_u.answer;
+            if (answerVal) {
+                var our_answer = "<br><br>" + "<span style='font-weight:700;'>" + "Our Answer:" + "</span>" + "<br>" + _.escape(t_u.answer);
+            } else {
+                var our_answer = "";
+            } 
+            
+            $("<div data-q_id='" + t_u.id + "' class='question_container alert alert-dismissible alert-info'>" + attendee_name + hide_btn + line_break + _.escape(t_u.text) + our_answer + "</div>").hide().prependTo("#text_upload_container").fadeIn(1000);
+        });
+        
+        $.each(data.blacklist_ids, function( index, id ) {
+            // This if just so we avoid search the dom on ids that couldn't 
+            // possibly be in the dom
+            if ( _.contains( attendee_text_upload_question_ids, id ) ) {
+                $('*[data-q_id="'+ id +'"]').remove();
+                attendee_text_upload_question_ids = _.filter(attendee_text_upload_question_ids, function(q_id) { return q_id !== id })
+            }
+        })
+
+        if (data.text_uploads && data.text_uploads.length === 0 && $('.question_container').length === 0) {
+            if ( (no_questions_header + no_questions_content).length > 0 ) { // string length
+                $("<div data-q_id='0' class='question_container alert alert-dismissible alert-info'><span style='font-weight:700;'>" + no_questions_header + "</span><br>" + no_questions_content + "</div>").hide().prependTo("#text_upload_container").fadeIn(1000);
+            }
+        } else if (data.text_uploads && data.text_uploads.length > 0 && $('*[data-q_id="0"]').length > 0)  {
+            $('*[data-q_id="0"]').remove();
+        }
+
+        if (single_question_mode) {
+            function isOverflowing() {
+                <%# return $("html").height() > $(window).height() || $("html").width() > $(window).width(); %>
+                return $("html").height() > window.innerHeight || $("html").width() > window.innerWidth;
+            }
+
+            // seems like a better way of testing this than the above;
+            // apparently does not work in very old browsers
+            function checkOverflow(el) {
+                var curOverflow = el.style.overflow;
+                if ( !curOverflow || curOverflow === "visible" ) {
+                    el.style.overflow = "hidden";
+                }
+                var isOverflowing = el.clientWidth < el.scrollWidth 
+                    || el.clientHeight < el.scrollHeight;
+                el.style.overflow = curOverflow;
+                return isOverflowing;
+            }
+
+            function headerIsOverflowing() {
+                return checkOverflow( $(".qa-header-container")[0] ) 
+            }
+
+            // the overflow check will seem inaccurate when
+            // a google font is being used, as it will run at least
+            // once before the font is loaded. After that first incident
+            // it should be fine
+            var i = 0;
+            while ( !isOverflowing() ) {
+                // if question is blank we have to break out early
+                // as the div will never grow in size
+                if ($('.question_container').first().html() == "") {
+                    break;
+                }
+                i++;
+                var font_size = parseInt($('.question_container').first().css('font-size')) + 5;
+                $('.question_container').css({
+                    'font-size': font_size + "px",
+                    'line-height': font_size * 1.3 + "px"
+                });
+                if (i > 400) break; // saftey for edge cases
+            }
+
+            var i = 0;
+            while ( isOverflowing() ) {
+                // if question is blank we have to break out early
+                // as the div will never grow in size
+                if ($('.question_container').first().html() == "") {
+                    break;
+                }
+                i++
+                var font_size = parseInt($('.question_container').first().css('font-size')) - 1;
+                $('.question_container').css({
+                    'font-size': font_size + "px",
+                    'line-height': font_size * 1.3 + "px"
+                });
+                if (i > 400) break; // saftey for edge cases
+            }
+
+            if (show_header) {
+                var i = 0;
+                while ( !headerIsOverflowing() ) {
+                    // exit early if session title has no content besides maybe
+                    // an image
+                    if (hide_session_title) {
+                        break;
+                    }
+                    i++;
+                    var font_size = parseInt($('.qa-header-container').first().css('font-size')) + 5;
+                    $('.qa-header-container').css({
+                        'font-size': font_size + "px",
+                        'line-height': font_size * 1.3 + "px"
+                    });
+                    if (i > 400) break; // saftey for edge cases
+                }
+                var i = 0;
+                while ( headerIsOverflowing() ) {
+                    // exit early if session title has no content besides maybe
+                    // an image
+                    if (hide_session_title) {
+                        break;
+                    }
+                    i++
+                    var font_size = parseInt($('.qa-header-container').first().css('font-size')) - 1;
+                    $('.qa-header-container').css({
+                        'font-size': font_size + "px",
+                        'line-height': font_size * 1.3 + "px"
+                    });
+                    if (i > 400) break; // saftey for edge cases
+                }
+            } // if show header
+        } // if single question mode
+
+        $("#refreshed").show().fadeOut(2000);
+    };
+
+    var loadQuestions = function() {
+
+        $.ajaxSetup({
+            timeout: 15000
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/qa_ajax_data/<%= @session.id %>",
+            dataType: "JSON",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "question_ids": attendee_text_upload_question_ids
+            }),
+            success: function(data) {
+                getQuestionsSuccessFunction(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown)	{
+                if (window.DEBUG) { console.log("ajax error"); }
+                if (window.DEBUG) { console.log(jqXHR); }
+                if (window.DEBUG) { console.log(textStatus); }
+                if (window.DEBUG) { console.log(errorThrown); }
+
+            }
+        });	
+    };
+
+    window.onload = function() {
+
+        // var checkQuestions = setInterval(function() {
+        //     loadQuestions();
+        // }, 30000);
+
+        // Initial load
+        loadQuestions();
+
+        // if (!single_question_mode) {
+        //     var autoRefresh = true;
+
+
+        $("#refresh-questions").on("click", function() {
+            loadQuestions();
+        });
+
+        //     $("#toggle-refresh").on("click", function() {
+        //         if (autoRefresh===false) {
+        //             $("#toggle-refresh").html("Auto-Refresh On");
+        //             autoRefresh = true;
+        //             checkQuestions = setInterval(function() {
+        //                 loadQuestions();
+        //             }, 30000);
+        //         } else {
+        //             $("#toggle-refresh").html("Auto-Refresh Off");
+        //             autoRefresh = false;
+        //             clearInterval(checkQuestions);
+        //         }
+        //     });
+        // }
+
+        // this stream will handle questions update on publishing or blacklisting by a moderator
+        let channel = '/questions_stream/' + session_id;
+        var client = new Faye.Client('<%=@event.chat_url%>' + '/faye')
+        var questions_stream = client.subscribe(channel, function(data) {
+            console.log(data)
+            if(data.data){
+                getQuestionsSuccessFunction(data.data)
+            }
+        });
+    };
+
+
+    </script>
+<% else %>
+  Sorry, this event does not have QA for guests enabled.
+<% end %>

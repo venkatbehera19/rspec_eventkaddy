@@ -1,0 +1,30 @@
+Instructions for manual patching
+
+#manually delete .svn directories if necessary, or use svn export if possible
+find . -type d -name '.svn' -exec rm {} \;
+
+#create the diff (with context option enabled) changes in a patch for the two directories
+diff -rc ./www-old/ ./www-new/ > manualchanges.patch
+
+#in the directory level above the working copy to be patched, run the patch
+patch -p0 -i ./manualchanges.patch 
+
+
+
+merge algorithm:
+
+	A bit of shell script using grep should do it, the general process is this:
+	
+	assume your 2 files are file1 and file2
+	
+	Copy file1 to outfile
+	
+	for each line file2
+	
+	if grep for line in outfile produces no results
+	
+	append the line to the end of outfile
+	
+	endif
+	
+	next line in file2

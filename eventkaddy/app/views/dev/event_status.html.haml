@@ -1,0 +1,49 @@
+.well
+
+    %h1 Event Status
+
+    = link_to "Event Settings Form", '/events/edit_event_settings', class:'btn btn-link'
+
+    %hr{style:'border-top: 1px solid #000;'}
+
+    %h4 Implications
+
+    - if @status[:implication] == []
+        .alert.alert-success= "No implications!"
+
+    - @status[:implication].each do |i|
+        .alert.alert-danger{style:'font-weight:900;font-size:18px;'}
+            = i
+
+    %hr{style:'border-top: 1px solid #000;'}
+
+    %h4 To Dos
+
+    - if @status[:todo] == []
+        .alert.alert-success=  "No todos!"
+
+    - @status[:todo].each do |t|
+        .alert.alert-danger{style:'font-size:16px;'}
+            = t
+
+    %hr{style:'border-top: 1px solid #000;'}
+
+    %h4 Warnings
+
+    - if @status[:warning] == []
+        .alert.alert-success= "No warnings!"
+
+    - @status[:warning].each do |t|
+        .alert.alert-warning{style:'font-size:16px;'}
+            = t
+
+    %hr{style:'border-top: 1px solid #000;'}
+
+    %h4 Completed
+
+    - if @status[:completed] == []
+        .alert.alert-warning= "Nothing complete."
+
+    - @status[:completed].each do |c|
+        .alert.alert-info{style:'font-size:16px;'}
+            = c

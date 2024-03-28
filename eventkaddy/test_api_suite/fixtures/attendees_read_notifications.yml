@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  attendee: realistic
+  notification: one
+
+two:
+  attendee: two
+  notification: two

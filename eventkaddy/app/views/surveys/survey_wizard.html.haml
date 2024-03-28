@@ -1,0 +1,53 @@
+.wizard-container.px-4.py-4.bg-light.custom-border.mt-3
+    %h3
+        Survey Wizard
+        %span{class:'sync_status'} Synced!
+    .primary-instruction
+
+    .autoscrollbar{style:'text-align:right;'}
+        #wizard-scroll.btn.btn-secondary
+            Turn On Autoscroll to Bottom
+
+    %br
+
+    .sub-instruction
+        Hint: Move between different sections of the wizard by clicking the relevent headers below.
+
+    .survey-tree-container
+        .tree-title
+            No data yet, start working below!
+        .tree-description
+        - unless current_user.role? :exhibitor
+            .tree-post_action
+            .tree-submit_success_message
+            .tree-submit_failure_message
+            .tree-disallow_editing
+            .tree-publish_to_attendee_survey_results
+            .tree-special_location
+        .tree-begins
+        .tree-ends
+        - unless current_user.role? :exhibitor
+            .tree-survey-type
+        .tree-survey_sections
+        / .tree-questions
+
+    = render 'surveys/wizard_partials/title_view'
+    = render 'surveys/wizard_partials/time_view'
+    = render 'surveys/wizard_partials/type_view'
+    = render 'surveys/wizard_partials/survey_section_view'
+    = render 'surveys/wizard_partials/question_view'
+    = render 'surveys/wizard_partials/answer_view'
+    = render 'surveys/wizard_partials/hint_view'
+
+-# = render 'surveys/wizard_partials/modelsjs'
+-# = render 'surveys/wizard_partials/routesjs'
+-# = render 'surveys/wizard_partials/js'
+= render 'surveys/wizard_partials/css'
+
+%script{ src: '/non_pipeline_assets/survey_wizard/index.min.js' }
+
+:javascript
+
+    $(function() { SurveyWizard.init(); });
+
+

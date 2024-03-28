@@ -1,0 +1,75 @@
+wb = xlsx_package.workbook
+
+wb.styles do |s|
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = [
+    "Session Code",
+    "Title",
+    "Date",
+    "Start Time",
+    "End Time",
+    "First Name",
+    "Last Name",
+    "Attendee Account Code",
+    "Favorited",
+    "Scanned by Name",
+    "Scanned by Account Code",
+    "Scanned Date",
+    "Scanned Time"
+  ]
+
+  # heads = [ "Type Name", "Sender Account Code", "Sender Name", "Target Account Code", "Target Name", "Session Code", "Session Title", "Company Name", "Location Name" ]
+
+  style = heads.map {|h| black_cell }
+
+  # hopefully make the join query a bit faster
+  SessionsAttendee.update_session_id_int_from_2019_on
+  scans = AttendeeScan.iattend_scans_data @event_id
+
+  if @job
+    @job.update!( status: "Processing Rows", total_rows: scans.length)
+    @job.write_to_file
+  end
+
+  last_location = false # take advantage that nil == false returns false
+  # missing_location_count = 0
+  sheet = nil # I think I have to define it outside the block to retain it through iterations?
+
+  scans.each { |s|
+    # it seems to me the problem is that "" is an invalid location name.
+    # puts s["location_name"].inspect.red
+    if last_location != s["location_name"]
+      last_location = s["location_name"]
+     if s["location_name"] == nil
+       # missing_location_count += 1
+       s["location_name"] = "Location Missing"
+     end
+     if s["location_name"] == ''
+       # missing_location_count += 1
+       s["location_name"] = "Location Blank"
+     end
+      sheet = wb.add_worksheet( name: ( s["location_name"]).truncate(31) )
+      sheet.add_row heads, :style => style
+    end
+
+    row = [
+      s["session_code"],
+      s["session_title"],
+      s["session_date"],
+      s["session_begins"] && s["session_begins"].strftime('%T') || '',
+      s["session_ends"] && s["session_ends"].strftime('%T') || '',
+      s["target_first_name"],
+      s["target_last_name"],
+      s["target_account_code"],
+      s["favourited"],
+      s["sender_name"],
+      s["sender_account_code"],
+      s["created_at"].strftime('%D'),
+      s["created_at"].strftime('%T')
+    ]
+    sheet.add_row row
+    @job.plus_one_row if @job
+    sheet.column_widths *row.map{ |i| 30 }
+  }
+end

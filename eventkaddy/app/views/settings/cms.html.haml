@@ -1,0 +1,697 @@
+
+:javascript
+    $(function() {
+        var checkTrue = function() { $(this).children('input')[1].checked = true; };
+        var checkFalse = function() {
+            $(this).children('input')[0].value = 0;
+            $(this).children('input')[1].checked = false;
+        };
+        var checkClickHandler = function(checkbox_container_class) {
+            $('.check_all_' + checkbox_container_class).on('click', function() {
+                $('.' + checkbox_container_class).each(checkTrue);
+            });
+        };
+        var uncheckClickHandler = function(checkbox_container_class) {
+            $('.uncheck_all_' + checkbox_container_class).on('click', function() {
+                $('.' + checkbox_container_class).each(checkFalse);
+            });
+        };
+        var addCheckHandlers = function(checkbox_container_class) {
+            checkClickHandler( checkbox_container_class );
+            uncheckClickHandler( checkbox_container_class );
+        };
+
+        addCheckHandlers( 'configure_page' );
+        addCheckHandlers( 'cms_side_menu' );
+        addCheckHandlers( 'session_form' );
+        addCheckHandlers( 'attendee_form' );
+        addCheckHandlers( 'attendee_profile_form');
+        addCheckHandlers( 'speaker_form' );
+        addCheckHandlers( 'exhibitor_form' );
+        addCheckHandlers( 'notifications_form' );
+        addCheckHandlers( 'session_show_page' );
+        addCheckHandlers( 'session_file_index' );
+        addCheckHandlers( 'session_index' );
+        addCheckHandlers( 'attendee_index' );
+        addCheckHandlers( 'speaker_index' );
+        addCheckHandlers( 'exhibitor_index' );
+        addCheckHandlers( 'exhibitor_show_page' );
+        addCheckHandlers( 'settings_tab' );
+        addCheckHandlers( 'reports_view' );
+        addCheckHandlers( 'exhibitor_portal' );
+        addCheckHandlers( 'attendee_table' );
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true
+        });
+    });
+
+:css
+    #accordion {
+       margin-top:10px;
+       margin-bottom:10px;
+    }
+
+    #accordion > h4 {
+        padding:10px;
+        cursor: pointer;
+    }
+    .acc-div {
+        padding:10px;
+    }
+
+%h3 CMS Settings
+
+- if current_user.role? :super_admin
+    .well{style:'min-height:500px;'}
+
+        = form_for @cms_settings, :html => { :method => :post }, :url => '/settings/update_cms_settings' do |f|
+            = f.submit 'Update CMS Settings', class:'btn btn-primary'
+            %br
+            %br
+            = link_to 'Copy Settings Form', "/settings/copy_settings_form", class:"btn btn-primary"
+
+            :ruby
+                check_box = ->(classname, prefix) {
+                    ->(col, label, show=false, check_box_option={}) {
+                        show_or_hide = show ? 'show' : 'hide'
+                        "<div class='field #{classname}'>
+                            #{f.check_box("#{show_or_hide}_#{prefix}_#{col}".to_sym, check_box_option)} #{show_or_hide.capitalize} #{label}
+                        </div>".html_safe
+                    }
+                }
+
+                config_page_check_box           = check_box["configure_page", "config_page"]
+                side_menu_check_box             = check_box["cms_side_menu", "menu"]
+                session_file_index_check_box    = check_box["session_file_index", "session_file_index"]
+                session_index_check_box         = check_box["session_index", "session_index"]
+                speaker_index_check_box         = check_box["speaker_index", "speaker_index"]
+                exhibitor_index_check_box       = check_box["exhibitor_index", "exhibitor_index"]
+                exhibitor_show_page_check_box   = check_box["exhibitor_show_page", "exhibitor_show_page"]
+                attendee_index_check_box        = check_box["attendee_index", "attendee_index"]
+                session_show_page_check_box     = check_box["session_show_page", "session_show_page"]
+                session_form_check_box          = check_box["session_form", "session_form"]
+                attendee_form_check_box         = check_box["attendee_form", "attendee_form"]
+                attendee_profile_form_check_box = check_box["attendee_profile_form", "attendee_profile_form"]
+                speaker_form_check_box          = check_box["speaker_form", "speaker_form"]
+                exhibitor_form_check_box        = check_box["exhibitor_form", "exhibitor_form"]
+                notification_form_check_box     = check_box["notification_form", "notification_form"]
+                settings_tab_check_box          = check_box["settings_tab", "settings_tab"]
+                reports_view_check_box          = check_box["reports_view","reports_view"]
+                exhibitor_portal_check_box      = check_box["exhibitor_portal","exhibitor_portal"]
+                attendee_table_check_box        = check_box["attendee_table", "attendee_table"]
+            %br
+            %br
+            = check_box_tag :use_these_settings_as_defaults
+            Use These Settings As Defaults
+            %br
+            %br
+
+            #accordion
+                %h4 Configure Page
+                .acc-div
+                    .btn.btn-link.check_all_configure_page Check All
+                    .btn.btn-link.uncheck_all_configure_page Uncheck All
+                    %br
+                    %br
+                    = config_page_check_box["edit_preset_tags_button", "Edit Preset Tags Button", true]
+                    = config_page_check_box["import_export_row_sessions",      "Hide Config Page Sessions Import Export Row"]
+                    = config_page_check_box["import_export_row_sessions_full", "Hide Config Page Sessions Full Import Export Row"]
+                    = config_page_check_box["import_export_row_delete_session_tags",  "Hide Config Page Delete Session Tags Import Export Row"]
+                    = config_page_check_box["import_export_row_speakers",      "Hide Config Page Speakers Import Export Row"]
+                    = config_page_check_box["import_export_row_exhibitors",    "Hide Config Page Exhibitors Import Export Row"]
+                    = config_page_check_box["import_export_row_maps",          "Hide Config Page Maps Import Export Row"]
+                    = config_page_check_box["import_export_row_attendees",     "Hide Config Page Attendees Import Export Row"]
+                    = config_page_check_box["import_export_row_notifications", "Hide Config Page Notifications Import Export Row"]
+                    = config_page_check_box["import_export_row_home_buttons",  "Hide Config Page Home Buttons Import Export Row"]
+
+                %h4 Tag Meta Data
+                .acc-div
+                    .field
+                        = f.check_box :tag_date_loc_meta_data
+                        Session Tag Date and Location Meta Data
+
+                %h4 CMS Side Menu
+                .acc-div
+                    .btn.btn-link.check_all_cms_side_menu Check All
+                    .btn.btn-link.uncheck_all_cms_side_menu Uncheck All
+                    %br
+                    %br
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b DIRECT LINKS
+                    = side_menu_check_box["statistics",               "Dashboard"]
+                    = side_menu_check_box["sessions",                 "Sessions"]
+                    = side_menu_check_box["speakers",                 "Speakers"]
+                    = side_menu_check_box["exhibitors",               "Exhibitors"]
+                    = side_menu_check_box["attendees",                "Attendees"]
+                    = side_menu_check_box["import_export",            "Import/Export Data"]
+                    = side_menu_check_box["home_screen_icons_app",    "App Home Buttons"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b MAPPING
+                    = side_menu_check_box["maps_rooms_header", "Mapping Header"]
+                    = side_menu_check_box["rooms",                    "Session Rooms"]
+                    = side_menu_check_box["event_maps",               "Event Maps"]
+                    = side_menu_check_box["booths",                   "Exhibitor Booths"]
+                    = side_menu_check_box["room_layouts",             "Room Layouts"]
+                    -# = side_menu_check_box["room_layouts",             "Room Layouts"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b APP & VIRTUAL CONFIG
+                    = side_menu_check_box["app_virtual_config_header","App & Virtual Configuration Header"]
+                    = side_menu_check_box["event_settings",           "Event Settings"]
+                    = side_menu_check_box["banners",                  "Banners"]
+                    = side_menu_check_box["notifications",            "Notifications"]
+                    = side_menu_check_box["surveys",                  "Surveys"]
+                    = side_menu_check_box["polls",                    "Polls"]
+                    = side_menu_check_box["session_polls",            "SessionPolls"]
+                    = side_menu_check_box["app_forms",                "Mobile App Forms"]
+                    = side_menu_check_box["ce_certificates",          "CE Certificates"]
+                    = side_menu_check_box["flare_photos_link",        "Flare Photo Gallery"]
+                    = side_menu_check_box["conference_notes",         "Session Files"]
+                    = side_menu_check_box["mobile_and_app_settings",  "Mobile and App Settings"]
+                    = side_menu_check_box["home_screen_icons_mobile", "Old Home Mobile Buttons"]
+                    = side_menu_check_box["mobile_app_booleans",      "Mobile App Booleans"]
+                    = side_menu_check_box["app_message_threads",      "App Message Threads", true]
+                    = side_menu_check_box["event_tickets",             "Event Tickets"]
+                    = side_menu_check_box["attendee_badges",           "Attendee Badge"]
+                    = side_menu_check_box['custom_form',               "Custom Form"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b GAMES
+                    = side_menu_check_box["game_header",              "Games Header"]
+                    = side_menu_check_box["scavenger_hunts",          "Scavenger Hunts"]
+                    = side_menu_check_box["app_game",                 "App Game"]
+                    = side_menu_check_box["game_statistics",          "Game Statistics"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b REPORTS
+                    = side_menu_check_box["reports_header",           "Reports Header"]
+                    = side_menu_check_box["report_downloads",         "Download"]                    
+                    = side_menu_check_box["video_views",              "Video Views"]
+                    = side_menu_check_box["statistics",               "Statistics"]
+                    = side_menu_check_box["feedback_summary",         "Feedback Summary"]
+                    = side_menu_check_box["download_request",         "Download Request"]
+
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b PORTAL SETTINGS
+                    = side_menu_check_box["settings_header",          "Settings Header"]
+                    = side_menu_check_box["speaker_portal_settings",  "Speaker Portal Settings"]
+                    = side_menu_check_box["speaker_pdfs",             "Speaker PDFs"]
+                    = side_menu_check_box["exhibitor_pdfs",           "Exhibitor PDFs"]
+                    = side_menu_check_box["exhibitor_portal_settings","Exhibitor Portal Settings"]
+                    = side_menu_check_box["qna_page_settings",        "Q&A Page Settings"]
+                    = side_menu_check_box["general_portal_settings",  "General Portal Settings (banners, support email)"]
+                    = side_menu_check_box["guest_view_settings",      "Leadership/Guest View Settings"]
+                    = side_menu_check_box["education_managers",       "Education Managers"]
+                    = side_menu_check_box["attendee_portal_settings", "Attendee Portal Settings"]
+                    = side_menu_check_box["attendee_badge_settings",   "Attendee Badge Printing Settings"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b REGISTRATIONS
+                    = side_menu_check_box["registrations_header",          "Registration Header"]
+                    = side_menu_check_box[ "simple_registration_settings", "Simple Sign up"]                   
+                    = side_menu_check_box[ "registration_portal_settings", "Registration"]
+                    = side_menu_check_box[ "exhibitor_registration_portal_settings", "Exhibitor Registration"]
+                    = side_menu_check_box["speaker_registration_settings", "Speaker Registration"]                   
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b VIDEO PORTAL
+                    = side_menu_check_box["video_portal_header",      "Video Portal Header"]
+                    = side_menu_check_box[ "video_portal_booleans",   "Video Portal Booleans"]
+                    = side_menu_check_box[ "video_portal_headings",   "Video Portal Headings"]
+                    = side_menu_check_box[ "video_portal_contents",   "Video Portal Contents"]
+                    = side_menu_check_box[ "video_portal_styles",     "Video Portal Styles"]
+                    = side_menu_check_box[ "video_portal_images",     "Video Portal Images"]
+                    = side_menu_check_box["exhibitor_portal_global_configs", "Exhibitor Enhanced Portal Settings"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b Program Feed
+                    = side_menu_check_box[ "program_feed_header",      "Program Feed Header"]
+                    = side_menu_check_box[ "program_feed_booleans",    "Program Feed Booleans"]
+                    = side_menu_check_box[ "program_feed_headings",    "Program Feed Headings"]
+                    = side_menu_check_box[ "program_feed_styles",      "Program Feed Styles"]
+
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b EMAIL & TEMPLATES
+                    = side_menu_check_box["templates_header",         "Email & Templates Header"]
+                    = side_menu_check_box["custom_emails",            "Write Emails"]
+                    = side_menu_check_box[ "speaker_email_password_template", "Speaker Numeric Password Template"]
+                    = side_menu_check_box[ "speaker_numeric_password_template", "Speaker Email Password Template"]
+                    = side_menu_check_box[ "speaker_email_confirmation_template", "Speaker Email Confirmation Template"]
+                    = side_menu_check_box[ "attendee_email_password_template", "Attendee Email Password Template"]
+                    = side_menu_check_box[ "registration_attendee_email_password_template", "Registration Attendee Email Password Template"]
+                    = side_menu_check_box[ "registration_attendee_receipt", "Registration Attendee Receipt Template"]
+                    = side_menu_check_box[ "registration_attendee_email_confirmation_template", "Registration Attendee Email Confirmation Template"]
+                    = side_menu_check_box[ "calendar_invitation_email_template", "Calendar Invitation Email Template"]
+                    = side_menu_check_box[ "attendee_email_confirmation_template", "Attendee Email Confirmation Template"]
+                    = side_menu_check_box[ "exhibitor_email_password_template", "Exhibitor Email Password Template"]
+                    = side_menu_check_box[ "ce_certificate_email_template", "CE Certificate Email Template"]
+                    = side_menu_check_box["portal_messages",          "Portal Messages"]
+                    = side_menu_check_box["exhibitor_receipt_template",          "Exhibitor Receipt Template"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b Products
+                    = side_menu_check_box[ "products_header",      "Product Header"]
+                    = side_menu_check_box[ "product_categories",    "Product Category"]
+                    = side_menu_check_box[ "products",    "Product"]
+                    = side_menu_check_box[ "mode_of_payment", "Mode Of Payment"]
+                    = side_menu_check_box[ "product_coupons", "Coupons"]
+
+                    %p{class:"dropdown-header px-1 pt-3"}
+                        %b Transactions
+                    = side_menu_check_box[ "transactions_header",      "Transactions Header"]
+                    = side_menu_check_box[ "item_purchases", "Item Purchases"]
+                    = side_menu_check_box[ "webhook_transactions", "Webhooks"]
+                    = side_menu_check_box[ "transactions", "Transactions"]
+                    = side_menu_check_box[ "exhibitor_purchases", "Exhibitor Purchases"]
+                    = side_menu_check_box[ "attendee_purchases", "Attendee Purchases"]
+                    = side_menu_check_box[ "purchases", "Purchases"]
+                %h4 Attendee Index
+                .acc-div
+                    .btn.btn-link.check_all_attendee_index Check All
+                    .btn.btn-link.uncheck_all_attendee_index Uncheck All
+                    %br
+                    %br
+                    = attendee_index_check_box["multiple_new_for_all", "Multiple New Sessions For All Attendees Button"]
+                    = attendee_index_check_box["bulk_add_attendee_photos", "Bulk Add Attendee Photos Button"]
+                    = attendee_index_check_box["bulk_set_attendees_photos_to_online", "Bulk Set Attendee Photos to Online Button"]
+                    = attendee_index_check_box["app_message", "App Message to Attendees Button"]
+
+                %h4 Attendee Table Columns
+                .acc-div
+                    .btn.btn-link.check_all_attendee_table Check All
+                    .btn.btn-link.uncheck_all_attendee_table Uncheck All
+                    %br/
+                    %br/
+                    = attendee_table_check_box["attendee_photo", "Attendee Photo"]
+                    = attendee_table_check_box["attendee_first_name", "Attendee First Name", false, { disabled: true }]
+                    = attendee_table_check_box["attendee_last_name", "Attendee Last Name", false, { disabled: true }]
+                    = attendee_table_check_box["attendee_business_unit", "Attendee Business Unit"]
+                    = attendee_table_check_box["attendee_title", "Attendee Title"]
+                    = attendee_table_check_box["attendee_company", "Attendee company", false, { disabled: true }]
+                    = attendee_table_check_box["attendee_email", "Attendee Email"]
+                    = attendee_table_check_box["attendee_registration_id", "Attendee Registration ID"]
+
+                %h4 Attendee Form
+                .acc-div
+                    .btn.btn-link.check_all_attendee_form Check All
+                    .btn.btn-link.uncheck_all_attendee_form Uncheck All
+                    %br
+                    %br
+                    = attendee_form_check_box["photo_file", "Photo File"]
+                    = attendee_form_check_box["online_url", "Online URL (event.master_url must also be present)"]
+                    = attendee_form_check_box["account_code", "Account Code"]
+                    = attendee_form_check_box["first_name", "First Name"]
+                    = attendee_form_check_box["last_name", "Last Name"]
+                    = attendee_form_check_box["honor_prefix", "Honor Prefix"]
+                    = attendee_form_check_box["honor_suffix", "Honor Suffix"]
+                    = attendee_form_check_box["business_unit", "Business Unit"]
+                    = attendee_form_check_box["title", "Title"]
+                    = attendee_form_check_box["business_phone", "Business Phone"]
+                    = attendee_form_check_box["mobile_phone", "Mobile Phone"]
+                    = attendee_form_check_box["email", "Email"]
+                    = attendee_form_check_box["company", "Company"]
+                    = attendee_form_check_box["assignment", "Assignment"]
+                    = attendee_form_check_box["custom_filter_1", "Custom Filter 1 (Attendee Type)"]
+                    = attendee_form_check_box["username", "Username"]
+                    = attendee_form_check_box["password", "Password"]
+                    = attendee_form_check_box["authy_id", "Authy ID"]
+                    = attendee_form_check_box["biography", "Biography"]
+                    = attendee_form_check_box["messaging_opt_out", "Messaging Opt Out"]
+                    = attendee_form_check_box["app_listing_opt_out", "App Listing Opt Out"]
+                    = attendee_form_check_box["game_opt_out", "Game Opt Out"]
+                    = attendee_form_check_box["is_demo", "Demo User Checkbox"]
+
+                    %br
+                    %h4 Previously Not Included in Form Before 2017 & Toggles
+                    = attendee_form_check_box["country", "Country"]
+                    = attendee_form_check_box["state", "State"]
+                    = attendee_form_check_box["city", "City"]
+                    = attendee_form_check_box["notes_email", "Notes Email"]
+                    = attendee_form_check_box["notes_email_pending", "Notes Email Pending"]
+                    = attendee_form_check_box["temp_photo_filename", "Temp Photo Filename"]
+                    = attendee_form_check_box["photo_filename", "Photo Filename"]
+                    = attendee_form_check_box["iattend_sessions", "Iattend Sessions"]
+                    = attendee_form_check_box["validar_url", "Validar URL"]
+                    = attendee_form_check_box["publish", "Publish"]
+                    = attendee_form_check_box["twitter_url", "Twitter URL"]
+                    = attendee_form_check_box["facebook_url", "Facebook URL"]
+                    = attendee_form_check_box["linked_in", "Linked In"]
+                    = attendee_form_check_box["attendee_type_id", "Attendee Type ID"]
+                    = attendee_form_check_box["first_run_toggle", "First Run Toggle"]
+                    = attendee_form_check_box["video_portal_first_run_toggle", "Video Portal First Run Toggle"]
+                    = attendee_form_check_box["custom_filter_2", "Custom Filter 2"]
+                    = attendee_form_check_box["custom_filter_3", "Custom Filter 3"]
+                    = attendee_form_check_box["token", "Token"]
+                    = attendee_form_check_box["tags_safeguard", "Tags Safeguard"]
+                    = attendee_form_check_box["speaker_biography", "Speaker Biography"]
+                    = attendee_form_check_box["travel_info", "Travel Info"] 
+                    = attendee_form_check_box["table_assignment", "Table Assignment"]
+                    = attendee_form_check_box["custom_fields_1", "Custom Fields 1"]
+                    = attendee_form_check_box["custom_fields_2", "Custom Fields 2"]
+                    = attendee_form_check_box["custom_fields_3", "Custom Fields 3"]
+                    = attendee_form_check_box["premium_member", "Premium Member"]
+                    = attendee_form_check_box["badge_name", "Badge Name"]
+
+                %h4 Attendee Profile Form (Accessible from App)
+                .acc-div
+                    .btn.btn-link.check_all_attendee_profile_form Check All
+                    .btn.btn-link.uncheck_all_attendee_profile_form Uncheck All
+                    %br
+                    %br
+                    = attendee_profile_form_check_box["first_name", "First Name"]
+                    = attendee_profile_form_check_box["last_name", "Last Name"]
+                    = attendee_profile_form_check_box["business_unit", "Business Unit"]
+                    = attendee_profile_form_check_box["title", "Title"]
+                    = attendee_profile_form_check_box["business_phone", "Business Phone"]
+                    = attendee_profile_form_check_box["mobile_phone", "Mobile Phone"]
+                    = attendee_profile_form_check_box["email", "Email"]
+                    = attendee_profile_form_check_box["company", "Company"]
+                    = attendee_profile_form_check_box["twitter_url", "Twitter URL"]
+                    = attendee_profile_form_check_box["facebook_url", "Facebook URL"]
+                    = attendee_profile_form_check_box["linked_in", "Linked In"]
+
+                    %br
+                    %h4 Fields Not Included in Original Form Specifications
+                    = attendee_profile_form_check_box["honor_prefix", "Honor Prefix"]
+                    = attendee_profile_form_check_box["honor_suffix", "Honor Suffix"]
+                    = attendee_profile_form_check_box["biography", "Biography"]
+                    = attendee_profile_form_check_box["country", "Country"]
+                    = attendee_profile_form_check_box["state", "State"]
+                    = attendee_profile_form_check_box["city", "City"]
+                    = attendee_profile_form_check_box["custom_filter_3", "Custom Filter 3"]
+                    = attendee_profile_form_check_box["custom_fields_1", "Custom Fields 1"]
+                    = attendee_profile_form_check_box["custom_fields_2", "Custom Fields 2"]
+                    = attendee_profile_form_check_box["custom_fields_3", "Custom Fields 3"]
+
+                %h4 Exhibitor Index
+                .acc-div
+                    .btn.btn-link.check_all_exhibitor_index Check All
+                    .btn.btn-link.uncheck_all_exhibitor_index Uncheck All
+                    %br
+                    %br
+                    = exhibitor_index_check_box["add_exhibitor_files_to_placeholders", "Add Exhibitor Files to Placeholders Button"]
+                    = exhibitor_index_check_box["booth_owners_multiple_new", "Multiple New Booth Owners Button"]
+                    = exhibitor_index_check_box["bulk_set_exhibitors_photos_to_online", "Bulk Set Exhibitors Photos To Online"]
+
+                %h4 Exhibitor Show Page
+                .acc-div
+                    .btn.btn-link.check_all_exhibitor_show_page Check All
+                    .btn.btn-link.uncheck_all_exhibitor_show_page Uncheck All
+                    %br
+                    %br
+                    = exhibitor_show_page_check_box["media_files", "Media Files"]
+                    = exhibitor_show_page_check_box["edit_custom_content", "Custom Content"]
+                    = exhibitor_show_page_check_box["exhibitor_products", "Exhibitor Products"]
+
+                %h4 Exhibitor Form
+                .acc-div
+                    .btn.btn-link.check_all_exhibitor_form Check All
+                    .btn.btn-link.uncheck_all_exhibitor_form Uncheck All
+                    %br
+                    %br
+                    = exhibitor_form_check_box["online_url", "Online URL (event.master_url must also be present)"]
+                    = exhibitor_form_check_box["logo", "Logo URL"]
+                    = exhibitor_form_check_box["portal_logo_file", "Logo Image (use for storing logos offline)"]
+                    = exhibitor_form_check_box["company_name", "Company"]
+                    = exhibitor_form_check_box["description", "Description"]
+                    = exhibitor_form_check_box["message", "Message"]
+                    = exhibitor_form_check_box["address_line1", "Address Line 1"]
+                    = exhibitor_form_check_box["address_line2", "Address Line 2"]
+                    = exhibitor_form_check_box["city", "City"]
+                    = exhibitor_form_check_box["state", "State"]
+                    = exhibitor_form_check_box["zip", "Zip"]
+                    = exhibitor_form_check_box["country", "Country"]
+                    = exhibitor_form_check_box["phone", "Phone"]
+                    = exhibitor_form_check_box["url_web", "URL Web"]
+                    = exhibitor_form_check_box["url_twitter", "URL Twitter"]
+                    = exhibitor_form_check_box["url_facebook", "URL Facebook"]
+                    = exhibitor_form_check_box["url_linkedin", "URL Linkedin"]
+                    = exhibitor_form_check_box["url_rss", "URL RSS"]
+                    = exhibitor_form_check_box["url_instagram", "URL Instagram"]
+                    = exhibitor_form_check_box["url_youtube", "URL YouTube"]
+                    = exhibitor_form_check_box["contact_name", "Contact Name"]
+                    = exhibitor_form_check_box["email", "Email"]
+                    = exhibitor_form_check_box["is_sponsor", "Is Sponsor"]
+                    = exhibitor_form_check_box["sponsor_type", "Sponsor Type"]
+                    = exhibitor_form_check_box["location_mapping_id", "Location Mapping ID"]
+                    = exhibitor_form_check_box["unpublished", "Unpublished"]
+                    %br
+                    %h4 Previously Not Included in Form Before 2017 & Toggles
+
+                    -# = exhibitor_form_check_box["user_id", "User ID"]
+                    = exhibitor_form_check_box["fax", "Fax"]
+                    = exhibitor_form_check_box["contact_title", "Contact Title"]
+                    = exhibitor_form_check_box["contact_email", "Contact Email"]
+                    = exhibitor_form_check_box["contact_title_two", "Contact Title 2"]
+                    = exhibitor_form_check_box["contact_name_two", "Contact Name 2"]
+                    = exhibitor_form_check_box["contact_email_two", "Contact Email 2"]
+                    = exhibitor_form_check_box["contact_mobile_two", "Contact Mobile 2"]
+                    = exhibitor_form_check_box["toll_free", "Toll Free"]
+                    = exhibitor_form_check_box["unsubscribed", "Unsubscribed (Used in now abandoned speaker mailing system)"]
+                    = exhibitor_form_check_box["token", "Token (Used in now abandoned speaker mailing system)"]
+                    = exhibitor_form_check_box["custom_fields", "Custom Fields"]
+                    = exhibitor_form_check_box["tags_safeguard", "Tags Safeguard"]
+                    = exhibitor_form_check_box["exhibitor_code", "Exhibitor Code"]
+
+                %h4 Exhibitor Portal
+                .acc-div
+                    .btn.btn-link.check_all_exhibitor_portal Check All
+                    .btn.btn-link.uncheck_all_exhibitor_portal Uncheck All
+                    %br
+                    %br
+                    = exhibitor_portal_check_box[ "attendee_email", "Attendee Email Address"]
+                    = exhibitor_portal_check_box[ "attendee_mobile_phone", "Attendee Mobile Phone Number"]
+                    = exhibitor_portal_check_box[ "attendee_business_phone", "Attendee Business Phone Number"]
+
+                %h4 Session File Index
+                .acc-div
+                    .btn.btn-link.check_all_session_file_index Check All
+                    .btn.btn-link.uncheck_all_session_file_index Uncheck All
+                    %br
+                    %br
+                    = session_file_index_check_box["select_sessions_to_add_session_files_to", "Select Sessions To Add Session Files To Button"]
+                    = session_file_index_check_box["add_session_file_to_all_sessions", "Add Session File To All Sessions Button"]
+                    = session_file_index_check_box["finalize_all_sessions_files", "Finalize All Session Files Button"]
+                    = session_file_index_check_box["select_session_files_to_publish", "Session Files To Publish Button"]
+
+                %h4 Session Index
+                .acc-div
+                    .btn.btn-link.check_all_session_index Check All
+                    .btn.btn-link.uncheck_all_session_index Uncheck All
+                    %br
+                    %br
+                    = session_index_check_box["add_files_to_placeholders", "Add Files To Placeholders Button"]
+                    = session_index_check_box["bulk_add_session_thumbnails", "Bulk Add Session Thumbnails Button"]
+                    = session_index_check_box["select_pdf_date", "Publish Session PDFs Button (Hannah version for session.publish_pdf manipulation)"]
+
+                %h4 Session Show Page
+                .acc-div
+                    .btn.btn-link.check_all_session_show_page Check All
+                    .btn.btn-link.uncheck_all_session_show_page Uncheck All
+                    %br
+                    %br
+                    = session_show_page_check_box["speakers_button", "Speakers Button"]
+                    = session_show_page_check_box["sponsors_button", "Sponsors Button"]
+                    = session_show_page_check_box["session_tags_button", "Session Tags Button"]
+                    = session_show_page_check_box["session_files_button", "Session Files Button"]
+                    = session_show_page_check_box["media_files_button", "Media Files Button"]
+
+                    = session_show_page_check_box["audience_tags_button", "Audience Tags Button", true]
+                    = session_show_page_check_box["av_requests_button", "AV Requests Button", true]
+                    = session_show_page_check_box["room_layouts_button", "Room Layouts Button", true]
+                    = session_show_page_check_box["get_video_url", "Video Url Button", true]
+                    = session_show_page_check_box["encode_video", "Encode Video Button", true]
+                    = session_show_page_check_box["search_for_encoded_video", "Search for Encoded Video Button", true]
+                    = session_show_page_check_box["video_thumbnail", "Video Thumbnail Button", true]
+
+                %h4 Session Form
+                .acc-div
+                    .btn.btn-link.check_all_session_form Check All
+                    .btn.btn-link.uncheck_all_session_form Uncheck All
+                    %br
+                    %br
+                    = session_form_check_box["next_previous_buttons", "Next and Previous Session Buttons"]
+                    = session_form_check_box["session_code",         "Session Code"]
+                    = session_form_check_box["title",                "Title"]
+                    = session_form_check_box["description",          "Description"]
+                    = session_form_check_box["session_cancelled",    "Session Cancelled"]
+                    = session_form_check_box["qa_enabled",           "QA Enabled"]
+                    = session_form_check_box["is_poster",            "Is Poster?"]
+                    = session_form_check_box["sold_out",             "Sold Out?"]
+                    = session_form_check_box["wvctv",                "wvctv (Record)"]
+                    = session_form_check_box["embedded_video_url",   "Embedded Video URL"]
+                    = session_form_check_box["thumbnail_event_file", "Thumbnail Event File"]
+                    = session_form_check_box["learning_objective",   "Learning Objective"]
+                    = session_form_check_box["credit_hours",         "Credit Hours"]
+                    = session_form_check_box["program_type",         "Program Type"]
+                    = session_form_check_box["date",                 "Date"]
+                    = session_form_check_box["start_at",             "Start At"]
+                    = session_form_check_box["end_at",               "End At"]
+                    = session_form_check_box["sessions_speakers",     "Add Speakers Select"]
+                    = session_form_check_box["location_mapping_id",  "Location Mapping ID"]
+                    = session_form_check_box["published",            "Published"]
+                    = session_form_check_box["unpublished",          "Unpublished"]
+                    = session_form_check_box["video_thumbnail",      "Video Thumbnail (Cinemacon only, Logo 1 URL, otherwise normal)"]
+                    = session_form_check_box["video_android",        "Video Android (Cinemacon only, Logo 2 URL, otherwise normal)"]
+                    = session_form_check_box["video_ipad",           "Video iPad (Sponsor Logo URL normally, Logo 3 URL for Cinemacon)"]
+                    = session_form_check_box["price",                "Price"]
+                    = session_form_check_box["capacity",             "Capacity"]
+                    = session_form_check_box["ticketed",             "Ticketed"]
+                    = session_form_check_box["race_approved",        "Race Approved (CE Approved)"]
+                    = session_form_check_box["on_demand",            "On Demand"]
+                    %br
+                    %h4 Previously Not Included in Form Before 2017 & Toggles
+                    = session_form_check_box["poster_number", "Poster Number"]
+                    = session_form_check_box["tag_twitter", "Tag Twitter"]
+                    = session_form_check_box["timezone_offset", "Timezone Offset"]
+                    = session_form_check_box["record_type", "Record Type"]
+                    = session_form_check_box["video_iphone", "Video Iphone"]
+                    = session_form_check_box["video_duration", "Video Duration"]
+                    = session_form_check_box["track_subtrack", "Track Subtrack"]
+                    = session_form_check_box["session_file_urls", "Session File URLs"]
+                    = session_form_check_box["survey_url", "Survey URL"]
+                    = session_form_check_box["poll_url", "Poll URL"]
+                    = session_form_check_box["custom_fields", "Custom Fields"]
+                    = session_form_check_box["tags_safeguard", "Tags Safeguard"]
+                    = session_form_check_box["custom_filter_1", "Custom Filter 1"]
+                    = session_form_check_box["custom_filter_2", "Custom Filter 2"]
+                    = session_form_check_box["custom_filter_3", "Custom Filter 3"]
+                    = session_form_check_box["feedback_enabled", "Feedback Enabled"]
+                    = session_form_check_box["promotion", "Promotion"]
+                    = session_form_check_box["keyword", "Keyword"]
+                    = session_form_check_box["premium_access", "Premium Access"]
+                    = session_form_check_box["video_file_location", "Video File Location"]
+                    = session_form_check_box["encoded_videos", "Encoded Videos"]
+
+                %h4 Speaker Index
+                .acc-div
+                    .btn.btn-link.check_all_speaker_index Check All
+                    .btn.btn-link.uncheck_all_speaker_index Uncheck All
+                    %br
+                    %br
+                    = speaker_index_check_box["bulk_add_speaker_photos", "Bulk Add Speaker Photos Button"]
+                    = speaker_index_check_box["bulk_set_speakers_photos_to_online", "Bulk Set Speaker Photos To Online Button"]
+
+                %h4 Speaker Form
+                .acc-div
+                    .btn.btn-link.check_all_speaker_form Check All
+                    .btn.btn-link.uncheck_all_speaker_form Uncheck All
+                    %br
+                    %br
+                    = speaker_form_check_box["event_file_photo", "Event File Photo"]
+                    = speaker_form_check_box["event_file_cv", "Event File CV"]
+                    = speaker_form_check_box["online_url", "Online URL (event.master_url must also be present)"]
+                    = speaker_form_check_box["first_name", "First Name"]
+                    = speaker_form_check_box["last_name", "Last Name"]
+                    = speaker_form_check_box["email", "Email"]
+                    = speaker_form_check_box["honor_prefix", "Honor Prefix"]
+                    = speaker_form_check_box["honor_suffix", "Honor Suffix"]
+                    = speaker_form_check_box["title", "Title"]
+                    = speaker_form_check_box["city", "City"]
+                    = speaker_form_check_box["state", "State"]
+                    = speaker_form_check_box["country", "Country"]
+                    = speaker_form_check_box["zip", "Zip"]
+                    = speaker_form_check_box["work_phone", "Work Phone"]
+                    = speaker_form_check_box["mobile_phone", "Mobile Phone"]
+                    = speaker_form_check_box["home_phone", "Home Phone"]
+                    = speaker_form_check_box["fax", "Fax"]
+                    = speaker_form_check_box["middle_initial", "Middle Initial"]
+                    = speaker_form_check_box["company", "Company"]
+                    = speaker_form_check_box["address1", "Address1"]
+                    = speaker_form_check_box["address2", "Address2"]
+                    = speaker_form_check_box["address3", "Address3"]
+                    = speaker_form_check_box["financial_disclosure_section", "Financial Disclosure Section"]
+                    = speaker_form_check_box["fd_tax_id", "FD Tax ID"]
+                    = speaker_form_check_box["fd_pay_to", "FD Pay To"]
+                    = speaker_form_check_box["fd_street_address", "FD Street Address"]
+                    = speaker_form_check_box["fd_city", "FD City"]
+                    = speaker_form_check_box["fd_state", "FD State"]
+                    = speaker_form_check_box["fd_zip", "FD Zip"]
+                    = speaker_form_check_box["biography", "Biography"]
+                    = speaker_form_check_box["notes", "Additional Notes"]
+                    = speaker_form_check_box["availability_notes", "Availability Notes"]
+                    = speaker_form_check_box["financial_disclosure", "Financial Disclosure"]
+                    = speaker_form_check_box["unpublished", "Unpublished"]
+
+                    %br
+                    %h4 Previously Not Included in Form Before 2017 & Toggles
+
+                    = speaker_form_check_box["photo_filename", "Photo Filename"]
+                    = speaker_form_check_box["speaker_code", "Speaker Code"]
+                    = speaker_form_check_box["twitter_url", "Twitter URL"]
+                    = speaker_form_check_box["facebook_url", "Facebook URL"]
+                    = speaker_form_check_box["linked_in", "Linked In"]
+                    = speaker_form_check_box["custom_filter_1", "Custom Filter 1"]
+                    = speaker_form_check_box["custom_filter_2", "Custom Filter 2"]
+                    = speaker_form_check_box["custom_filter_3", "Custom Filter 3"]
+                    = speaker_form_check_box["event_file_fd", "event_file_fd"]
+                    = speaker_form_check_box["speaker_type_id", "Speaker Type ID"]
+                    = speaker_form_check_box["unsubscribed", "Unsubscribed (Used in now abandoned speaker mailing system)"]
+                    = speaker_form_check_box["token", "Token (Used in now abandoned speaker mailing system)"]
+
+
+
+                -# %h4 Settings Page Tabs
+                -# .acc-div
+                -#     .btn.btn-link.check_all_settings_tab Check All
+                -#     .btn.btn-link.uncheck_all_settings_tab Uncheck All
+                -#     %br
+                -#     %br
+                -#     = settings_tab_check_box[ "info", "Info"]
+                -#     = settings_tab_check_box[ "general_portal_settings", "General Portal Settings (banners, support email)"]
+                -#     = settings_tab_check_box[ "event_settings", "Event Settings"]
+                -#     = settings_tab_check_box[ "speaker_portal_settings", "Speaker Portal Settings"]
+                -#     -# = settings_tab_check_box[ "speaker_portal_av_request_items", "Speaker Portal AV Request Items"]
+                -#     -# = settings_tab_check_box[ "speaker_portal_tabs", "Speaker Portal Tabs"]
+                -#     -# = settings_tab_check_box[ "speaker_required_data", "Speaker Required Data"]
+                -#     = settings_tab_check_box[ "exhibitor_portal_settings", "Exhibitor Portal Settings"]
+                -#     = settings_tab_check_box[ "mobile_app_booleans", "Mobile App Booleans & Strings"]
+                -#     = settings_tab_check_box[ "qna_page_settings", "Q&A Page Settings"]
+                -#     = settings_tab_check_box[ "guest_view_settings", "Guest View Settings"]
+                -#     = settings_tab_check_box[ "video_portal_booleans", "Video Portal Booleans"]
+                -#     -# = settings_tab_check_box[ "video_portal_strings", "Video Portal Strings"]
+                -#     = settings_tab_check_box[ "video_portal_headings", "Video Portal Headings"]
+                -#     = settings_tab_check_box[ "video_portal_contents", "Video Portal Contents"]
+                -#     = settings_tab_check_box[ "video_portal_styles", "Video Portal Styles"]
+                -#     = settings_tab_check_box[ "video_portal_images", "Video Portal Images"]
+                -#     = settings_tab_check_box[ "simple_registration_settings", "Simple Registration Settings"]                   
+                -#     = settings_tab_check_box[ "registration_portal_settings", "Registration Portal Settings"]                   
+                -#     = settings_tab_check_box[ "speaker_email_password_template", "Speaker Email Password Template"]
+                -#     = settings_tab_check_box[ "attendee_email_password_template", "Attendee Email Password Template"]
+                -#     = settings_tab_check_box[ "calendar_invitation_email_template", "Calendar Invitation Email Template"]
+                -#     = settings_tab_check_box[ "attendee_email_confirmation_template", "Attendee Email Confirmation Template"]
+                -#     = settings_tab_check_box[ "exhibitor_email_password_template", "Exhibitor Email Password Template"]
+
+                %h4 Statistics Page
+                .acc-div
+                    .field
+                        = f.check_box :hide_statistics_page_game
+                        Hide Game Info
+
+                %h4 Notification Form
+                .acc-div
+                    .btn.btn-link.check_all_notification_form Check All
+                    .btn.btn-link.uncheck_all_notification_form Uncheck All
+                    %br
+                    %br
+                    = notification_form_check_box["iattend_session_codes_filter", "iAttend Session Codes Select"]
+                    = notification_form_check_box["pn_filters", "PN Filters Select (hide even if pn filters are present, otherwise show only if pn filters are present)"]
+                    = notification_form_check_box[ "unpublish_option", "Unpublish Option"]
+                %h4 Reports View
+                .acc-div
+                    .btn.btn-link.check_all_reports_view Check All
+                    .btn.btn-link.uncheck_all_reports_view Uncheck All
+                    %br
+                    %br
+                    = reports_view_check_box[ "attendee_email", "Attendee Email Address"]
+                    = reports_view_check_box[ "attendee_mobile_phone", "Attendee Mobile Phone Number"]
+                    = reports_view_check_box[ "attendee_business_phone", "Attendee Business Phone Number"]
+
+            = f.submit 'Update CMS Settings', class:'btn btn-primary'
+- else
+    Sorry, this page is for super admins only.
+

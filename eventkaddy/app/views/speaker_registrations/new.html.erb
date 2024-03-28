@@ -1,0 +1,68 @@
+<% if @speaker_registration_settings.registration_open %>
+  <div class="speaker_registration_heading" style="margin: auto;">
+    <%= @speaker_registration_settings.speaker_registration_heading.html_safe %>
+  </div>
+  <div class="simple_registration_subheading">
+    <%= @speaker_registration_settings.speaker_registration_subheading.html_safe %>
+  </div>
+  <%= @speaker_registration_settings.speaker_registration_content.html_safe %>
+  <%= form_for(@speaker, :html => { :class => "form" }, :url => {:action => "create"}, :method => :post ) do |f| %>
+    <% if @speaker.errors.any? %>
+      <div id="error_explanation" >
+        <h2>
+          <%= pluralize(@speaker.errors.count, "error") %> prohibited this speaker from being saved;
+        </h2>
+        <ul>
+          <% @speaker.errors.full_messages.each do |msg| %>
+            <li> <%= msg %> </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <%= f.label :first_name, "#{@speaker_registration_settings.first_name_label || "First Name"}", class: "required-field" %>
+          <%= f.text_field :first_name, required: true, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <%= f.label :last_name, "#{@speaker_registration_settings.last_name_label || 'Last Name'}", class:"required-field" %>
+          <%= f.text_field :last_name, required:true, class: "form-control"%>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <%= f.label :email_address, "#{@speaker_registration_settings.email_label || 'Email Address'}", class:"required-field" %>
+          <%= f.text_field :email, type: 'email', required:true, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <%= f.label :company, "#{@speaker_registration_settings.company_label || 'Company'}", class:"required-field" %>
+          <%= f.text_field :company, required:true, class: "form-control"%>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <%= f.label :title, "#{@speaker_registration_settings.title_label || 'Title'}" %>
+          <%= f.text_field :title, class: "form-control" %>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <%= recaptcha_tags %>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center align-items-center">
+      <div class="col-md-8">
+          <div class="form-group mt-2">
+            <br/>
+            <%= f.submit "Register", class: "btn btn-primary form-control" %>
+          </div>
+        </div>
+    </div>
+  <% end %>
+<% end %>

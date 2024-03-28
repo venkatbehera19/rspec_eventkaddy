@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  title: MyString
+  active: false
+  moderated: false
+  moderator_attendee: one
+  session: one
+
+two:
+  event: two
+  title: MyString
+  active: false
+  moderated: false
+  moderator_attendee: two
+  session: two

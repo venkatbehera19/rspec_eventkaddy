@@ -1,0 +1,16 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: Multiple Choice
+
+two:
+  name: Long Form
+
+three:
+  name: Star Rating
+
+four:
+  name: Multiple Select
+
+five:
+  name: Image Upload

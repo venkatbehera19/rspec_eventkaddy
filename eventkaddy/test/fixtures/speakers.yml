@@ -1,0 +1,17 @@
+# another problem here T.T we are inconsistent currently about using user_id vs
+# email for the association
+
+<% 1.upto(10) do |i| %>
+speaker_<%=i%>:
+  event:   event_where_speakers_already_have_associated_users
+  first_name: John<%=i%>
+  last_name:  Smith<%=i%>
+  email:      speaker_<%=i%>@eventkaddy.net
+  user:       speaker_<%=i%>
+<% end %>
+
+devious_speaker:
+  event:      event_where_speakers_already_have_associated_users
+  first_name: Admin
+  last_name:  Admin
+  email:      admin@eventkaddy.net

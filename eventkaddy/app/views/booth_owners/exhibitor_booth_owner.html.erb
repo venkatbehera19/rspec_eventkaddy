@@ -1,0 +1,46 @@
+<%= link_to 'Back' , "/exhibitors/#{@exhibitor.id}", class: 'btn btn-secondary' %>
+<h4><%= @exhibitor.company_name %></h4>
+<%= form_tag("/booth_owners/add_booth_owner_for_exhibitor", method: "post", class: "form-horizontal add-booth-owner" ) do |f| %>
+  <%= hidden_field_tag :exhibitor_id, @exhibitor.id %>
+
+  <%= select_tag(:attendee_ids, options_for_select(@attendees.map(&:id), @selected.ids), :multiple => true, :size=>30, class: "custom-select d-none") %>
+  <div class="row">
+    <div class="col-md-6">
+      <%= render partial: 'attendee_list' , locals: {attendees: @selected, type: 'booth_owners'}%>
+    </div>
+
+    <div class="col-md-6">
+      <%= render partial: 'attendee_list' , locals: {attendees: @attendees - @selected, type: 'available_attendees'}%>
+    </div>
+
+  </div>
+
+   <div class="actions">
+    <%= submit_tag "Add Booth Owner Associations", class:"btn btn-primary d-none" %>
+  </div>
+<% end %>
+
+
+
+<style>
+::-webkit-scrollbar {
+  display: block !important;
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}  
+
+</style>

@@ -1,0 +1,276 @@
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div id="items">
+      <% @product_category_with_product.each do |category| %>
+        <% if category.iid != 'exhibitor_booth'  %>
+          <div class="container py-5">
+            <p class="lead mb-2 text-center"><%= category.name %></p>
+            <% categories = category.products.order(:order) %>
+            <% categories.each do |product|%>
+              <% if product.is_product_available? %>
+                <div class="row justify-content-center mb-3" id="product-<%= product.id %>">
+                  <div class="col-md-12 col-xl-10">
+                    <div class="card shadow-0 border rounded-3">
+                      <div class="card-body">
+                        <div class="row">
+                          <% unless product.event_file.blank? %>
+                            <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                              <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                                <% url = product.event_file.return_authenticated_url%>
+                                    <%= image_tag(url["url"], class: "w-100 h-100", size: "350x350") %>
+                                <a href="#!">
+                                  <div class="hover-overlay">
+                                    <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                                  </div>
+                                </a>
+                              </div>
+                            </div>
+                          <% end %>
+                          <div class="col-md-6 col-lg-6 col-xl-6">
+                            <h4><%= product.name %></h4>
+                            <p class=" mb-4 mb-md-0">
+                              <%= product.description.html_safe %>
+                            </p>
+                          </div>
+                          <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                            <div class="d-flex flex-row align-items-center mb-1">
+                              <h4 class="mb-1 me-1">
+                                	<% unless category.name == "Staff Members" %>
+                                		$<%= sprintf "%.2f", product.price %>
+								                  <% end %>
+                              </h4>
+                            </div>
+                            <div class="d-flex mt-4">
+                              <% if product.product_category.is_single_select_product? %>
+                                <% if @cart.is_single_category_product_available?(product) %>
+                                  <button 
+                                    class="btn btn-outline-danger btn-sm mt-2 mr-2 add-to-cart product-category-<%= category.id %>"
+                                    data-product="<%= product.id %>" 
+                                    data-type="remove" 
+                                    data-cart="<%= @cart.id %>"
+                                    data-category="<%= category.id %>"
+                                    id="product-btn-<%= product.id %>"
+                                    >
+                                    Remove
+                                  </button>
+                                <% else %>
+                                  <button 
+                                  class="btn btn-outline-primary btn-sm mt-2 mr-2 add-to-cart product-category-<%= category.id %>"
+                                  data-product="<%= product.id %>" 
+                                  data-type="add" 
+                                  data-cart="<%= @cart.id %>"
+                                  data-category="<%= category.id %>"
+                                  id="product-btn-<%= product.id %>"
+                                  <%= check_able_to_buy_products(product, @cart) ? 'disabled' : '' %>
+                                  >
+                                    Add
+                                  </button>
+                                <% end %>
+                              <% else %>
+                                <button 
+                                  class="btn btn-outline-primary btn-sm mt-2 add-to-cart" 
+                                  data-product="<%= product.id %>" 
+                                  data-type="decrease" 
+                                  data-cart="<%= @cart.id %>"
+                                  data-category="<%= category.id %>" 
+                                >-
+                                </button>
+                                <p class="btn mt-1" id="product-quantity-<%= product.id %>">
+                                  <%= @cart.cart_item_quantity_by_product(product) %>
+                                </p>
+                                <%# binding.pry %>
+                                <button 
+                                  class="btn btn-outline-primary btn-sm mt-2 add-to-cart product-category-<%= category.id %>" 
+                                  data-product="<%= product.id %>" 
+                                  data-type="increase" 
+                                  data-cart="<%= @cart.id %>"
+                                  data-category="<%= category.id %>" 
+                                  <%= check_able_to_buy_products(product, @cart) ? 'disabled' : '' %>
+                                >+
+                                </button>
+                              <% end %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% elsif category.iid == 'exhibitor_booth' && @exhibitor.location_mapping_id.nil? %>
+        <div id="collapseOne" class="collapse show row" aria-labelledby="headingOne" data-parent="#accordionExample">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-6">
+                <% if @event_map.present? %>
+                  <%= image_tag(@event_map.event_file.return_authenticated_url()['url'], :style=>"height: auto; width: 100%") %>
+                <% end %>
+              </div>  
+              <div class="col-md-6">
+                <%= form_for @cart, :url => '/transaction/exhibitor/add_to_cart', remote: true, method: 'post' do |f| %>
+                  <p>Choose Any One Booth</p>
+                  <div class="field">
+                    <%= hidden_field_tag :user_id, @cart.user_id %>
+                    <% selected_booth_item = @cart.cart_items.find_by(item_type: 'LocationMapping')%>
+                    <% if @sponsorship_with_booth_selection_category_product %>
+                      <% location_mapping_with_product_associated = @event_map.location_mappings.joins(:location_mapping_products).select{|booth| booth.locked_by.nil? && booth.product_id.nil? && booth.products.first.iid == 'premium_location'} %>
+                    <% else %>
+                      <% location_mapping_with_product_associated = @event_map.location_mappings.joins(:location_mapping_products).select{|booth| booth.locked_by.nil? && booth.product_id.nil? && booth.products.first.iid != 'premium_location'} %>
+                    <% end %>                    <% already_bought = LocationMapping.joins('LEFT JOIN order_items ON location_mappings.id = order_items.item_id').where(order_items: {item_type: 'LocationMapping'}).uniq %>
+                    <% already_booked_lm = Exhibitor.joins(:location_mapping).where(event_id: @event_map.event_id).pluck(:'location_mappings.id').uniq %>
+                    <% location_mapping_both = LocationMapping.where(id: already_booked_lm) %>
+                    <% available_location_mapping = (location_mapping_with_product_associated - already_bought) - location_mapping_both %>
+                    <%= select_tag :booth, options_from_collection_for_select(available_location_mapping, 'id', 'with_product', selected_booth_item&.item_id), style: "width: 50%;", include_blank: true, required: true %>
+                  </div>  
+                  <div class="product_details">
+                    <p id="product_name"></p>
+                    <p id="product_price"></p>
+                    <p id="maximum_complimentary_staff"></p>
+                    <p id="maximum_discount_staff"></p>
+                  </div>
+                  <div class="actions">
+                    <%= f.submit 'Add To Cart', class:"btn btn-outline-primary btn-sm booth_add_to_cart"%>
+                  </div>
+                <% end %>
+                <div class="form-submit-info">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% end %>
+      <% end %>
+    </div>
+    <%= render partial: "transactions/cart" %>
+    <div class="accordion" id="accordionExample">
+      <button id="topBtn" title="Cart" data-toggle="modal" data-target="#cartModal" >
+        <i class="fa fa-shopping-cart" aria-hidden="true">
+        </i>
+        <span class="badge badge-warning" id="lblCartCount"><%= @cart.cart_items.reduce(0){|sum,item| sum+=item.quantity}%></span>
+      </button>
+      <div style="text-align: center;">
+        <%= link_to 'Proceed To Cart', "/#{session[:event_id]}/exhibitor_portals/cart/#{@cart.id}", class: "btn btn-outline-primary"%>
+      </div>  
+    </div>
+  </div>
+</div>
+<style>
+  label.registered-attendee-form-label {
+    font-size: 1.2rem;
+  }
+  .required-field::after {
+    content: '*';
+    color: red;
+    margin-left: 2px;
+  }
+  td {
+    font-weight: 100 !important;
+  }
+  li.nav-item.HeaderCart {
+      cursor: pointer;
+      font: inherit;
+      border: none;
+      background-color: white;
+      color: black;
+      padding: 0.35rem 1rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-radius: 25px;
+      font-weight: bold;
+  }
+
+  span.HeaderCart_icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      margin-right: 0.5rem;
+  }
+  span.HeaderCart_badge {
+      background-color: black;
+      padding: 0.25rem 1rem;
+      border-radius: 25px;
+      margin-left: 1rem;
+      font-weight: bold;
+      color: white;
+  }
+  #topBtn {
+     display: none;
+     position: fixed;
+     bottom: 66px;
+     right: 30px;
+     z-index: 99;
+     font-size: 25px;
+     border: none;
+     outline: none;
+     background-color: black;
+     color: white;
+     cursor: pointer;
+     padding: 15px;
+     border-radius: 4px;
+  }
+
+  span#lblCartCount {
+      font-size: 14px;
+      background: #2FA4E7;
+      color: #fff;
+      padding: 0 5px;
+      vertical-align: top;
+      margin-left: -6px;
+  }
+  @media (max-width: 767.98px) { .border-sm-start-none { border-left: none !important; } }
+</style>
+<script>
+
+  window.onscroll = function() {scrollFunction()};
+
+  function scrollFunction() {
+    var mybutton = document.getElementById("topBtn");
+    if(mybutton){
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        mybutton.style.display = "block";
+      } else {
+        mybutton.style.display = "none";
+      }
+    }
+  }
+
+  $(document).ready(function(){
+    $("#booth").select2( {
+      placeholder: "Select Booth",
+      width: 'resolve',
+      theme: "classic"
+      }).on('change', function(e){
+        var selectedValue = $(this).val();
+        console.log("Selected value: " + selectedValue)
+        $.ajax({
+          type: "get",
+          url: `/location_mappings/product/${selectedValue}`,
+          dataType: 'json',
+          success: function (response) {
+            var response_data = response['data'];
+            if (response['status']){
+              $('#product_name').text(`Its a ${response_data['name']}`)
+              $('#product_price').text(`Price of the booth is $${response_data['price']}`)
+              $('#maximum_complimentary_staff').text(`Maximum Complimentary Staff ${response_data['maximum_complimentary_staff']}`)
+              $('#maximum_discount_staff').text(` Maximum discount staff ${response_data['maximum_discount_staff']}`)
+            }
+          },
+          error: function (error) {
+            console.log(error);
+          }
+        });
+      });
+
+    var product_categories_booth_present = "<%= @sponsorship_with_booth_category_product %>";
+    console.log('product_categories_booth_present', product_categories_booth_present);
+    if (product_categories_booth_present){
+      $('.booth_add_to_cart').attr('disabled', true);
+    }
+  })
+
+</script>

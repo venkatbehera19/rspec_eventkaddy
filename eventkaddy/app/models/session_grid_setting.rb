@@ -1,0 +1,2 @@
+class SessionGridSetting < ApplicationRecord
+end

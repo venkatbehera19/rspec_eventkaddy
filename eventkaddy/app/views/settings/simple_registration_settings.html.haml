@@ -1,0 +1,247 @@
+:javascript
+    $(function() {
+        $('.jpicker').jPicker({window:{position:{x:'100',y:'300'}}});
+        var checkTrue = function() { $(this).children('input')[1].checked = true; };
+        var checkFalse = function() {
+            $(this).children('input')[0].value = 0;
+            $(this).children('input')[1].checked = false;
+        };
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true
+        });
+    });
+    $(document).on('change','#button_classes_select', function(){
+        let selected_cls = $(this).val();
+        console.log(selected_cls);
+        $('#sample_button').removeClass().addClass('btn ' + selected_cls);
+    });
+
+:css
+    #accordion {
+       margin-top:10px;
+       margin-bottom:10px;
+    }
+    .acc-div {
+        padding:10px;
+    }
+    
+%h4 Simple Registration Settings
+%br/
+%div{style:'min-height:500px;'}
+
+    = form_for @simple_registration_settings, :html => {:multipart => true, :method => :post }, :url => '/settings/update_simple_registration_settings' do |f|
+        #accordion
+            %h4 General Configurations
+            .acc-div
+                .alert{:class => "alert-info", :style=>"wdith:100%"}
+                    %b Registration Url:
+                    %a{ :href=> "#{@event.cms_url}/#{@event.id}/event_registrations", :target=>"_blank"}
+                        ="#{@event.cms_url}/#{@event.id}/event_registrations"
+                .field
+                    %h5 Registration Portal
+                    = f.radio_button(:registration_open, 1, { checked: @simple_registration_settings.registration_open})
+                    Open&nbsp;&nbsp;
+                    = f.radio_button(:registration_open, 0, {checked: !@simple_registration_settings.registration_open})
+                %hr/
+                .form-group
+                    %label Google Analytics Key
+                    = f.text_field :ga_key, class: "form-control"
+                .form-group
+                    %label HTML Title
+                    = f.text_field :html_title, class: "form-control"
+                .field
+                    = f.check_box :registration_with_email_confirmation
+                    Registration with Confirmation Email
+                %hr/
+                .field
+                    = f.check_box :send_calendar_invite
+                    Send Calendar Reminder Invite on Registration
+                %hr/
+                .field
+                    = f.check_box :send_attendee_password
+                    Send Password Mail On Registration
+                %br
+                %small To edit the email template please visit Calendar Invitation Email Template tab on Settings Page. To edit calendar invite please visit Event Settings tab > Calendar Reminder Info.
+                %hr/         
+                .form-group
+                    %label Maximum Attendees Count
+                    = f.text_field :attendees_count, :type=>'number', :placeholder=>500, class: "form-control"
+                %hr/
+                .form-group
+                    %label Message (to display when attendees count reach its limit)
+                    = f.cktext_area :seats_full_message, style:"min-width:700px;height:300px", :value=>(@simple_registration_settings.seats_full_message.blank?)? "The attendance limit has been reached. Please contact us to be put on a waiting list." : @simple_registration_settings.seats_full_message, :ckeditor => {:toolbar => "Full"}
+
+            %h4 Styles
+            .acc-div
+                %h5 Text Color Theme
+                %small Please select Light text-color for Dark backgrounds and vice versa.
+
+                %br/
+                %br/
+                .field
+                    = f.radio_button(:dark_bg_theme, 1, { checked: @simple_registration_settings.dark_bg_theme})
+                    Light&nbsp;&nbsp;
+                    = f.radio_button(:dark_bg_theme, 0, { checked: !@simple_registration_settings.dark_bg_theme})
+                    Dark
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :bold_text, class: "custom-control-input", id: "bold-text-switch"
+                    %label.custom-control-label{:for => "bold-text-switch"} Bold Text
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :text_shadow, class: "custom-control-input", id: "text-shadow-switch"
+                    %label.custom-control-label{:for => "text-shadow-switch"} Text Shadow
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :text_shadow_h1, class: "custom-control-input", id: "text-shadow_h1-switch"
+                    %label.custom-control-label{:for => "text-shadow_h1-switch"} Apply Text Shadow to h1
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :text_shadow_h2, class: "custom-control-input", id: "text-shadow_h2-switch"
+                    %label.custom-control-label{:for => "text-shadow_h2-switch"} Apply Text Shadow to h2
+                %hr/
+                %h5 Page Background
+                .form-group
+                    %label Background Image
+                    %br
+                    -if !@simple_registration_settings.body_background_image.blank?
+                        =image_tag(EventFile.find(@simple_registration_settings.body_background_image.to_i).path, :class=>'photo_preview')
+
+                    = file_field_tag :body_background_image, style: "width: 85%;"
+                %br/
+                .form-group
+                    %label Background Color
+                    %br
+                    = f.text_field :body_background_color, class: 'jpicker form-control d-inline', value: @simple_registration_settings.body_background_color || 'ffffff', style: "width: 85%;"
+                .form-group
+                    %label Background Position
+                    %br
+                    = f.text_field :body_background_position, value: @simple_registration_settings.body_background_position || 'center', class: 'form-control d-inline', style: "width: 85%;"
+                .form-group
+                    %label Background Size
+                    %br
+                    = f.text_field :body_background_size, value: @simple_registration_settings.body_background_size || 'cover', class: 'form-control d-inline', style: "width: 85%;"    
+                .form-group
+                    %label Background Repeat
+                    %br
+                    = f.text_field :body_background_repeat, value: @simple_registration_settings.body_background_repeat || 'no-repeat', class: 'form-control d-inline', style: "width: 85%;"
+                %br/
+                %hr/
+                %h5 Headers font-color
+                .form-group
+                    %label h1
+                    %br
+                    = f.text_field :h1_color, class: 'jpicker form-control d-inline', value: @simple_registration_settings.h1_color || '317eac', style: "width: 85%;"
+                .form-group
+                    %label h2
+                    %br
+                    = f.text_field :h2_color, class: 'jpicker form-control d-inline', value: @simple_registration_settings.h2_color || '317eac', style: "width: 85%;"    
+                .form-group
+                    %label h3
+                    %br
+                    = f.text_field :h3_color, class: 'jpicker form-control d-inline', value: @simple_registration_settings.h3_color || '317eac', style: "width: 85%;"       
+                
+                .form-group
+                    %label h4
+                    %br
+                    = f.text_field :h4_color, class: 'jpicker form-control d-inline', value: @simple_registration_settings.h4_color || '317eac', style: "width: 85%;"       
+                %h5 Buttons And Links
+                .form-group
+                    %label Calendar DropDown Button (registration index page)
+                    %br
+                    = f.select :reg_button_class, btn_classes_enum(), {}, selected:(@simple_registration_settings.reg_button_class.blank? ? "btn-outline-dark" : @simple_registration_settings.reg_button_class), id:"button_classes_select", class:"form-control d-inline"
+                    = button_tag "Add to Calendar &nbsp;#{image_tag('/defaults/calendar_icons/calendar-plus-48.png', width:20)}".html_safe, id:"sample_button", class:"btn #{@simple_registration_settings.reg_button_class.blank? ? "btn-outline-dark" : @simple_registration_settings.reg_button_class}", type:"button"
+              
+            %h4 Registration Images
+            .acc-div
+                %table                
+                    - if (@event_setting.registration_banner_event_file_id!=nil) then
+                        - e =  EventFile.find(@event_setting.registration_banner_event_file_id)
+                        - if e.cloud_storage_type_id.blank?
+                            %tr
+                                %td= image_tag(e.path, :class=>'photo_preview')                            
+                            %tr
+                                %td  
+                            %tr
+                                %td.text-break
+                                    Download your current banner photo: 
+                                    %br
+                                    = link_to e.name, e.path
+                        - else
+                            - e_url = e.return_authenticated_url()
+                            %tr                            
+                                %td= image_tag(e_url['url'], :class=>'photo_preview')
+                            %tr
+                                %td  
+                            %tr
+                                %td.text-break
+                                    Download your current banner photo: 
+                                    %br
+                                    = link_to e.name, e_url['url'], download: '', target:'_blank'
+                        %tr
+                            %td  
+                        %tr
+                            %td
+                                .field
+                                    = label_tag "Upload a new Registration Banner:"
+                                    = file_field_tag :portal_banner_file
+                    - else
+                        %tr
+                            %td
+                                .field
+                                    = label_tag :portal_banner_file, "Choose a Registration Banner"
+                                    %br
+                                    = file_field_tag :portal_banner_file
+
+            %h4 Registration Page 
+            .acc-div
+                .field
+                    %label Heading
+                    = f.cktext_area :simple_registration_heading, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label SubHeading
+                    = f.cktext_area :simple_registration_subheading, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label Event Duration
+                    = f.cktext_area :simple_registration_duration, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label Event Content
+                    = f.cktext_area :simple_registration_content, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+
+
+            %h4 View Page (Post registration) 
+            .acc-div
+                .field
+                    %label Heading
+                    = f.cktext_area :simple_registration_heading1, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label SubHeading
+                    = f.cktext_area :simple_registration_subheading1, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label Event Duration
+                    = f.cktext_area :simple_registration_duration1, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label Event Content
+                    = f.cktext_area :simple_registration_content1, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+
+            %h4 Form Fields Label
+            .acc-div
+                .form-group
+                    %label First Name
+                    = f.text_field :first_name_label, class: "form-control"
+                .form-group
+                    %label Last Name
+                    = f.text_field :last_name_label, class: "form-control"
+                .form-group
+                    %label Email Address
+                    = f.text_field :email_label, class: "form-control"
+                .form-group
+                    %label Company
+                    = f.text_field :company_label, class: "form-control"
+                .form-group
+                    %label Title
+                    = f.text_field :title_label, class: "form-control"
+
+
+        = f.submit 'Update', class:'btn btn-primary'

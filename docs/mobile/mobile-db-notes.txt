@@ -1,0 +1,35 @@
+http://stackoverflow.com/questions/5438255/html5-thoughts-on-localstorage-instead-of-websql-or-indexeddb
+
+
+
+MOBILE COUCH DB
+
+
+
+
+
+
+WEB SQL
+
+
+
+
+
+INDEXED DB
+
+
+
+
+
+
+JSON STORE (LAWNCHAIR)
+
+
+
+
+
+SQL LITE
+
+
+
+

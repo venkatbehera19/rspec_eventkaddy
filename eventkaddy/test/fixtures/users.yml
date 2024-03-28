@@ -1,0 +1,17 @@
+# https://stackoverflow.com/questions/16199710/rails-3-2-mysql-error-field-created-at-doesnt-have-a-default-value-inser
+# Had to edit my.cnf for mysql to make has_and_belongs_to_many fixtures work in
+# rails 3... basically need to allow null values even when a field says it
+# shouldn't be null. Maybe okay as long as it's not in production
+admin:
+  email: admin@eventkaddy.net
+  encrypted_password: abc
+  roles: super_admin
+  events: event_where_speakers_already_have_associated_users
+
+<% 1.upto(10) do |i| %>
+speaker_<%=i%>:
+  email:              speaker_<%=i%>@eventkaddy.net
+  encrypted_password: abc
+  roles:              speaker
+  events:             event_where_speakers_already_have_associated_users
+<% end %>

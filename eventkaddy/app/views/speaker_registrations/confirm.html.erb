@@ -1,0 +1,34 @@
+<div class="form">
+  <% if !@speaker_registration_settings&.numeric_password %>
+    <%= form_for(@user, :html => { :class => "form" }, :url => { :action => "create_speaker_portal_user" } ) do |f| %>
+      <% if @speaker_registration_settings.speaker_registration_heading1 %>
+        <p><%= @speaker_registration_settings.speaker_registration_heading1.html_safe %></p>
+      <% end %>
+      <% if @user.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+          <ul>
+            <% @user.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <%= hidden_field_tag :speaker_id, @speaker.id %>
+      <%= hidden_field_tag :email, @speaker.email %>
+  
+      <p><%= f.label :password, { class: 'form-label' } %></p>
+      <p><%= f.password_field :password, { class: 'form-control', placeholder: 'Enter Password'} %></p>
+  
+      <p><%= f.label :password_confirmation %></p>
+      <p><%= f.password_field :password_confirmation, { class: 'form-control', placeholder: 'Enter Confirm Password'} %></p>
+  
+      <p><%= f.submit "Set Portal Password", class: "btn btn-primary" %></p>
+    <% end %>
+  <% else %>
+    <div class="d-flex">
+      <h3><%= @message %></h3>
+    </div>
+  <% end %>
+</div>
+<br/>

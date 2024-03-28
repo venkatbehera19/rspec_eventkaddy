@@ -1,0 +1,73 @@
+<h4>Room Layouts</h4>
+
+<%= link_to 'New Room Layout', "/room_layouts/new",class:"btn btn-primary" %> <br/><br/>
+
+<table id="room_layouts" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Location/Room</th>
+      <th class="hide-on-phone">Configuration</th>
+      <th>Title</th>
+
+      <th class="nSort hide-on-phone">Layout Image</th>
+      <th class="nSort hide-on-phone">Default</th>
+      <% if ( current_user.role?(:client) || current_user.role?(:super_admin) ) then %>      
+        <th class="nSort"></th>
+      <% end %>
+    </tr>
+  </thead>
+  
+  <tbody>
+    <% @room_layouts.each do |room_layout| %>
+      <tr>
+        <% if room_layout.location_mapping!=nil then %>
+          <td><%= room_layout.location_mapping.name %></td>
+        <% else %>
+          <td></td>
+        <% end %>
+        
+        <td><%= room_layout.room_layout_configuration.name %></td>
+  
+        <td><%= room_layout.title %></td>
+  
+        <% if room_layout.event_file!=nil then %>
+          <% if room_layout.event_file.cloud_storage_type_id.blank? %>
+            <td><%= image_tag room_layout.event_file.path, {height:35,width:35} %></td>
+          <% else %>
+            <td><%= image_tag room_layout.event_file.return_authenticated_url()['url'], {height:35,width:35} %></td>
+          <% end %>
+        <% else %>
+          <td></td>
+        <% end %>
+        
+        <% if room_layout.default==true then %>
+          <td>Yes</td>
+        <% else %>
+          <td>No</td>
+        <% end %>
+        
+        <% if ( current_user.role?(:client) || current_user.role?(:super_admin) ) then %>      
+          <td class="table-actions">
+            <div class="btn-group d-flex">
+              <%= link_to 'Edit', edit_room_layout_path(room_layout) ,class:"btn btn-outline-success" %>
+              <%= link_to 'Delete', room_layout, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %>
+            </div>
+            <div class="dropdown">
+              <a data-toggle="dropdown" class="ellipse-style">
+                <i class="fa fa-ellipsis-v"></i>
+              </a>
+              <div class="dropdown-menu">
+                <%= link_to 'Edit', edit_room_layout_path(room_layout) ,class:"dropdown-item text-success" %>
+                <%= link_to 'Delete', room_layout, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"dropdown-item text-danger" %>
+              </div>
+            </div>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+
+</table>
+
+<br />
+

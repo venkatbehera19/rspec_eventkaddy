@@ -1,0 +1,5 @@
+<p>Welcome <%= @email %>!</p>
+
+<p>Click on the link below to confirm your account and generate your password with two factor authentication:</p>
+
+<p><%= link_to 'Confirm my account', generate_passord_with_two_fa_url(:confirmation_token => @token) %></p>

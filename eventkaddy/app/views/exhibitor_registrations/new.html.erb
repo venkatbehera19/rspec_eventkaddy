@@ -1,0 +1,213 @@
+<body>
+  <!-- ======= Banner ======= /
+  -->
+  <nav class="navbar navbar-light bg-light reg-banner">
+    <%= @settings.reg_banner.to_s.html_safe %>
+  </nav>
+  <!-- ======= Main ======= /
+  -->
+  <div class="container-fluid d-flex flex-column mx-auto reg-main">
+    <!-- ======= Header ======= /
+    -->
+    <div class="d-flex reg-section-container align-items-center reg-header pb-0" style="<%= "background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_edit_page %>"> 
+      <div class="row mx-auto d-flex reg-row">
+        <div class="col-12 d-flex reg-col">
+          <!-- ======= Nav ======= /
+          -->
+          <div class="row">
+            <nav class="navbar navbar-expand-sm navbar-light full-width">
+                <a class="navbar-brand text-wrap">
+                <% event_setting = EventSetting.select(:portal_logo_event_file_id).where(event_id:params[:event_id]).first_or_create %>
+                <% if event_setting && event_setting.event_file_portal_logo %>
+                  <%= image_tag(event_setting.event_file_portal_logo.path, :class =>'photo_preview') %>
+                <% else %>
+                  <img src="/assets/ek_logo.png" width="100px"/>
+                <% end %>
+              </a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="/<%= params[:event_id] %>/exhibitor_registrations">
+                        <i class="fa fa-home"></i>
+                      </a>
+                    </li>
+                  <% if @settings.method("agenda").call() %>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/<%= params[:event_id] %>/exhibitor_registrations/agenda">
+                        AGENDA
+                      </a>
+                    </li>
+                  <% end %>
+                  <% if @settings.method("speakers").call() %>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/<%= params[:event_id] %>/exhibitor_registrations/speakers">
+                        SPEAKERS
+                      </a>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            </nav>
+          </div>
+
+          <!-- ======= Header Content ======= /
+          -->
+          <% if @settings.show_header_edit_page %>
+            <div class="row">
+              <div class="reg-header-content">
+                <% if !@settings.reg_header_content.blank? %>
+                  <% efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(@settings.reg_header_content.to_i) %>
+                  <% if efile.cloud_storage_type_id.blank? %>
+                    <%= image_tag(efile.path, :class=>'photo_preview') %>
+                  <% else %>
+                    <%= image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview') %>
+                  <% end %>
+                  <br/>
+                  <br/>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="reg-section-container">
+        <%# Notice %>
+        <% if notice %>
+          <div class="alert alert-info shadow" role="alert" style="border-left:#178acc 5px solid; border-radius: 0px">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true" style="color:#178acc">&times;</span>
+            </button>
+            <div class="row">
+                <i class="fa fa-check-circle-o info-font"></i>
+                <p style="font-size:12px;color:#178acc !important;" class="mb-0 font-weight-light"><%= notice %></p>
+            </div>
+          </div>
+        <% end %>
+        <% if alert %>
+          <div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true" style="color:#721C24">&times;</span>
+            </button>
+            <div class="row">
+                <i class="fa fa-exclamation-circle danger-font"></i>
+                <p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <br/>
+    <br/>
+
+    <div class="reg-section-container">
+      <div class="row">
+        <div class="col-md-8 mx-auto px-5 pb-4 <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+            <%= @settings.reg_form_header.html_safe %>
+            <%= form_for(@user, :html => { :class => "form" }, :url => {:action => "create"}, :method => :create ) do |f| %>
+              <% if @user.errors.any? %>
+                <div id="error_explanation">
+                  <h2><%= pluralize(@user.errors.count, "error") %> prohibited this form from being saved:</h2>
+
+                  <ul>
+                  <% @user.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                  </ul>
+                </div>
+              <% end %>
+
+              <%= hidden_field_tag 'user[event_ids]', params[:event_id] %>
+
+              <% if @settings.locked_email %>
+                <div class='form-group attendee-profile-form-input'>
+                  <%= f.label :email, :class => "registered-attendee-form-label"%>
+                  <%= f.text_field :email, :readonly=>true, class: "form-control" %>
+                </div>
+              <% end %>
+
+              <% text_field = ->(col, label, options={}) {
+                  if(@settings.respond_to?(col) &&  @settings.method("#{col}").call())
+                    "<div class='form-group attendee-profile-form-input'>#{f.label col, label, {:class => "registered-attendee-form-label #{'required-field' if !!@settings.send("required_#{col}") }"}}#{f.text_field col, options}</div>".html_safe
+                  end
+              } %>
+
+              <%= text_field["email",           @settings.email_label || "Email", class: "form-control", required: true] %>
+              <% if @settings.password %>
+                <div class='form-group attendee-profile-form-input'>
+                  <%= f.label :password, :class => "registered-attendee-form-label" %>
+                  <%= f.password_field :password, class: "form-control", required: @settings.required_password %>
+                </div>
+                <div class='form-group attendee-profile-form-input'>
+                  <%= f.label :password_confirmation, :class => "registered-attendee-form-label" %>
+                  <%= f.password_field :password_confirmation, class: "form-control", required: @settings.required_password %>
+                </div>
+              <% end %>
+
+              <%= text_field["first_name",      @settings.first_name_label || "First Name", class: "form-control", required:!!@settings.required_first_name] %>
+              <%= text_field["last_name",       @settings.last_name_label || "Last Name", class: "form-control", required:!!@settings.required_last_name] %>
+              <%= text_field["mobile_phone",    @settings.mobile_phone_label || "Mobile Phone", class: "form-control", required:!!@settings.required_mobile_phone] %>
+              <%= text_field["company",         @settings.company_label || "Company", class: "form-control", required:!!@settings.required_company] %>
+              <%= text_field["twitter_url",     @settings.twitter_url_label || "Twitter URL", class: "form-control", required:!!@settings.required_twitter_url] %>
+              <%= text_field["facebook_url",    @settings.facebook_url_label || "Facebook URL", class: "form-control", required:!!@settings.required_facebook_url] %>
+              <%= text_field["linked_in",       @settings.linked_in_label || "Linked In", class: "form-control", required:!!@settings.required_linked_in] %>
+              <%= text_field["country",         @settings.country_label || "Country", class: "form-control", required:!!@settings.required_country] %>
+              <%= text_field["state",           @settings.state_label || "State", class: "form-control", required:!!@settings.required_state] %>
+              <%= text_field["city",            @settings.city_label || "City", class: "form-control", required:!!@settings.required_city] %>
+
+              <div class="actions ">
+                <div class="row d-flex">
+                  <div class="col reg-back-btn">
+                    <%= link_to "Back Home", "/#{params[:event_id]}/exhibitor_registrations", class:"btn #{@settings.dark_bg_theme ? 'btn-light' : 'btn-dark'} round-btn" %>
+                  </div>
+                  <div class="col reg-btn">
+                    <% btn_text = @settings.have_payment_page ? "Save and Proceed To Payment" : "Register"%>
+                    <%= f.submit btn_text, class:"btn btn-primary round-btn register" %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+            <br/>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<style>
+  .reg-header{
+    background-image: url("<%=(!!@settings.reg_header_bg_img && @settings.show_header_edit_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : '' %>");
+  }
+  label.registered-attendee-form-label {
+    font-size: 1.2rem;
+  }
+  .required-field::after {
+    content: '*';
+    color: red;
+    margin-left: 2px;
+  }
+</style>
+
+<script>
+  $(document).ready(function(){
+    $('#attendee_password_confirmation').on('input', function(){
+        if($(this).val() !== $('#attendee_password').val()){
+            $(this).css('border', '1px solid red')
+        }else{
+            $(this).css('border', '1px solid green')
+            $(".round-btn.register").removeAttr('disabled')
+        }
+    })
+  })
+
+  $( ".form" ).submit(function( event ) {
+    if($('#attendee_password_confirmation').val() !== $('#attendee_password').val()){
+      $('#attendee_password_confirmation').css('border', '1px solid red')
+      event.preventDefault()
+      $('html, body').animate({
+          scrollTop: $("#attendee_password_confirmation").offset().top
+      }, 2000);
+    }
+  });
+</script>

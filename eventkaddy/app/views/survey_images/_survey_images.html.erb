@@ -1,0 +1,65 @@
+  <div class="col-12 d-flex flex-row flex-wrap p-0 <%= @survey_responses.empty? ? 'justify-content-center' : ''%>" id="left-parent-div">
+    <%unless @survey_responses.empty?%>
+      <%@survey_responses.each do |survey_response|%>
+        <div class="col-lg-4 col-md-6 col-6 mb-4 left-image-wrappers" >
+          <div class="float-right" >
+            <%= check_box_tag 'delete', '', false, class: "form-check-input delete_checkbox select_unselect_all", id: "delete_checkbox_#{survey_response["response_id"]}" %>
+          </div>
+          <div class="card image-shadow left-image-cards mt-4">
+            <%= image_tag "spinner.gif", width: 200, height: 250, class: "card-img-top lazyload", data:{original: survey_response["url"]}, alt: "spinner"%>
+
+            <div class="card-body pt-0 pb-0">
+              <h6 class="card-title survey-title">Survey: <%=survey_response["title"]%></h6>
+              <p class="card-text survey-question">Question: <%=survey_response["question"]%></p>
+              <p class="card-text mb-0"><small class="text-muted">Submitted At: <%=Time.parse(survey_response["created_at"]).strftime("%Y-%m-%d %l:%M")%></small></p>
+              <p class="card-text">Submitted By: <%= survey_response["first_name"] + " " + survey_response["last_name"] %></p>
+              <input type="hidden" name="responseId" value=<%=survey_response["response_id"]%>>
+              <input type="hidden" name="imageStatus" value=<%=survey_response["image_status"]%>>
+              <% if survey_response["image_status"] == 1 %>
+                <span class="float-right text-success"><i class="fa fa-2x fa-check-circle-o"></i></span>
+              <% elsif survey_response["image_status"] == 0 %>
+                <span class="float-right text-danger"><i class="fa fa-ban fa-2x"></i></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <%end%>
+    <%else%>
+      <div>
+        <h4> No Images To Show </h4>
+      </div>
+    <%end%>
+  </div>
+  <div class="d-none" id="right-parent-div">
+    <div class="card border-0" id="right-div-preview-card">
+      <div id="previewCardImage">
+        <%= image_tag "spinner.gif", id: "previewImage",class: "lazyload mx-auto", alt: "spinner"%>
+      </div>
+      <div class="card-body pt-0">
+        <h6 class="card-title" id="preview-survey-title"></h5>
+        <p class="card-text" id="preview-survey-question"></p>
+        <p class="card-text" id="preview-survey-time"></p>
+        <p class="card-text" id="preview-survey-by"></p>
+        <div id="preview-survey-buttons" class="previewButtonsDisplay d-flex justify-content-around">
+          <%= link_to "", class: "btn btn-outline-primary", id:"preview-verify-button" , remote: true, method: :patch do %>
+            <i class="fa fa-2x fa-check" aria-hidden="true"></i>
+          <%end%>
+          <%= link_to "", class: "btn btn-outline-danger", id:"preview-reject-button" , remote: true, method: :patch do %>
+            <i class="fa fa-2x fa-times" aria-hidden="true"></i>
+          <%end%>
+        </div>
+        <div class="d-none float-right" id="preview-verified-div">
+          <%= link_to "", class: "btn btn-outline-warning preview-undo-button", remote: true, method: :patch do %>
+            <i class="fa fa-undo" aria-hidden="true"></i>
+          <%end%>
+          <span class="btn btn-outline-success">Verified</span>
+        </div>
+        <div class="d-none float-right" id="preview-rejected-div">
+          <%= link_to "", class: "btn btn-outline-warning preview-undo-button", remote: true, method: :patch do %>
+            <i class="fa fa-undo" aria-hidden="true"></i>
+          <%end%>
+          <span class="btn btn-outline-danger">Rejected</span>
+        </div>
+      </div>
+    </div>
+  </div>

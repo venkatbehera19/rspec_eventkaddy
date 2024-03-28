@@ -1,0 +1,13 @@
+#+TITLE: Cordova App Development and Maintenance Goals
+* Weed out unnecessary forks in logic between chrome and device code
+This should be achieved by using mocks in chrome. It is important, because if we have two paths, a lot of the time we have to update both of them but we are likely to only test one or the other thoroughly, and if we test both thoroughly it is very costly time-wise. Using mocks could help reduce errors and make it easier to verify logic is working well, and give us a better opportunity to think about adding some e2e testing.
+* Flatten deeply nested sequences
+There is much unnecessarily nested code that makes the logic of the app extremely difficult to follow. ie: one function calls another function that calls another function that calls another function. In the case of synchronous code it is silly, and in the case of asychronous code it is nothing that the Future monad can't help with.
+
+This is especailly the case with functions which have names that are too similar (getData vs loadData or things like that) and don't reveal intention. It also makes it very hard to track bugs when a single function like loadBootstrapEventData accounts for 1000s of lines of code with no obvious way of knowing it.
+* Reduce overloaded functions
+Some functions do much more than they say they do, or are responsible for tasks which are actually distinct. For example, rendering the login page vs loading the data into memory. It makes it hard to find where these things are happening when they are living in a generically named or misnamed function.
+* Integration Tests / e2e tests
+It would be helpful to have at least a few simple ones that verify the basic proceedures of the app work at all, like rendering the login page for the different modes, and loading data into the app. This may be more of a wish than something realistic, given the complexity and coupled nature of the app as is, but might become more tenable if other design goals are achieved.
+* Live reload and return to the page you were on with a refresh
+I have some live reload code for Javascript, but it would only be helpful if we could return to the url we were just at on a refresh. This is probably as simple as storing the url in local storage and visiting it after the bootup sequence, but I need to be careful that this is either a dev / chrome only feature, or that it doesn't break things on device.  Mainly I'm worried that the app as is might depend on a visit to the home url on load to finish up the boot sequence. Still, it would help a lot with speeding up development, especially of visual features like css and layout, and that would open the way to perhaps even fixing the egregious stylesheet issues that the app has (overuse of z-index, !important etc).

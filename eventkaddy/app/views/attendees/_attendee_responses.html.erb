@@ -1,0 +1,19 @@
+<% if report_data.length > 0 %>
+  <% report_data.each do |data| %>
+    <div class="row" style="border: 1px solid gray;">
+      <div class="col-sm-5">
+        <div><b><%= data[:attendee_name] %></b></div>
+        <div><%= data[:attendee_email] %> <br> <%= data[:attendee_phone] %></div>
+      </div>
+      <div class="col-sm-7" style="overflow-y: auto; height: 4rem;">
+      <% data[:response_data].each do |qr_pair| %>
+          <div> <b> <%= qr_pair[:question] %>  </b> </div>
+          <div> <%= qr_pair[:response] %> </div>
+      <% end %>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <h5>Not Data to show</h5>
+<% end %>
+<%= hidden_field_tag :total_pages, total_pages %>

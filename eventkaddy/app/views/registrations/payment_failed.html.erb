@@ -1,0 +1,74 @@
+%body
+  - unless @settings.hide_banner_bar
+    / ======= Banner ======= /
+    %nav.navbar.navbar-light.bg-light.reg-banner
+      = @settings.reg_banner.to_s.html_safe
+
+  / ======= Main ======= /
+  .container-fluid.d-flex.flex-column.mx-auto.reg-main
+
+    / ======= Header ======= /
+    .d-flex.reg-section-container.align-items-center.reg-header{style: ("background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_registered_page)}
+      .row.mx-auto.d-flex.reg-row
+        .col-12.d-flex.reg-col
+
+          / ======= Nav ======= /
+          .row
+            %nav.navbar.navbar-expand-sm.navbar-light.full-width
+              %a.navbar-brand.text-wrap{ id:"registration-top-nav"}
+                -if @event.logo_event_file_id.present?
+                  = image_tag(@event.event_file.return_authenticated_url["url"], :class =>'photo_preview', style: "max-height: 70px")
+                -else
+                  %img{:src => "/assets/ek_logo.png", :width => "100px"}/
+              %button.navbar-toggler.collapsed{type:"button", 'data-toggle':"collapse", 'data-target':".navbar-collapse", 'aria-expanded':"false" }
+                %span.navbar-toggler-icon
+              .collapse.navbar-collapse.justify-content-end
+                %ul.navbar-nav.ml-auto
+                  %li.nav-item
+                    %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations"}
+                      %i.fa.fa-home
+                  - if @settings.method("agenda").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations/agenda"}
+                        AGENDA
+                  - if @settings.method("speakers").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/exhibitor_registrations/speakers"}
+                        SPEAKERS
+
+          / ======= Header Content ======= /
+          - if @settings.show_header_registered_page
+            .row
+              .reg-header-content
+                -if !@settings.reg_header_content.blank?
+                  - efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(@settings.reg_header_content.to_i)
+                  - if efile.cloud_storage_type_id.blank?
+                    = image_tag(efile.path, :class=>'photo_preview')
+                  - else
+                    = image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview')
+                  %br/
+
+                  %br/
+    
+    / ======= Notice ======= /
+    - if notice
+      .alert.alert-info.shadow{:role => "alert", :style => "border-left:#178acc 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#178acc"} ×
+        .row
+          %i.fa.fa-check-circle-o.info-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px;color:#178acc !important;"}= notice
+    - if alert
+      .alert.alert-danger.shadow{:role => "alert", :style => "border-left:#721C24 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#721C24"} ×
+        .row
+          %i.fa.fa-exclamation-circle.danger-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px"}= alert
+    .d-flex.reg-section-container
+      %h3 Payment Failed
+
+:css
+  .reg-header{
+    background-image: url("#{(!!@settings.reg_header_bg_img && @settings.show_header_registered_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : ''}");
+  }

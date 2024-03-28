@@ -1,0 +1,58 @@
+<%= form_for(@event_map, :html => { :multipart => true, :class => "bg-light custom-border px-3 orm-group" } ) do |f| %>
+  <% if @event_map.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event_map.errors.count, "error") %> prohibited this event_map from being saved:</h2>
+
+      <ul>
+      <% @event_map.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :map_name %>
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :image_file, "Map Image"%>
+    <%= file_field_tag :image_file %>
+  </div>
+
+  <!--get map types for this event -->
+  <div class="form-group">
+    <%= label_tag(:select_map_type, "Map Type:") %>
+    <%= f.collection_select(:map_type_id, @map_types, :id, :map_type, {}, class: "custom-select") %>
+  </div>
+
+  <div id="external_map_fields" class="collapse">
+    <div class="form-group">
+      <%= f.label(:external_map_url, "External Map Url") %>
+      <%= f.text_field :external_map_url, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :address_description, "Address Description" %>
+      <%= f.text_area :address_description, class: "form-control" %>
+    </div>
+  </div>
+
+  <br />
+  <div class="actions">
+    <%= f.submit "Submit", class:"btn btn-primary"    %>
+  </div>
+<% end %>
+
+<script>
+  var mapTypeSelected = $('#event_map_map_type_id option:selected');
+  if (mapTypeSelected.text() === 'External Map')
+    $('#external_map_fields').collapse('show');
+  
+  $('#event_map_map_type_id').on('change', function(){
+    if ($(this).find('option:selected').text() === 'External Map')
+      $('#external_map_fields').collapse('show');
+    else
+      $('#external_map_fields').collapse('hide');
+  });
+</script>

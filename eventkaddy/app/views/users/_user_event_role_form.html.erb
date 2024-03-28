@@ -1,0 +1,33 @@
+<%= form_for(user, url: add_user_event_user_path(user.id), method: :post ) do |f| %>
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@user.errors.count, "error") %> could not register the new user:</h2>
+      <ul>
+          <% @user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-group">
+    <%= f.label :email %>
+    <%= f.text_field :email, class: "form-control", disabled: true %>
+  </div>
+  <div class="instructions">
+    (Click to expand and select event to filter)
+  </div>
+  <br/>
+  <div class="dropdown-container1">
+    <div class="dropdown-button noselect">
+        <div class="dropdown-label">Events</div>
+        <div class="dropdown-quantity">(<span class="quantity">Any</span>)</div>
+        <i class="fa fa-filter"></i>
+    </div>
+    <div class="dropdown-list" style="display: none;">
+        <input type="search" placeholder="Search Event" class="dropdown-search drop-search"/>
+        <ul id="event_data"></ul>
+    </div>
+  </div>
+  <%= f.hidden_field :event_ids, id: 'selected_event_ids' %>
+  <%= f.submit "Add Events", class:"btn btn-primary" %>
+<% end %>

@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+first_response:
+  event: one
+  survey_response: first_survey_response
+  question: one
+  answer: one
+  response: A great question
+  rating: 1
+
+second_response:
+  event: two
+  survey_response: second_survey_response
+  question: two
+  answer: two
+  response: MyText
+  rating: 1

@@ -1,0 +1,25 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   event_id: 1
+#   session_code: MyString
+#   session_cancelled: false
+#   title: MyString
+#   description: MyString
+#   room_id: 1
+#   link_id: 1
+#   tag_twitter: MyString
+#   start_at: 2011-02-08 15:04:15
+#   end_at: 2011-02-08 15:04:15
+
+# two:
+#   event_id: 1
+#   session_code: MyString
+#   session_cancelled: false
+#   title: MyString
+#   description: MyString
+#   room_id: 1
+#   link_id: 1
+#   tag_twitter: MyString
+#   start_at: 2011-02-08 15:04:15
+#   end_at: 2011-02-08 15:04:15

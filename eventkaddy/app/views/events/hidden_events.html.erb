@@ -1,0 +1,19 @@
+<%= form_for(@events, :html => {:method => :post, :class => "bg-light custom-border px-3 py-3" }, :url => {:action => "update_hidden_events"} ) do |f| %>
+
+    <div class="form-group">
+        <%= label_tag(:events, "Select Events to Hide:") %>
+        <%= select_tag(
+            :event_ids,
+            options_for_select(@events.map { |e| ["#{e.id} #{e.name}", e.id] }, @hidden_event_ids),
+            :multiple => true,
+            :size     => 30,
+            :class => "custom-select"
+        ) %>
+    </div>  
+
+    <br>
+    <br>
+    <div class="actions">
+        <%= f.submit "Hide Events From Change Event Menu", class:"btn btn-primary" %>
+    </div>
+<% end %>

@@ -1,0 +1,4 @@
+<% unless current_user.errors.any? %>
+  $("#twoFactorContainer").html("<%= j (render partial: "profiles/profile_components/two-factor") %>");
+<%end%>
+$("#twoFactorErrorsDiv").html("<%= j (render "profiles/profile_components/error_messages", resource: current_user, success_message: @success_message) %>");

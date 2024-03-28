@@ -1,0 +1,82 @@
+<% convert_line_breaks = ->(text) { %>
+    <% return "" unless text %>
+    <% text.split(/[\n\r]/).each do |line| %>
+        <%= line %>
+    <% end %>
+<% } %>
+
+Hi <%= @email %>,
+
+Here are your notes from <%= @event.name %>.
+
+--- Session Notes ---
+
+<% if @session_notes.length === 0 then %>
+   You have not taken any Session Notes.
+<% else %>
+   <% @session_notes.each do |sn| %>
+      -- <%= sn.title %>
+
+        :: <% convert_line_breaks[ sn.text ] %>
+
+
+   <% end %>
+<% end %>
+
+--- Exhibitor Notes ---
+
+<% if @exhibitor_notes.length === 0 then %>
+   You have not taken any Exhibitor Notes.
+<% else %>
+   <% @exhibitor_notes.each do |en| %>
+      -- <%= en.title %>
+
+        :: <% convert_line_breaks[ en.text ] %>
+
+
+   <% end %>
+<% end %>
+
+--- Attendee Notes ---
+
+<% if @attendee_notes.length === 0 then %>
+   You have not taken any Attendee Notes.
+<% else %>
+   <% @attendee_notes.each do |an| %>
+      -- <%= an.title %>
+
+        <% if @show_contact_info %>
+            --- Contact Info
+            <% unless an.email.blank? %>
+                Email: <%= an.email %>
+            <% end %>
+            <% unless an.mobile_phone.blank? %>
+                Mobile Phone: <%= an.mobile_phone %>
+            <% end %>
+            <% unless an.business_phone.blank? %>
+                Business Phone: <%= an.business_phone %>
+            <% end %>
+            <% if [an.email, an.mobile_phone, an.business_phone].all? {|item| item.blank?} %>
+              Contact info unavailable.
+            <% end %>
+        <% end %>
+
+        :: <% convert_line_breaks[ an.text ] %>
+
+
+   <% end %>
+<% end %>
+
+--- General Notes ---
+
+<% if @general_notes.length === 0 then %>
+   You have not taken any General Notes.
+<% else %>
+   <% @general_notes.each do |gn| %>
+      -- <%= gn.title %>
+
+        :: <% convert_line_breaks[ gn.text ] %>
+
+
+   <% end %>
+<% end %>

@@ -1,0 +1,14 @@
+<h4 class="view-title">Notification Details</h4>
+<%= link_to 'Index', "/notifications?mobile=#{@mobile}", class:"btn btn-outline-secondary" %>
+<%= link_to 'Edit', edit_notification_path(@notification, mobile: @mobile), class:"btn btn-outline-success" %><br><br>
+
+<table class="table">
+<tr><th>Name</th><td><%= @notification.name %></td></tr>
+<tr><th>Description</th><td><%= @notification.description %></td></tr>
+<tr><th>Filters</th><td><%= JSON.parse(@notification.pn_filters).join ', ' if @notification.pn_filters %></td></tr>
+<tr><th>Session Codes</th><td><%= @notification.session_codes.join ', ' if @notification.session_codes %></td></tr>
+<tr><th>Event Name</th><td><%= @notification.event.name %></td></tr>
+<tr><th>Web Page URL</th><td><%= @notification.web_url %></td></tr>
+<tr><th>Unpublished</th><td><%= !!@notification.unpublished %></td></tr>
+<tr><th>Enable Push Notification</th><td><%= @notification.push_notification? %></td></tr>
+</table>

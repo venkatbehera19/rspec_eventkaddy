@@ -1,0 +1,38 @@
+<div>
+  <h4><%= session.title %></h4>
+    <div class="list-group list-group-flush" id = "simple-list">
+      <% session.reload.poll_sessions.each do |poll| %> 
+        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <%=poll.title%>
+          <% if (@event_setting!=nil && @event_setting.sessions_editable == true) %>
+            <div class ="d-flex btnWrapper" id="containerDiv-<%=poll.id%>">
+              <%= link_to "Remove", moderator_session_poll_remove_path(poll.id), class:"btn btn-danger mr-1 speakerRemovePoll", method: :post, remote: true, data: { confirm: "Are you sure you want to remove this Session Poll?" }%>
+            </div> 
+          <% end %>
+        </li>
+      <% end %>
+    </div>
+</div>
+<% if (@event_setting!=nil && @event_setting.sessions_editable == true) %>
+  <%= link_to "Create New Polls", "/speaker_portals/sessions/#{@session.id}/new_poll", class: "btn btn-info mt-2" %>
+  <button class="btn btn-primary mt-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    Add Polls To Sessions
+  </button>
+  <div class="collapse mt-2 row" id="collapseExample">
+    <div class="col-md-9">
+      <%= select_tag "poll", options_from_collection_for_select(@polls, "id", "title"), class: "custom-select", id: "polls_list" %>
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-primary addSessionPoll" onclick="addSessionPoll(<%= session.event_id %>, <%= session.id %>, 'speaker')">Add Poll Question</button>
+    </div>
+  </div>
+<%end%>
+
+
+<script >
+  speakerSessionRemoved = (event, data, xhr) => {
+    $("#polls_list_container").html(data);
+  }
+
+  $('.speakerRemovePoll').bind("ajax:success", speakerSessionRemoved)
+</script>

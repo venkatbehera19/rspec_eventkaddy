@@ -1,0 +1,21 @@
+<%= form_for(@speaker_type) do |f| %>
+  <% if @speaker_type.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@speaker_type.errors.count, "error") %> prohibited this speaker_type from being saved:</h2>
+
+      <ul>
+      <% @speaker_type.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :speaker_type %>
+    <%= f.text_field :speaker_type %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

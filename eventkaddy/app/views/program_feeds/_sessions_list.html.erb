@@ -1,0 +1,123 @@
+<% if @sessions.present? %>
+  <% @sessions.each do |time, sessions|%>
+    <div class="card mt-1 time-sesions" id="<%= "session_at_#{time.strftime("%H").to_i}"%>">
+        <div class="alert alert-info time_header" role="alert">
+          <%= sessions.first.date.strftime("%a, %B %d") %>
+          <%= twelve_hour_format?(@event.id) ? tweleve_hour_format(time) : twenty_four_hour_format(time)  %>
+        </div>
+        <div class="tobesticky alert alert-info sticky">
+          <%= sessions.first.date.strftime("%a, %B %d") %>
+          <%= twelve_hour_format?(@event.id) ? tweleve_hour_format(time) : twenty_four_hour_format(time) %>
+        </div>
+      <div class="card-body session-body p-0">
+        <% sessions.uniq.each do |session| %>
+          <div class="session card">
+            <div class="card-header">
+              <p class="title mb-0"><%= session.title %>
+                <% if @current_attendee %>
+                  <div class="favourite-option" style="font-size:20px">
+                    <% if session_favorite(session.id) %>
+                      <i class="fa fa-star text-danger make-favourite" aria-hidden="true" data-session="<%= session.id %>" data-favourite="true"></i>
+                    <% else%>
+                      <i class="fa fa-star-o make-favourite" aria-hidden="true" data-session="<%= session.id %>" data-favourite="false"></i>
+                    <% end %>
+                  </div>
+                <% end %>
+              </p>
+            </div>
+            <div class="card-body pt-1">
+              <div class="d-flex">
+                <% if twelve_hour_format?(@event.id) %>
+                 <b> Time: </b><span class="pl-1"><%= "#{session.start_at.strftime("%I:%M %p")} - #{session.end_at.strftime("%I:%M %p")}" %> </span>
+                <% else %>
+                  <b>Time: </b><span class="pl-1"><%= "#{session.start_at.strftime('%H:%M')} - #{session.end_at.strftime('%H:%M')}" %> </span>
+                <% end %>
+
+              </div>
+              <div class="session_room">
+             <% if session.location_mapping&.name.present? %>
+              <b> Room: </b><%=session.location_mapping&.name %>
+      <% end %>
+              </div>
+              <div class="session_track_subtrack.present?">
+                 <% if session.track_subtrack %>
+                <b>Primary Audience: </b><%= session.track_subtrack %><% end %>
+              </div>
+
+              <div class="session.custom_filter_3">
+         <% if session.custom_filter_3.present? %>
+                <b>Continuing Education: </b> <%= session.custom_filter_3 %><% end %>
+              </div>
+              <div class="session.custom_filter_2">
+                <%= "#{session.custom_filter_2.present? ? session.custom_filter_2 : nil }"  %>
+              </div>
+
+              <div class="description">
+                <br>
+                <p><%= session.description&.html_safe %></p>
+                <p style="font-weight:bold;"><%= "#{session.learning_objective.present? ? "Learning Objective(s): "&.html_safe : nil }"  %></p>
+                <p><%= session.learning_objective&.html_safe %></p>
+              </div>
+              <% if session.sponsors.present? %>
+                <div>
+                  <p class="mb-0 pt-2 pb-2 title" style="font-weight:bold;font-size:15px;">Sponsored By: </p>
+                  <% session.sponsors.each do |sponsor| %>
+                    <p p-1 style="margin-bottom: 10px;">
+                      <% url = get_sponsor_logo(sponsor) %>
+                      <% if url %>
+                        <%= image_tag(url, class: "sponsor-profile-pic")%>
+                      <% end %>  
+                      <span><b><%= sponsor.company_name%></b></span>
+                    </p>
+                  <% end %>
+                </div>
+              <% end %>
+              <% if session.speakers.present? %>
+                <div>
+                  <p class="mb-0 pt-2 pb-2" style="font-weight:bold;font-size:15px;">Speaker(s): </p>
+                  <% session.speakers.each do |speaker| %>
+                    <p>
+                      <span><b><%= speaker.full_name %></b></span><br><%= "#{speaker.company}" %>
+                    </p>
+                  <%end%>
+                </div>
+              <% end -%> 
+            </div>
+            <% if session.description.present? || session.learning_objective.present? %>
+              <div class="show-more-less pl-3">
+                <p class="show_more">Show More</p>
+                <p class="show_less d-none">Show Less</p>                  
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <div class="session-end"></div>
+    </div>
+  <% end %>
+
+
+<% if params[:date] == 'ALL' %>
+<div class="load-more" style="display: none;">
+  <div class="loading loading08">
+    <span data-text="L">L</span>
+    <span data-text="O">O</span>
+    <span data-text="A">A</span>
+    <span data-text="D">D</span>
+    <span data-text="I">I</span>
+    <span data-text="N">N</span>
+    <span data-text="G">G</span>
+  </div>
+</div>
+<%end%>
+<% else %>
+  <div class="no-record">
+    <p class="display-4 text-secondary font-italic">No Session Found</p>
+  </div>
+<% end %>
+
+<style>
+  .make-favourite {
+    cursor: pointer;
+  }
+</style>

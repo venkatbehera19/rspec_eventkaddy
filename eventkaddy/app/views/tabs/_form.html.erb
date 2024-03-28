@@ -1,0 +1,45 @@
+<% if @tab.tab_type_id===4 then %>
+    <ul id="sessionsettings-tabs" class="nav nav-tabs">
+  
+    <li id="edit_headers_footers-tab"><%= link_to "Headers and Footers", "/tabs/#{@tab.id}/edit" %></li>
+    <li id="edit_session_notes-tab"><%= link_to "Session Notes Content", "/event_settings/edit_session_notes_content" %></li>
+    <li id="edit_av_requests-tab"><%= link_to "AV Requests Content", "/event_settings/edit_av_requirements" %></li>
+  </ul>
+<% end %>
+
+<%= form_for(@tab, :html => { :multipart => true, :class=>"bg-light custom-border px-3 py-3" } ) do |f| %>
+  <% if @tab.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@tab.errors.count, "error") %> prohibited this tab from being saved:</h2>
+
+      <ul>
+      <% @tab.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+ 
+  <div class="field">
+    <%= f.label :header_text, "Header Text" %>
+    <%= f.cktext_area :header_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"} %><br /><br />
+  </div>
+
+ <div class="field">
+    <%= f.label :footer_text, "Footer Text" %>
+    <%= f.cktext_area :footer_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Simple"}%><br /><br />
+  </div>
+
+  <br/>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

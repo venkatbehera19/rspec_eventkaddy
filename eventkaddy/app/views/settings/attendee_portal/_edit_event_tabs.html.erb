@@ -1,0 +1,37 @@
+<%= javascript_include_tag 'unordered-files/sortandrename.js' %>
+
+<h4>Attendee Tabs Configuration</h4>
+
+<div id="stable-height"><div id="response"></div></div>
+
+<ul class="sortable-tabs mx-auto">
+  <% @tabs.each do |tab| %>
+    <li class="d-flex flex-row tab-row mb-2">
+      <div class="position-btns handle" style="width: 5%;">
+        <button type="button" class="pos-btn btn" role="up">
+          <i class="fa fa-angle-up"></i>
+        </button> <br>
+        <button type="button" class="pos-btn btn" role="down">
+          <i class="fa fa-angle-down"></i>
+        </button>
+      </div>
+      <div class="tab-text form-inline row ml-4 mr-4" style="width: 75%;">
+        <input type="text" value="<%=tab.name%>" class="form-control col-md-7">
+        <%= link_to 'Edit Header and Footer', edit_tab_path(tab) ,class:"btn btn-outline-success col-md-5 handle" %>
+      </div>
+      <div class="pt-4 enabled-disabled pull-right">
+        <% if tab.enabled %>
+          <label class="switch handle">
+            <input type="checkbox" id="<%= tab.tab_type_id %>" checked>
+            <span class="slider round"></span>
+          </label>
+        <% else %>
+          <label class="switch handle">
+            <input type="checkbox" id="<%= tab.tab_type_id %>">
+            <span class="slider round"></span>
+          </label>
+        <% end %>
+      </div>
+    </li>
+  <% end %>
+</ul>

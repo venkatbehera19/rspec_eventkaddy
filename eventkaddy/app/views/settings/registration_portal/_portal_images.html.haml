@@ -1,0 +1,29 @@
+%table
+    - if @registration_portal_settings.setting_type.name == 'exhibitor_registration_portal_settings'
+        - event_file = @event_setting.exhibitor_registration_banner_event_file_id
+    - else
+        - event_file = @event_setting.registration_banner_event_file_id
+    - if (event_file!=nil) then
+        %tr
+            %td= image_tag(EventFile.find(event_file).path, :class=>'photo_preview')
+        %tr
+            %td= link_to('Delete', event_file_path(id: event_file, registration_banner_event_file_id: true), data: {:confirm => "Are you sure?"}, :method => :delete, params: { registration_banner_event_file_id: true }, class: "btn btn-outline-danger")
+        %tr
+            %td.text-break
+                Download your current banner photo: 
+                %br
+                = link_to EventFile.find(event_file).name, EventFile.find(event_file).path
+        %tr
+            %td  
+        %tr
+            %td
+                .field
+                    = label_tag "Upload a new Portal Banner:"
+                    = file_field_tag :portal_banner_file
+    - else
+        %tr
+            %td
+                .field
+                    = label_tag :portal_banner_file, "Choose a Portal Banner"
+                    %br
+                    = file_field_tag :portal_banner_file

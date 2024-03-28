@@ -1,0 +1,15 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event: 
+#   attendee: 
+#   survey: 
+#   gps_location: 9.99
+#   time_taken: 1
+
+# two:
+#   event: 
+#   attendee: 
+#   survey: 
+#   gps_location: 9.99
+#   time_taken: 1

@@ -1,0 +1,46 @@
+<%# Just include CSRF and application.js/css for pages which are not really %>
+<%# part of the CMS or portals %>
+<!DOCTYPE html>
+<html>
+    <head>
+      <title>EventKaddy</title>
+      <%= stylesheet_link_tag    "application" %>
+      <%= javascript_include_tag "application" %>
+      <%= csrf_meta_tag %>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <style>
+        .attendee-profile-form-label th {
+          color: #444;
+          font-size: 16px;
+        }
+        .attendee-profile-table td {
+          color: #444;
+          font-size: 16px;
+        }
+
+        .attendee-profile-form-input input {
+          color: #444;
+          font-size: 16px;
+          margin-bottom: 5px;
+        }
+
+        .attendee-profile-photo-button {
+          border-color: #ddd;
+          background-color: #fff;
+          color: #444;
+          padding: 12px;
+          border-width: 1px;
+          border-style: solid;
+          font-size: 16px;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+      </style>
+    </head>
+
+    <body>
+      <div class="container-fluid">
+        <%= yield %>
+      </div>
+    </body>
+</html>

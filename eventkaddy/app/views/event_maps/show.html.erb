@@ -1,0 +1,99 @@
+<h4 class="view-title">Map Details</h4>
+<%= link_to 'Edit', edit_event_map_path(@event_map) ,class:"btn btn-outline-success" %> <%= link_to 'Add Rooms to Map', "#{@event_map.id}/add_rooms" ,class:"btn btn-primary" %><br><br>
+
+<table class="table">
+<% if (@event_map.event_file!=nil) then %>
+<tr><th>Map Image</th>
+  <td><%= link_to @event_map.event_file.path do %>
+    <% if @event_map.event_file.cloud_storage_type_id.blank? %>
+        <%= image_tag(@event_map.event_file.path, :style=>"height: auto; width: 100%") %>
+    <% else %>
+        <%= image_tag(@event_map.event_file.return_authenticated_url()['url'], :style=>"height: auto; width: 100%") %>
+    <% end %>
+  <% end %></td></tr>
+<% end %>
+<tr><th>Map Name</th><td><%= @event_map.name %></td></tr>
+<tr><th>Map Type</th><td><%= @event_map.map_type.map_type unless @event_map.map_type.blank? %></td></tr>
+<% if @event_map.map_type.map_type == "Interactive Map" %>
+  <tr><th>Interactive Map Page</th><td><%= link_to "Website", "https://interactivemap.eventkaddy.net/?event_id=#{@event_map.event_id}" %></td></tr>
+<% end %>
+<% if @event_map.map_type&.map_type.eql?('External Map') %>
+  <tr><th>Address Description</th><td><%= @event_map.address_description %></td></tr>
+  <tr><th>External Map Url</th><td><a href="<%= @event_map.external_map_url %>"><%= @event_map.external_map_url %></a></td></tr>
+<% end %>
+</table>
+<br><br>
+
+
+<!-- <div style="text-align: end;"> -->
+<%#= label_tag :product_category%>
+<%#= select_tag :product_category, options_from_collection_for_select(ProductCategory.where(event_id: session[:event_id]), 'id', 'name') %>
+<!-- </div> -->
+
+<table id="location_mappings" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+<!--
+	<col width="200" />
+	<col width="100" />
+	<col width="35" />
+	<col width="35" />
+	<col width="35" />
+-->
+
+<thead>
+  <tr>
+    <th>Location Name</th>
+    <th>Type</th>
+    <th></th>
+  </tr>
+</thead>
+
+<tbody>
+<% @event_map.location_mappings.each do |location_mapping| %>
+  <tr>
+    <td><%= location_mapping.name %></td>
+     <td><%= location_mapping.location_mapping_type_name %></td>
+    <td class="table-actions">
+      <div class="dropdown">
+        <a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+          <i class="fa fa-ellipsis-v"></i>
+        </a>
+        <div class="dropdown-menu">
+          <%= link_to 'Show', location_mapping ,class:"btn dropdown-item text-info" %>
+          <%= link_to 'Edit', edit_location_mapping_path(location_mapping) ,class:"btn dropdown-item text-success" %>
+          <%= link_to 'Remove From Map', "/location_mappings/remove_association/#{location_mapping.id}", :confirm => 'Are you sure?', :method => :post ,class:"btn dropdown-item text-danger" %>
+          <%= select_tag :product, options_from_collection_for_select(Product.where(event_id: session[:event_id]), 'id', 'name', location_mapping.location_mapping_products.first&.product_id), class: 'location_mapping_product', include_blank: true, 'data-room': location_mapping.id %>
+        </div>
+      </div>
+      <div class="btn-group d-flex">
+        <%= link_to 'Show', location_mapping ,class:"btn btn-outline-info" %>
+        <%= link_to 'Edit', edit_location_mapping_path(location_mapping) ,class:"btn btn-outline-success" %>
+        <%= link_to 'Remove From Map', "/location_mappings/remove_association/#{location_mapping.id}", :confirm => 'Are you sure?', :method => :post ,class:"btn btn-outline-danger" %>
+        <% product_categories_id = ProductCategory.find_by(event_id: session[:event_id], iid: 'exhibitor_booth').id %>
+        <%= select_tag :product, options_from_collection_for_select(Product.where(event_id: session[:event_id], product_categories_id: product_categories_id), 'id', 'name', location_mapping.location_mapping_products.first&.product_id), class: 'location_mapping_product', include_blank: true, 'data-room': location_mapping.id %>
+      </div>
+    </td>
+  </tr>
+<% end %>
+</tbody>
+
+</table>
+
+<br />
+
+
+<script>
+  $( ".location_mapping_product" ).change(function() {
+    el = this  
+    location_mapping  = el.dataset.room
+    product = el.value
+    console.log(location_mapping, product)  
+      $.post("/location_mappings/location_mapping_product", {'location_mapping': {location_mapping, product}},
+        function (data, textStatus, jqXHR) {
+          if(data.message === 'nothing happened'){
+              el.value = ' '
+              alert('Something Went Wrong')
+          }
+        }
+      );
+  });
+</script>

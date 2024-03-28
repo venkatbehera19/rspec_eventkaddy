@@ -1,0 +1,28 @@
+Linode - basic outbound mail server setup
+
+
+	Ubuntu 10.04 ref doc:  http://library.linode.com/email/exim/send-only-mta-ubuntu-10.04-lucid
+
+	Ubuntu 12.04 ref doc:  https://library.linode.com/email/exim/send-only-mta-ubuntu-12.04-precise-pangolin
+
+	Before you begin installing and configuring the components described in this guide, please make sure you've followed our instructions for setting your hostname. Issue the following commands to make sure it is set properly:
+
+	hostname
+	hostname -f
+
+	apt-get install exim4-daemon-light mailutils
+
+	run command: dpkg-reconfigure exim4-config
+
+
+	IP-addresses to listen on for incoming SMTP connections:
+
+		127.0.0.1;
+
+
+	 Maildir format in home directory 
+
+
+	Accept the default "non-split" option for your mail configuration file. Enter at least one external email address (choose one that you check frequently) in addition to "root" when asked to specify postmaster mail recipients.
+
+

@@ -1,0 +1,30 @@
+<%= link_to 'Back', script_types_path,class:"btn btn-secondary" %>
+<%= link_to 'Edit', edit_script_type_path(@script_type) ,class:"btn btn-outline-success" %> 
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Button Label:</b>
+  <%= @script_type.name %>
+</p>
+
+<p>
+  <b>Url:</b>
+  <%= @script_type.url %>
+</p>
+
+
+<p>
+  <b>Post Request:</b>
+  <%= @script_type.post_request %>
+</p>
+
+<p>
+  <b>Job:</b>
+  <%= @script_type.job %>
+</p>
+
+<p>
+  <b>File Name (optional):</b>
+  <%= @script_type.file_name%>
+</p>

@@ -1,0 +1,64 @@
+<style>
+  .sortable{
+    min-height: 2.6rem;
+    border: 1px solid rgba(0, 0, 0, 0.13);
+    border-radius: 0.3rem;
+  }
+  .sorting-disabled{
+    background-color: #fac282ef;
+  }
+  .sponsor-medal{
+    max-width: 1.5rem;
+    height: auto;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js" integrity="sha512-jNDtFf7qgU0eH/+Z42FG4fw3w7DM/9zbgNPe3wfJlCylVDTT3IgKW5r92Vy9IHa6U50vyMz5gRByIu4YIXFtaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> 
+<h1>Product Category</h1>
+<div class="save-alert text-success" style="display: none;">Saved!</div>
+<div class="sponsor-type-container">
+  <div >
+    <ul id="global-sponsor-types" class="sortable list-group">
+      <% @all_product_category.each do |product_category| %>
+        <li id="<%= product_category.id %>" class="list-group-item">
+          <%= product_category.name %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+<script>
+  $('#global-sponsor-types').sortable({
+    connectWith: ".sortable",
+    stop: function(e, ui){
+      if (ui.item.hasClass('sorting-disabled') && ui.item.parent().attr('id') === 'global-sponsor-types'){
+        $(this).sortable('cancel');
+        return;
+      }
+      if (ui.item.parent().attr('id') === 'global-sponsor-types'){
+        if (window.confirm("Wants to change the order?")){
+          // console.log('first',ui.item)
+          $.post('/update_order_product_category', {
+            product_categories:  updatedEventSponsorLevelStates()
+          },
+            function (data, textStatus, jqXHR){
+              if (data.notice === 'ok'){
+                $('.save-alert').show().fadeOut(900);
+              }
+            }
+          )
+        }
+      }
+    }
+  })
+  function updatedEventSponsorLevelStates(){
+    let updatedStates = [];
+    $('#global-sponsor-types').children().each(function(){
+      updatedStates.push({
+        product_id: $(this).attr('id'),
+        order: $(this).index()
+      })
+    });
+    // console.log('updatedStates',updatedStates)
+    return updatedStates;
+  }
+</script>

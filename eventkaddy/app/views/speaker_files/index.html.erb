@@ -1,0 +1,80 @@
+<h4>Speaker Files for <%= @speaker.first_name+" "+@speaker.last_name %></h4>
+
+<% if (current_user.role? :trackowner) then %>
+  <%= link_to 'Back to Speaker', "/speakers/#{@speaker_id}" ,class:"btn btn-outline-secondary" %>
+<% elsif (current_user.role? :speaker) then %>
+  <%= link_to 'Back', "/speaker_portals/download_pdf" ,class:"btn btn-outline-secondary" %><br/><br/>
+<% else %>
+  <%= link_to 'Back to Speaker', "/speakers/#{@speaker_id}" ,class:"btn btn-outline-secondary" %>
+<% end %><br><br>
+
+
+
+<table id="pdf-index" cellpadding="0" cellspacing="0" border="0" class="table table-bordered">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Original</th>
+			<th>Signed Copy</th>
+  	</tr>
+	</thead>
+
+	<tbody>
+		<% @pdf_files.each do |pdf_file| %>
+			<% download_path = pdf_file.path %>
+			<% speaker_file = SpeakerFile.where(speaker_id:@speaker.id,original_document_id:pdf_file.id) %>
+
+	 		<tr>
+		   		<td><%= pdf_file.name %></td>
+		   		<td><%= link_to 'Download', "#{download_path}",:target => '_blank',class:"btn btn-outline-info" %></td>
+		   		<td class="table-actions">
+						<div class="btn-group d-flex">
+							<% if speaker_file.length > 0 %>
+									<%= link_to 'Download', "/speaker_portals/downloads/#{speaker_file.first.id}",:target => '_blank',class:"btn btn-outline-info" %><br><br>
+									<% if (@event_setting.nil?) || (@event_setting.speaker_files) then %>
+									<%= link_to 'Delete', "/speaker_files/#{speaker_file.first.id}", data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %>
+									<% end %>
+							<% else %>
+								<span class="missing btn" style="cursor: alias;">Signed Copy Required</span>
+							<% end %>
+							<% if !(@event_setting.nil?) && !(@event_setting.speaker_files) then %>
+								<span class="missing btn" style="cursor: alias;">NOTE: Speaker uploads have been disabled. <strong><a href="mailto:<%=@event_setting.support_email_address %>?subject=2014 Speaker Portal Inquiry" class="portal_email"><%= @event_setting.support_email_address %></a></strong></span>
+							<% else %>
+								<% if speaker_file.length < 1 %>
+									<%= link_to 'Upload Signed Copy', "/speaker_files/#{@speaker.id}/new/#{pdf_file.id}", class:"btn btn-primary"%>
+								<% else %>
+									<%= link_to 'Update Signed Copy', "/speaker_files/#{speaker_file.first.id}/edit", class:"btn btn-primary"%>
+								<% end %>
+							<% end %>
+						</div>
+
+						<div class="dropdown dropleft">
+							<a class="ellipse-style" data-toggle="dropdown">
+								<i class="fa fa-ellipsis-v"></i>
+							</a>
+							<div class="dropdown-menu">
+								<% if speaker_file.length > 0 %>
+										<%= link_to 'Download', "/speaker_portals/downloads/#{speaker_file.first.id}",:target => '_blank',class:"btn dropdown-item text-info" %>
+										<% if (@event_setting.nil?) || (@event_setting.speaker_files) then %>
+										<%= link_to 'Delete', "/speaker_files/#{speaker_file.first.id}", data: {:confirm => 'Are you sure?'}, class:"btn dropdown-item text-danger" %>
+										<% end %>
+								<% else %>
+									<span class="missing dropdown-item-text">Signed Copy Required</span>
+								<% end %>
+								<% if !(@event_setting.nil?) && !(@event_setting.speaker_files) then %>
+									<span class="missing dropdown-item-text">NOTE: Speaker uploads have been disabled. <strong><a href="mailto:<%=@event_setting.support_email_address %>?subject=2014 Speaker Portal Inquiry" class="portal_email"><%= @event_setting.support_email_address %></a></strong></span>
+								<% else %>
+									<% if speaker_file.length < 1 %>
+										<%= link_to 'Upload Signed Copy', "/speaker_files/#{@speaker.id}/new/#{pdf_file.id}", class:"btn dropdown-item text-primary"%>
+									<% else %>
+										<%= link_to 'Update Signed Copy', "/speaker_files/#{speaker_file.first.id}/edit", class:"btn dropdown-item text-primary"%>
+									<% end %>
+								<% end %>
+							</div>
+						</div>
+					</td>
+
+  	 		</tr>
+		<% end %>
+	</tbody>
+</table>

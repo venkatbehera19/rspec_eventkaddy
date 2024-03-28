@@ -1,0 +1,15 @@
+Here is a link to pulldown the topics:
+
+https://api.eventpoint.com/1.1/program/topics?apikey=1790c2be77524996a6ee34c5bd93cea7&code=wpc2011
+
+apikey:1790c2be77524996a6ee34c5bd93cea7
+code:wpc2011
+
+
+
+https://api.eventpoint.com/1.1/program/sessionchanges?apikey=1790c2be77524996a6ee34c5bd93cea7&code=wpc2011
+https://api.eventpoint.com/1.1/program/categories?apikey=1790c2be77524996a6ee34c5bd93cea7&code=wpc2011
+https://api.eventpoint.com/1.1/program/speakers?apikey=1790c2be77524996a6ee34c5bd93cea7&code=wpc2011
+
+
+65b890e4-16f4-df11-82f7-001ec953730b

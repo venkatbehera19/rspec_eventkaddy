@@ -1,0 +1,180 @@
+<!-- Begin Exhibitor Quick Add Modal -->
+
+<div id="quickAdd" class="modal hide fade" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <% @exhibitor = Exhibitor.new %>
+    <%= form_for(@exhibitor) do |f| %>
+
+    <% settings = Setting.return_cms_settings session[:event_id] %>
+
+    <% text_field = ->(col, label, options={}) {
+        unless settings.method("hide_exhibitor_form_#{col}").call
+          "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}</div>".html_safe
+        end
+    } %>
+
+    <% cktext_area = ->(col, label, options={}) {
+        unless settings.method("hide_exhibitor_form_#{col}").call
+          "<div class='form-group'>#{f.label col, label}#{f.cktext_area col, options}</div>".html_safe
+        end
+    } %>
+
+    <% check_box = ->(col, label) {
+        unless settings.method("hide_exhibitor_form_#{col}").call
+          f.label(col) { f.check_box(col) + " #{label}" } + "<br>".html_safe
+        end
+    } %>
+
+    <% select = -> (col, label, items, options={}) {
+        unless settings.method("hide_exhibitor_form_#{col}").call
+            "<div class='form-group'>#{f.label col, label}#{f.select col, items, options}</div>".html_safe
+        end
+    } %>
+
+
+    <div class="modal-content px-3 py-3 px-lg-5 py-lg-5">
+      <div class="modal-header">
+        <h3 id="myModalLabel">Creating Exhibitor</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      </div>
+      <div class="modal-header">
+        <div id='quick-add-successes'>Successfully Added Exhibitors:</div>
+      </div>
+      <div class="modal-body">
+        <table>
+            <tr><td>
+              <div class="field">
+                <%= label_tag :portal_logo_file, "Logo Image"%>
+                <%= file_field_tag :portal_logo_file, class:'clear-on-submit' %>
+              </div>
+            </td></tr>
+        </table>
+        <% unless Event.find(session[:event_id]).master_url.blank? %>
+            <div class="field" style="<%= 'display:none;' if settings.method("hide_exhibitor_form_online_url").call %>">
+                <%= label_tag :online_url do %>
+                    <%= check_box_tag :online_url, 1, {:checked => "checked"} %>
+                    Include Online Copy of Latest Exhibitor Logo
+                <% end %><br>
+            </div>
+        <% end %>
+
+          <div class="form-group">
+            <%= f.label :exhibitor_code, "Exhibitor Code" %>
+            <%= f.text_field :exhibitor_code, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :company_name, 'Company Name' %>
+            <%= f.text_field :company_name, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :url_web, 'URL Web' %>
+            <%= f.text_field :url_web, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :phone %>
+            <%= f.text_field :phone, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+              <%= f.label :fax %>
+              <%= f.text_field :fax, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+              <%= f.label :email %>
+              <%= f.text_field :email, class:'clear-on-submit form-control' %>
+          </div>
+          <!--get location_mappings for this event -->
+          <% unless settings.method("hide_exhibitor_form_location_mapping_id").call %>
+              <% @room_mapping_type = LocationMappingType.where(type_name:'Booth').first.id %>
+              <% @location_mappings = LocationMapping.where("location_mappings.mapping_type= ? AND event_id= ?",@room_mapping_type, session[:event_id]).order('location_mappings.name ASC') %>
+              <div class="field">
+                <%= label_tag(:select_location_mapping, "Booth:") %>
+               <%= f.collection_select(:location_mapping_id,@location_mappings, :id, :name, {include_blank: "Select Any Option"}, class: "form-control custom-select") %> <br /><br />
+              </div>
+          <% end %>
+          <a href="#extra-fields" class="btn-link" data-toggle="collapse">
+            Add more details to the exhibitors <i class="fa fa-plus"></i> <br><br>
+          </a>
+          <div class="collapse px-2" id="extra-fields">
+            
+            <%= text_field["logo", "Logo URL (use for storing logos online only)", class: "form-control"] %>
+
+            <%= check_box[:is_sponsor, "Is Sponsor"] %>
+
+            <% unless settings.method("hide_exhibitor_form_sponsor_type").call %>
+                <div class="field">
+                  <%= label_tag(:select_sponsor_level_type, "Sponsor Type:") %>
+                  <%= f.collection_select(:sponsor_level_type_id, SponsorLevelType.all, :id, :sponsor_type, {selected: SponsorLevelType.where(sponsor_type: "General").first.id},
+                   class: "form-control custom-select") %> <br>
+                </div>
+            <% end %>
+            <a href="#des-msg" class="btn-link" data-toggle="collapse">
+              Add Description and Message <i class="fa fa-plus"></i> <br><br>
+            </a>
+            <div class="collapse px-2" id="des-msg">
+              <%= cktext_area[:description, "Description", ckeditor:{toolbar: "Full"}] %>
+              <%= cktext_area[:message, "Message", ckeditor:{toolbar: "Simple"}] %>
+            </div>
+            <a href="#contact-address" class="btn-link" data-toggle="collapse">
+              Contact and Address Details <i class="fa fa-plus"></i> <br><br>
+            </a>
+            <div class="collapse px-2" id="contact-address">
+              <%= text_field["contact_email",  "Contact Email", class: "form-control"] %>
+              <%= text_field["address_line1", "Address Line 1", class: "form-control"] %>
+              <%= text_field["address_line2", "Address Line 2", class: "form-control"] %>
+              <%= text_field["city",          "City", class: "form-control"] %>
+              <%= text_field["state",         "State", class: "form-control"] %>
+              <%= text_field["zip",           "Zip", class: "form-control"] %>
+              <%= text_field["country",       "Country", class: "form-control"] %>
+              <%= text_field["toll_free", "Toll Free", class: "form-control"] %>
+              <%= text_field["contact_name",  "Contact Name", class: "form-control"] %>
+              <%= text_field["contact_title", "Contact Title", class: "form-control"] %>
+              <%= text_field["contact_name_two",  "Contact Name 2", class: "form-control"] %>
+              <%= text_field["contact_title_two", "Contact Title 2", class: "form-control"] %>
+              <%= text_field["contact_email_two", "Email 2", class: "form-control"] %>
+              <%= text_field["contact_mobile_two", "Mobile 2", class: "form-control"] %>
+            </div>
+            <a href="#social-media" class="btn-link" data-toggle="collapse">
+              Link Social Media Accounts <i class="fa fa-plus"></i> <br><br>
+            </a>
+            <div class="collapse px-2" id="social-media">
+              <%= text_field["url_twitter",   "Url Twitter", class: "form-control"] %>
+              <%= text_field["url_facebook",  "URL Facebook", class: "form-control"] %>
+              <%= text_field["url_linkedin",  "URL Linkedin", class: "form-control"] %>
+              <%= text_field["url_rss",       "URL RSS", class: "form-control"] %>
+              <%= text_field["url_instagram", "URL Instagram", class: "form-control"] %>
+              <%= text_field["url_youtube",   "URL YouTube", class: "form-control"] %>
+              <%= text_field["url_tiktok",    "URL TikTok", class: "form-control"] %>
+            </div>
+            <a href="#other" class="btn-link" data-toggle="collapse">
+              Tags and other Details <i class="fa fa-plus"></i> <br><br>
+            </a>
+            <div class="collapse px-2" id="other">
+              <%= check_box["unpublished", "Unpublished"] %>
+               
+              <%= check_box["unsubscribed",    "Unsubscribed"] %>
+              <%= text_field["token",          "Token", class: "form-control"] %>
+              <%= text_field["custom_fields",  "Custom Fields", class: "form-control"] %>
+              <%= text_field["tags_safeguard", "Tags Safeguard", class: "form-control"] %>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancel</button> <%= f.submit id:"quick-add-submit",class:"btn btn-primary" %>
+      </div>
+    </div>
+    <% end %>
+  </div>
+</div>
+  
+
+<script>
+    $('.modal-header > .close').on('click', function() { location.reload(); })
+    $('.modal-footer > .cancel').on('click', function() { location.reload(); })
+</script>
+
+<!-- End Exhibitor Quick Add Modal -->

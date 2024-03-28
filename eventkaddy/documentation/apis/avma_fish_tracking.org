@@ -1,0 +1,99 @@
+#+TITLE: AVMA Fish Tracking
+
+* Fish
+A company that does rfid (used to do beacons).
+
+Their plan is the push to us each attendee just once.
+
+We need to be able to handle potentially hundreds of connections very quickly
+
+need to read then update to not duplicate session codes
+
+we might be able to limit how many connections by filtering out attendee types who are useless
+especially if they don't send the connection at all
+
+* Load Test idea
+
+write a script that will hit the server multiple times, and then run that script with multiple cron tasks
+
+potentially about 3000 connections very quickly
+
+** Research
+What I have discovered from some brief research is that there are a lot of very specialized tools for managing simulation of multiple concurrent users with cookies session data and other complex scenarios, and a lot of output feedback for how well things are running, but those tools have a large learning curve that we aren't really looking for right now, and are scenario is much simpler and shouldn't need such complex tools (and may not even be helped with those tools).
+
+I spoke with DG about this and DG said it shouldn't really be necessary, we should just make sure we've got enough thin servers going.
+
+Probably what I will do is run a bare minimum load test from my laptop, just to see how many connections I could get in a minute with my machine alone. This should be a low cost quick and simple procedure that might give us some useful information. Unless I find something concerning, that may be all we can do, other than have multiple people from Event Kaddy each running a script from their laptop at the same time, or trying to run a script across multiple servers to simulate load (but that is already getting more time consuming and complex than is probably warranted).
+
+* Suggestions for Sessions from Fish
+** General Concept (D.B. meeting)
+need new table for this
+
+get pulled on viewing the page like favourites
+
+clean out yesterdays favourites
+
+need to keep suggestions for reporting later, so pull based on updated at
+
+Keeping in mind that we might want to implement suggestions ourselves in the future
+
+** Additional Ideas (D.G. meeting)
+
+Maybe a column for "reason" which can contain why the session was recommended. Even if fish doesn't
+implement this idea, it would be useful for our own build.
+
+session_recommendations event_id, session_id, session_code, reason, useful?, recommendation_source_type, recommendation_type (daily, persistent, etc)
+exhibitor_recommendations (possible future table)
+
+DG says types are good, because they offer us flexibility.
+Initially we may only have one type, but this gives a clear idea
+how to add additonal functionality if we return back to the feature.
+** Plan (E.G. refine into structured path)
+
+- [X] Add four new tables
+
+#+NAME: add tables
+#+BEGIN_SRC sh
+rails g model SessionRecommendation event_id:integer attendee_id:integer session_id:integer session_code:string reason:text useful:boolean recommendation_source_type_id:integer recommendation_persistence_type_id:integer
+rails g model ExhibitorRecommendation event_id:integer attendee_id:integer exhibitor_id:integer exhibitor_code:string reason:text useful:boolean recommendation_source_type_id:integer recommendation_persistence_type_id:integer
+rails g model RecommendationPersistenceType name:string
+rails g model RecommendationSourceType name:string
+rake db:migrate
+#+END_SRC
+
+- [X] add endpoint the proxy
+- [X] add the functionality of creating session suggestions
+- [X] add tests to proxy for the main scenarios you expect
+- [ ] make suggestions viewable from CMS via attendee show page
+- [ ] update external fish documentation with example
+- [ ] outline some ideas about how the feature should be implemented in app (as this task me be reassigned to me, depending on DG work load)
+
+* Push Attendee iAttend
+
+At the moment this is on the avmaproxy site. I have made a proxy key especially for Fish so they
+will only have access to the endpoints we wish them to have. The relevant files are:
+
+- [[https://github.com/dtgallant/lodestar/blob/avmaproxy-multiyear/sinatra-proxy-servers/app-avma2018.rb#L524-L555][AVMA Sinatra App 2018]]
+- [[https://github.com/dtgallant/lodestar/blob/avmaproxy-multiyear/sinatra-proxy-servers/modules/fish_api.rb][Fish API Module]]
+- [[https://github.com/dtgallant/lodestar/blob/avmaproxy-multiyear/sinatra-proxy-servers/tests/main.rb][Curl Tests]]
+
+The tests file assumes you have a thin server running on localhost:3000 and hits it with curl requests. You should only run it locally when the app is in dev mode, but it should be harmless even if you ran it in production. It is very barebones and uses the real database (either your local or the production one, however you have it setup in the app file).
+
+* Bergevin's Original Email Outlining Task
+I had a meeting today with AVMA and Fish (the RFID badge provider) to discuss implementing Fish's ability to track CE automatically as the attendees walk through the scanners in each room.
+
+As per DG's suggestion, they are fine with pushing the data to us.
+
+We need to build an API (similar to what we did for WJade) where every time an attendee is scanned it sends a data push to our API in order that we add the session to the comma delimted list of attended sessions in our attendees table.
+
+We would need an api that sends a reg id, and session code.
+
+The second part of the process is to build a new home button type in the app that is similar to the Favourites button where instead of reading favourites they are reading a list of recommended sessions and exhibitors.  This list would be updated each day and only show today's recommended sessions from Fish.
+
+In this case, we need an api that sends a reg id and a daily list of session codes (ie recommended sessions per Fish's algorithm to recommend sessions for attendees). And a list of exhibitor names /codes for the recommended exhibitor list.  They would push the data once a data after hours.
+
+We would need a new table in the database to support these recommended sessions and exhibitors.
+
+DG can handle the app changes.  Ed can you handle the database and API updates?
+
+We can setup a call to discuss further.

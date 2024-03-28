@@ -1,0 +1,38 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Product Purchase Details</h4>
+      <h5>Total Transactions Amount - $ <%= sprintf('%.2f', @amount_with_refund_money + (@amount_with_refund_money * 3)/100 ) %></h5>
+      <h5>Total Paid Amount - $ <%= sprintf('%.2f', @total_amount + (@total_amount * 3)/100 ) %></h5>
+      <h5>Total Refund Amount - $ <%= sprintf('%.2f', @total_refunded_amount + (@total_refunded_amount * 3)/100 ) %></h5>
+
+      <br>
+      <table class="table table-striped" id="products_table">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Total Number of purchased</th>
+            <th>Total Quantity</th>
+            <th>Total Product Amount </th>
+            <th>Total Order Amount</th>
+            <th>Total Paid Amount</th>
+            <th>Total Refund Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @result.each do |result| %>
+            <tr>
+              <td><%= result["name"] %></td>
+              <td><%= link_to("#{result["count"]}", product_path(result["products_id"])) %></td>
+              <td><%= result["total_quantity"] %></td>
+              <td>$<%= sprintf('%.2f', result["total_product_order_amount"]) %></td>
+              <td>$<%= sprintf('%.2f', result["total_paid_amount"]) %></td>
+              <td>$<%= sprintf('%.2f', result['total_amount']) %></td>
+              <td>$<%= sprintf('%.2f', result['total_refunded_amount']) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

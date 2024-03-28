@@ -1,0 +1,25 @@
+<h1>Listing users_organizations</h1>
+<%= link_to 'New Users organization', new_users_organization_path,class:"btn btn-primary" %> <br/><br/>
+<table>
+  <tr>
+    <th>User</th>
+    <th>Org</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @users_organizations.each do |users_organization| %>
+  <tr>
+    <td><%= users_organization.user_id %></td>
+    <td><%= users_organization.org_id %></td>
+    <td><%= link_to 'Show', users_organization ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_users_organization_path(users_organization) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', users_organization, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

@@ -1,0 +1,33 @@
+<div class="card d-block shadow-sm p-0  mb-3 bg-white rounded">
+  <div class="card-body pb-0">
+    <%= form.label :ios_app_icon do %>
+      <p class = "form-element-title card-title ">
+        App Icon
+        <span class="blockquote-footer">
+          (1024*1024, format: png)
+        </span>
+      </p>
+      <p class = "form-element-description card-subtitle">A unique image for your mobile application, and the first users see when they find the app on the <%=store_name%>.</p>
+    <%end%>
+  </div>
+  <div>
+    <%= form.file_field :ios_app_icon, id: "ios-icon-pond", class: "ios_icon_pond"%>
+  </div>
+</div>
+
+<div class="card d-block shadow-sm p-0  mb-3 bg-white rounded">
+  <div class="card-body pb-0">
+    <%= form.label :ios_splash_screen do %>
+      <p class = "form-element-title card-title ">
+        Splash Screen 
+        <span class="blockquote-footer">
+        (2732*2732, format: png)
+        <span>
+      </p>
+      <p class = "form-element-description card-subtitle">Splash screens to notify the user that the program is in the process of loading.</p>
+    <%end%>
+  </div>
+  <div>
+    <%= form.file_field :ios_splash_screen, id: "ios-splash-pond", class: "ios_splash_pond"%>
+  </div>
+</div>

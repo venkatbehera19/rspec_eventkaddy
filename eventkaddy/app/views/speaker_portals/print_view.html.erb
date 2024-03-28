@@ -1,0 +1,20 @@
+<body onload="window.print();">
+<%= link_to "Back to My Sessions", "/speaker_portals/sessions" %>
+
+<h3><%=@speaker.honor_prefix%> <%=@speaker.first_name%> <%=@speaker.middle_initial%> <%=@speaker.last_name%> <%=@speaker.honor_suffix%>'s Sessions</h1>
+<hr size=2>
+<% @sessions.each do |session| %>
+
+<span style="color:#336699; font: 12px 'Trebuchet MS', Arial, Helvetica, sans-serif; font-weight: bold;"><%= session.date.strftime('%A, %B %d, %Y') %> </span><br><br>
+
+<span style="font-family: 'Segoe UI',Arial,Helvetica,sans-serif; font: 14px 'Trebuchet MS', Arial, Helvetica, sans-serif;"><%= session.title %></span> <br>
+<span class="details" style="color: #666; font-size: 10px; font-family: 'Segoe UI',Arial,Helvetica,sans-serif;font-weight: bold;"><%=@speaker.honor_prefix%> <%=@speaker.first_name%> <%=@speaker.middle_initial%> <%=@speaker.last_name%> <%=@speaker.honor_suffix%><br>
+	<b>Moderators</b>: <% session.sessions_speakers.each do |mod| %>
+							<% if (mod.speaker_type_id==6) then %>
+							 <%= mod.speaker.honor_prefix+" "+mod.speaker.first_name+" "+mod.speaker.middle_initial+" "+mod.speaker.last_name+" "+mod.speaker.honor_suffix+" | " %>
+							<% end %>
+						<% end %><br>
+<b>Session Code:</b> <%= session.session_code %> |  <b>Time:</b> <%= session.start_at.strftime('%I:%M %p') %> - <%= session.end_at.strftime('%I:%M %p') %> </span><br>
+<hr size=2>
+<% end %>
+</body>

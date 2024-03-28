@@ -1,0 +1,17 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   group_id: 1
+#   render_url: MyString
+#   name: MyString
+#   icon_entry: MyString
+#   content: MyText
+#   position: 1
+
+# two:
+#   group_id: 1
+#   render_url: MyString
+#   name: MyString
+#   icon_entry: MyString
+#   content: MyText
+#   position: 1

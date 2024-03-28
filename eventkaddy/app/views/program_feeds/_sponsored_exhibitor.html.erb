@@ -1,0 +1,14 @@
+<h5>Sponsored</h5>
+<div class="row py-3" id="sponsored-exhibitor-cards">
+  <%= render partial: 'exhibitors_list', locals: {exhibitors: @sponsored_exhibitors} %>
+</div>
+<div class="pagination-buttons row justify-content-between p-3">
+  <button class="btn btn-outline-primary sponsored-exhibitor-pagination" type="button" id="prev_sponsored_exhibitors">
+    <i class="fa fa-angle-left"></i> 
+  </button>
+  <button class="btn btn-outline-primary sponsored-exhibitor-pagination" type="button" id="next_sponsored_exhibitors">
+    <i class="fa fa-angle-right"></i>
+  </button>
+</div>
+<%= hidden_field_tag :total_pages_sponsor, @total_pages_sponsor %>
+<hr>

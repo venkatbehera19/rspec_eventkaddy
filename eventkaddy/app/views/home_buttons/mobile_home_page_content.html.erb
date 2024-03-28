@@ -1,0 +1,134 @@
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Slider js lib -->
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.12/dist/js/splide.min.js"></script>
+<!-- Slider css lib -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@3.6.12/dist/css/splide.min.css">
+
+<link rel="stylesheet" href="/non_pipeline_assets/mobile_home_page.css">
+
+<link rel="stylesheet" href="<%= @mobile_app_css ? @mobile_app_css.return_authenticated_url()['url'] : nil %>">
+<style>
+#hbgroup-panel{
+  z-index: initial !important;
+}
+</style>
+
+<body id="home_page_body" style="background: url(<%= @bg_image_file ? @bg_image_file.return_authenticated_url()['url'] : nil %>) center; background-size: auto;">
+  
+  <div id="header">
+    <div id="back"></div>
+      <div id="extended-menu-midleft-button"></div>
+      <div id="extended-menu-button"></div>
+      <div id="extended-menu-midright-button"></div>
+      <div id="header-title" align="center" style="background: url(<%= @event_setting.event_file_portal_logo&.path %>) center no-repeat;"></div>
+  </div>
+  <div id="header-border"></div>
+
+  <div id="homepage-ad">
+    <div id="banner_carousel" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        <% index = 0 %>
+        <% @banners.each_with_index do |banner| %>
+          <% unless banner.event_file.blank? %>
+            <div class="carousel-item <%= (index.eql?(0) ? "active" : "") %>">
+              <%= image_tag banner.event_file.return_authenticated_url()['url'], style: 'width: 100%; max-height: 51px;', class: "d-block" %>
+            </div>
+            <% index += 1 %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div id="content">
+    <div id="hbgroup-list" class="main-page">
+      <div id="hbgroup-panel">
+        <div class="splide" style="z-index: 30;">
+          <div class="splide__track">
+            <ul class="splide__list">
+              <% @home_buttons.each_slice(9) do | batch | %>
+                <li class="splide__slide">
+                  <div class="row">
+                    <% batch.each do |home_button| %>
+                      <div class="col-4 margin-v">
+                        <div class="home-btns text-center">
+                          <% if !home_button.event_file.blank? %>
+                            <% if home_button.event_file.cloud_storage_type_id.blank? %>
+                              <%= image_tag(home_button.event_file.path) %>
+                            <% else %>
+                              <%= image_tag(home_button.event_file.return_authenticated_url()['url']) %>
+                            <% end %>
+                          <% else %>
+                             <%= image_tag("") %>
+                          <% end %>
+                          <div class="btn-name hbgroup-list-item-text"><%= home_button.name %></div>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="hbgroup-list-footer">
+          <ul class="pagination pagination-sm d-inline-flex mx-auto my-0">
+          </ul>
+          <div id="banner_carousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+              <% index = 0 %>
+              <% @footer_banners.each_with_index do |banner| %>
+                <% unless banner.event_file.blank? %>
+                  <div class="carousel-item <%= (index.eql?(0) ? "active" : "") %>">
+                    <%= image_tag banner.event_file.return_authenticated_url()['url'], style: 'width: 100%; max-height: 14%;', class: "d-block" %>
+                  </div>
+                  <% index += 1 %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  var splide = new Splide( '.splide', 
+  { type: 'slide',
+    width: '100vw',
+    arrows:  false,
+    pagination: false,
+  } );
+
+  splide.on('moved', function(data){
+    $('.pagenav.active').removeClass('active');
+    $('.pagenav-' + (data + 1)).addClass('active');
+  })
+
+  //Setting custom pagination buttons
+  let numberOfButtons = $('.splide__slide').length;
+  for(let i = 0; i < numberOfButtons; i++){
+    let html = '<li class="page-item pagenav pagenav-' + (i + 1) + ' ' + (i === 0 ? 'active': '') + '">' +
+    '<a class="page-link">' + (i + 1) + '</a>' +
+    '</li>';
+    $('#hbgroup-list-footer .pagination').append(html);
+  }
+
+  splide.mount();
+  $('.pagenav').on('click', function(){
+    let index = $('.pagenav').index(this);
+    splide.go(index);
+    $('.pagenav.active').removeClass('active');
+    $(this).addClass('active');
+  });
+</script>

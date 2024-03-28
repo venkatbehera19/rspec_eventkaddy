@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  event_file: one
+  name: MyString
+  filename: MyString
+  width: 1
+  height: 1
+  map_type: one
+
+two:
+  event: one
+  event_file: one
+  name: MyString
+  filename: MyString
+  width: 1
+  height: 1
+  map_type: two

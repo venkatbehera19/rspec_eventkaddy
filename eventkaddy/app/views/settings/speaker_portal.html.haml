@@ -1,0 +1,136 @@
+:javascript
+    $(function() {
+        var checkTrue = function() { $(this).children('input')[1].checked = true; };
+        var checkFalse = function() {
+            $(this).children('input')[0].value = 0;
+            $(this).children('input')[1].checked = false;
+        };
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true
+        });
+    });
+
+:css
+    #accordion {
+       margin-top:10px;
+       margin-bottom:10px;
+    }
+    .acc-div {
+        padding:10px;
+    }
+%h4 Speaker Portal Settings
+= link_to 'Speaker Session Form', '/settings/speaker_portal/session_form', class:'btn btn-primary'
+= link_to 'Speaker Other tags', '/settings/speaker_portal/other_tags', class: 'btn btn-primary'
+= link_to 'Speaker Other Keywords', '/settings/speaker_portal/other_session_keywords', class: 'btn btn-primary'
+
+%br/
+%br/
+.bg-light.custom-border.px-2.py-1
+
+    #accordion
+        %h4 Portal Images
+        .acc-div
+            %h4 Banner
+            = form_for @event_setting, :html => { :multipart => true, :method => :post }, :url => '/settings/update_speaker_portal_banner' do |f|
+                %table
+                    - if (@event_setting.speaker_banner_event_file_id!=nil) then
+                        - efile = EventFile.where("id= ?",@event_setting.speaker_banner_event_file_id).first
+                        - if efile.cloud_storage_type_id
+                            - epath = efile.return_authenticated_url()['url']
+                            %tr
+                                %td= image_tag(epath, :class=>'photo_preview')
+                            %tr
+                                %td  
+                            %tr
+                                %td{style: "word-break: break-word; white-space: normal;"}
+                                    Download your current banner photo: #{link_to efile.name, epath, target:'_blank'}
+                        - else
+                            %tr
+                                %td= image_tag(efile.path, :class=>'photo_preview')
+                            %tr
+                                %td  
+                            %tr
+                                %td{style: "word-break: break-word; white-space: normal;"}
+                                    Download your current banner photo: #{link_to efile.name, efile.path}
+                        %tr
+                            %td  
+                        %tr
+                            %td
+                                .field
+                                    = label_tag "Upload a new Portal Banner:"
+                                    = file_field_tag :portal_banner_file
+                    - else
+                        %tr
+                            %td
+                                .field
+                                    = label_tag :portal_banner_file, "Choose a Portal Banner"
+                                    %br
+                                    = file_field_tag :portal_banner_file
+                %br
+                %br
+                = f.submit 'Update Speaker Portal Banner', class:'btn btn-primary'
+        %h4 General configurations
+        .acc-div
+            = form_for(@event_setting, :html => { :multipart => true }, :url => '/settings/update_event_settings', :method => "put"   ) do |f|
+                = f.label :sessions_editable do
+                    = f.check_box :sessions_editable
+                    Speakers Can Edit Session Titles, Descriptions, Session Polls
+                %br/
+                = f.label :speaker_details_editable do
+                    = f.check_box :speaker_details_editable
+                    Speakers Can Edit Profiles
+                %br/
+                = f.label :speaker_files do
+                    = f.check_box :speaker_files
+                    Speakers Can Upload Files
+                %br/
+                = f.label :session_files do
+                    = f.check_box :session_files
+                    Speakers Can Create Session Files
+                %br/
+                = f.label :av_requests do
+                    = f.check_box :av_requests
+                    Speakers Can Request Audio/Visual Equipment
+                %br/
+                = f.submit "Update" ,class:"btn btn-primary"
+        %h4 Form Fields
+        .acc-div
+            =render "settings/speaker_portal/form_fields"
+        %h4 Session Form Fields
+        .acc-div
+            =render "settings/speaker_portal/session_form_fields"
+        %h4 Configure Program Types
+        .acc-div
+            =render "settings/speaker_portal/configure_program_types"
+        %h4 Portal AV Request Items
+        .acc-div
+            =render "settings/speaker_portal/select"
+        %h4 Portal Tabs
+        .acc-div
+            =render "settings/speaker_portal/edit_event_tabs"
+        %h4 Required Data
+        .acc-div
+            =render "settings/speaker_portal/edit_requirements"
+:javascript
+    $("#submit_av_list_item").on("click", function(){
+        //console.log('click');
+        if ($('#new_av_list_item').val() == "") return;
+        $.ajax({
+            type:        "POST",
+            url:         "/events_av_list_items/create",
+            dataType:    "JSON",
+            contentType: 'application/json',
+            data:        JSON.stringify({ "name": $('#new_av_list_item').val() }),
+            success:     function(data) {
+                if (data.status) {
+                    $('#av_list_item_ids').append(
+                        '<option value="' + data.id + '" selected="selected">' + data.name + '</option>'
+                    )
+                } else {
+                    alert( data.message )
+                }
+            },
+            error: function() { alert('Something went wrong.'); console.log('ajax post error') }
+        });
+    });

@@ -1,0 +1,76 @@
+
+begin
+  flare_path = Rails.root.join('config','flare_database.yml')
+  raise "flare database configuration not found." unless File.exist? flare_path
+  dbh = Mysql2::Client.new( YAML::load(File.open(flare_path))["prod"] )
+
+  wb = xlsx_package.workbook
+
+  wb.styles do |s|
+    black_cell = s.add_style :bg_color  => "00",
+                             :fg_color  => "FF",
+                             :sz        => 14,
+                             :alignment => { :horizontal=> :center }
+
+    heads = [
+      "Post Title",
+      "Handle",
+      "Account Code",
+      "Type",
+      "Number of Likes",
+      "Number of Comments",
+    ]
+
+    style = heads.map {|h| black_cell }
+
+    # to_i to prevent injection; not much can be done with a number; that
+    # event id is already coming from session[:event_id]
+    results = dbh.query("
+        SELECT title_short,
+               user_handle,
+               account_code,
+               COUNT(comments.id) AS comment_count,
+               COUNT(likes.id) AS like_count,
+               flare_file_types.name AS type_name
+        FROM posts
+        LEFT OUTER JOIN attendees        ON attendees.id        = posts.attendee_id
+        LEFT OUTER JOIN likes            ON likes.post_id       = posts.id
+        LEFT OUTER JOIN comments         ON comments.post_id    = posts.id
+        LEFT OUTER JOIN flare_files      ON flare_files.id      = posts.flare_file_id
+        LEFT OUTER JOIN flare_file_types ON flare_file_types.id = flare_files.flare_file_type_id
+        WHERE posts.event_id=#{@event_id.to_i}
+        GROUP BY posts.id
+        ORDER BY like_count DESC;
+    ")
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: results.count)
+      @job.write_to_file
+    end
+
+    wb.add_worksheet(name: "Post Data") do |sheet|
+      sheet.add_row heads, :style => style
+      results.each { |p|
+        row = [
+          p["title_short"],
+          p["user_handle"],
+          p["account_code"],
+          p["type_name"],
+          p["like_count"],
+          p["comment_count"]
+        ]
+        sheet.add_row row
+        @job.plus_one_row if @job
+        sheet.column_widths *row.map{ |i| 30 }
+      }
+    end
+
+  end
+
+rescue Mysql2::Error => e
+  puts "Error code: #{e.errno}"
+  puts "Error message: #{e.error}"
+  puts "Error SQLSTATE: #{e.sqlstate}" if e.respond_to?("sqlstate")
+ensure
+  dbh.close if dbh
+end

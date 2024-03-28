@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+  <meta charset="utf-8">
+  <title>Exhibitor Product Information</title>
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_include_tag "application" %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <style>
+    exhibitor_product_url {
+      white-space: pre;
+      white-space: pre-wrap;
+      white-space: pre-line;
+      white-space: -pre-wrap;
+      white-space: -o-pre-wrap;
+      white-space: -moz-pre-wrap;
+      white-space: -hp-pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+
+  <body style="background-color:#FAFAFA; padding:0px;">
+
+    <div id="exprod" class="container-fluid center-block">
+
+      <div class="row-fluid">
+        <%#= image_tag("/event_data/48/exhibitor_product_event_logo/header.png") %>
+        <% if @exhibitor.event_file %>
+          <%= image_tag(@exhibitor.event_file.path, class:'exprod-image') %>
+        <% else %>
+          <% unless @exhibitor.company_name.blank? %>
+            <h2 class="exhibitor-product-headers"><%= CGI.unescapeHTML(@exhibitor.company_name) %></h2>
+          <% end %>
+        <% end %>
+        <% unless @exhibitor.location_mapping.blank? %>
+         <h3 class="exhibitor-product-headers">Booth # <%= CGI.unescapeHTML(@exhibitor.location_mapping.name) %></h3>
+        <% end %>
+      </div>
+
+       <div class="card mb-3">
+          <% if @exhibitor_product.event_file_product_image %>
+            <%= image_tag(@exhibitor_product.event_file_product_image.path, alt:'EXhibitor Product', class:'card-img-top') %>
+          <% else %>
+            <%= image_tag('/defaults/exhibitor_product/exhibitor_product.png') %>
+          <% end %>
+          <div class="card-body">
+            <h2 class="card-title"><%= CGI.unescapeHTML(@exhibitor_product.name) %></h2>
+            <p class="card-text"> <%= sanitize @exhibitor_product.description, tags: %w(p a br b i span div li ul), attributes: %w(href) %> </p>
+          </div>
+          <div class="exprod-res list-group list-group-flush" style="padding:1.25rem">
+            <% unless @exhibitor_product.product_url.blank? %>
+              <h3 class="card-title">Resources</h3>
+              <p class="exhibitor_product_url">Product: <%= link_to @exhibitor_product.product_url, "#{@exhibitor_product.product_url}" %></p>
+            <% end %>
+
+            <% unless @exhibitor_product.youtube_url.blank? %>
+              <% if @exhibitor_product.youtube_url.include? "https://" %>
+                <iframe src="https://www.youtube.com/embed/<%=@exhibitor_product.youtube_url.split("=").last%>"></iframe>
+              <% else %>
+                <iframe src="http://www.youtube.com/embed/<%=@exhibitor_product.youtube_url.split("=").last%>"></iframe>
+              <% end %>
+
+            <% end %>
+          </div>
+
+          <div class="card-body">
+            <h3 class="card-title">Contact Information                  </h3>
+            <% unless @exhibitor.company_name.blank? %>
+              <p> <%= CGI.unescapeHTML(@exhibitor.company_name)                       %> </p>
+            <% end %>
+            <p> <%= @exhibitor.address_line1 unless @exhibitor.address_line1.blank? %> </p>
+            <p> <%= @exhibitor.address_line2 unless @exhibitor.address_line2.blank? %> </p>
+            <p> <%= "#{@exhibitor.city}, #{@exhibitor.state}, #{@exhibitor.zip}" unless @exhibitor.city.blank? || @exhibitor.state.blank? || @exhibitor.zip.blank? %> </p>
+            <p> <%= number_to_phone(@exhibitor.phone, area_code: true) unless @exhibitor.phone.blank?   %> </p>
+            <p> <%= mail_to(@exhibitor.email)                          unless @exhibitor.email.blank?   %> </p>
+            <p> <%= link_to(@exhibitor.url_web)                        unless @exhibitor.url_web.blank? %> </p>
+          </div>
+
+        </div>
+
+    </div>
+
+  </body>
+
+</html>
+

@@ -1,0 +1,57 @@
+<% if speakers.present? %>
+	<% speakers.each do |speaker| %>
+		<div class="col-lg-4 col-md-5 col-sm-6 col-12 my-2">
+			<%= link_to "/#{params[:event_id]}/program/speaker/#{speaker.id}", class: "speaker-card d-flex py-2 px-2" do %>
+				<div class="speaker-image">
+				<% if speaker.event_file_photo %>
+					<% url = speaker.event_file_photo.return_authenticated_url["url"] rescue '' %>
+					<%= image_tag '/defaults/avatar.png', alt: "Profile pic", data: {original: url}, class: "speaker-profile-pic mt-3 lazyloaded" %>
+				<% else %>
+					<%= image_tag '/defaults/avatar.png', alt: "Profile pic", class: "speaker-profile-pic mt-3" %>
+				<% end %>       
+				</div>
+				<div class="speaker-basic-info ml-2">
+					<div class="mt-3"><b> <%= speaker.full_name %> </b></div>
+					<div class="mt-1" style="font-size: 0.8rem;"><%= speaker.title %></div>
+					<span class="speaker-company mt-1"><%= speaker.company %></span>
+				</div>
+			<% end %>
+			<% if @current_attendee %>
+				<div class="speaker-favourite">
+					<% if ( speaker.sessions.ids.map(&:to_s) -  @sessions_attendees_ids).empty? %>
+						<i class="fa fa-star text-danger make-favourite" aria-hidden="true" data-speaker="<%= speaker.id %>" data-favourite="true"></i>
+					<% else %>
+						<i class="fa fa-star-o make-favourite" aria-hidden="true" data-speaker="<%= speaker.id %>" data-favourite="false"></i>
+					<% end %>
+				</div>
+			<% end %>
+		</div>
+	<% end %>
+<% else %>
+		<div class="no-record">
+			<p class="display-4 text-secondary font-italic">No Speaker Found</p>
+		</div>
+<% end %>
+
+<%= hidden_field_tag :total_pages, @total_pages %>
+
+<button onclick="topFunction()" id="topBtn" title="Go to top"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+
+
+<style type="text/css">
+	.speaker-image canvas {
+			height: 8rem;
+			width: 8rem;
+			border-radius: 50%;
+	}
+	.speaker-favourite{
+    position: absolute;
+    right: 30px;
+    font-size: 20px;
+    top: 20px;
+	}
+  .make-favourite {
+    cursor: pointer;
+  }
+</style>
+

@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  home_button: one
+  image_event_file: one
+  name: MyString
+  description: MyText
+  custom_list_type: one
+
+two:
+  event: one
+  home_button: two
+  image_event_file: two
+  name: MyString
+  description: MyText
+  custom_list_type: two

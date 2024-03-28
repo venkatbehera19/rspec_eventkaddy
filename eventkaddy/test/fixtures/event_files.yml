@@ -1,0 +1,17 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   event_id: 1
+#   name: MyString
+#   size: 1
+#   mime_type: MyString
+#   path: MyString
+#   event_file_type_id: 1
+
+# two:
+#   event_id: 1
+#   name: MyString
+#   size: 1
+#   mime_type: MyString
+#   path: MyString
+#   event_file_type_id: 1

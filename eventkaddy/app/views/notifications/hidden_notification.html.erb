@@ -1,0 +1,28 @@
+<%= form_for(
+    @notification,
+    :url => "/notifications/create_hidden_notification",
+    :html => { :class => "bg-light custom-border px-3 py-3" }
+) do |f| %>
+
+    <h3>Hidden Notifications Form</h3>
+    <% if @notification.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@notification.errors.count, "error") %> prohibited this notification from being saved:</h2>
+
+            <ul>
+                <% @notification.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <div class='form-group'>
+        <%= label_tag :type_name, "Hidden Notification Type" %>
+        <%= select_tag :type_name, options_for_select(@types), class: "custom-select"  %>
+    </div>
+
+    <div class="actions">
+        <%= f.submit "Sumbit", class: "btn btn-primary", confirm: "Are you sure?" %>
+    </div>
+<% end %>

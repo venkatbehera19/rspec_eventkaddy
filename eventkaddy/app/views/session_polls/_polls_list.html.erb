@@ -1,0 +1,30 @@
+<style>
+  .updatePollSession {
+    width: 105px !important;
+  }
+
+  .operationsBtn {
+    width: 75px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+  }
+
+</style>
+<div class="list-group list-group-flush" id = "simple-list">
+  <% session.reload.poll_sessions.each do |poll| %> 
+    <li id="sessionPollLi-<%=session.id%>-<%=poll.id%>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-toggle="modal" data-target="#pollModal-<%=poll.id%>">
+      <%=poll.title%>
+      <div class ="d-flex btnWrapper" id="containerDiv-<%=poll.id%>">
+        <% if poll.activate_history == 0 %>
+          <%= link_to 'Edit',edit_moderator_session_poll_path(poll.id), class:"btn btn-warning operationsBtn mr-1 getRequestButton", id: "editBtn-#{poll.id}"%>
+        <% else %>
+          <%= link_to "Reset", moderator_session_poll_restore_path(poll.id), class:"btn btn-danger operationsBtn mr-1", method: :post, remote: true, id: "resetBtn-#{poll.id}", data: { confirm: "Are you sure you want to reset this Session Poll?" }%>
+        <% end %>
+        <%= link_to 'Show',moderator_session_poll_path(poll.id), class:"btn btn-info operationsBtn mr-1 getRequestButton" %>
+        <% temp_active_poll = (active_poll && poll.id == active_poll.id) %>
+        <%= link_to temp_active_poll ? "Deactivate" : "Activate",moderator_portals_update_session_poll_status_path(poll_id: poll.id, session_id: session.id),class: "btn btn-primary mr-1 btn-wrap-text operationsBtn updatePollSession #{ temp_active_poll ? 'activated-btn' : "" }", id: "a-switch-#{poll.id}",data: {poll_id: poll.id, session_id: session.id},method: :post, remote: true %>
+      </div> 
+    </li>
+  <% end %>
+</div>

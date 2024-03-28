@@ -1,0 +1,86 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+  black_cell_left_align = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14
+
+  heads = [ 'ID', 'Position', 'Name', 'Enabled',
+    'Type', 'External Link', 'Survey ID', 'Attendee Type' ]
+
+  wb.add_worksheet(name: "Home Button Data") do |sheet|
+
+    sheet.add_row [ "Home Button Import Instructions:" ],
+                  style: black_cell_left_align
+    sheet.merge_cells "A1:H1"
+    instructions = <<-INSTRUCTIONS
+The ID column is for updating existing records. You need never modify it.
+If blank, a new home button or custom list item will be created. Therefore,
+take care to download the latest home buttons export before modifying
+their data, so that the ID will be populated and you will not accidentally
+create new versions of records you only wanted to modify.
+
+The following Types are permissible:
+
+"Sessions", "Speakers", "Exhibitors", "Maps", "Notifications", "Favourites", 
+"Settings", "Social", "Custom List", "Attendees", "Notes", "Messaging",
+"Photo", "Whats On Now", "External", "External Popup", "Game",
+"QA Sessions", "Gallery Photo Uploader", "Exhibitor Game", "Photo Gallery",
+"External Link", "Barcode Scanner", "Attendee Profile", "Daily Questions",
+"Scavenger Hunt", "Survey"
+
+If the type is a Custom List, Custom List Items can be added in the table
+below Home Buttons. You will not be able to add Custom List Items for a
+Custom List which does not yet have an ID (therefore you will have to 
+upload the sheet once, download it to populate the Home Button IDs, add 
+your Custom List Items, and upload it again for any new Home Button which 
+is a Custom List).
+
+The following Attendee Types are permissable.
+"All", "Standard Attendee", "Speaker", "Guest", "Exhibitor", "Client", "Moderator", "Admin"
+
+Possible Survey Ids:
+
+#{Survey.select("id, title")
+  .where(event_id:@event_id)
+  .map{ |s| "#{s.id}: #{s.title}" }
+  .join(", ") }
+    INSTRUCTIONS
+    sheet.add_row [ instructions ]
+    17.times { sheet.add_row [] }
+    sheet.merge_cells "A2:D18"
+
+    sheet.add_row [ "Home Buttons" ], style: black_cell_left_align
+    sheet.add_row heads, style: heads.map { |h| black_cell }
+
+    HomeButton
+      .where(event_id:@event_id)
+      .order('enabled DESC, position')
+      .each do |hb|
+        row = [:id, :position, :name].map {|m| hb.send m }
+        # gotcha: << resolves before ternary unless explicitly told
+        row << (hb.enabled === false ? 'false' : 'true')
+        row << HomeButtonType.find(hb.home_button_type_id).name
+        row.concat [:external_link, :survey_id].map {|m| hb.send m }
+        type = AttendeeType.where(id:hb.attendee_type_id).first
+        row << ( type && type.name || "All" )
+        sheet.add_row row
+    end
+
+    sheet.add_row [ "Custom List Items" ],
+                  style: black_cell_left_align
+
+    sheet.add_row [ "ID", "Home Button ID", "Position", "Title", "Content" ],
+                  style: heads.map { |h| black_cell }
+
+    CustomListItem
+      .where(event_id: @event_id)
+      .order('custom_list_id, position')
+      .each do |cli|
+        row = [ cli.id, cli.custom_list.home_button_id ]
+        row = row.concat [:position, :title, :content].map {|m| cli.send m }
+        sheet.add_row row
+      end
+
+    sheet.column_widths *( 1..7 ).map{ |n| 20 }
+  end
+end

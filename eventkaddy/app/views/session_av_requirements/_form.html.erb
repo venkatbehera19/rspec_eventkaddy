@@ -1,0 +1,39 @@
+<%= form_for(@session_av_requirement, :html => { :multipart => true, :class=>"form-horizontal well" } ) do |f| %>
+
+  <% if @session_av_requirement.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@session_av_requirement.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+      <ul>
+      <% @session_av_requirement.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+    <%= f.hidden_field :session_id, :value => @session_id %>
+  </div>
+
+  <div class="field">
+  <%= label_tag(:select_av_list_item, "Select Request:") %>
+  <%= f.collection_select(
+      :av_list_item_id,
+      EventsAvListItem.select('*, name').where(event_id: session[:event_id]).joins(:av_list_item).order(:name),
+      :av_list_item_id,
+      :name
+  ) %>
+    <br><br>
+  </div>
+
+  <div class="field">
+    <%= f.label :additional_notes %>
+    <%= f.text_area :additional_notes %><br /><br />
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Submit", class:"btn btn-primary"   %>
+  </div>
+<% end %>

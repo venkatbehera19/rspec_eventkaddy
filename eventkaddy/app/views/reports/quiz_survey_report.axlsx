@@ -1,0 +1,82 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+def add_basic_info sheet, survey
+  sheet.add_row ["#{survey.title}"],       style: @black_cell, :height => 30
+  sheet.add_row ["#{survey.description}"], style: @black_cell, :height => 30
+end
+
+def add_headers sheet, questions
+  style = []
+  heads = [
+    'Registration ID',
+    'Attendee Name',
+    "Correct Answers"
+  ]
+  questions.map {|q| heads << q }
+  heads << "Response Last Updated At"
+  heads << "(Local Time) Response Last Updated At"
+  heads.each {|h| style << @black_cell }
+  sheet.add_row heads, :style => style
+end
+
+survey_type_id = SurveyType.where(name:'Daily Questions').first.id
+
+wb.styles do |style|
+  @black_cell = style.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+  @bold_cell  = style.add_style :sz => 16
+end
+
+utc_offset = Event.find( @event_id ).utc_offset || "+00:00"
+
+if @job
+  @job.update!(
+    status: "Processing Rows",
+    total_rows: SurveyResponse.
+      joins('LEFT JOIN surveys ON surveys.id=survey_responses.survey_id').
+      where(event_id:@event_id).
+      where('surveys.survey_type_id=?', survey_type_id).count
+  )
+  @job.write_to_file
+end
+
+Survey.where(event_id:@event_id, survey_type_id: survey_type_id).each do |survey|
+
+  wb.add_worksheet(name: survey.title) do |sheet|
+
+    add_basic_info sheet, survey
+
+    question_ids = []
+    questions    = []
+    questions_type_ids    = []
+
+    survey.questions.order('questions.survey_section_id, questions.order').each {|q| questions << q.question; question_ids << q.id; questions_type_ids << q.question_type_id }
+
+    survey_responses = SurveyResponse.where(survey_id:survey.id).order('attendee_id')
+
+    if survey_responses.length > 0
+      sheet.add_row []
+      add_headers sheet, questions
+    end
+
+    survey_responses.each do |sr|
+
+      attendee  = Attendee.find(sr.attendee_id)
+      responses = sr.responses
+
+      row = [ attendee.account_code, attendee.full_name ]
+
+      unless responses.blank?
+        answers = Answer.quiz_answers_as_array( question_ids, responses, questions_type_ids )
+        row << "#{answers.reduce(0) {|memo, a| memo + a[:correct_count] }} / #{questions.length}"
+        row.concat answers.map {|a| a[:value] }
+        row << sr.updated_at.to_s
+        row << Time.parse("#{sr.updated_at.strftime('%Y-%m-%d %H:%M:%S')}Z").localtime(utc_offset).to_s
+      end
+
+      sheet.add_row row
+      @job.plus_one_row if @job
+    end
+  end
+end
+

@@ -1,0 +1,100 @@
+<div style="padding:10px;">
+    <h4>Listing Email Queues for:<b> <%= @organization.name %></b></h4>
+</div>
+
+
+<table id="custom-emails-table" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+    <thead>
+        <tr> 
+            <th>Email Type</th>
+            <th>User Type</th>
+            <th>Email</th>
+            <th>Active Time</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% @email_queues.each do |n| %>
+            <tr>
+                <% email_type = n.organization_email_template.template_type.name.include?('unsubscribe') ? 'GoodBye' : 'Welcome' %>
+                <td><%= email_type %></td>
+                <td><%= "member" %></td>
+                <td><%= n.email %></td>
+                <td>
+                    <%= (!!n.active_time) ? (
+                      current_user.twelve_hour_format ? Time.parse(
+                        "#{n.active_time.strftime('%Y-%m-%d %H:%M:%S')}Z"
+                    ).localtime( @event.utc_offset ).strftime('%Y-%m-%d %I:%M %p') :
+                      Time.parse(
+                        "#{n.active_time.strftime('%Y-%m-%d %H:%M:%S')}Z"
+                    ).localtime( @event.utc_offset )): '-' %>
+            </td>
+            <td><%= n.status %></td>
+            <td><%= (!!n.created_at) ? (
+                      current_user.twelve_hour_format ? Time.parse(
+                        "#{n.created_at.strftime('%Y-%m-%d %H:%M:%S')}Z"
+                    ).localtime( @event.utc_offset ).strftime('%Y-%m-%d %I:%M %p') :
+                      Time.parse(
+                        "#{n.created_at.strftime('%Y-%m-%d %H:%M:%S')}Z"
+                    ).localtime( @event.utc_offset )): '-' %></td>
+            <td class="table-actions">
+              <div class="dropdown">
+                <a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+                  <i class="fa fa-ellipsis-v"></i>
+                </a>
+                <div class="dropdown-menu">
+                  <%= link_to(
+                      'Show',
+                      "/members_listing/show_email/#{n.id}",
+                      :class   => "btn dropdown-item text-info") %>
+                  <%= link_to(
+                      'Delete',
+                      "/members_listing/destroy_email/#{n.id}",
+                      :data => { confirm: 'Are you sure you want to delete?'},
+                      :method  => :delete,
+                      :class   => "btn dropdown-item text-danger") %>
+                </div>
+              </div>
+              <div class="btn-group d-flex">
+                <%= link_to(
+                    'Show',
+                    "/members_listing/show_email/#{n.id}",
+                    :class   => "btn btn-outline-info") %>
+                <%= link_to(
+                    'Delete',
+                    "/members_listing/destroy_email/#{n.id}",
+                    :data => { confirm: 'Are you sure you want to delete?'},
+                    :method  => :delete,
+                    :class   => "btn btn-outline-danger") %>
+              </div>
+            </td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
+
+<br>
+
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline table-responsive'
+    })
+    $('#custom-emails-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+      fnInitComplete: () => { 
+        $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+        $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+        $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+          .prepend("<span class='d-none d-md-inline'>Show:</span>");
+      }
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>
+
+

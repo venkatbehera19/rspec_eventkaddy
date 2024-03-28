@@ -1,0 +1,140 @@
+:css
+    .survey-time {
+        font-weight:bold;
+        font-size:14px;
+        margin-bottom:20px;
+    }
+
+    .survey-section {
+        margin:10px;
+    }
+
+    .survey-heading {
+        font-size:18px;
+        font-weight:bold;
+        color:#317EAC;
+    }
+
+    .survey-subheading {
+        margin:10px;
+        font-style:italic;
+        color:#317EAC;
+    }
+
+    .survey-question {
+        font-weight: bold;
+        font-size:16px;
+        margin:20px;
+    }
+
+    .survey-hint {
+        color:#7C837C;
+        margin-top:10px;
+        margin-left: 25px;
+    }
+
+    .survey-answer {
+        margin:25px;
+    }
+
+.bg-light.custom-border.px-3.py-3
+    = link_to "Edit", "/survey_wizard?id=#{@survey.id}", class: 'btn btn-outline-success'
+    = link_to "Back", "/surveys", class: 'btn btn-outline-secondary'
+    %br
+    %br
+
+    - unless current_user.role? :exhibitor
+        = link_to "Session Associations", "/surveys/associations/#{@survey.id}", class: 'btn btn-link'
+        = link_to "Exhibitor Associations", "/surveys/exhibitor_associations/#{@survey.id}", class: 'btn btn-link'
+        = link_to "CE Certificate Associations", "/surveys/ce_certificate_associations/#{@survey.id}", class: 'btn btn-link'
+        = link_to "Survey Images", survey_image_path(@survey.id), class: 'btn btn-link'
+        = link_to "All Survey Images ", survey_images_path, class: 'btn btn-link'
+
+    %h2= @survey.title
+
+    .survey-time
+        Available from
+        = current_user.twelve_hour_format ?  @survey.begins.strftime("%Y-%m-%d %I:%M %p") : @survey.begins.to_s.gsub(/\sUTC/, '')
+
+    .survey-time
+        Closes on
+        = current_user.twelve_hour_format ?  @survey.ends.strftime("%Y-%m-%d %I:%M %p") : @survey.ends.to_s.gsub(/\sUTC/, '')
+
+    %hr
+
+    = form_tag '/surveys/upload_survey_response', class:'survey-form' do
+        = hidden_field_tag 'survey_id', @survey_data['id']
+        - if @session && @session['id']
+            = hidden_field_tag 'session_id', @session['id']
+
+        - @survey_data['sections'].each do |section|
+            - if !section['heading'].blank?
+                %survey-h2= section['heading']
+                %br
+                %br
+            - if !section['subheading'].blank?
+                %survey-h4= section['subheading']
+                %br
+                %br
+
+            - section['questions'].each do |question|
+                - @response = get_response_for_question(question['id'].to_s,@survey_response['id'].to_s)
+                /Multiple Choice
+                - if question['question_type_id'] == 1
+                    .field
+                        .lvlabel.survey-label= question['order'].to_s + '. ' + question['question']
+                        - question['answers'].each do |a|
+                            %lvlabel.survey-label.answer-block
+                                = radio_button_tag "mc_question_#{question['id']}", a['id'], @response['answer_id']==a['id']
+                                = a['answer']
+
+                /Long Form
+                - if question['question_type_id'] == 2
+                    .form-group 
+                        .lvlabel.survey-label= question['order'].to_s + '. ' + question['question']
+                        = text_field_tag "lf_question_#{question['id']}", @response.response, class:'answer-block form-control'
+
+                /Star Rating
+                - if question['question_type_id'] == 3
+                    .field
+                        .lvlabel.survey-label= question['order'].to_s + '. ' + question['question']
+                        .ratable.answer-block{id: "r_question_#{question['id']}__#{@response.rating}", style:'margin-left:15px; width:90%;'}
+                /Multiple Select
+                - if question['question_type_id'] == 4
+                    .field
+                        .lvlabel.survey-label= question['order'].to_s + '. ' + question['question']
+                        - question['answers'].each do |a|
+                            %lvlabel.survey-label.answer-block
+                                / The ID has to be unique, so adding the answer id to the question id
+                                = radio_button_tag "ms_question_#{question['id']}/#{a['id']}", a['id']
+                                = a['answer']
+                                %br        
+        .survey-submit-container
+            .submit
+                = submit_tag "Submit Survey as Test User", class:"btn btn-primary survey-submit"
+
+            %br
+            - if @skip_button_enabled
+                = link_to 'No thanks, I\'ll take the survey later.', '/surveys', class:'btn btn-danger'
+
+:javascript
+    $(function() {
+        $(".ratable").each(function() {
+            var res = this.id.split("__");
+            $(this).raty({
+                cancel    : false,
+                cancelOff : 'cancel-off-big.png',
+                cancelOn  : 'cancel-on-big.png',
+                half      : false,
+                size      : 24,
+                starHalf  : 'star-half-big.png',
+                starOff   : 'star-off-big.png',
+                starOn    : 'star-on-big.png',
+                width     : '100%',
+                path      : '/raty/img',
+                space     : true,
+                scoreName : res[0],
+                score     : res[1]
+            });
+        });
+    });

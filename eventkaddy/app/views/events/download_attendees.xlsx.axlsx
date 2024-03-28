@@ -1,0 +1,88 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	heads = ['First Name','Last Name','Honor Prefix','Honor Suffix','Title','Company','Temp Photo Filename','Attendee Tags','Biography','Business Unit','Business Phone','Mobile Phone','Email','Registration ID','Username','Password', 'Attendee Type','Registered Sessions','Assignment', 'Custom Filter 1', 'Custom Filter 2', 'Custom Filter 3', 'Messaging Opt Out', 'App Listing Opt Out', 'Game Opt Out', 'Notification Filters', 'Custom Fields 1', 'Custom Fields 2', 'Custom Fields 3', 'Travel Info', 'Table Assignment', 'City', 'State', 'Country', 'Premium Member']
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Attendee Data") do |sheet|
+	  sheet.add_row heads, :style => style
+
+    attendees = Attendee.includes(:attendee_type).where(event_id:@event_id)
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: attendees.length)
+      @job.write_to_file
+    end
+
+		attendees.each do |attendee|
+
+			sessions_favourited = ''
+
+			if attendee.sessions.length > 0
+				attendee.sessions.each_with_index do |session,i|
+					unless (i+1)===attendee.sessions.length
+						sessions_favourited += "#{session.session_code},"
+					else
+						sessions_favourited += "#{session.session_code}"
+					end
+				end
+			end
+
+			msg_opt_out = attendee.messaging_opt_out ? 1 : 0
+			listing_opt_out = attendee.app_listing_opt_out ? 1 : 0
+			game_opt_out = attendee.game_opt_out ? 1 : 0
+
+      pn_filters = attendee.pn_filters
+      pn_filters = pn_filters ? JSON.parse(pn_filters).join(', ') : nil
+
+			attendee_tags = ReturnTagsAsStringForModel.new(model:attendee, tag_type:'attendee').call
+
+      sheet.add_row [
+        attendee.first_name,
+        attendee.last_name,
+        attendee.honor_prefix,
+        attendee.honor_suffix,
+        attendee.title,
+        attendee.company,
+        attendee.temp_photo_filename,
+        attendee_tags,
+        attendee.biography,
+        attendee.business_unit,
+        attendee.business_phone,
+        attendee.mobile_phone,
+        attendee.email,
+        attendee.account_code,
+        attendee.username,
+        attendee.password,
+        attendee.attendee_type&.name,
+        sessions_favourited,
+        attendee.assignment,
+        attendee.custom_filter_1,
+        attendee.custom_filter_2,
+        attendee.custom_filter_3,
+        msg_opt_out,
+        listing_opt_out,
+        game_opt_out,
+        pn_filters,
+        attendee.custom_fields_1,
+        attendee.custom_fields_2,
+        attendee.custom_fields_3,
+        attendee.travel_info,
+        attendee.table_assignment,
+        attendee.city,
+        attendee.state,
+	      attendee.country, 
+        attendee.premium_member
+      ]
+      @job.plus_one_row if @job
+      sheet.column_widths 20,20,20,20,20,20,20,20,20,20,20,20,40,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30
+		end
+	end
+end

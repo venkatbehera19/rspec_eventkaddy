@@ -1,0 +1,10 @@
+<h3>Publish PDFs</h3>
+<h4>Please select a conference date</h4>
+  <%=link_to "All Sessions", sessions_list_pdfs_path, class:"btn btn-primary"%> <br/><br/>
+  <%@dates.each do |date|%>
+    <% formatted_date = date.strftime('%A, %e %B, %Y') %>
+
+    <%=link_to formatted_date, sessions_list_pdfs_path(:date => date), class:"btn btn-secondary" %><br><br>
+ 
+  <%end%>
+ 

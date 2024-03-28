@@ -1,0 +1,30 @@
+<h3>Account Email Change</h3>
+ 
+<%= form_for(@user, :html => { :method => :put, class: "form-horizontal well" }, :url => {:action => "update_email"}) do |f| %>
+
+	<% if @user.errors.any? %>
+		<div class="alert alert-danger">
+	    	<p><%= pluralize(@user.errors.count, "error") %></p>
+	
+		  	<p>
+		    	<ul>
+		      		<% @user.errors.full_messages.each do |msg| %>
+		        	<li><%= msg %></li>
+		      		<% end %>
+		      	</ul>
+	    	</p>
+	    </div>
+    <% end %>
+
+	<div class="form-group">
+		<%= f.label :email %> <i>(Important: You need this email to log in)</i>
+		<%= f.text_field :email, class: "form-control" %>
+	</div>
+ 
+	<div class="form-group">
+		<%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i>
+		<%= f.password_field :current_password, class: "form-control" %>
+	</div>
+ 
+  <p><%= f.submit "Update", class:"btn btn-primary"    %></p>
+<% end %>

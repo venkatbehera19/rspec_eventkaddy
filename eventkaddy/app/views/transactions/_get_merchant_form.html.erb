@@ -1,0 +1,78 @@
+<% if @error_message %>
+  <p><%= @error_message %></p>
+<% else %>
+  <%= form_for :transaction, url: "/#{params[:event_id]}/registrations/payment/create", :html => {id: "payment-form"} do |f| %>
+    <%= f.hidden_field :attendee_slug, :value => params[:id] %>
+    <%= f.hidden_field :id, :value => @transaction.id %>
+    <%= f.hidden_field :register_form, :value => @register_form.id %>
+    <% show_memberhsip_field = ["aafp_member", "aafp_non_member", "aafp_retired"].include?(@transaction.product.iid)%>
+    <div class="form-group">
+      <%= text_field_tag 'transaction[membership_id]', nil, placeholder: 'Enter Membership ID', class: 'form-control', disabled: !show_memberhsip_field%>
+    </div>  
+    <div id="dropin-container"></div>
+    <input type="hidden" id="nonce" name="payment_method_nonce"/>
+    <%= f.submit "Submit", class:"btn btn-primary d-none" %>
+  <% end %>
+
+  <div class="for-error"></div>
+  <div id='submit-paypal'></div>
+
+<script>
+
+function submitForm(chargeID) {
+  var $form = $("#payment-form");
+  $form.append($('<input type="hidden" name="transaction[charge_id]"/>').val(chargeID));
+  formData = new FormData($form[0]);
+  action = $form.attr('action');
+  $.ajax({
+          url: action,
+          type: 'post',
+          data: formData,
+          async: true,
+          cache: false,
+          contentType: false,
+          enctype: 'multipart/form-data',
+          processData: false,
+          success: function (url) {
+            window.location.href = url.url
+          },
+          error: function (error) {
+            $('.for-error').text(error.responseJSON.message)
+          }
+      })
+}
+
+
+  (function setupPaypal() {
+    paypal.Buttons({
+      env: '<%= @paypal_env %>',
+      createOrder: function() {
+        $('.for-error').text('')
+        return $.post("/orders/paypal/create_payment", $('#payment-form').serialize())
+        .then(function(data) {
+          return data.token;
+        })
+        .catch(function(response) {
+          $('.for-error').text(response.responseJSON.error)
+        })
+      },
+      onApprove: function(data) {
+        return $.post("/orders/paypal/execute_payment", {
+          paymentID: data.paymentID,
+          orderID: data.orderID,
+          payerID:   data.payerID,
+          registerFormId: $('#transaction_register_form').val(),
+        }).then(function(response) {
+          submitForm(data.paymentID || data.orderID)
+        }).catch(function(error){
+          submitForm(data.paymentID || data.orderID)
+        });
+      }
+    }).render('#submit-paypal');
+
+  }());
+
+
+</script>
+
+<% end %>

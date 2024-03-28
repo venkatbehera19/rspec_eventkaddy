@@ -1,0 +1,238 @@
+:javascript
+    $(function() {
+        $('#datetimepicker').datetimepicker();
+        $('.jpicker').jPicker({window:{position:{x:'100',y:'300'}}});
+
+        var checkTrue = function() { $(this).children('input')[1].checked = true; };
+        var checkFalse = function() {
+            $(this).children('input')[0].value = 0;
+            $(this).children('input')[1].checked = false;
+        };
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true,
+            active: false
+        });
+        if ($('#setting_send_calendar_invite').is(':checked')) $('#attach_calendar_invite').show()
+        else $('#attach_calendar_invite').hide()
+    });
+    
+    function toggleInviteAttachOption () {
+        if ($('#setting_send_calendar_invite').is(':checked')) $('#attach_calendar_invite').show()
+        else $('#attach_calendar_invite').hide()
+    }
+    $(document).on('change','#button_classes_select', function(){
+        let selected_cls = $(this).val();
+        console.log(selected_cls);
+        $('#sample_button').removeClass().addClass('btn ' + selected_cls);
+    });
+:css
+    #accordion {
+       margin-top:10px;
+       margin-bottom:10px;
+    }
+    .acc-div {
+        padding:10px;
+    }
+    .datepicker-control{
+        position:relative;
+    }
+    #setting_product_categories_ids {
+        width: 70% !important
+    }
+
+= javascript_include_tag 'unordered-files/jquery.form.js'
+= javascript_include_tag 'unordered-files/image_upload.js'
+
+%h4 Registration Settings
+%br/ 
+%div{style:'min-height:500px;'}
+    .col-sm-9.pull-left-in-web
+        = form_for @registration_portal_settings, :html => {:multipart => true, :method => :post }, :url => '/settings/update_registration_portal_settings' do |f|
+            
+            #accordion
+                %h4 General Configurations
+                .acc-div
+                    .alert{:class => "alert-info", :style=>"wdith:100%"}
+                        %b Registration Url:
+                        %a{ :href=> "#{@event.cms_url}/#{@event.id}/registrations", :target=>"_blank"}
+                            ="#{@event.cms_url}/#{@event.id}/registrations"
+
+                    .field
+                        %h5 Registration Portal
+                        = f.radio_button(:registration_open, "true")
+                        Open&nbsp;&nbsp;
+                        = f.radio_button(:registration_open, "false")
+                        Close
+                    %hr/
+                    
+                    .form-group
+                        %label Google Analytics Key
+                        = f.text_field :ga_key, class: "form-control"
+                    .form-group
+                        %label HTML Title
+                        = f.text_field :html_title, class: "form-control"
+                    .form-group 
+                        %label Select Tag Title 
+                        = f.text_field :select_tag_title, class: "form-control"
+
+                    %br/
+                    .field
+                        = f.check_box :send_calendar_invite, onchange: "toggleInviteAttachOption()"
+                        Send Calendar Reminder Invite on Registration
+
+                    .field#attach_calendar_invite
+                        %br/
+                        = f.check_box :attach_calendar_invite
+                        Attach Calendar Invitation
+                        %br/
+                        To edit calendar invitation, please go to Event Settings > Calendar Reminder Info
+
+                    %br/
+                    .form-group.custom-control.custom-switch
+                        = f.check_box :launch_virtual_portal, class: "custom-control-input"
+                        = f.label :launch_virtual_portal, class: "custom-control-label" do
+                            Show Button to Launch Virtual Portal from Profile Page
+                    %br
+
+                    .form-group.custom-control.custom-switch
+                        = f.check_box :receipt_attachment, class: "custom-control-input"
+                        = f.label :receipt_attachment, class: "custom-control-label" do
+                            Add Receipt attachment to mail
+                    %br
+
+                    .form-group
+                        %label Landing Page (Virtual portal relative path)
+                        = f.text_field :landing, class: "form-control"
+
+                    .form-group
+                        %label Registration to be closed by
+                        .datepicker-control
+                            = f.text_field :closing_date, id:"datetimepicker", class: "form-control"
+
+                    %br
+                    .form-group
+                        %label Event Details 1
+                        = f.cktext_area :event_details_1, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+                    .form-group
+                        %label Event Details 2
+                        = f.cktext_area :event_details_2, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+        
+
+                %h4 Header and Banner
+                .acc-div
+                    = render partial: 'settings/registration_portal/header_and_banner', locals: {f: f}
+
+                %h4 Customized Index Page
+                .acc-div
+                    = render partial: 'settings/registration_portal/customized_index_page', locals: {f: f}
+
+                %h4 Registration Form Page
+                .acc-div
+                    = render partial: 'settings/registration_portal/registration_form_page', locals: {f: f}
+
+                %h4 Member User Information Page
+                .acc-div 
+                    = render partial: 'settings/registration_portal/member_information_page', locals: {f: f}
+
+                %h4 Successful Modal
+                .acc-div 
+                    = render partial: 'settings/registration_portal/successful_modal', locals: {f: f}
+
+                %h4 Post Registration Page
+                .acc-div
+                    = render partial: 'settings/registration_portal/post_registration_page', locals: {f: f}
+
+                %h4 Navbar
+                .acc-div
+                    = render partial: 'settings/registration_portal/navbar', locals: {f: f}
+
+                %h4 General Styles
+                .acc-div
+                    = render partial: 'settings/registration_portal/general_styles', locals: {f: f}
+
+                %h4 Index Page Styles
+                .acc-div
+                    = render partial: 'settings/registration_portal/index_page_styles', locals: {f: f}
+
+                %h4 Post Registration Page Styles
+                .acc-div
+                    = render partial: 'settings/registration_portal/post_registration_page_styles', locals: {f: f}
+
+                %h4 Portal Images
+                .acc-div
+                    = render partial: 'settings/registration_portal/portal_images', locals: {f: f}
+
+                %h4 Attendees Profile Display
+                .acc-div
+                    = render partial: 'settings/registration_portal/attendees_profile_display', locals: {f: f}
+
+                %h4 Form Fields
+                .acc-div
+                    = render partial: 'settings/registration_portal/form_fields', locals: {f: f}
+
+                %h4 Agenda Info
+                .acc-div
+                    = render partial: 'settings/registration_portal/agenda_info', locals: {f: f}
+
+                %h4 Speakers Info
+                .acc-div
+                    = render partial: 'settings/registration_portal/speakers_info', locals: {f: f}
+
+                %h4 Exhibitors Info
+                .acc-div
+                    = render partial: 'settings/registration_portal/exhibitors_info', locals: {f: f}
+
+                %h4 Sponsors Info
+                .acc-div
+                    = render partial: 'settings/registration_portal/sponsors_info', locals: {f: f}
+
+                %h4 Hotel Info
+                .acc-div
+                    = render partial: 'settings/registration_portal/hotel_info', locals: {f: f}
+
+                %h4 Standby Screen Content
+                .acc-div
+                    = render partial: 'settings/registration_portal/standby_screen_content', locals: {f: f}
+
+                %h4 Payment Gateway
+                .acc-div
+                    = render partial: 'settings/registration_portal/paypal_payment', locals: {f: f}
+
+                %h4 Product 
+                .acc-div
+                    = render partial: 'settings/registration_portal/payment_tabs_setting', locals: {f: f}
+
+            = f.submit 'Update Registration Portal Settings', class:'btn btn-primary', id: "submitRegistrationSettings"
+
+
+    .col-sm-3.ml-auto
+        %h2 Image Gallery
+        %a.btn.btn-primary{:href => "#uploadToGallery", "data-toggle" => "modal"} Add New Image+
+        %br/
+        %br/
+        .modal.fade#uploadToGallery{"tabindex" => -1, "aria-labelledby" => "myModalLabel", "aria-hidden" => "true"}
+            .modal-dialog{style: "background-color:white"}
+                .modal-content
+                    .modal-header
+                        %h3#myModalLabel Upload new Image to Gallery
+                        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+                    .modal-body
+                        = form_tag  settings_upload_email_template_image_path, method: :post, multipart: true, style: "display:inline" do
+                            %div
+                                %div
+                                    #uploadedImages
+                                    .field
+                                        = label_tag :event_file, "New Image"
+                                        %br/
+                                        = file_field_tag :event_file
+                                    %hr/
+                                    %input#SubmitUpload.btn.btn-primary{"data-dismiss" => "modal",:type => "button", :value => "Upload"}
+                                    %button.btn.btn-outline-danger{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} Cancel
+        #gallery
+            - if @event_files!=nil
+                - @event_files.each do |file|
+                    .float
+                        = image_tag(file.path)
+                        %p
+                            = link_to "Delete", {:controller => :event_files, :action => :destroy, :id => file.id}, { :remote => true, :class =>'deleter btn delete'}   

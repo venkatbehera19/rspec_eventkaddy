@@ -1,0 +1,8 @@
+<h4 class="view-title">Subtrack Details</h4>
+<%= link_to 'Edit', edit_subtrack_path(@subtrack) ,class:"btn edit" %>
+
+<table class="table">
+<tr><th>Subtrack Name</th><td><%= @subtrack.name %></td></tr>
+<tr><th>Track Name</th><td><%= @subtrack.track.name %></td></tr>
+<tr><th>Description</th> <td><%= @subtrack.description %></td></tr>
+</table>

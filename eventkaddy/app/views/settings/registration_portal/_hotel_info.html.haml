@@ -1,0 +1,6 @@
+.form-group.custom-control.custom-switch
+    = f.check_box :show_header_hotel_info_page, class: "custom-control-input"
+    = f.label :show_header_hotel_info_page, class: "custom-control-label" do
+        Show Header
+%label Hotel Info
+= f.cktext_area :hotels_info, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}

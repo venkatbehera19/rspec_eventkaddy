@@ -1,0 +1,29 @@
+<%= form_for(@exhibitor_link) do |f| %>
+  <% if @exhibitor_link.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@exhibitor_link.errors.count, "error") %> prohibited this exhibitor_link from being saved:</h2>
+
+      <ul>
+      <% @exhibitor_link.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :exhibitor_id, :value => @exhibitor_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :exhibitor_link_name %>
+    <%= f.text_field :exhibitor_link_name %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :exhibitor_link_url %>
+    <%= f.text_field :exhibitor_link_url %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

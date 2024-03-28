@@ -1,0 +1,55 @@
+<%= link_to "Back", "/events/configure/#{session[:event_id]}/", class:'btn' %>
+<br>
+<br>
+<div class="well">
+    <p>The following is an overview of the data which would be deleted. Tables
+    with names like "sessions_attendee" are tables with linking records that connect
+    two other tables, in this case sessions and attendees. Therefore it is the link
+    which will be destroyed, not the attendee records.</p>
+    <p>Deletion of records should be avoided except when it is known the data will
+    not be missed, as with test data. Please review carefully the following data
+    to ensure no surprises about which data is to be removed. Generally these
+    table names represent internal naming to EventKaddy, and may differ slightly
+    to the names you are used to working with.</p>
+    <p><b>Remember that this action cannot be undone and will occur very quickly!</b></p>
+
+    <table>
+        <thead>
+            <th>Table</th>
+            <th>Record Count</th>
+        </thead>
+        <tbody>
+            <tr><td><b>Session Data</b></td></tr>
+            <tr><td></td></tr>
+            <% @session_data.each_pair do |table, count| %>
+                <% next if count == 0 %>
+                <tr>
+                    <td> <%= table %> </td>
+                    <td> <%= count %> </td>
+                </tr>
+            <% end %>
+
+            <tr><td></td></tr>
+            <tr><td><b>Speaker Data</b></td></tr>
+            <tr><td></td></tr>
+            <% @speaker_data.each_pair do |table, count| %>
+                <% next if count == 0 %>
+                <tr>
+                    <td> <%= table %> </td>
+                    <td> <%= count %> </td>
+                </tr>
+            <% end %>
+
+        </tbody>
+    </table>
+
+    <br><br>
+
+    <%= link_to "Do Nothing and Return To Imports & Exports", "/events/configure/#{session[:event_id]}/", class:'btn' %>
+
+    <br><br><br>
+    <%= link_to "Really Delete The Above Session & Speaker Data",
+        "/events/deleteall_sessiondata",
+        confirm: "Are you sure?",
+        class:'btn btn-danger' %>
+</div>

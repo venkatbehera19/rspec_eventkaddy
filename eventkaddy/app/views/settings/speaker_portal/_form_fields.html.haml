@@ -1,0 +1,242 @@
+= form_for @speaker_portal_settings, :html => { :method => :post }, :url => '/settings/update_speaker_portal_settings' do |f|
+    %h4 Locked Fields (cannot be edited by speaker)
+    .field
+        = f.check_box :locked_photo_file
+        Photo File Locked
+    .field
+        = f.check_box :locked_speaker_form_online_url
+        Speaker Online URL Locked
+    .field
+        = f.check_box :locked_cv_file
+        CV File Locked
+    .field
+        = f.check_box :locked_fd_file
+        FD File Locked
+    .field
+        = f.check_box :locked_first_name
+        First Name Locked
+    .field
+        = f.check_box :locked_middle_initial
+        Middle Initial Locked
+    .field
+        = f.check_box :locked_last_name
+        Last Name Locked
+    .field
+        = f.check_box :locked_email
+        Email Locked
+    .field
+        = f.check_box :locked_honor_prefix
+        Honor Prefix Locked
+    .field
+        = f.check_box :locked_honor_suffix
+        Honor Suffix Locked
+    .field
+        = f.check_box :locked_company
+        Company Locked
+    .field
+        = f.check_box :locked_address1
+        Address1 Locked
+    .field
+        = f.check_box :locked_address2
+        Address2 Locked
+    .field
+        = f.check_box :locked_address3
+        Address3 Locked
+    .field
+        = f.check_box :locked_city
+        City Locked
+    .field
+        = f.check_box :locked_state
+        State Locked
+    .field
+        = f.check_box :locked_country
+        Country Locked
+    .field
+        = f.check_box :locked_zip
+        Zip Locked
+    .field
+        = f.check_box :locked_work_phone
+        Work Phone Locked
+    .field
+        = f.check_box :locked_mobile_phone
+        Mobile Phone Locked
+    .field
+        = f.check_box :locked_home_phone
+        Home Phone Locked
+    .field
+        = f.check_box :locked_fax
+        Fax Locked
+    .field
+        = f.check_box :locked_biography
+        Biography Locked
+    .field
+        = f.check_box :locked_notes
+        Notes Locked
+    .field
+        = f.check_box :locked_availability_notes
+        Availability Notes Locked
+    .field
+        = f.check_box :locked_financial_disclosure
+        Financial Disclosure Locked
+    .field
+        = f.check_box :locked_fd_tax_id
+        FD Tax Id Locked
+    .field
+        = f.check_box :locked_fd_pay_to
+        FD Pay To Locked
+    .field
+        = f.check_box :locked_fd_street_address
+        FD Street Address Locked
+    .field
+        = f.check_box :locked_fd_city
+        FD City Locked
+    .field
+        = f.check_box :locked_fd_state
+        FD State Locked
+    .field
+        = f.check_box :locked_fd_zip
+        FD Zip Locked
+    .field
+        = f.check_box :locked_facebook_url
+        Facebook Url
+    .field
+        = f.check_box :locked_linked_in
+        LinkedIn Url
+    .field
+        = f.check_box :locked_twitter_url
+        Twitter Url
+    .field
+        = f.check_box :locked_custom_filter_1
+        Custom Filter 1
+    .field
+        = f.check_box :locked_custom_filter_2
+        Custom Filter 2
+    .field
+        = f.check_box :locked_custom_filter_3
+        Custom Filter 3
+
+    %h4 Hidden Fields
+    .field
+        = f.check_box :hide_photo_file
+        Photo File Hidden
+    .field
+        = f.check_box :hide_speaker_form_online_url
+        Speaker Online URL Hidden
+    .field
+        = f.check_box :hide_cv_file
+        CV File Hidden
+    .field
+        = f.check_box :hide_fd_file
+        FD File Hidden
+    .field
+        = f.check_box :hide_first_name
+        First Name Hidden
+    .field
+        = f.check_box :hide_middle_initial
+        Middle Initial Hidden
+    .field
+        = f.check_box :hide_last_name
+        Last Name Hidden
+    .field
+        = f.check_box :hide_email
+        Email Hidden
+    .field
+        = f.check_box :hide_honor_prefix
+        Honor Prefix Hidden
+    .field
+        = f.check_box :hide_honor_suffix
+        Honor Suffix Hidden
+    .field
+        = f.check_box :hide_company
+        Company Hidden
+    .field
+        = f.check_box :hide_address1
+        Address1 Hidden
+    .field
+        = f.check_box :hide_address2
+        Address2 Hidden
+    .field
+        = f.check_box :hide_address3
+        Address3 Hidden
+    .field
+        = f.check_box :hide_city
+        City Hidden
+    .field
+        = f.check_box :hide_state
+        State Hidden
+    .field
+        = f.check_box :hide_country
+        Country Hidden
+    .field
+        = f.check_box :hide_zip
+        Zip Hidden
+    .field
+        = f.check_box :hide_work_phone
+        Work Phone Hidden
+    .field
+        = f.check_box :hide_mobile_phone
+        Mobile Phone Hidden
+    .field
+        = f.check_box :hide_home_phone
+        Home Phone Hidden
+    .field
+        = f.check_box :hide_fax
+        Fax Hidden
+    .field
+        = f.check_box :hide_biography
+        Biography Hidden
+    .field
+        = f.check_box :hide_notes
+        Notes Hidden
+    .field
+        = f.check_box :hide_availability_notes
+        Availability Notes Hidden
+    .field
+        = f.check_box :hide_financial_disclosure
+        Financial Disclosure Hidden
+    .field
+        = f.check_box :hide_fd_tax_id
+        FD Tax Id Hidden
+    .field
+        = f.check_box :hide_fd_pay_to
+        FD Pay To Hidden
+    .field
+        = f.check_box :hide_fd_street_address
+        FD Street Address Hidden
+    .field
+        = f.check_box :hide_fd_city
+        FD City Hidden
+    .field
+        = f.check_box :hide_fd_state
+        FD State Hidden
+    .field
+        = f.check_box :hide_fd_zip
+        FD Zip Hidden
+    .field
+        = f.check_box :hide_facebook_url
+        Facebook Url
+    .field
+        = f.check_box :hide_linked_in
+        LinkedIn Url
+    .field
+        = f.check_box :hide_twitter_url
+        Twitter Url
+    .field
+        = f.check_box :hide_custom_filter_1
+        Custom Filter 1
+    .field
+        = f.check_box :hide_custom_filter_2
+        Custom Filter 2
+    .field
+        = f.check_box :hide_custom_filter_3
+        Custom Filter 3
+
+    -# %h4 Miscellaneous
+    -# .field
+    -#     = f.check_box :hide_change_password
+    -#     Hide Change Password Button
+    -# .field
+    -#     = f.check_box :hide_message_image_upload
+    -#     Hide Message Image Upload
+
+    = f.submit 'Update Speaker Portal Settings', class:'btn btn-primary'

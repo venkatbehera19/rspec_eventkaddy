@@ -1,0 +1,50 @@
+Setup Rsync between two nodes to keep event_data folder in sync
+
+	Repeat the below procedure for both machines, so the sync can go both ways.
+
+		First log in on A as user a and generate a pair of authentication keys. Do not enter a passphrase:
+
+		a@A:~> ssh-keygen -t rsa
+		Generating public/private rsa key pair.
+		Enter file in which to save the key (/home/a/.ssh/id_rsa): 
+		Created directory '/home/a/.ssh'.
+		Enter passphrase (empty for no passphrase): 
+		Enter same passphrase again: 
+		Your identification has been saved in /home/a/.ssh/id_rsa.
+		Your public key has been saved in /home/a/.ssh/id_rsa.pub.
+		The key fingerprint is:
+		3e:4f:05:79:3a:9f:96:7c:3b:ad:e9:58:37:bc:37:e4 a@A
+		Now use ssh to create a directory ~/.ssh as user b on B. (The directory may already exist, which is fine):
+
+		a@A:~> ssh b@B mkdir -p .ssh
+		b@B's password: 
+		Finally append a's new public key to b@B:.ssh/authorized_keys and enter b's password one last time:
+
+		a@A:~> cat .ssh/id_rsa.pub | ssh b@B 'cat >> .ssh/authorized_keys'
+		b@B's password: 
+		From now on you can log into B as b from A as a without password:
+
+		a@A:~> ssh b@B hostname
+		B
+		A note from one of our readers: Depending on your version of SSH you might also have to do the following changes:
+
+		Put the public key in .ssh/authorized_keys2
+		Change the permissions of .ssh to 700
+		Change the permissions of .ssh/authorized_keys2 to 640
+
+
+
+	Then setup a script on both nodes under /home/deploy/bin, changing the IP address to match the node where data is being
+	fetched from:
+
+		echo "running event_data rsync"
+		/usr/bin/rsync -avh deploy@192.168.131.97:/home/deploy/ek-cms-prod/public/event_data /home/deploy/ek-cms-prod/public/
+
+
+	Then on both machines add this script to a cronjob that runs every minute:
+
+		* * * * * /bin/bash /home/deploy/bin/event_data_sync.sh > /home/deploy/cron_debug.txt 2>&1
+
+	Don't forgot to put a newline after the task when editing the crontab.
+
+	

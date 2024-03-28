@@ -1,0 +1,33 @@
+<h1>Listing enhanced_listings</h1>
+
+<%= link_to 'New Enhanced listing', new_enhanced_listing_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Exhibitor</th>
+    <th>Product name</th>
+    <th>Product image</th>
+    <th>Product description</th>
+    <th>Product link</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @enhanced_listings.each do |enhanced_listing| %>
+  <tr>
+    <td><%= enhanced_listing.exhibitor_id %></td>
+    <td><%= enhanced_listing.product_name %></td>
+    <td><%= enhanced_listing.product_image %></td>
+    <td><%= enhanced_listing.product_description %></td>
+    <td><%= enhanced_listing.product_link %></td>
+    <td><%= link_to 'Show', enhanced_listing ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_enhanced_listing_path(enhanced_listing) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', enhanced_listing, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

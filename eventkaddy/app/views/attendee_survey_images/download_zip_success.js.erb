@@ -1,0 +1,5 @@
+var downloadBtn = "download-btn-<%= @attendee.account_code%>"
+downloadBtn = $(`#${downloadBtn}`);
+downloadBtn.text("Creating Zip...");
+downloadBtn.prepend('<span style="margin-right:10px;" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>');
+downloadBtn.addClass("disabled");

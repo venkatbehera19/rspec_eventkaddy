@@ -1,0 +1,47 @@
+<div class="bg-light custom-border px-3 py-3" style="min-height:500px;">
+
+    <%= link_to 'Back', '/members_listing/organization_email_queue', class:'btn btn-secondary' %><br>
+
+    <div style="padding:10px;">
+        <h4>Template Preview</h4>
+
+    </div> <br><br>
+    <h5>Subject</h5>
+    <%= text_field_tag 'subject', @template.email_subject, disabled: true, class: "form-control" %>
+    <br/><br>
+
+    <h5>Content</h5>
+    <div class="custom-border" style="min-height:100px;background-color:white;overflow-x:auto">
+        <% begin %>
+            <%# This is a decent solution, but since we're duplicating this in multiple places... we shouldn't do it inline %>
+            <%# Why not make an Example.attendee_email_template? %>
+            <%= @template.render([Example.method(:user).call, Event.find(session[:event_id])]) {|content|
+                content.gsub(/{{event_file\((.*?)\)\.?(.*?)}}/) {|match|
+                    image_tag OrganizationFile.find($1).path
+                }
+            } %>
+        <% rescue => e %>
+            An error occurred while trying to render the template.<br><br>
+            <%= e.message %><br><br>
+            Try removing some of the {{special_code}} to find which part is broken.
+        <% end %>
+    </div>
+
+    <br><br>
+    <h5>Preview Text</h5>
+
+    <button data-toggle="collapse" data-target="#preview-text" type='button'>Toggle</button>
+    <div id="preview-text" class="well collapse" style="min-height:100px;background-color:white;">
+        <% begin %>
+            <%= OrganizationEmailTemplate.remove_html_tags( @template.render([Example.method(:user).call, Event.find(session[:event_id])]) {|content|
+                content.gsub(/{{event_file\((.*?)\)\.?(.*?)}}/) {|match|
+                    image_tag OrganizationFile.find($1).path
+                }
+            } ).gsub("\r", "<br>").html_safe %>
+        <% rescue => e %>
+            An error occurred while trying to render the template.<br><br>
+            <%= e.message %><br><br>
+            Try removing some of the {{special_code}} to find which part is broken.
+        <% end %>
+    </div>
+</div>

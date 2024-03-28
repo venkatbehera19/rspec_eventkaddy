@@ -1,0 +1,111 @@
+<% if @speaker_portal_settings&.create_session && !@session_limit_reached %>
+	<h4>Proposed Sessions</h4>
+<% else %>
+	<h4> Sessions</h4>
+<% end %>
+
+<br/>
+<% if @speaker_portal_settings&.speaker_sessions %>
+	<%= link_to 'Speaker Sessions', "/speaker_portals/sessions/Primary Presenter" ,class:"btn btn-outline-info" %>  
+<% end %>
+<!--<%= link_to 'Moderator Sessions', "/speaker_portals/sessions/Moderator" ,class:"btn show" %> -->
+<% if @speaker_portal_settings&.printable_schedule %>
+	<%= link_to "Printable Schedule", "/speaker_portals/print_view",class:"btn btn-outline-secondary" %>
+<% end %>
+<% if @speaker_portal_settings&.create_session && !@session_limit_reached %>
+	<%= link_to "+ Propose Session", new_speaker_portal_path, class: "btn btn-outline-info" %>
+<% end %>
+<% if @session_limit_reached %>
+	<p class="font-weight-bold">You have reached the limit of sessions you can propose.</p>
+<% end %>
+
+<br/><br/>
+
+
+<table id="spsessions" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+	<thead>
+		<tr>
+		 <th>Session Code</th>
+		 <th>Title</th>
+		 <th>Date/Time</th>
+		 <th style="width:120px;">Room/Location</th>
+		 <!--<th>Program Area/Category/Presentation Type</th>
+		 <th>Completeness</th>
+		 <th>Speaker Type</th>-->
+<!-- 		 <th>Learning Objectives</th> -->
+
+
+
+		 <th></th>
+    <!--     <%# if @event_setting && @event_setting.av_requests%>
+		 <th></th>
+         <% #end%>
+		 <th></th> -->
+  		</tr>
+	</thead>
+
+	<tbody>
+		<% @sessions.each do |session| %>
+
+	 	<tr>
+			<td><%= session.session_code %></td>
+			<td><%= session.title %></td>
+			<% if (session.date!=nil && session.start_at!=nil && session.end_at!=nil) then %>
+				<td><i><%= session.date.strftime('%m-%d-%Y') %></i><br><%= session.start_at.strftime('%l:%M%p') %> - <%= session.end_at.strftime('%l:%M%p') %></td>
+			<% else %>
+				<td>Not Assigned Yet</td>
+			<% end %>
+			<% if session.location_mapping_name != nil then %>
+				<td><%= session.location_mapping_name %></td>
+			<% else %>
+				<td>Not Assigned Yet</td>
+			<% end %>
+<!--
+    	 <% if session.learning_objective != nil then %>
+    	 <td><%= session.learning_objective.truncate(100) %></td>
+    	 <% else %>
+    	  <td></td>
+    	 <% end %>
+-->
+    	 <!--<td><%= session.track_subtrack %></td>
+    	 <td>N/A</td>
+    	 <td><%= session.speaker_type_name %></td>-->
+
+    	<td class="table-actions">
+				<div class="btn-group d-flex">
+					<% if @event_setting.sessions_editable %>
+						<%= link_to 'Edit', edit_speaker_portal_path(session.id), class:"btn btn-outline-success" %>
+					<% else %>
+						<%= link_to 'View', speaker_portal_path(session.id), class:"btn btn-outline-success" %>
+					<% end %>
+					<% if @event_setting && @event_setting.av_requests%>
+						<%= link_to 'AV', "/session_av_requirements/#{session.id}/index", class:"btn btn-outline-info" %>
+					<%end%>
+					<%= link_to 'Upload Files',"/session_files/#{session.id}/index", class:"btn btn-primary" %>
+					<%= link_to 'Upload Media Files', "/media_files/sessions/#{session.id}/index", class:"btn btn-primary" %>
+				</div>
+
+				<div class="dropdown">
+					<a class="ellipse-style" data-toggle="dropdown">
+						<i class="fa fa-ellipsis-v"></i>
+					</a>
+					<div class="dropdown-menu">
+					<%= link_to 'Edit', "/speaker_portals/edit_session/#{session.id}", class:"btn dropdown-item text-success" %>
+					<% if @event_setting && @event_setting.av_requests%>
+						<%= link_to 'AV', "/session_av_requirements/#{session.id}/index", class:"btn dropdown-item text-info" %>
+					<%end%>
+					<%= link_to 'Upload Files',"/session_files/#{session.id}/index", class:"btn dropdown-item text-primary" %>
+					<%= link_to 'Upload Media Files', "/media_files/sessions/#{session.id}/index", class:"btn dropdown-item text-primary" %>
+					</div>
+				</div>
+			</td>
+
+  	 	</tr>
+		<% end %>
+	</tbody>
+</table>
+
+
+
+
+

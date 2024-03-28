@@ -1,0 +1,259 @@
+<%= form_for(@notification, :html=>{:class=>"bg-light custom-border px-3 py-3"}) do |f| %>
+    <% if @notification.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@notification.errors.count, "error") %> prohibited this notification from being saved:</h2>
+
+            <ul>
+                <% @notification.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <%# I can't easily make this into a ckeditor field, as it is very %> 
+    <%# difficult to resize the ckeditor textarea ( though not %>
+    <%# impossible ), and more importantly it looks very off %> 
+    <%# with the description field being totally different %>
+    <div class="form-group">
+        <%= f.label :name %>
+        <%= f.text_field :name, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+        <%= f.label :description %>
+        <%= f.text_area :description, class: "form-control", rows: 3 %>
+        * Use upcoming_event_page to show Link for Upcoming Event on Video Portal
+    </div>
+
+    <%# Show how many characters remaining %>
+    <div id='indicator' class='field' style="font-weight: bold;"> </div>
+
+    <div class="form-group">
+        <%= f.label :web_url, "Web Page URL" %>
+        <%= f.text_field :web_url, class: "form-control" %>
+    </div>
+
+    <% event    = Event.find session[:event_id] %>
+    <% settings = Setting.return_cms_settings session[:event_id] %>
+    <% filters  = event.all_pn_filters %>
+    <% selected = !@notification.pn_filters ? [] : JSON.parse(@notification.pn_filters) %>
+
+    <% unless settings.method("hide_notification_form_pn_filters").call %>
+        <% if filters.length > 0 %>
+            <div class="form-group">
+                <%= label_tag(:pn_filters, "Select filters to restrict which attendees will receive this notification. No selection means all. Important: Ignored when using session codes below.") %>
+                <%= select_tag(:pn_filters, options_for_select(filters, selected), :multiple => true, :size=>10, class: "custom-select") %>
+            </div>
+        <% end %>
+    <% end %>
+
+    <% unless settings.method("hide_notification_form_iattend_session_codes_filter").call %>
+        <% sessions_selected = @notification.session_codes || [] %>
+        <div class="form-group">
+            <%= label_tag(:session_codes, "If an attendee must attend a session to receive this notification, select those sessions here. Important: Do not combine with filters above, as they will be ignored in favour of session codes.") %>
+            <%= select_tag(:session_codes, options_for_select(@sessions.map { |s| ["#{s.session_code} #{s.title}",s.session_code] }, sessions_selected),:multiple => true, :size=>30, class: "custom-select") %>
+        </div>
+    <% end %>
+
+    <div class="form-group narrow-datetime">
+        <%= f.label "Send Date/Time" %> <br>
+        <%= f.datetime_select :active_time, {:default => @localtime}, class: "custom-select" %>
+    </div>
+
+    <br />
+    <table>
+        <%# <tr> %>
+        <%#     <td> On-site Time From Ruby </td> %>
+        <%#     <td> %>
+        <%#         <%= @site_time %1> %>
+        <%#     </td> %>
+        <%# </tr> %>
+        <tr>
+            <td><b>Current On-site Time*</b></td>
+            <td>
+                <div id="jstime"></div>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Time You Entered</b></td>
+            <td>
+                <div id="jsformtime"></div>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Difference</b></td>
+            <td>
+                <div id="jstimedifference"></div>
+            </td>
+        </tr>
+    </table>
+    * This time reflects when you loaded the page only.
+    <br>
+    <br>
+
+    <div id="notification-warning" style='color:#C82B3E'></div>
+
+    <br>
+    <%= hidden_field_tag :mobile, @mobile %>
+
+    <br>
+    <% unless settings.hide_notification_form_unpublish_option %>
+        <div class="form-group">
+            <%= f.label :unpublished %>
+            <%= f.check_box :unpublished %>
+        </div>
+    <% end %>
+
+    <div class="form-group">
+        <%= f.label :on_home_feed_announcement %>
+        <%= f.check_box :on_home_feed_announcement %>
+        <br>
+        * If Checked, this notification will not send as push notification 
+    </div>
+    <div class="form-group">
+        <%= f.label :push_notification do %>
+            <b>Enable Push Notification</b>
+        <% end %>
+
+        <!-- To make the toggle by default true -->
+       <% if action_name.eql?('new') %>
+         <%= f.check_box :push_notification, checked: true %>
+       <% else  %>
+         <%= f.check_box :push_notification %>
+       <% end %>
+    </div>
+
+
+    <div class="actions">
+        <%= f.submit id:'submitbutton', class:"btn btn-primary" %>
+    </div>
+<% end %>
+
+<script>
+
+$(function() {
+
+    var EKInputLimit = {
+
+        character_limit: undefined,
+
+        $input: undefined,
+
+        $indicator: undefined,
+
+        $submit: undefined,
+
+        charactersRemaining: function() {
+            return this.character_limit - this.$input.val().length;
+        },
+
+        setSubmitStatus: function(characters_remaining) {
+            if (characters_remaining < 0) {
+                this.$indicator.css('color','red');
+                this.$submit.prop('disabled', true);
+            }
+            else if (this.$input.val().length === 0 ) {
+                this.$indicator.css('color','black');
+                this.$submit.prop('disabled', true);
+            }
+            else {
+                this.$indicator.css('color','green');
+                this.$submit.prop('disabled', false);
+            }
+        },
+
+        updateIndicatorAndSubmitStatus: function() {
+            var characters_remaining = this.charactersRemaining();
+            this.$indicator.html('Remaining characters:' + characters_remaining);
+            this.setSubmitStatus(characters_remaining);
+        },
+
+        addHandler: function() {
+            this.$input.keyup(function(e) { EKInputLimit.updateIndicatorAndSubmitStatus(); });
+        },
+
+        init: function($input, $indicator, $submit, character_limit) {
+            this.character_limit = character_limit;
+            this.$input          = $input;
+            this.$indicator      = $indicator;
+            this.$submit         = $submit;
+            this.updateIndicatorAndSubmitStatus();
+            this.addHandler();
+        }
+
+    };
+
+    EKInputLimit.init(
+        $('#notification_description'),
+        $('#indicator'),
+        $('#submitbutton'),
+        157
+    );
+
+    var month_map = {'January':0, 'February':1, 'March':2, 'April':3,
+        'May':4, 'June':5, 'July':6, 'August':7, 'September':8,
+        'October':9, 'November':10, 'December':11};
+
+    function notificationFormGetTime() {
+        var year   = $('#notification_active_time_1i').find(':selected').text();
+        var month  = $('#notification_active_time_2i').find(':selected').text();
+        var day    = $('#notification_active_time_3i').find(':selected').text();
+        var hour   = $('#notification_active_time_4i').find(':selected').text();
+        var minute = $('#notification_active_time_5i').find(':selected').text();
+        return new Date(year, month_map[month], day, hour, minute);
+    }
+
+    // function formSetToTimeEarlierThanNow() {
+    //     return notificationFormGetTime() < on_site_time;
+    // }
+    function convertTime(time) {        
+        var millis  = time % 1000;
+        time        = parseInt(time/1000);
+        var seconds = time % 60;
+        time        = parseInt(time/60);
+        var minutes = time % 60;
+        time        = parseInt(time/60);
+        var hours   = time % 24;
+        time        = parseInt(time/24);
+        var days   = Math.round(time);
+        var out     = "";
+        if(days   && days > 0)     out += days    + " " + ((days == 1)    ? "day"  : "days")  + " ";
+        if(hours   && hours > 0)   out += hours   + " " + ((hours == 1)   ? "hr"   : "hrs")   + " ";
+        if(minutes && minutes > 0) out += minutes + " " + ((minutes == 1) ? "min"  : "mins")  + " ";
+        if(seconds && seconds > 0) out += seconds + " " + ((seconds == 1) ? "sec"  : "secs")  + " ";
+        if(millis  && millis> 0)   out += millis  + " " + ((millis== 1)   ? "msec" : "msecs") + " ";
+        return out;
+    }
+    var time_array = "<%= @site_time %>".split(' ');
+    var year_month_day = time_array[0].split('-');
+    var hour_minute_second = time_array[1].split(':');
+    var on_site_time = new Date( parseInt( year_month_day[0] ),
+                                 parseInt( year_month_day[1] ) - 1,
+                                 parseInt( year_month_day[2] ),
+                                 parseInt( hour_minute_second[0] ),
+                                 parseInt( hour_minute_second[1] ),
+                                 parseInt( hour_minute_second[2] ));
+
+    function setNotificationWarning() {
+        var form_time = notificationFormGetTime();
+        $('#jsformtime').html( ("" + form_time).split(' GMT')[0] );
+        $('#jstimedifference').html( convertTime( form_time - on_site_time ) );
+        if ( form_time < on_site_time ) {
+            $('#notification-warning').html('IMPORTANT: Your notification has been set to a time earlier than now and will be sent immediately on submission.');
+        } else {
+            $('#notification-warning').html('');
+        }
+    }
+
+    // handlers on each of the date dropdowns
+    $('#notification_active_time_1i, #notification_active_time_2i, #notification_active_time_3i, #notification_active_time_4i,#notification_active_time_5i').change( setNotificationWarning );
+
+    // run on page load too
+    $('#jstime').html( ("" + on_site_time).split(' GMT')[0] );
+    setNotificationWarning();
+
+});
+
+
+</script>

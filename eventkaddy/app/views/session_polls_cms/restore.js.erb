@@ -1,0 +1,1 @@
+$( "#containerDiv-<%=@session_poll.id%>" ).find('#resetBtn-<%=@session_poll.id%>').replaceWith( '<%= link_to 'Edit', edit_session_poll_path(@session_poll), class:"btn btn-outline-secondary", id: "editBtn-#{@session_poll.id}" %>' );

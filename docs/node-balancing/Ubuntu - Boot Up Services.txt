@@ -1,0 +1,12 @@
+Ubuntu - Boot Up Services
+
+	To Disable
+
+		rc.d services
+
+			sudo update-rc.d -f thin-ekdev disable
+
+		upstart init daemon
+
+			sudo cp /etc/init/mysql.conf /etc/init/mysql.conf.modified
+			sudo rm /etc/init/mysql.conf

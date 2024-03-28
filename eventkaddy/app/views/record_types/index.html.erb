@@ -1,0 +1,23 @@
+<h1>Listing record_types</h1>
+<%= link_to 'New Record type', new_record_type_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Record type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @record_types.each do |record_type| %>
+  <tr>
+    <td><%= record_type.record_type %></td>
+    <td><%= link_to 'Show', record_type ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_record_type_path(record_type) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', record_type, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+

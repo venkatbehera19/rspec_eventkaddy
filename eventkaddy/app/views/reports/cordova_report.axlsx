@@ -1,0 +1,382 @@
+def reports event_id
+  begin
+    reporting_path = Rails.root.join('config','reporting_database.yml')
+    raise "reporting database configuration not found." unless File.exist? reporting_path
+    dbh = Mysql2::Client.new( YAML::load(File.open(reporting_path))[Rails.env] )
+    return {
+      reports:      dbh.query("SELECT * FROM cordova_reports c WHERE c.event_id=#{event_id.to_i} AND c.device_type_id NOT IN (1,5)"),
+      report_types: dbh.query("SELECT * FROM cordova_report_types"),
+      device_types: dbh.query("SELECT * FROM device_types WHERE id NOT IN (1,5)") # don't use chrome or rails site
+    }
+
+  rescue Mysql2::Error => e
+    puts "Error code: #{e.errno}"
+    puts "Error message: #{e.error}"
+    puts "Error SQLSTATE: #{e.sqlstate}" if e.respond_to?("sqlstate")
+  ensure
+    dbh.close if dbh
+  end
+end
+
+# @event_id = 238
+if @job
+  @job.update!(original_file:'Reporting Database', status: "Fetching Rows From Database")
+  @job.write_to_file
+end
+
+# Error message: Options parameter must be a Hash
+r = reports(@event_id)
+
+if @job
+  @job.update!(status: "Preparing Rows", total_rows: r[:reports].count)
+  @job.write_to_file
+end
+
+# r[:device_types].map{|t| t['name'] } # ["iPhone", "iPad", "Android"]
+# r[:report_types].select {|v| v['id'] == 1} # [{"id"=>1, "name"=>"bootup", "created_at"=>nil, "updated_at"=>nil}]
+
+# s = {} # summary
+s    = [] # summary
+dt_s = [] # device types summary
+bd   = [] # by day
+bh   = [] # by hour
+
+# add a value in a nested hash... just takes care of the dirty work of making
+# sure each key has an empty object if it wasn't already defined
+#  old flat version
+# add_values = ->(obj, key_chain, value) {
+#   o = obj; kc = key_chain; v = value; kcf = kc.first
+#   if kc.length == 1
+#     o[ kcf ] = o[ kcf ] && o[ kcf ] + v || v
+#   else
+#     o[ kcf ] = o[ kcf ] || {}
+#     o[ kcf ] = add_values.call o[ kcf ], kc.drop(1), v
+#   end
+#   o
+# }
+
+# r[:report_types].map {|r| r['name'] }
+
+# for now, before I make anymore migrations
+hard_code_types = [
+  { id: 1, name: "bootup",                                   order: 1, col_order: 1, shared_name: 'Bootup',                           col_name: 'Count'},
+  { id: 2, name: "header clicked",                           order: 2, col_order: 1, shared_name: 'Header Button',                    col_name: 'Usage'},
+  { id: 3, name: "banner ad display",                        order: 3, col_order: 1, shared_name: 'Banner Ad',                        col_name: 'Views'},
+  { id: 4, name: "banner ad clicked",                        order: 3, col_order: 2, shared_name: 'Banner Ad',                        col_name: 'Usage'},
+  { id: 5, name: "single banner ad clicked",                 order: 4, col_order: 1, shared_name: 'Single Banner Ad',                 col_name: 'Usage'},
+  { id: 6, name: "minimalist-mode header or footer clicked", order: 5, col_order: 1, shared_name: 'Minimalist Mode Header or Footer', col_name: 'Usage'},
+  { id: 7, name: "home screen nav",                          order: 6, col_order: 1, shared_name: 'Home Screen Button',               col_name: 'Usage'},
+  { id: nil, name: "display", order: 0, col_order: 1, shared_name: 'Display', col_name: 'Count' }, # hmmm.... probably want this to be a real type
+]
+
+get_headers = ->( type_name ) {
+  type = hard_code_types.select{|t| t[:name] == type_name}[0]
+  [ type[:shared_name] ].concat(hard_code_types.select {|t| t[ :order ]==type[:order]}.sort{|a,b| a[:col_order] <=> b[:col_order]}.map{|t| t[:col_name]})
+}
+
+get_device_headers = ->( type_name ) {
+  type = hard_code_types.select{|t| t[:name] == type_name}[0]
+  [ type[:shared_name] ].
+    concat(
+      r[:device_types].map {|dt|
+        hard_code_types.
+          select {|t| t[ :order ]==type[:order]}.
+          sort{|a,b| a[:col_order] <=> b[:col_order]}.
+          map{|t|
+          dt['name'] + ' ' + t[:col_name]
+        }
+      }.flatten
+  )
+}
+
+
+add_values = ->( obj, order, name, row_name, row_index, value, date=nil, row_order=nil ) {
+  o = obj; n = name; rn = row_name; ri = row_index; v = value
+  # order = order.to_s + date if date # this is ordering of the headings... add date to it makes a separate set of headings
+  dataset           = o.select {|o_p| o_p[:order] == order}[0] || {}
+  dataset[:order]   = order
+  if n.is_a? String
+    dataset[:headers] = get_headers.call n
+  else # an array of preset headers
+    dataset[:headers] = n
+  end
+  dataset[:headers].unshift 'Date' if date
+  dataset[:rows]    = dataset[:rows] || []
+  unless o.select {|o_p| o_p[:order] == order}[0]
+    o << dataset
+  end
+  row               = dataset[:rows].select {|r| r[:name] == rn }[0] || {}
+  row[:name]        = rn
+  row[:values]      = row[:values] || []
+  unless date
+    row[:values][ri - 1]  = (row[:values][ri - 1] || 0) + v
+  else
+    row[:values][0] = row_order
+    row[:values][1] = date
+    row[:values][ri+1]  = (row[:values][ri+1] || 0) + v
+  end
+  unless dataset[:rows].select {|r| r[:name] == rn }[0]
+    dataset[:rows] << row
+  end
+  o
+}
+
+# add_values.call [], 3, 'banner ad display', 'Bannername', 1, 5
+
+# add_values.call s, [t,l], v
+
+r[:reports].each do |r_p|
+
+  @job.plus_one_row if @job
+  dt_n = r[:device_types].select {|dt| dt['id'] == r_p['device_type_id'] }[0][:name]
+
+  # r_p at this point, set var for the device
+  JSON.parse( r_p['json'] ).each do |k,v|
+
+    k_p = k.split('__')
+    # e   = 'event_id' + k_p[0] # event_id # including event_id was a mistake, orginally thought I would need it for multi-event
+    m   = k_p[1] # metric
+    d   = k_p[2] # date
+
+    if k_p.length > 1
+
+      # old version (v0...)
+      # "238__banner ad display-file:///data/user/0/org.compositingcouncil.eventapp/files/iPhone6Plus_Komptech_20200103234353_.jpg__2020-1-9-9":74
+      # "238__Home Screen Nav-#sessions/tags/index-Sessions__2020-1-10-13":1
+      m_p = m.split('-')
+      # fix for clients using old version!! can just remove a after event 238 has been over awhile
+      # old_type_name = ['Home Screen Nav', 'banner ad display', 'banner ad clicked'].find {|t| t==m_p[0]}
+      # old_type_name = ['Home Screen Nav', 'banner ad display', 'banner ad clicked'].find {|t| t==m_p[0]}
+      if m_p[0].match(/[A-Za-z]/)
+        # begin
+          type = hard_code_types.find {|t| t[:name] == m_p[0].downcase }
+          m_p[0] = type[:id]
+          m_p[1] = if type[:name] == 'Home Screen Nav'; path = m_p[1].split('/'); path[path.length - 1];
+                   elsif ['banner ad display', 'banner ad clicked'].include? type[:name];  m_p[1].split('_')[1];
+                   elsif type[:name] == 'header clicked'; 'Home Screen'; end
+        # rescue
+        #   # raise type.inspect
+        #   raise m_p.inspect
+        # end
+      end
+
+      t   = r[:report_types].select{|t| t['id'] == m_p[0].to_i }[0]['name']
+      l   = m_p[2] || m_p[1] || t # ex bootup doesn't have a specific name
+      # id = m_p[1] # only for home buttons
+      hct = hard_code_types.select {|t_p| t_p[:name] == t }[0] # hardcode type
+      add_values.call(s, hct[:order], hct[:name], l, hct[:col_order], v)
+      # add_values.call s, [t,l], v
+
+
+      highest_col = hard_code_types.select{|t| t[:order] == hct[:order]}.sort{|a,b| a[:col_order] <=> b[:col_order]}.last[:col_order]
+
+      add_values.call(
+        dt_s,                 # device_type_summary
+        hct[:order],          # order to display reports in, now difficult because DB's suggested device layout doesn't want siblings anymore
+        get_device_headers.call( hct[:name] ), # only used for get headers... we could just pass in the headers instead. and call get_headers here, though it doesn't matter
+        l,                    # the specific name of the row, ie the banner name, the home button name, etc.
+        # -2 because we're not using the first type (chrome dev) and to account for index..
+        highest_col * (r_p['device_type_id'] - 1) + hct[:col_order] - highest_col, # index of the column for that row to fill in, enables multiple reports on one row (count, views)
+        v                     # the amount to add to whatever value is present (or to set, if the current value is nil)
+      )
+
+      d_p  = d.split('-')
+      # hacks for older version with arrays
+      # date = 'date'+Date.parse( d_p.first(3).join('-') ).strftime('%a %b %e')
+      # hour = 'date'+DateTime.parse( d_p.first(3).join('-') + 'T' + d_p[3] + ':00' ).strftime('%a %b %e %r')
+      _date = Date.parse( d_p.first(3).join('-') )
+      date = _date.strftime('%a %b %e')
+      _hour = DateTime.parse( d_p.first(3).join('-') + 'T' + d_p[3] + ':00' )
+      # hour = _hour.strftime('%a %b %e %r')
+      hour = _hour.strftime('%a %b %e %I:%M %p')
+
+      # actually doing this by date is not that simple.
+      # maybe I could just have date be a hidden value
+      # missing leading 0 in date makes  sorting hard... another rabbit mistake
+      add_values.call(bd, hct[:order], hct[:name], d_p.first(3).join('-') + '__' + l, hct[:col_order], v, date, _date.to_time.to_i.to_s + l)
+      # this part is not working.... probably hct name needs the hour.
+      add_values.call(bh, hct[:order], hct[:name], d + '__' + l, hct[:col_order], v, hour, _hour.to_i.to_s + l)
+      # add_values.call bd, [t,date,l], v
+      # add_values.call bh, [t,hour,l], v
+    else
+      # add_values.call s, [k,v], 1
+      # add_values.call(s, 0, k, v, 1, 1) # summary obj, 0th order, use key for name, use value for row, use 1 for column, and use 1 for value
+      hct = hard_code_types.select {|t_p| t_p[:name] == k }[0] # hardcode type
+      add_values.call(s, hct[:order], hct[:name], v, hct[:col_order], 1)
+    end
+  end
+end
+
+# dt_s
+
+# bd
+
+
+# hash_to_nested_arrays = ->(o) {
+#   if o.is_a? Hash
+#     hash_to_nested_arrays.call( o.to_a )
+#   elsif o.is_a? Array
+#     o.map do |o_p|
+#       if o_p[1].is_a? Hash
+#         [o_p[0], hash_to_nested_arrays.call( o_p[1] )]
+#       else
+#         o_p
+#       end
+#     end
+#   else
+#     o
+#   end
+# }
+
+# hash_to_nested_arrays.call(s)
+# [
+#   ["display", [
+#     ["717x377", 2]
+#   ]],
+
+#   ["238", [
+#     ["home screen nav", [
+#       ["Sessions", 2],
+#       ["Speakers", 2],
+#       ["Sponsors", 1],
+#       ["Social", 1],
+#       ["STA Certified Compost", 1]
+#     ]],
+#     ["header clicked", [
+#       ["Home Screen", 7]
+#     ]]
+#   ]]
+# ]
+
+@event_name = Event.find(@event_id).name
+
+# add_row = ->(sheet, style, data) {
+#   data.each do |d|
+#     # base case... ie bottom
+#     if !d[0].is_a?(Array) && !d[1].is_a?(Array)
+#       sheet.add_row d
+#     # category
+#     elsif !d[0].is_a?(Array)
+#       if d[0].match(/^event_id/)
+#         # do nothing
+#         # sheet.add_row [ @event_name ], :style => style.first
+#       elsif d[0].match(/^date/)
+#         sheet.add_row []
+#         sheet.add_row [ d[0].gsub('date','') ], :style => style.second
+#         sheet.add_row []
+#       else
+#         sheet.add_row []
+#         sheet.add_row [ d[0] ], :style => style.first
+#         sheet.add_row []
+#       end
+#       add_row.call( sheet, style, d[1] )
+#     end
+#   end
+# }
+
+# def is_num?(str)
+#   !!Integer(str)
+# rescue ArgumentError, TypeError
+#   false
+# end
+
+# s # [{:order=>6, :headers=>["Home Screen Button", "Usage"], :rows=>[{:name=>"Sessions", :values=>[5]}, {:name=>"Speakers", :values=>[4]}, {:name=>"Sponsors", :values=>[1]}, {:name=>"Social", :values=>[3]}, {:name=>"STA Certified Compost", :values=>[1]}, {:name=>"Exhibitor Map", :values=>[1]}, {:name=>"Notifications", :values=>[1]}]}, {:order=>2, :headers=>["Header Button", "Usage"], :rows=>[{:name=>"Home Screen", :values=>[15]}]}, {:order=>1, :headers=>["Bootup", "Count"], :rows=>[{:name=>nil, :values=>[6]}]}, {:order=>3, :headers=>["Banner Ad", "Views", "Usage"], :rows=>[{:name=>"5", :values=>[22]}, {:name=>"Komptech", :values=>[50]}, {:name=>"BioCycle", :values=>[49, 3]}, {:name=>"Peterson", :values=>[49, 3]}, {:name=>"McGill", :values=>[49, 3]}, {:name=>"Vermeer", :values=>[47, 2]}, {:name=>"WeCareDenali", :values=>[45, 2]}, {:name=>"rotochopper", :values=>[45, 1]}, {:name=>"Morbark", :values=>[45, 2]}]}]
+
+wb = xlsx_package.workbook
+
+wb.styles do |styles|
+  bc    = [
+    styles.add_style(:bg_color => "00", :fg_color => "FF", :sz => 18, :alignment => { :horizontal => :center }),
+    styles.add_style(:bg_color => "50504E", :fg_color => "FF", :sz => 16, :alignment => { :horizontal => :center }),
+    styles.add_style(:bg_color => "50504E", :fg_color => "FF", :sz => 14, :alignment => { :horizontal => :center })
+  ]
+
+  if @job
+    @job.update!(status: "Writing Event App Summary", row: 0, total_rows: s.map{|d| d[:rows].length}.reduce(&:+))
+    @job.write_to_file
+  end
+
+  wb.add_worksheet(name: "Event App Report Summary") do |sheet|
+    sheet.add_row [ @event_name ], :style => bc.first
+    # add_row.call( sheet, bc, hash_to_nested_arrays.call(s) )
+
+    s.sort {|a,b| a[:order] <=> b[:order] }.each do |dataset|
+      sheet.add_row []
+      sheet.add_row dataset[:headers], :style => bc.first
+      dataset[:rows].each do |r|
+        @job.plus_one_row if @job
+        sheet.add_row [ r[:name] ].concat( r[:values] )
+      end
+    end
+  end
+
+  if @job
+    @job.update!(status: "Writing Event App Device Summary", row: 0, total_rows: dt_s.map{|d| d[:rows].length}.reduce(&:+))
+    @job.write_to_file
+  end
+
+  wb.add_worksheet(name: "Event App Report Device Summary") do |sheet|
+    sheet.add_row [ @event_name ], :style => bc.first
+    dt_s.sort {|a,b| a[:order] <=> b[:order] }.each do |dataset|
+      sheet.add_row []
+      sheet.add_row dataset[:headers], :style => bc.first
+      dataset[:rows].each do |r|
+        @job.plus_one_row if @job
+        sheet.add_row [ r[:name] ].concat( r[:values] )
+      end
+    end
+  end
+
+  if @job
+    @job.update!(status: "Writing Event App Report By Date", row: 0, total_rows: bd.map{|d| d[:rows].length}.reduce(&:+))
+    @job.write_to_file
+  end
+
+  wb.add_worksheet(name: "Event App Report By Date") do |sheet|
+    sheet.add_row [ @event_name ], :style => bc.first
+    bd.sort {|a,b| a[:order] <=> b[:order] }.each do |dataset|
+      sheet.add_row []
+      sheet.add_row dataset[:headers], :style => bc.first
+      dataset[:rows].sort{|a,b| a[:values][0] <=> b[:values][0] }.each do |r|
+        @job.plus_one_row if @job
+        sheet.add_row [ r[:values][1], r[:name].split('__').last ].concat( r[:values][2..-1] )
+        # sheet.add_row [r[:values][0], r[:values][1], r[:name] ].concat( r[:values][2..-1] ) # showing ordering for debugging
+      end
+    end
+  end
+
+  if @job
+    @job.update!(status: "Writing Event App Report By Hour", row: 0, total_rows: bh.map{|d| d[:rows].length}.reduce(&:+))
+    @job.write_to_file
+  end
+
+  wb.add_worksheet(name: "Event App Report By Hour") do |sheet|
+    sheet.add_row [ @event_name ], :style => bc.first
+    bh.sort {|a,b| a[:order] <=> b[:order] }.each do |dataset|
+      sheet.add_row []
+      sheet.add_row dataset[:headers], :style => bc.first
+      dataset[:rows].sort{|a,b| a[:values][0] <=> b[:values][0] }.each do |r|
+        @job.plus_one_row if @job
+        sheet.add_row [ r[:values][1], r[:name].split('__').last ].concat( r[:values][2..-1] )
+        # sheet.add_row [r[:values][0], r[:values][1], r[:name] ].concat( r[:values][2..-1] ) # showing ordering for debugging
+      end
+    end
+  end
+end
+
+
+
+# bd
+
+# bh # {"238"=>{"home screen nav"=>{"2020-1-9-15"=>{"Sessions"=>1, "Speakers"=>1, "Sponsors"=>1, "Social"=>1}, "2020-1-9-16"=>{"Sessions"=>1, "Speakers"=>1, "STA Certified Compost"=>1}}, "header clicked"=>{"2020-1-9-15"=>{"Home Screen"=>4}, "2020-1-9-16"=>{"Home Screen"=>3}}}}
+
+# s # {"display"=>{"717x377"=>2}, "238"=>{"home screen nav"=>{"Sessions"=>2, "Speakers"=>2, "Sponsors"=>1, "Social"=>1, "STA Certified Compost"=>1}, "header clicked"=>{"Home Screen"=>7}}}
+
+# s # {"display"=>{"717x377"=>1}, "238"=>{"home screen nav"=>{"Sessions"=>1, "Speakers"=>1, "Sponsors"=>1, "Social"=>1}, "header clicked"=>{"Home Screen"=>4}}}
+
+# # original
+# # s # {:display=>{"717x377"=>1}, "238__7-2407-Sessions__2020-1-9-15"=>1, "238__2-Home Screen__2020-1-9-15"=>4, "238__7-2451-Speakers__2020-1-9-15"=>1, "238__7-2450-Sponsors__2020-1-9-15"=>1, "238__7-2439-Social__2020-1-9-15"=>1}
+
+
+
+# # "238__7-2407-Sessions__2020-1-9-15".split('__') # ["238", "7-2407-Sessions", "2020-1-9-15"]

@@ -1,0 +1,93 @@
+<script>
+  $(function() {
+    $('#datetimepicker').datetimepicker({
+      format: 'DD/MM/YYYY HH:mm:ss'
+    });
+    $('#datetimepicker2').datetimepicker({
+      format: 'DD/MM/YYYY HH:mm:ss'
+    });
+    $('.jpicker').jPicker({window:{position:{x:'100',y:'300'}}});
+  })
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<%= form_for(@coupon, :html => {:class => "form-horizontal well" }) do |f| %>
+  <% if @coupon.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@coupon.errors.count, "error") %> prohibited this coupon from being saved:</h2>
+
+      <ul>
+      <% @coupon.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :exhibitor_id, :value => @exhibitor_id %>
+  </div>
+  <%= f.hidden_field :event_id, :value => @session_id %>
+
+  <div class="form-group">
+    <%= f.label :coupon_name %>
+    <%= f.text_field :coupon_name , class: "form-control"%><br /><br />
+  </div>
+
+  <div class="form-group">
+    <%= f.label :coupon_code %>
+    <%= f.text_field :coupon_code, class: "form-control" %><br /><br />
+  </div>
+
+  <div class="form-group">
+    <%= f.label :coupon_description %>
+    <%= f.text_area :coupon_description, class: "form-control" %><br /><br />
+  </div>
+
+  <div class="form-group">
+    <%= f.label :start_date %>
+    <div class="datepicker-control">
+      <%= f.text_field :start_date, id: "datetimepicker", class: "form-control",:value => @coupon.start_date.nil? ? '' : @coupon.start_date.strftime("%d/%m/%Y %H:%M"), required: true %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :end_date %>
+    <div class="datepicker-control">
+      <%= f.text_field :end_date, id: "datetimepicker2", class: "form-control",:value => @coupon.end_date.nil? ? '' : @coupon.end_date.strftime("%d/%m/%Y %H:%M"), required: true %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :discount_type %>
+    <%= select_tag :discount_type, options_for_select(['percentage', 'fixed_amount'], @coupon.discount_type), class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Amount/Percentage" %>
+    <%= f.number_field :amount, class: "form-control" %><br /><br />
+  </div>
+
+  <div class="form-group">
+    <%= f.label :max_usage %>
+    <%= f.number_field :max_usage, class: "form-control" %><br /><br />
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Select product" %>
+    <%= select_tag :product_id, options_for_select(Product.where(event_id: @session_id).map { |product| [product.name, product.id] }, @coupon.product_id), class: "form-control", multiple: false %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>
+
+<script>
+  $("#product_id").select2( {
+    placeholder: "select product",
+    theme: "classic"
+  });
+</script>

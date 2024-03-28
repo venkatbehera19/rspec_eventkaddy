@@ -1,0 +1,13 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   event_file_id: 1
+#   video_portal_image_type_id: 1
+#   name: MyString
+
+# two:
+#   event_id: 1
+#   event_file_id: 1
+#   video_portal_image_type_id: 1
+#   name: MyString

@@ -1,0 +1,93 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+Micky:
+  event: one
+  unpublished: false
+  first_name: MyString
+  last_name: MyString
+  honor_prefix: MyString
+  honor_suffix: MyString
+  title: MyString
+  company: MyString
+  biography: MyText
+  photo_filename: MyString
+  event_file_photo: one
+  email: MyString
+  speaker_code: MyString
+  middle_initial: MyString
+  notes: MyText
+  address1: MyString
+  address2: MyString
+  address3: MyString
+  city: MyString
+  state: MyString
+  country: MyString
+  zip: MyString
+  work_phone: MyString
+  mobile_phone: MyString
+  home_phone: MyString
+  fax: MyString
+  financial_disclosure: MyText
+  event_file_cv: 1   #see test_helper
+  fd_tax_id: 1          #no corresponding table
+  fd_pay_to: MyString
+  fd_street_address: MyString
+  fd_city: MyString
+  fd_state: MyString
+  fd_zip: MyString
+  event_file_fd: 1   #see test_helper
+  speaker_type: one
+  twitter_url: MyString
+  facebook_url: MyString
+  linked_in: MyString
+  unsubscribed: false
+  token: MyString
+  custom_filter_1: MyText
+  custom_filter_2: MyText
+  custom_filter_3: MyText
+
+Minnie:
+  event: one
+  unpublished: false
+  first_name: MyString
+  last_name: MyString
+  honor_prefix: MyString
+  honor_suffix: MyString
+  title: MyString
+  company: MyString
+  biography: MyText
+  photo_filename: MyString
+  event_file_photo: two #see test helper
+  email: MyString
+  speaker_code: MyString
+  middle_initial: MyString
+  notes: MyText
+  address1: MyString
+  address2: MyString
+  address3: MyString
+  city: MyString
+  state: MyString
+  country: MyString
+  zip: MyString
+  work_phone: MyString
+  mobile_phone: MyString
+  home_phone: MyString
+  fax: MyString
+  financial_disclosure: MyText
+  event_file_cv: one   #see test_helper
+  fd_tax_id: 1         #no corresponding table
+  fd_pay_to: MyString
+  fd_street_address: MyString
+  fd_city: MyString
+  fd_state: MyString
+  fd_zip: MyString
+  event_file_fd: one   #see test_helper
+  speaker_type: two
+  twitter_url: MyString
+  facebook_url: MyString
+  linked_in: MyString
+  unsubscribed: false
+  token: MyString
+  custom_filter_1: MyText
+  custom_filter_2: MyText
+  custom_filter_3: MyText

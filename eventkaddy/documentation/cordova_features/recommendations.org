@@ -1,0 +1,49 @@
+#+TITLE: Recommendations
+* Settings Toggles
+** EKM.DONT_SHOW_OLDER_RECOMMENDATIONS
+Set to true when you only want the recommendations of the most recent date to be shown on the recommendations pages. This is not the same as showing only recommendations of the current date, and should be used in the case that we feel it is least surprising to an attendee if recommendations they've seen before do not disappear without being replaced. In other words, if there are no recommendations that day, or the attendee's internet is not working.
+
+Setting to false will mean all recommendations including those from previous days will be shown, which may be of interest to attendees who want a quick way to find speakers for sessions they learned about through recommendations on previous days. Recommendations will be listed under date headings in order of most recent active_date. This is all based on the recommendations.active_date, not the session.date, though they should in practice be the same. It is best to base it on active_date of the recommendation in order to leave open the flexibility of recommending sessions for future dates, especially before the conference has started.
+
+Conceivably, we might want to be able to create recommendations in advance without showing them, but that feature is not implemented.
+* Relevant Files
+https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/controllers/recommendations-controller.js][recommendations-controller]]
+Just creates the list view and feeds it data. There could be other views in the future, but for now I'm avoiding over-complicating the feature.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/views/recommendations-list-view.js][recommendations-list-view]]
+List view, ie the index of recommendations.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/bb-collections/RecommendationStore.js][Recommendations Collection]]
+Collection with sort by most recent date then by earliest time. Sessions and Exhibitors Collection both defined here for now, as they are likely to often be modified together.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/bb-models/Recommendation.js][Recommendations Model]]
+Sessions and Exhibitors Collection both defined here for now, as they are likely to often be modified together.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/notices/bcbs-notice.js][BCBS Notice Screen]]
+Duplicating changes from Notice Screen.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/notices/Notice.js][Notice Screen]]
+Shown before trying to download recommendations, and removed on failure or success of fetch.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/index.html][index.html]]
+An additional template. A div added to content divs.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/settings/title-settings.js][title settings]]
+Contains the text for two failure alerts when recommendations cannot be fetched.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/app-core/App.js][App js]]
+Needed to add to pageDivList to make view work.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/app-core/core-bb-routing.js][routing]]
+define controller + divLookup (though I don't think we'll make use of divLookup
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/bb-view-loader.js][View Loader]]
+Add view js file to loading path. I believe this is used for forcing reloading of scripts in an already submitted app?
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/misc-utility-functions.js][util functions]]
+Added safe truncate function.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/settings.js][settings js]]
+Added DONT_SHOW_OLDER_RECOMMENDATIONS
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/views/hbgroup-view.js][hbgroup view]]
+Added cases for recommendations.
+** [[https://github.com/dtgallant/lodestar/blob/rabbit-dev/ekbackbone/javascripts/misc-utility-functions.js][util functions]]
+** [[https://github.com/dtgallant/lodestar/blob/cms-prod-stable/eventkaddy/app/controllers/attendees_controller.rb][api endpoint]]
+cms prod stable endpoint; contains query that populates the recommendations endpoint. Remember that this endpoint may become deprecated if cms-prod-stable is replaced with the new api
+
+* Relevant Commits
+** [[https://github.com/dtgallant/lodestar/commit/ec4e8428110010404087f7243d290dff219618aa][cms-prod-stable]]
+Endpoint for recommendations.
+** [[https://github.com/dtgallant/lodestar/commit/4783fdfa8da9e2979299c98fe371f20446096760][rabbit-dev]]
+Initial commit of the main functionality.
+** [[https://github.com/dtgallant/lodestar/commit/438c76cf74054a15662c43ae7c5369fb418f9ead][ox]]
+Just add new home button types

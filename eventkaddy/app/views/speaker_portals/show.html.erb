@@ -1,0 +1,94 @@
+<div class="form">
+  <%= form_for(@session, :html => { :class => "form" }, :url => { :action => "update" } ) do |f| %>
+    <div class="form-group">
+      <p> <%= f.label :title, "Title *", class: "form-label" %> </p>
+      <p> <%= f.text_field :title, class: "form-control", disabled: true %> </p>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :program_type, class: "form-label" %>
+      <%= f.collection_select(:program_type_id, ProgramType.where( name: @speaker_portal_settings.program_types), :id, :name, {}, class: "custom-select", disabled: true)  %>
+    </div>
+
+      <div class="form-group">
+        <%= f.label :description, "Abstract #{@speaker_portal_settings&.required_abstract ? '*' : ''}" %>
+        <%= f.text_area :description, size: "70x5", class: "form-control" , :required => @speaker_portal_settings&.required_abstract ? @speaker_portal_settings&.required_abstract : false , maxlength: 600 , disabled: true%>
+      </div>
+    
+    <br/>
+      <div class="form-group">
+        <%= f.label :learning_objective, "Learning Objectives #{ @speaker_portal_settings&.required_learning_objectives ? '*': ''}" %>
+        <%= f.text_area :learning_objective, class: "form-control", :required => @speaker_portal_settings&.required_learning_objectives ? @speaker_portal_settings&.required_learning_objectives : false, maxlength: 500, disabled: true  %>
+      </div>
+
+      <div class="form-group"> 
+        <%= f.label "Select Tags #{ @speaker_portal_settings&.required_tags ? '*' : '' }" %>
+        <%= f.select :session_tag, options_for_select(
+          @event.tag_sets_hash ? @event.tag_sets_hash["1"].flatten : [], selected: @session_tags.pluck(:name)
+          ), {}, :multiple=> true, :validate=> true, :class=> 'form-control session-select', :required => @speaker_portal_settings&.required_tags ? @speaker_portal_settings&.required_tags : false, disabled: true %> 
+      </div>
+
+    <hr/>
+
+    <%= f.hidden_field :tag_type, :value => @tag_type.id %>
+    <%= f.hidden_field :event_id, :value => @event.id %>
+
+      <div class="form-group">
+        <%= f.label "Other Tags #{ @speaker_portal_settings&.required_other_tags ? '*': ''}" %>
+        <%= f.text_field :other_session_tag, value: @other_session_tags.pluck(:name).join('||'),  class: "form-control", :required => @speaker_portal_settings&.required_other_tags ? @speaker_portal_settings&.required_other_tags : false, disabled: true %>
+      </div>
+
+      <div class="form-group"> 
+        <%= f.label "Select KeyWords #{ @speaker_portal_settings&.required_keywords ? '*':'' }" %>
+        <%= f.select :session_keyword, options_for_select(@keywords, selected: @session_keywords.pluck(:name)), {}, :multiple=> true, :validate=> true, :class=> 'form-control session-select', :required => @speaker_portal_settings&.required_keywords ? @speaker_portal_settings&.required_keywords : false , disabled: true%> 
+      </div>
+
+      <div class="form-group">
+        <%= f.label "Other KeyWords #{@speaker_portal_settings&.required_other_keywords ? '*': ''}" %>
+        <%= f.text_field :other_keyword_tag, value: @session_other_keywords.pluck(:name).join('||'), class: "form-control", :required => @speaker_portal_settings&.required_other_keywords ? @speaker_portal_settings&.required_other_keywords : false, disabled: true %>
+      </div>
+
+    <% if @session.fields %>
+      <% @session_fields.each do |field| %>
+        <% if field["type"] == 'text' %>
+          <%= f.label field["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+          <%= text_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"], value: field["value"] %>
+        <% elsif field["type"] == 'textarea' %>
+          <%= f.label field["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+          <%= text_area_tag "user[#{field["name"]}]", field["value"], class: field["className"], required: field["required"], :value => field["value"]  %>
+        <% elsif field["type"] == 'checkbox-group' %>
+          <%= f.label field["label"] %>
+          <br/>
+          <% field["values"].each do |option| %>
+            <%= check_box_tag "user[#{field["name"]}][]", option["label"], option["selected"] ? option["selected"] : false %>
+            <%= label_tag option["label"], option["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+            <br>
+          <% end %>
+        <% elsif field["type"] == 'radio-group' %>
+          <%= f.label field["label"] %>
+          <% field["values"].each do |option| %>
+            <%= radio_button_tag "user[#{field["name"]}]", option["label"], option["selected"] ? option["selected"] : false %>
+            <%= label_tag option["label"], option["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+          <% end %>
+        <% elsif field["type"] == 'date' %>
+          <%= f.label field["label"] %>
+          <%= date_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"], value: field["value"] %>
+        <% elsif field["type"] == 'number' %>
+            <%= f.label field["label"]&.gsub(/(&nbsp;|\s)+/, " ") %>
+            <%= number_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"], value: field["value"] %>
+        <% elsif field["type"] == 'header' %>
+          <h1><%= field["label"] %></h1>
+        <% elsif field["type"] == 'paragraph' %>
+          <p><%= field["label"].html_safe %></p>
+        <% end %>
+        <br/>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<style>
+  .session-select{
+    height: 200px !important;
+  }
+</style>

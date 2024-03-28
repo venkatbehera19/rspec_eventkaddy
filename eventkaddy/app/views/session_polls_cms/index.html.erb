@@ -1,0 +1,40 @@
+<h1>Session Polls</h1>
+<% unless @sessions_with_polls.length > 0 %>
+  <p class="h5 text-uppercase align-middle">
+    There are no Session Polls.
+  </p>
+<%else%>  
+  <% @sessions_with_polls.length > 0 && @sessions_with_polls.each_with_index do |session_with_polls,index| %>
+    <div class="card border-light">
+      <div class="card-header" id="heading-<%=index%>">
+        <h5 class="mb-0">
+          <p class="collapsed" data-toggle="collapse" data-target="#sessionCollapse-<%=session_with_polls.id%>" aria-expanded="true" aria-controls="sessionCollapse-<%=session_with_polls.id%>">
+            <%= session_with_polls.title %>
+          </p>
+        </h5>
+      </div>
+      
+      <div id="sessionCollapse-<%=session_with_polls.id%>" class="collapse" aria-labelledby="heading-<%=index%>" >
+        <ul class="list-group list-group-flush">
+          <% session_with_polls.poll_sessions.each do |session_poll| %>
+            <li class="pollSessionListItem list-group-item list-group-item-action">
+              <div class ="d-flex justify-content-between align-items-center">
+                <%= session_poll.title %>
+                <div id="containerDiv-<%= session_poll.id %>" class="btn-group d-flex">
+                  <% if session_poll.activate_history == 0 %>
+                    <%= link_to 'Edit', edit_session_poll_path(session_poll), class:"btn btn-outline-secondary", id: "editBtn-#{session_poll.id}" %>
+                  <% else %>
+                    <%= link_to 'Reset', session_poll_restore_path(session_poll), class:"btn btn-outline-warning", :method => :post ,remote: true, id: "resetBtn-#{session_poll.id}", data: { confirm: 'Are you sure you want to reset this Session Poll?' }%>
+                  <% end %>
+                  <%= link_to 'Show', session_poll_path(session_poll), class:"btn btn-outline-info" %>
+                  <%= link_to 'Delete', session_poll_path(session_poll), data: { confirm: 'Are you sure you want to delete this Session Poll?' }, :method => :delete ,class:"btn btn-outline-danger" %>
+                </div>
+              </div>
+            </li>
+          <%end%>
+        </ul>
+        
+      </div>
+    </div>
+  <%end%>
+<%end%>

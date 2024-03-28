@@ -1,0 +1,40 @@
+:css
+  .stat { font-weight:bold;display:inline; }
+
+%br
+
+.div= link_to "Export App Badge Statistics To Spreadsheet", "/events/game_stats_report.xlsx", class: "btn-link"
+
+%h5 Badge Completion
+- @db.badges_completed.each do |b|
+  .stat= "Attendees who completed #{b[:badges_completed]} badge#{"s" if b[:badges_completed]!=1}: "
+  = b[:attendee_count]
+  %br
+%br
+- @db.badges_completed_by_badge_name.each do |b|
+  .stat= "Attendees who completed #{b[:name]}: "
+  = b[:attendee_count]
+  %br
+%h5 Leaderboard
+:ruby
+  def tie_break_explanation t1, t2, rank
+    "Acquired points #{distance_of_time_in_words( t1, t2 )} faster than rank #{rank + 1}"
+  end
+%table.table.table-striped
+  %thead{style:"text-align:left;"}
+    %tr
+      %th{style:"padding-right:10px;"} Rank
+      %th Name
+      %th{style:"padding-left:10px;"} Score
+      %th{style:"padding-left:10px;"} Tiebreak Reason
+  %tbody
+    - @db.top_ten_attendees_by_points.each_with_index do |a, i|
+      %tr
+        %td.stat= "#{i+1}." 
+        %td= "[#{a.account_code}] #{a.name}"
+        %td{style:"padding-left:10px;"}= a.points
+        - if @db.top_ten_attendees_by_points[i + 1] && @db.top_ten_attendees_by_points[i + 1].points == a.points
+          %td{style:"padding-left:10px;"}= tie_break_explanation a.most_recent_update, @db.top_ten_attendees_by_points[i + 1].most_recent_update, i + 1
+        - else
+          %td
+

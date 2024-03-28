@@ -1,0 +1,163 @@
+%h5 Text Color Theme
+%small Please select Light text-color for Dark backgrounds and vice versa.
+
+%br/
+%br/
+.field
+    = f.radio_button(:dark_bg_theme, true)
+    Light&nbsp;&nbsp;
+    = f.radio_button(:dark_bg_theme, false)
+    Dark
+    
+.form-group
+    %label Text Color
+    %br
+    = f.text_field :text_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.text_color || '000000', style: "width: 85%;"
+.form-group
+    %label Link Color
+    %br
+    = f.text_field :link_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.link_color || '000000', style: "width: 85%;"
+
+%br/
+.form-group
+    %label Content Link Color
+    %br
+    = f.text_field :content_link_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.content_link_color || '000000', style: "width: 85%;"
+
+%br/
+.custom-control.custom-switch
+    = f.check_box :bold_text, class: "custom-control-input", id: "bold-text-switch"
+    %label.custom-control-label{:for => "bold-text-switch"} Bold Text
+%br/
+.custom-control.custom-switch
+    = f.check_box :navbar_text_shadow, class: "custom-control-input", id: "navbar-text-shadow-switch"
+    %label.custom-control-label{:for => "navbar-text-shadow-switch"}Navbar Text Shadow
+%br/
+.custom-control.custom-switch
+    = f.check_box :text_shadow, class: "custom-control-input", id: "text-shadow-switch"
+    %label.custom-control-label{:for => "text-shadow-switch"} Text Shadow
+%br/
+.custom-control.custom-switch
+    = f.check_box :text_shadow_h1, class: "custom-control-input", id: "text-shadow_h1-switch"
+    %label.custom-control-label{:for => "text-shadow_h1-switch"} Apply Text Shadow to h1
+%br/
+.custom-control.custom-switch
+    = f.check_box :text_shadow_h2, class: "custom-control-input", id: "text-shadow_h2-switch"
+    %label.custom-control-label{:for => "text-shadow_h2-switch"} Apply Text Shadow to h2
+%hr/
+%h5 NavBar Color
+.form-group
+    %label Gradient Top
+    %br
+    = f.text_field :gradient_top, class: 'jpicker form-control d-inline', value: @registration_portal_settings.gradient_top || '317eac', style: "width: 85%;"
+.form-group
+    %label Gradient Bottom
+    %br
+    = f.text_field :gradient_bottom, class: 'jpicker form-control d-inline', value: @registration_portal_settings.gradient_bottom || 'a4b5c0', style: "width: 85%;"
+%hr/
+%h5 Page Background
+.form-group
+    %label Background Image
+    %br
+    -if !@registration_portal_settings.body_background_image.blank?
+        - efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(@registration_portal_settings.body_background_image.to_i)
+        - if efile.cloud_storage_type_id.blank?
+            = image_tag(efile.path, :class=>'photo_preview')
+        - else
+            = image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview')
+        %br/
+        = link_to 'Remove Image', "/registrations/remove_bg_img", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-danger"
+
+        %br/
+        %h6 Change Image
+
+
+    = file_field_tag :body_background_image
+    %br
+.form-group
+    %label Background Color
+    %br
+    = f.text_field :body_background_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.body_background_color || 'ffffff', style: "width: 85%;"
+.form-group
+    %label Background Position
+    %br
+    = f.text_field :body_background_position, value: @registration_portal_settings.body_background_position || 'center', class: 'form-control d-inline', style: "width: 85%;"
+.form-group
+    %label Background Size
+    %br
+    = f.text_field :body_background_size, value: @registration_portal_settings.body_background_size || 'cover', class: 'form-control d-inline', style: "width: 85%;"    
+.form-group
+    %label Background Repeat
+    %br
+    = f.text_field :body_background_repeat, value: @registration_portal_settings.body_background_repeat || 'no-repeat', class: 'form-control d-inline', style: "width: 85%;"       
+%hr/
+%h5 Headers font-color
+.form-group
+    %label h1
+    %br
+    = f.text_field :h1_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.h1_color || '317eac', style: "width: 85%;"
+.form-group
+    %label h2
+    %br
+    = f.text_field :h2_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.h2_color || '317eac', style: "width: 85%;"    
+.form-group
+    %label h3
+    %br
+    = f.text_field :h3_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.h3_color || '317eac', style: "width: 85%;"       
+
+.form-group
+    %label h4
+    %br
+    = f.text_field :h4_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.h4_color || '317eac', style: "width: 85%;"       
+
+%hr/
+%h5 Nav-links And Buttons
+.form-group
+    %label Register Button And View-And-Edit-Profile Button (registration index page)
+    %br
+    = f.select :reg_button_class, btn_classes_enum(), {}, selected:(@registration_portal_settings.reg_button_class.blank? ? "btn-danger" : @registration_portal_settings.reg_button_class), id:"button_classes_select", class:"form-control d-inline"
+    = button_tag :Register, id:"sample_button", class:"btn #{@registration_portal_settings.reg_button_class.blank? ? "btn-danger" : @registration_portal_settings.reg_button_class}", type:"button"
+.form-group
+    %label Nav Links (navbar)
+    %br
+    = f.text_field :nav_links_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.nav_links_color || 'ffffff', style: "width: 85%;"    
+.form-group
+    %label Already Registered Link
+    %br
+    = f.text_field :already_reg_link_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.already_reg_link_color || '2fa4e7', style: "width: 85%;"       
+
+%hr/
+%h5 Social Links
+%small Note: If the inputs fields are blank, link icons will not appear on the page
+.form-group
+    %label twitter
+    %br
+    = f.text_field :twitter_link, class: 'form-control d-inline', style: "width: 85%;"
+.form-group
+    %label facebook
+    %br
+    = f.text_field :facebook_link, class: 'form-control d-inline', style: "width: 85%;"    
+.form-group
+    %label instagram
+    %br
+    = f.text_field :instagram_link, class: 'form-control d-inline', style: "width: 85%;"       
+
+.form-group
+    %label skype
+    %br
+    = f.text_field :skype_link, class: 'form-control d-inline', style: "width: 85%;"       
+
+.form-group
+    %label linkedin
+    %br
+    = f.text_field :linkedin_link, class: 'form-control d-inline', style: "width: 85%;"       
+%h5 Registration Button Color
+.form-group
+    %label Button
+    %br
+    = f.text_field :registration_button_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.registration_button_color || '54b4eb', style: "width: 85%;"
+.form-group
+    %label Button Text Color
+    %br
+    = f.text_field :registration_button_text_color, class: 'jpicker form-control d-inline', value: @registration_portal_settings.registration_button_text_color || 'ffffff', style: "width: 85%;"
+%hr/

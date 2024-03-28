@@ -1,0 +1,2 @@
+class SurveyType < ApplicationRecord
+end

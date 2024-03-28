@@ -1,0 +1,40 @@
+<div class="top-individual-filters">
+  <div class="outer-div col-md-12" style="height: 120px">
+    <div class="inner-div col-md-12">
+      <ul id="dates">
+        <% dates = (@event.event_start_at.to_date..@event.event_end_at.to_date).to_a %>
+        <% dates << "ALL" %>
+        <% today_date_include = dates.include?(Date.today) %>
+        <% dates.each_with_index do |date, index|%>
+          <% if params[:date] && params[:date] == 'ALL' %>
+            <% active = params[:date] == date ? "active" : '' %>
+          <% else %>
+            <% active = Date.parse(@sel_date) == date ? "active" : '' %>
+          <% end %>
+
+          <li class="<%= active %>" id="date" data-date="<%= date.to_s %>" style="width: 120px;" onclick="changeDate(<%= "'#{date}'"%>)">
+            <% if date != "ALL" %>
+              <p style="margin-top: 8px;width: 100px">
+                <%= "Day #{index+1} #{active.present? ? "(#{@sessions.values.flatten.count})" : ''}" %>
+              </p>
+              <span style="font-size: inherit;"><%= date.strftime("%a, %B %d") %></span>
+            <%else%>
+              <p style="margin-top: 8px;width: 100px"><%= "All Days #{active.present? ? "(#{@total_sessions})" : ''}" %></p>
+              <span style="font-size: inherit;"><%= "#{dates.first.strftime("%A")} - #{dates[-2].strftime("%A")}"%></span>
+            <%end%>
+          </li>
+        <%end%>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="sessions-list">
+  <%= render partial: 'sessions_list' %>
+  <div class="loader d-none">
+    <div class="spinner"></div>
+  </div>
+  <%= hidden_field_tag :total_pages, @total_pages&.ceil %>
+</div>
+
+
+<button onclick="topFunction()" id="topBtn" title="Go to top"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>

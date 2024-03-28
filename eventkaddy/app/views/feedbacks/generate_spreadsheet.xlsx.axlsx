@@ -1,0 +1,38 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+	
+	wb.add_worksheet(name: "Feedback Results") do |sheet|
+	  sheet.add_row ['Session Code',
+ 				'Attendee Name',
+                  'Session Title',
+                  'Speaker Name',
+                  'Rating Type',
+                  'Rating',
+				 'Comment'], :style => [black_cell, black_cell, black_cell, black_cell,black_cell,black_cell,black_cell]
+	  @feedbacks.each do |feedback|
+
+      type = feedback.speaker_id ? 'Delivery Rating' : 'Content Rating' 
+      rating = feedback.rating != -1 ? feedback.rating : ''
+	  	
+      speaker_name = if type == 'Delivery Rating'
+                       "#{feedback.speaker_first_name} #{feedback.speaker_last_name}"
+                     else
+                       Session.find(feedback.session_id).all_speaker_names
+                     end
+
+	attendee_name =  "#{feedback.attendee_first_name} #{feedback.attendee_last_name}"
+      sheet.add_row([
+        feedback.session_code,
+		attendee_name,
+        feedback.session_title,
+        speaker_name,
+        type,
+        rating,
+        feedback.comment
+      ])
+      sheet.column_widths 20, 60, 60, 20, 20, 20, 80
+		end
+	end
+end

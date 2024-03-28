@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col-md-5 mx-auto dark-themed-container <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>" id="verify-email">
+    <h2>Message</h2>
+    <p style="text-align:center"><%= @message %></p>
+    <% if @verified %>
+      <%  if @settings && @settings["launch_virtual_portal"] && !@settings["landing"].blank? %>
+        <%= link_to "Login to Profile", "#{@event.virtual_portal_url}#{@settings["landing"]}", :target=>"_blank", class: "btn btn-primary btn-sm btn-center" %>
+      <% else %>
+        <%= link_to "Login to Profile", "/#{@event_id}/registrations/login_to_profile", class: "btn btn-primary btn-center" %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>

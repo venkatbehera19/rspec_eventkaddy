@@ -1,0 +1,46 @@
+<div>
+  <div class ="registered-attendee-table <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+    <% if  !@settings.json.blank? && @settings.enable_profile_message_display %>
+      <h4 class="alert alert-info"><%=  @settings.message_to_display %></h4>
+    <% end %>
+    <h2>Profile</h2>
+    <div class="pull-right btn-group mb-2">
+      <%= link_to "Edit Profile", "/#{params[:event_id]}/registrations/edit_profile/#{params[:slug]}", class: "btn btn-primary btn-sm" %>
+      <%  if !@settings.json.blank? && @settings.launch_virtual_portal && !@settings.landing.blank? %>
+        <%= link_to "Launch Virtual Portal", "#{@event.virtual_portal_url}#{@settings.landing}", :target=>"_blank", class: "btn btn-primary btn-sm" %>
+      <% end %>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover">
+          <tbody>              
+          <% text_field = ->(col, label, attendee_col, options={}) {
+              if(@settings.respond_to?(col) &&  @settings.method("#{col}").call())
+                "<tr><td>#{label}</td><td>#{@attendee.method("#{attendee_col}").call}</td></tr>".html_safe
+              end
+          } %>
+          <%= text_field["locked_email",    "Email",                    "email"] %>
+          <%= text_field["username",        "Username",                 "username"] %>
+          <%= text_field["first_name",      "First Name",               "first_name"] %>
+          <%= text_field["last_name",       "Last Name",                "last_name"] %>
+          <%= text_field["honor_prefix",    "Honor Prefix",             "honor_prefix"] %>
+          <%= text_field["honor_suffix",    "Honor Suffix",             "honor_suffix"] %>
+          <%= text_field["business_unit",   "Business Unit",            "business_unit"] %>
+          <%= text_field["title",           "Title",                    "title"] %>
+          <%= text_field["business_phone",  "Business Phone",           "business_phone"] %>
+          <%= text_field["mobile_phone",    "Mobile Phone",             "mobile_phone"] %>
+          <%= text_field["company",         "Company",                  "company"] %>
+          <%= text_field["twitter_url",     "Twitter URL",              "twitter_url"] %>
+          <%= text_field["facebook_url",    "Facebook URL",             "facebook_url"] %>
+          <%= text_field["linked_in",       "Linked In",                "linked_in"] %>
+          <%= text_field["biography",       "Biography",                "biography"] %>
+          <%= text_field["country",         "Country",                  "country"] %>
+          <%= text_field["state",           "State",                    "state"] %>
+          <%= text_field["city",            "City",                     "city"] %>
+          <%= text_field["custom_fields_1", "Custom Fields 1",          "custom_fields_1"] %>
+          <%= text_field["custom_fields_2", "Custom Fields 2",          "custom_fields_2"] %>
+          <%= text_field["custom_fields_3", "Custom Fields 3",          "custom_fields_3"] %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

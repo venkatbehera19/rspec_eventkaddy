@@ -1,0 +1,29 @@
+<%= form_for(@event, :html => { :multipart => true, :class=>"form-horizontal well" }, :url => { :action => :create_exhibitor_files_for_placeholders }, :method => :post ) do |f| %>
+
+  <% if @event.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event.errors.count, "error") %> prohibited this exhibitor file from being saved:</h2>
+
+      <ul>
+      <% @event.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+
+<p>Use this function if you have already uploaded exhibitor files and their filenames via an excel sheet previously. Files uploaded here must match the filenames from the aforementioned excel sheet.</p>
+
+    <div class="field">
+    <%= label_tag :event_files, "Choose a File" %>
+    <%= file_field_tag "event_files[]", :multiple => true %>
+  </div><br />
+
+  <div class="actions">
+    <%= f.submit "Upload Files", class:"btn btn-primary"   %>
+  </div>
+<% end %>

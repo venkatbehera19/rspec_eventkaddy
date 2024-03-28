@@ -1,0 +1,23 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   portal_logo_event_file_id: 1
+#   travel_and_lodging: MyString
+#   hide_cv: false
+#   hide_bio: false
+#   sessions_editable: false
+#   av_requirements_content: MyText
+#   welcome_screen_content: MyText
+#   support_email_address: MyText
+
+# two:
+#   event_id: 1
+#   portal_logo_event_file_id: 1
+#   travel_and_lodging: MyString
+#   hide_cv: false
+#   hide_bio: false
+#   sessions_editable: false
+#   av_requirements_content: MyText
+#   welcome_screen_content: MyText
+#   support_email_address: MyText

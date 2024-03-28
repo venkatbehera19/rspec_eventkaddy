@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  device_type: one
+  app_image_type: one
+  app_image_size: one
+
+two:
+  device_type: two
+  app_image_type: two
+  app_image_size: two

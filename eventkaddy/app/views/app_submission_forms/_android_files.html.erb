@@ -1,0 +1,67 @@
+<div class="card d-block shadow-sm p-0  mb-3 bg-white rounded">
+  <div class="card-body pb-0">
+    <%= form.label :android_app_icon do %>
+      <p class = "form-element-title card-title ">
+        App Icon
+        <span class="blockquote-footer">
+          (1024*1024, format: png)
+        </span>
+      </p>
+      <p class = "form-element-description card-subtitle">A unique image for your mobile application, and the first users see when they find the app on the <%=store_name%>.</p>
+    <%end%>
+  </div>
+  <div>
+    <%= form.file_field :android_app_icon, id: "android-icon-pond", class: "android_icon_pond"%>
+  </div>
+</div>
+
+<div class="card d-block shadow-sm p-0  mb-3 bg-white rounded">
+  <div class="card-body pb-0">
+    <%= form.label :android_portrait_splash_screen do %>
+      <p class = "form-element-title card-title ">
+        Portrait Splash Screen 
+        <span class="blockquote-footer">
+          (1080*1920, format: png)
+        <span>
+      </p>
+      <p class = "form-element-description card-subtitle">Splash screens to notify the user that the program is in the process of loading.</p>
+    <%end%>
+  </div>
+  <div>
+    <%= form.file_field :android_portrait_splash_screen, id: "android-portrait-splash-pond", class: "android_portrait_splash_pond"%>
+  </div>
+</div>
+
+<div class="card d-block shadow-sm p-0  mb-3 bg-white rounded">
+  <div class="card-body pb-0">
+    <%= form.label :android_landscape_splash_screen do %>
+      <p class = "form-element-title card-title ">
+        Landscape Splash Screen 
+        <span class="blockquote-footer">
+        (1920*1080, format: png)
+        <span>
+      </p>
+      <p class = "form-element-description card-subtitle">Splash screens to notify the user that the program is in the process of loading.</p>
+    <%end%>
+  </div>
+  <div>
+    <%= form.file_field :android_landscape_splash_screen, id: "android-landscape-splash-pond", class: "android_landscape_splash_pond"%>
+  </div>
+</div>
+
+<div class="card d-block shadow-sm p-0  mb-3 bg-white rounded">
+  <div class="card-body pb-0">
+    <%= form.label :android_feature_graphic do %>
+      <p class = "form-element-title card-title ">
+        Feature Graphic 
+        <span class="blockquote-footer">
+        (1024*500, format: png/jpeg)
+        <span>
+      </p>
+      <p class = "form-element-description card-subtitle">Splash screens to notify the user that the program is in the process of loading.</p>
+    <%end%>
+  </div>
+  <div>
+    <%= form.file_field :android_feature_graphic, id: "android-feature-graphic-pond", class: "android_feature_graphic_pond"%>
+  </div>
+</div>

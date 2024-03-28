@@ -1,0 +1,17 @@
+<div class="top-individual-filters">
+  <div class="alphabets-horizontal">
+    <% ('a'..'z').to_a.push('all').each do |alpha| %>
+      <span class="alphabets" data-alpha="<%= alpha %>" onclick='<%= "#{type}('#{alpha}', #{params[:event_id]})" %>'> <%= alpha.upcase %> </span>
+    <% end %>
+  </div>
+  <div class="mobile-alphabets close-v-alphas collapse" id="mobile_alphas">
+    <% ('a'..'z').each_with_index do |alpha, index| %>
+      <% if index+1 <= 13 %>
+        <span class="alphabets first-col" data-alpha="<%= alpha %>" onclick='<%= "#{type}('#{alpha}', #{params[:event_id]})" %>'> <%= alpha.upcase %> </span>
+      <% else %>
+        <span class="alphabets second-col" data-alpha="<%= alpha %>" onclick='<%= "#{type}('#{alpha}', #{params[:event_id]})" %>'> <%= alpha.upcase %> </span>
+      <% end %>
+    <% end %>
+  </div>
+  <div class="show-v-alphas" data-toggle="collapse" data-target="#mobile_alphas"><i class="fa fa-font"></i></div>
+</div>

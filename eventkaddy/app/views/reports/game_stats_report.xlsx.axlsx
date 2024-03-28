@@ -1,0 +1,28 @@
+wb = xlsx_package.workbook
+
+wb.styles do |s|
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  # make export match output of stats method; may not be permenant
+  heads = AppBadge.first.stats.keys.map {|v| v.to_s.titleize }
+
+  style = heads.map {|h| black_cell }
+
+  wb.add_worksheet(name: "Game Stats Data") do |sheet|
+    sheet.add_row heads, :style => style
+
+    badges = AppBadge.where(event_id:@event_id)
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: badges.length)
+      @job.write_to_file
+    end
+
+    badges.each { |app_badge|
+      row = app_badge.stats.values
+      sheet.add_row row
+      @job.plus_one_row if @job
+      sheet.column_widths *row.map{ |i| 30 }
+    }
+  end
+
+end

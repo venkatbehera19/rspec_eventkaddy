@@ -1,0 +1,33 @@
+$("#exhibitor-cards").html("<%= j (render partial: 'exhibitors_list', locals: {exhibitors: @exhibitors}) %>");
+$("#sponsored-exhibitor-cards").html("<%= j (render partial: 'exhibitors_list', locals: {exhibitors: @sponsored_exhibitors}) %>");
+
+
+$('.sponsored-exhibitor-pagination').removeAttr("disabled");
+$('.exhibitor-pagination').removeAttr("disabled");
+
+$('#total_pages_sponsor').val("<%= @total_pages_sponsor%>")
+
+if (sel_filter.exhibitorPage <= 1)
+	$("#prev_exhibitors").attr("disabled", "disabled");
+if (sel_filter.exhibitorPage >= parseFloat($("#total_pages").val()))
+	$("#next_exhibitors").attr("disabled", "disabled");
+
+
+
+if (sel_filter.exhibitorSponsorPage <= 1)
+	$("#prev_sponsored_exhibitors").attr("disabled", "disabled");
+if (sel_filter.exhibitorSponsorPage >= parseFloat($("#total_pages_sponsor").val()))
+	$("#next_sponsored_exhibitors").attr("disabled", "disabled");
+
+topFunction()
+
+$('.lazyloaded').lazyload({
+	load : function() {
+	  	crop(this.src, 1).then((canvas) => {
+        if(!$(this.parentElement).find('canvas')[0]){
+          $(this.parentElement).prepend(canvas)
+          $(this).hide()
+        }
+	  });
+	}
+});

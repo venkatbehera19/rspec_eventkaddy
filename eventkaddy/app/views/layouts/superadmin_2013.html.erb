@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>EventKaddy CMS</title>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<%= csrf_meta_tag %>
+	<style>
+		.profile-link{
+			padding: 5px 10px !important;
+			font-size: 24px;
+		}
+		.profile-nav{
+			display: flex;
+			align-items: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="d-flex" id="wrapper">
+
+		<div class="bg-light border-right" id="sidebar-wrapper">
+			<div class="brand-logo text-center">
+				<% es = event_setting %>
+				<% if (es && es.event_file_portal_logo) then %>
+					<a href="/">
+						<%= image_tag(es.event_file_portal_logo.path, :size=>'100x40') %>
+					</a>
+				<% else %>
+					<a href="/">
+						<!-- <img src="/assets/ek_logo.png" width="100px" height="40px"> -->
+						<%= image_tag 'ek_logo_large.png', width: "100px", height: "40px" %>
+					</a>
+				<% end %>
+			</div>
+      <div class="list-group list-group-flush">
+        <%= link_to "/home/index", class: "list-group-item list-group-item-action bg-light d-flex" do %>
+					<div class="icon-div"><i class="fa fa-home"></i></div> Home
+				<% end %>
+        <%= link_to "/users", class: "list-group-item list-group-item-action bg-light d-flex" do %>
+					<div class="icon-div"><i class="fa fa-user-circle"></i></div> Users
+				<% end %>
+				<%= link_to "/organizations", class: "list-group-item list-group-item-action bg-light d-flex" do %>
+					<div class="icon-div"><i class="fa fa-sitemap"></i></div> Organizations	
+				<% end %>
+				<%= link_to "/events", class: "list-group-item list-group-item-action bg-light d-flex" do %>
+					<div class="icon-div"><i class="fa fa-calendar-check-o"></i></div> Events
+				<% end %>
+				<%= yield :event_sub_menu %>
+      </div>
+    </div>
+
+		<div id="page-content-wrapper">
+			<nav class="navbar navbar-expand-md navbar-dark bg-celurean-custom">
+				<svg id="menu-toggle" class="opened" width="30" height="30" viewBox="0 0 100 100" onclick="this.classList.toggle('opened');">
+						<path class="line line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058" />
+						<path class="line line2" d="M 20,50 H 80" />
+						<path class="line line3" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942" />
+				</svg>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#top-nav">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="top-nav">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item"><%= link_to "Home", "/home/index", class: "nav-link" %></li>
+						<% if user_signed_in? then %>
+							<% if (current_user.role?("SuperAdmin") || current_user.role?("Client")) %>
+								<li class="nav-item profile-nav">
+									<%= link_to profile_user_path(id: current_user.id), class: "profile-link" do %>
+								    <i class="fa fa-user-circle "></i>
+									<% end %>
+								</li>	
+							<%end%>
+							<li class="nav-item"><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete, class: "nav-link" %></li>
+						<% else %>
+							<li class="nav-item"><%= link_to "Speaker Portal", "/users/sign_in", class: "nav-link" %></li>
+							<li class="nav-item"><%= link_to "Manager Login", "/users/sign_in", class: "nav-link" %></li>
+						<% end %>
+					</ul>
+
+					<ul class="navbar-nav pull-right">
+						<% if @organization_for_events then %>
+							<li class="nav-item"><%= link_to @organization_for_events.name, "/events/indexfororg/#{@organization_for_events.id}", class: "nav-link" %></li>
+						<% else %>
+							<li></li>
+						<% end %>
+					</ul>
+				</div>	
+			</nav>
+				<% if notice %>
+					<div class="alert alert-success shadow" role="alert" style="border-left:#155724 5px solid; border-radius: 0px">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true" style="color:#155724">&times;</span>
+						</button>
+						<div class="row">
+								<i class="fa fa-check-circle-o success-font"></i>
+								<p style="font-size:12px" class="mb-0 font-weight-light"><%= notice %></p>
+						</div>
+					</div>
+				<% end %>
+				<% if alert %>
+					<div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true" style="color:#721C24">&times;</span>
+						</button>
+						<div class="row">
+								<i class="fa fa-exclamation-circle danger-font"></i>
+								<p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+						</div>
+					</div>
+				<% end %>
+			<br>
+			<div class="container mt-4 content-containerp5">
+				<div class="row">
+					<div class="col-md-12">
+						<div id="content">
+
+							<%= yield %>
+						</div>
+					</div>
+				</div><!--row-->
+			</div>
+
+			<br>
+			<br>
+
+			<div class="footer">
+				<div class="footer-text">
+					Questions?  Email support@eventkaddy.com
+				</div>
+			</div>	
+		</div>
+
+	</div>
+  
+	<!-- </div> -->
+</body>
+</html>

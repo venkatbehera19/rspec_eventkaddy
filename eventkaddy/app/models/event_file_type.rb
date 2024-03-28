@@ -1,0 +1,2 @@
+class EventFileType < ApplicationRecord
+end

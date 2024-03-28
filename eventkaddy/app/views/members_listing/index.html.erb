@@ -1,0 +1,67 @@
+<div class="row">
+  <div class="col-6 mb-2">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+      New Member <i class="fa fa-plus"></i>
+    </button>
+  </div>
+
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Members Listing</h4>
+      <br>
+
+        <table class="table table-striped" id="event_ticket_table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>First Name</th>
+              <th>Second Name</th>
+              <th>Email</th>
+              <th>Subscribed</th>
+              <th><%= @organization_setting.fields.except(:is_subscribed).keys.map{|key| key.gsub('_', ' ').capitalize}.join(',') rescue '' %></th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @members.each do |member| %>
+              <tr>
+                <td><%= member.json["title"] %></td>
+                <td><%= member.first_name %></td>
+                <td><%= member.last_name %></td>
+                <td><%= member.email %></td>
+                <td><%= member.json["is_subscribed"] %></td>
+                <td><%= member.json.except('is_subscribed').values.join(',') %></td>
+                <td class="table-actions">
+                  <div class="btn-group d-flex">
+                    <%= link_to 'Reset Password Mail', "/members_listing/send_reset_password_mail?user_id=#{member.id}", class:"btn btn-outline-info send-reset-mail", remote: true %>
+                  </div>
+                  <div class="dropdown">
+                    <a data-toggle='dropdown' style="font-size: 1.4rem; cursor: pointer;">
+                      <i class="fa fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                      <%= link_to 'Reset Password Mail', "/members_listing/send_reset_password_mail?user_id=#{member.id}", class:"btn text-info dropdown-item send-reset-mail" , remote: true %>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+
+<%= render 'add_member' %>
+
+<script >
+  ajaxUpdate = (event, data, xhr) => {
+    if(xhr === 'success'){
+      alert(data.message)
+    }else{
+      alert('Something Went Wrong')
+    }
+  }
+
+  $('.send-reset-mail').bind("ajax:success", ajaxUpdate).bind("ajax:error", ajaxUpdate)
+</script>

@@ -1,0 +1,53 @@
+<%= form_for(@event, :html => { :multipart => true, :class=>"form-horizontal well" }, :url => { :action => :upload_gallery_photos } ) do |f| %>
+
+  <% if @event.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+      <ul>
+      <% @event.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+
+	<!-- <p>You have <%#= Dir["public/event_data/#{session[:event_id].to_s}/gallery_photos/*"].length %> files currently in your online photo gallery. View your gallery HERE</p> <br> -->
+
+	<p>Use this page to upload files taken at photo booths and any other images you would like to appear in the online photo gallery.</p>
+
+    <div class="field">
+    <%= label_tag :event_files, "Choose a File" %>
+    <%= file_field_tag "event_files[]", :multiple => true %>
+  </div><br />
+
+  <div class="actions">
+    <%= f.submit "Upload Files", class:"btn btn-primary"   %>
+  </div>
+<% end %>
+
+<table id="photo-gallery" cellpadding="0" cellspacing="0" border="0" class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Date Created</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @photos.each do |photo| %>
+
+      <tr>
+          <td><%= image_tag(photo.path, style:"height:100px;") %></td>
+          <td><%= photo.created_at %></td>
+          <td><center><%= link_to 'Delete', photo, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></center></td>
+
+        </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,32 @@
+<h3>Account Password Update</h3>
+
+<%= form_for(@user, :html => { :method => :put, class: "well" }, :url => {:action => "update_account"}) do |f| %>
+
+	<% if @user.errors.any? %>
+		<div class="alert alert-danger">
+	    	<p><%= pluralize(@user.errors.count, "error") %></p>
+
+		  	<p>
+		    	<ul>
+		      		<% @user.errors.full_messages.each do |msg| %>
+		        	<li><%= msg %></li>
+		      		<% end %>
+		      	</ul>
+	    	</p>
+	    </div>
+    <% end %>
+	<div class="form-group">
+		<%= f.label :password %> <i>(leave blank if you don't want to change it)</i>
+		<%= f.password_field :password, class: "form-control" %>
+	</div>
+	<div class="form-group">
+		<%= f.label :password_confirmation %>
+		<%= f.password_field :password_confirmation, class: "form-control" %>
+	</div>
+	<div class="form-group">
+		<%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i>
+		<%= f.password_field :current_password, class: "form-control" %>
+	</div>
+
+  <p><%= f.submit "Update", class:"btn btn-primary"    %></p>
+<% end %>

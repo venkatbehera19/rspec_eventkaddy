@@ -1,0 +1,70 @@
+<div class="row justify-content-center">
+<%= form_for(@member, url: '/members', :html => {:class => "form-horizontal col-md-6" }) do |f| %>
+  <% if @member.errors.any? %>
+    <div class="alert alert-danger" role="alert">
+      <h5><%= pluralize(@member.errors.count, "error") %> prohibited this ticket from being saved:</h2>
+
+      <ul>
+      <% @member.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <h3>Please fill the form to Subscribe </h3>
+
+      <%= hidden_field_tag 'user[organization_ids]', @organization.id %>
+
+      <!-- <div class="form-group"> -->
+        <%#= f.label :title %>
+        <%#= f.text_field :title , class: "form-control", required: true, placeholder: 'Title'%>
+      <!-- </div> -->
+
+      <div class="form-group">
+        <%#= f.label :first_name %>
+        <%= f.text_field :first_name , class: "form-control", required: true, placeholder: 'First Name'%>
+      </div>
+
+      <div class="form-group">
+        <%#= f.label :last_name %>
+        <%= f.text_field :last_name , class: "form-control", required: true, placeholder: 'Last Name'%>
+      </div>
+
+      <div class="form-group">
+        <%#= f.label :email %>
+        <%= f.email_field :email , class: "form-control", required: true, placeholder: 'Email'%>
+      </div>
+
+      <div class="form-group  passwordField">
+        <%#= f.label :password %>
+        <%= f.password_field :password, class: "form-control", placeholder: 'Password'%>
+      </div>
+
+      <div class="form-group  passwordField">
+        <%#= f.label :password_confirmation %>
+        <%= f.password_field :password_confirmation, class: "form-control", placeholder: 'Password Confirmation' %>
+      </div>
+
+      <% if @organization_setting.fields && OrganizationSetting.can_be_fields?(@organization_setting.fields) %>
+        <% @organization_setting.fields.each do |field, type| %>
+          <div class="form-group">
+            <% if type == 'text' %>
+              <%= text_field_tag "user[#{field}]", nil, class: "form-control", required: true, placeholder: field.titleize.gsub('_', ' ') %>
+            <% elsif type == 'number' %>
+              <%= number_field_tag "user[#{field}]", nil, class: "form-control", required: true, placeholder: field.titleize.gsub('_', ' ') %>
+            <% elsif type == 'checkbox' %>
+              <%= check_box_tag "user[#{field}]", true, false %> 
+              <%= label_tag "user[#{field}]", field.titleize.gsub('_', ' ') %> 
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+
+  <div class="actions">
+    <%= f.submit 'Subscribe', class:"btn btn-primary"   %>
+  </div>
+
+  <p> Already Subscribed, <%= link_to "Log In", new_user_session_path, {style: 'color: #2fa4e7;'} %> </p>
+<% end %>
+</div>

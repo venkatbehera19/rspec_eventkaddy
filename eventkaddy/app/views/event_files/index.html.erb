@@ -1,0 +1,35 @@
+<h1>Listing event_files</h1>
+
+<%= link_to 'New Event file', new_event_file_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Event</th>
+    <th>Name</th>
+    <th>Size</th>
+    <th>Mime type</th>
+    <th>Path</th>
+    <th>Event file type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @event_files.each do |event_file| %>
+  <tr>
+    <td><%= event_file.event_id %></td>
+    <td><%= event_file.name %></td>
+    <td><%= event_file.size %></td>
+    <td><%= event_file.mime_type %></td>
+    <td><%= event_file.path %></td>
+    <td><%= event_file.event_file_type_id %></td>
+    <td><%= link_to 'Show', event_file ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_event_file_path(event_file) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', event_file, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

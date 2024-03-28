@@ -1,0 +1,88 @@
+<h4>Room Layouts for Session: <%= @session.session_code %></h4>
+
+
+<% if (current_user.role? :speaker) then %>
+  <%= link_to 'Back', "/speaker_portals/sessions" ,class:"btn btn-secondary" %>
+<% else %>
+  <%= link_to 'Back to Session', event_session_path(@session) ,class:"btn btn-secondary" %>
+<% end %>
+
+
+<br/><br/>
+
+<table class="table well">
+  <thead>
+    <tr>
+      <th>Layout Name</th>
+      <th>Configuration</th>
+      <th>Image</th>
+      <th>Default</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @sessions_room_layouts.each do |r| %>
+      <tr>
+          <td><%= r.title %></td>
+          <td><%= r.room_layout_configuration.name %></td>
+          <% if r.event_file!=nil then %>
+            <td><%= image_tag r.event_file.path, {height:75,width:75} %></td>
+          <% else %>
+            <td></td>
+          <% end %>
+          
+          <% if (r.default==true) then %>
+            <td>true</td>
+          <% else %>
+            <td>false</td>
+          <% end %>
+          
+          <td><%= link_to 'View/Download',r.event_file.path, class:'btn show' %></td>
+          
+          <% if ( current_user.role?(:client) || current_user.role?(:super_admin) ) then %>
+           <td><%= link_to 'Delete', "/room_layouts/#{@session.id}/remove_session_link/#{r.id}", :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+          <% else %>
+            <td></td>
+          <% end %>
+
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br/><br/>
+
+<% if ( current_user.role?(:client) || current_user.role?(:super_admin) ) then %>
+
+  <%= form_for(@sessions_room_layout, :html => { :multipart => true, :class=>"form-horizontal well" }, :url => {:action => "create_session_link"} ) do |f| %>
+    
+    <% if @sessions_room_layout.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@sessions_room_layout.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+        <ul>
+        <% @sessions_room_layout.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.hidden_field :event_id, :value => session[:event_id] %>
+      <%= f.hidden_field :session_id, :value => @session.id %>
+    </div>
+
+    <div class="field">
+    <%= label_tag(:select_room_layout, "Add Room Layout:") %><br />
+    <%= f.collection_select(:room_layout_id,@room_layouts, :id, :title,{}, class:'custom-select') %>  
+    </div>
+    
+    <div class="actions">
+      <%= f.submit "Submit", class:"btn btn-primary"   %>
+    </div>
+  <% end %>
+
+<% end %>

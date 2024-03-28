@@ -1,0 +1,32 @@
+<%= form_for(@event_setting, :html => { :multipart => true, :class => "form-horizontal well" }, :url => {:action => "update_exhibitor_welcome"}   ) do |f| %>
+
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+  <hr/>
+
+  <% if @event_setting.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event_setting.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+      <ul>
+      <% @event_setting.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :exhibitor_welcome, "Exhibitor Welcome Page Content" %><br />
+    <%= f.cktext_area :exhibitor_welcome, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"} %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+  
+<% end %>
+
+
+<br />

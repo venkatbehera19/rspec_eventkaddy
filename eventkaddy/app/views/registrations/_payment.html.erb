@@ -1,0 +1,229 @@
+<% if @mode_of_payment.iid == 'affinipay' %>
+  <script src="https://cdn.affinipay.com/hostedfields/1.4.0/fieldGen_1.4.0.js">
+  </script>
+<% else %>
+  <script src="https://www.paypal.com/sdk/js?client-id=<%= @client_id %>"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+<% end %>
+<div class="reg-section-container m-3">
+  <div id="timer"></div>
+  <div class="row">
+    <div class="col-md-7">
+      <div class="order-items">
+        <ul class="list-group list-group-flush">
+          <% @order.order_items.each do |item| %>
+            <div class="list-group-item list-group-item-action" id="orderitem-<%= item.id %>">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"><%= item.item.product_category.name %></h5>
+                <span class="font-weight-bold p-3" id="price-<%= item.id %>">$ <%= user.is_member ? (sprintf "%.2f",item.item.member_price * item.quantity) : (sprintf "%.2f", item.price * item.quantity) %></span>
+              </div>
+              <p class="mb-1">
+                <%= item.item.name %>
+              </p>
+              <p class="mb-1">
+                Qty: <%= item.quantity %>
+              </p>
+              <% if item.size? %>
+                <p class="mb-1">Size (<%= item&.size %>)</p>
+              <% end %>  
+            </div>
+          <% end %>
+          <% processing_fee_percentage = 3 %>
+          <% processing_fee = (@order.total * processing_fee_percentage / 100.0).round() %>
+          <% total_with_processing_fee = @order.total + processing_fee %>
+          <div class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">Processing Fee</h5>
+              <span class="font-weight-bold p-3" id="processing_fee">$ <%= sprintf "%.2f", processing_fee %></span>
+            </div>
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">Total (Including Processing Fee)</h5>
+              <span class="font-weight-bold p-3" id="total_amount">
+                $ <%= sprintf "%.2f", total_with_processing_fee %>
+              </span>
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <% if @stripe_env %>
+      <%= form_for :transaction, url: "/#{params[:event_id]}/registrations/payment/create_checkout_session_stripe", :html => {id: "payment-form"} do |f| %>
+        <%= f.hidden_field :id, :value => @mode_of_payment.id %>
+        <%= hidden_field_tag 'transaction[order_id]', @order.id %>
+        <div id="payment-element">
+        </div>
+        <%= f.submit "Pay now", class:"btn btn-primary", id: "submit" %>
+        <div class="spinner hidden" id="spinner"></div>
+        <div id="payment-message" class="hidden"></div>
+      <% end %>
+    <% elsif @client_id %>
+      <%= form_for :transaction, url: "/#{params[:event_id]}/exhibitor_registrations/exhibitor_payment_success", :html => {id: "payment-form"} do |f| %>
+          
+        <div id="dropin-container"></div>
+        <input type="hidden" id="nonce" name="payment_method_nonce"/>
+        <%= f.submit "Submit", class:"btn btn-primary d-none" %>
+      <% end %>
+
+      <div class="for-error"></div>
+      <div id='submit-paypal'></div>
+    <% elsif @mode_of_payment.iid == 'affinipay' %>
+      <div class="coupon-code-container">
+        <label for="coupon-code">Coupon Code</label>
+        <br>
+        <form id="coupon">
+          <input type="text" name="" id="coupon-code" class="form-control">
+          <input type="submit" value="Apply" class="btn btn-primary" id="coupon_submit_button">
+          <input type="button" value="Remove" class="btn btn-danger" id="coupon_remove_button">
+          <p id="coupon-error" style="color: red;"></p>
+          <p id="coupon-success" style="color: rgb(51, 216, 29);"></p>
+        </form>
+      </div>
+      <div class="form-information">
+        <h2 style="color: black !important;">Payment Information</h2>
+        <p class="ml-1" style="font-weight: normal !important; font-size: 17px;">Enter your payment information.</p>
+        <p class="ml-1" style="font-weight: normal !important;">All transaction are secure and encrypted.</p>
+      </div>
+      <form id="afiniform">
+        <div class="mb-2">
+          <label for="my_credit_card_field_id">Credit Card</label>
+          <div class="input-with-icon">
+            <div class="input-icon">
+              <i class="fa fa-credit-card"></i>
+            </div>
+          </div>
+          <div id="my_credit_card_field_id" class="custom-input-field"></div>
+          <div id="credit_card_error" style="color: red;"></div>
+        </div>
+        <div class="form-row mb-2">
+          <div class="col-auto">
+            <label for="exp_month">Exp Month</label>
+            <input id="exp_month" type="text" name="exp_month" class="form-control">
+          </div>
+          <div class="col-auto">
+            <label for="exp_year">Exp Year</label>
+            <input id="exp_year" type="text" name="exp_year" class="form-control">
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label for="my_cvv_field_id">CVV</label>
+          <div class="input-with-icon">
+            <div class="input-icon">
+              <i class="fa fa-key"></i>
+            </div>
+          </div>
+          <div id="my_cvv_field_id" class="custom-input-field"></div>
+          <div id="cvv_error" style="color: red;"></div>
+        </div>
+
+        <div class="mb-2" style="max-width: 84% !important;">
+          <label for="address_1">Address 1</label>
+          <input id="address_1" type="text" name="address_1" class="form-control">
+        </div>
+
+        <div class="form-row mb-2">
+          <div class="col-auto">
+            <label for="city">City</label>
+            <input id="city" type="text" name="city" class="form-control">
+          </div>
+          <div class="col-auto">
+            <label for="state">State</label>
+            <input id="state" type="text" name="state" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row mb-2">
+          <div class="col-auto">
+            <label for="country">Country</label>
+            <input id="country" type="text" name="country" class="form-control">
+          </div>
+          <div class="col-auto">
+            <label for="postal_code">Zip Code</label>
+            <input id="postal_code" type="text" name="postal_code" class="form-control">
+          </div>
+        </div>
+        <input id="primary-payment-btn" type="submit" value="Submit" class="btn btn-primary" style="max-width: 84% !important;" />
+      </form>
+    <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .reg-header{
+    background-image: url("<%=(!!@settings.reg_header_bg_img && @settings.show_header_edit_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : '' %>");
+  }
+  label.registered-attendee-form-label {
+    font-size: 1.2rem;
+  }
+  .required-field::after {
+    content: '*';
+    color: red;
+    margin-left: 2px;
+  }
+  td {
+    font-weight: 100 !important;
+  }
+  li.nav-item.HeaderCart {
+      cursor: pointer;
+      font: inherit;
+      border: none;
+      background-color: white;
+      color: black;
+      padding: 0.35rem 1rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-radius: 25px;
+      font-weight: bold;
+  }
+
+  span.HeaderCart_icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      margin-right: 0.5rem;
+  }
+  span.HeaderCart_badge {
+      background-color: black;
+      padding: 0.25rem 1rem;
+      border-radius: 25px;
+      margin-left: 1rem;
+      font-weight: bold;
+      color: white;
+  }
+  #topBtn {
+     display: none;
+     position: fixed;
+     bottom: 66px;
+     right: 30px;
+     z-index: 99;
+     font-size: 25px;
+     border: none;
+     outline: none;
+     background-color: black;
+     color: white;
+     cursor: pointer;
+     padding: 15px;
+     border-radius: 4px;
+  }
+
+  span#lblCartCount {
+      font-size: 14px;
+      background: #2FA4E7;
+      color: #fff;
+      padding: 0 5px;
+      vertical-align: top;
+      margin-left: -6px;
+  }
+
+  #timer {
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: red;
+  }
+  @media (max-width: 767.98px) { .border-sm-start-none { border-left: none !important; } }
+</style>
+

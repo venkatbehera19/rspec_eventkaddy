@@ -1,0 +1,27 @@
+<div class="bg-light custom-border px-3 py-3 mt-3" id="session_polls_tab">
+	<h3>Sessions Polls List</h3>
+	<div id="polls_list_container">
+		<%= render partial: 'polls_list', locals: {session: @session} %>
+	</div>
+</div>
+
+<script>
+
+  function addSessionPoll(eventId, sessionId, location) {
+    poll_id = $("#polls_list").val()
+    if(poll_id){
+      $.ajax({
+        type: "post",
+        url: "/moderator_portals/session_polls/add_polls",
+        data: {event: eventId, session: sessionId, poll: poll_id, location: location},
+        success: function (response) {
+          $("#polls_list_container").html(response)
+          $(`#polls_list option[value='${poll_id}']`).remove()
+        },
+        error: function (error) {
+          alert(error);
+        }
+      });
+    }
+  }
+</script>

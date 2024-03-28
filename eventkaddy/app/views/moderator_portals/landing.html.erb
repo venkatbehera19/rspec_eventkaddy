@@ -1,0 +1,125 @@
+<h4 style="color:black;">Welcome to the Q&A moderator portal. Click on a session below to view a live feed of incoming questions from the audience.</h4><br>
+
+<div class="sessions-filter row justify-content-center">
+	<div class = "col-md-8">
+		<div class="outer-div col-md-12">
+		  <div class="inner-div col-md-12">
+			  <ul id="dates">
+					<% today_date_include = @dates.include?(Date.today) %>
+					<%@dates.each_with_index do |date, index|%>
+						<% active = today_date_include ? date == Date.today ? "active" : "" : index == 0 ? "active" : "" %>
+						<li class="<%= active %>" data-date="<%= date.to_s %>">
+							<span><%= date.strftime("%B") %></span>
+							<p style="margin-top: 8px;font-size: 20px;"><%= date.strftime("%d")%><p>
+						</li>
+					<%end%>
+				</ul>
+			</div>
+		</div>
+		<div class="row mt-4 ml-2">
+			<div class="custom-control custom-switch col-3">
+				<input type="checkbox" class="custom-control-input filters" id="qa_enabled" checked='checked'>
+				<label class="custom-control-label" for="qa_enabled">QA Enabled?</label>
+				<i class="fa fa-info-circle" aria-hidden="true"></i>
+				<p class="qa-info" style="color: #307eb6;font-style: italic;">QA Enabled</p>
+			</div>
+			<div class="custom-control custom-switch col-3">
+				<input type="checkbox" class="custom-control-input filters" id="chat_enabled" checked='checked' disabled='disabled'>
+				<label class="custom-control-label" for="chat_enabled">Chat Enabled?</label>
+				<i class="fa fa-comments-o" aria-hidden="true"></i>
+				<p class="chat-info" style="color: #307eb6;font-style: italic;">Chat Enabled</p>
+			</div>
+			<div class="custom-control custom-switch col-3">
+				<input type="checkbox" class="custom-control-input filters" id="poll_enabled" >
+				<label class="custom-control-label" for="poll_enabled">Poll Enabled?</label>
+				<i class="fa fa-bar-chart" aria-hidden="true"></i>
+				<p class="poll-info" style="color: #307eb6;font-style: italic;">Poll Disabled</p>
+			</div>
+			<div class="form-group col-md-3">
+				<input type="text" class="form-control" id="session_search" placeholder="Session Search">
+			</div>
+		</div>
+	</div>
+</div>
+<div class="sessions-list">
+</div>
+
+<script>
+	$(document).ready(function () {
+		$("li.active")[0].scrollIntoView();
+		$('#dates li').click(function(e){
+		$(this).addClass('active').siblings().removeClass('active');
+				updateFilterStates();
+				getSessions();
+			});
+		});
+
+	var filterState = {
+		date: null,
+		qa_enabled: true,
+		chat_enabled: null,
+		poll_enabled: null,
+		search: null
+	}
+	updateFilterStates();
+	//console.log(filterState);
+	getSessions();
+
+	$('.filters').on('change', function(){
+		updateFilterStates();
+		getSessions();
+	});
+
+	function updateFilterStates(){
+		sel_date = $("ul#dates li.active").data("date")
+		filterState.date = sel_date ? sel_date : null;
+		filterState.qa_enabled = $('#qa_enabled').is(':checked');
+		filterState.poll_enabled = $('#poll_enabled').is(':checked');
+		filterState.search = $('#session_search').val();
+		if (!filterState.qa_enabled){
+			filterState.chat_enabled = $('#chat_enabled').is(':checked');
+			$('#chat_enabled').removeAttr('disabled');
+		} else {
+			filterState.chat_enabled = null;
+			$('#chat_enabled').attr('disabled', 'disabled');
+		}
+	}
+
+	function getSessions(){
+		$('.filters').attr('disabled', 'disabled');
+		$.get("/moderator_portals/sessions", filterState,
+			function (data, textStatus, jqXHR) {
+				$('.sessions-list').html(data);
+				$('.filters').removeAttr('disabled');
+				if ($('#qa_enabled').is(':checked'))
+					$('#chat_enabled').attr('disabled', 'disabled');
+			}
+		);
+	}
+
+	$("#qa_enabled").on('change', function(){
+		check = $(this).is(':checked');
+		qa_text = check ? "QA Checked" : "QA Not Checked"
+		chat_text = check ? "Chat Disabled,Not Checked" : "Chat Enabled"
+		$(".qa-info").text(qa_text)
+		$(".chat-info").text(chat_text)
+	});
+
+	$("#chat_enabled").on('change', function(){
+		check = $(this).is(':checked');
+		chat_text = check ? "Chat Checked" : "Chat Not Checked"
+		$(".chat-info").text(chat_text)
+	});
+
+	$("#poll_enabled").on('change',function(){
+		check = $(this).is(':checked');
+		poll_text = check ? 'Poll Checked' : "Poll Not Checked"
+		$(".poll-info").text(poll_text)
+	})
+
+	$("#session_search").on("input", function(){
+		updateFilterStates();
+		getSessions();
+    });
+
+</script>

@@ -1,0 +1,13 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   session_id: 1
+#   title: MyString
+#   description: MyText
+
+# two:
+#   event_id: 1
+#   session_id: 1
+#   title: MyString
+#   description: MyText

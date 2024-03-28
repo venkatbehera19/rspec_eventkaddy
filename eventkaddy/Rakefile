@@ -1,0 +1,70 @@
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
+
+require File.expand_path('../config/application', __FILE__)
+require 'rake'
+# require 'rake/testtask'
+require_relative "lib/code_amend/code_amend"
+require_relative "lib/code_amend/templates/pdf_templates"
+# require "rails/test_unit/runner"
+
+Eventkaddy::Application.load_tasks
+
+
+#############################################
+# addition test directories outside rails MVC
+#############################################
+
+# None of these solutions are working for some reason;
+# They don't seem to ammend the standard pipeline, and end
+# up missing requires they need
+
+# namespace :test do
+#   desc "Test tests/modules/* code"
+#   Rake::TestTask.new(modules: 'test:prepare') do |t|
+#     t.pattern = 'test/modules/**/*_test.rb'
+#   end
+# end
+# Rake::Task['test:run'].enhance ["test:modules"]
+
+#desc "Runs all tests in test folder"
+
+# task :test do
+#   $: << "test"
+#   ARGV.shift if ARGV[0] == "test"
+#   Rails::TestRunner.run(ARGV)
+# end
+
+# namespace :test do
+#   task :prepare do
+#     # Placeholder task for other Railtie and plugins to enhance.
+#     # If used with Active Record, this task runs before the database schema is synchronized.
+#   end
+
+#   task :run => %w[test]
+
+#   desc "Run tests quickly, but also reset db"
+#   task :db => %w[db:test:prepare test]
+
+#   ["functional", "modules", "unit", "performance"].each do |name|
+#     task name => "test:prepare" do
+#       $: << "test"
+#       Rails::TestRunner.run(["test/#{name}"])
+#     end
+#   end
+
+#   # task :generators => "test:prepare" do
+#   #   $: << "test"
+#   #   Rails::TestRunner.run(["test/lib/generators"])
+#   # end
+
+#   # task :units => "test:prepare" do
+#   #   $: << "test"
+#   #   Rails::TestRunner.run(["test/models", "test/helpers", "test/unit"])
+#   # end
+
+#   # task :functionals => "test:prepare" do
+#   #   $: << "test"
+#   #   Rails::TestRunner.run(["test/controllers", "test/mailers", "test/functional"])
+#   # end
+# end 

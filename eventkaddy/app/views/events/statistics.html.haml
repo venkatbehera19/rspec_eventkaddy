@@ -1,0 +1,118 @@
+%script(src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.js")
+.col-12.text-right
+  = link_to "/events/statistics_pdf", class: "btn btn-link" do
+    %i.fa.fa-download Download as PDF
+
+%br/
+
+.card-columns.row
+  %a.card.box-shadow-1.col-lg-2.col-md-3.col-6(href="/sessions")
+    .card-body
+      %h4.card-title
+        = @db.sessions_listed
+      .stat Sessions Listed
+  
+  %a.card.box-shadow-1.col-lg-2.col-md-3.col-6(href="/exhibitors")
+    .card-body
+      %h4.card-title
+        = @db.exhibitors_listed
+      .stat Exhibitors Listed
+  
+  %a.card.box-shadow-1.col-lg-2.col-md-3.col-6(href="/session_files/summary?content_type=conference note")
+    .card-body
+      %h4.card-title
+        = @db.conference_notes_listed
+      .stat Session Files
+
+  %a.card.box-shadow-1.col-lg-2.col-md-3.col-6(href="/attendees")
+    .card-body
+      %h4.card-title
+        = @db.attendees_listed
+      .stat Attendees Listed
+  
+  %a.card.box-shadow-1.col-lg-2.col-md-3.col-6(href="/notifications")
+    .card-body
+      %h4.card-title
+        = @db.push_notifications_sent
+      .stat Notifications Sent
+    
+  .card.box-shadow-1.col-lg-2.col-md-3.col-6
+    .card-body
+      %h4.card-title
+        = @db.notes_taken
+      .stat Notes Taken
+  
+  .card.box-shadow-1.col-lg-2.col-md-3.col-6
+    .card-body
+      %h4.card-title
+        = @db.messages_sent
+      .stat Messages Sent
+
+  %a.card.box-shadow-1.col-lg-2.col-md-3.col-6(href="/purchases")
+    .card-body
+      %h4.card-title
+        = @purchases.count
+      .stat Item Purchased
+
+  %a.card.box-shadow-1.col-lg-2.col-md-3.col-6(href="/purchases")
+    .card-body
+      %h4.card-title
+        = @purchases.sum('transactions.amount').to_s
+      .stat Total Amount Purchased
+
+
+= hidden_field_tag :total_logins, @db.attendees_logins
+= hidden_field_tag :unique_logins, @db.unique_logins
+= hidden_field_tag :duck_total_logins, @video_portal_logins['total_logins']
+= hidden_field_tag :duck_unique_logins, @video_portal_logins['unique_logins']
+
+- if @db.attendees_logins > 0
+  .row 
+    .col-md-3
+      %canvas#overall_login_canvas(style="width: 100%; height: auto;")
+    .col-md-3
+      %canvas#pc_vs_web_login(style="width: 100%; height: auto;")
+    .col-md-3
+      %canvas#unique_pc_vs_web_login(style="width: 100%; height: auto;")
+    .col-md-3
+      %canvas#duck_logins(style="width: 100%; height: auto;")
+
+#device_data
+  - @db.login_devices.each do |d|
+    = hidden_field_tag d[:device], d[:count]
+#unique_device_data
+  - @db.unique_login_devices.each do |d|
+    = hidden_field_tag d[:device], d[:count]
+
+= hidden_field_tag :survey_counts, @db.surveys_completed.to_json(root: false)
+
+#bar_graph_container.row
+
+%br/
+%br/
+.row
+  - unless @db.get_generated_certificate_names.blank?
+    .card.box-shadow-1.dashboard-box.col-md-5
+      .card-body
+        %h5.card-title Generated PDFs
+        %ul.list-group.list-group-flush
+          - @db.get_generated_certificate_names.each do |c|
+            %lilist-group-item.d-flex.justify-content-between.align-items-center
+              .stat= c[:name]
+              %span.badge.badge-primary.badge-pill
+                .stat= c[:count] 
+  .card.box-shadow-1.dashboard-box.col-md-5.ml-md-3
+    .card-body
+      %h5.card-title Feedback
+      %ul.list-group.list-group-flush
+        %lilist-group-item.d-flex.justify-content-between.align-items-center
+          .stat Session Feedback
+          %span.badge.badge-primary.badge-pill
+            = @db.session_feedback
+        %lilist-group-item.d-flex.justify-content-between.align-items-center
+          .stat Speaker Feedback
+          %span.badge.badge-primary.badge-pill
+            = @db.speaker_feedback
+
+- settings = Setting.return_cms_settings session[:event_id]
+

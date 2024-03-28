@@ -1,0 +1,24 @@
+
+= form_for(@survey, :html => {:class=>"bg-light custom-border px-3 py-3" }, :url => {:action => "update_ce_certificate_associations"} ) do |f|
+
+  %h3= @survey.title
+
+  - if @survey.errors.any?
+    #error_explanation
+      %h2
+        = pluralize(@survey.errors.count, "error")
+        prohibited this event from being saved:
+      %ul
+        - @survey.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    Please Note: One survey could be associated with one certificate only.
+  = f.hidden_field :id, :value => params[:id]
+
+  .form-group.mb-2
+    = label_tag(:add_ce_certificates, "Select CE Certificates:")
+    = select_tag(:ce_certificate_id, options_for_select(@ce_certificates.map { |ce_certificate| ["#{ce_certificate.name}", ce_certificate.id] }, @selected), :multiple => false, :size=>30, class: "custom-select")
+
+  .actions
+    = f.submit "Add CE Certificate Associations for Survey", class:"btn btn-primary"

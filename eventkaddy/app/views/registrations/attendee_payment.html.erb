@@ -1,0 +1,826 @@
+<body>
+  <nav class="navbar navbar-light bg-light reg-banner">
+    <%= @settings.reg_banner.to_s.html_safe %>
+  </nav>
+  <div class="container-fluid d-flex flex-column mx-auto reg-main">
+    <div class="d-flex reg-section-container align-items-center reg-header pb-0" style="<%= "background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_edit_page %>">
+      <div class="row mx-auto d-flex reg-row">
+        <div class="col-12 d-flex reg-col">
+          <!-- ======= Nav ======= /
+          -->
+          <nav class="navbar navbar-expand-sm navbar-light full-width">
+            <a class="navbar-brand text-wrap">
+              <% event_setting = EventSetting.select(:portal_logo_event_file_id).where(event_id:params[:event_id]).first_or_create %>
+              <% if event_setting && event_setting.event_file_portal_logo %>
+                <%= image_tag(event_setting.event_file_portal_logo.path, :class =>'photo_preview') %>
+              <% else %>
+                <img src="/assets/ek_logo.png" width="100px"/>
+              <% end %>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations">
+                      <i class="fa fa-home"></i>
+                    </a>
+                  </li>
+                <% if @settings.method("agenda").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/agenda">
+                      AGENDA
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("speakers").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/speakers">
+                      SPEAKERS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("exhibitors").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/exhibitors">
+                      EXHIBITORS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("sponsors").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/sponsors">
+                      SPONSORS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("hotel_information").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/hotel_information">
+                      HOTEL INFORMATION
+                    </a>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </nav>
+          <div class="row">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if notice %>
+    <div class="alert alert-success shadow" role="alert" style="border-left:#155724 5px solid; border-radius: 0px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true" style="color:#155724">&times;</span>
+      </button>
+      <div class="row">
+        <i class="fa fa-check-circle-o success-font"></i>
+        <p style="font-size:12px" class="mb-0 font-weight-light"><%= notice %></p>
+      </div>
+    </div>
+  <% end %>
+  <% if alert %>
+      <div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true" style="color:#721C24">&times;</span>
+          </button>
+          <div class="row">
+                  <i class="fa fa-exclamation-circle danger-font"></i>
+                  <p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+          </div>
+      </div>
+  <% end %>
+  <div id="loader" class="loader"></div>
+  <div id="loading-message" class="loading-message">
+    Your payment is being processed. Do not refresh or close this page.
+  </div>
+  <div id="success-message-container"></div>
+  <div id="user_defined_header">
+    <% if (@current_tab!=nil && @current_tab.header_text!=nil && @current_tab.header_text.length > 0) %>
+        <hr class="soften">
+        <%=@current_tab.header_text.html_safe %>
+        <hr class="soften">
+    <% end %>
+  </div>
+  <%= render "/registrations/payment", after_payment_path: "", user: @user %>
+  <div id="user_defined_footer">
+    <% if @current_tab!=nil && @current_tab.footer_text!=nil && @current_tab.footer_text.length > 0 %>
+        <hr class="soften">
+        <%= @current_tab.footer_text.html_safe %>
+        <hr class="soften">
+    <% end %>
+  </div>
+  <div class="modal fade" id="success-modal" tabindex="-1" role="dialog" aria-labelledby="success-modal-label" aria-hidden="true">
+    <div class="modal-dialog payment" role="document">
+        <div class="modal-content">
+          <div id="user_defined_header">
+            <%= @settings.successful_modal_page_header.to_s.html_safe %>
+          </div>
+            <div class="modal-header">
+              <h5 class="modal-title" id="success-modal-label" style="margin-left: 35%;"></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p id="thankyou_message" style="text-align: center;"></p>
+              <p id="email_info" style="text-align: center;"></p>
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th>Order ID:</th>
+                    <td id="user-id-cell"></td>
+                  </tr>
+                  <tr>
+                    <th>Transaction ID:</th>
+                    <td id="transaction-id-cell"></td>
+                  </tr>
+                  <tr>
+                    <th>Amount:</th>
+                    <td id="amount-cell"></td>
+                  </tr>
+                  <tr>
+                    <th>Time:</th>
+                    <td id="time-cell"></td>
+                  </tr>
+                  <tr>
+                    <th>Email:</th>
+                    <td id="email-cell"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal fade" id="failed-modal" tabindex="-1" role="dialog" aria-labelledby="success-modal-label" aria-hidden="true">
+    <div class="modal-dialog payment" role="document">
+        <div class="modal-content">
+          <div id="user_defined_header">
+            <%= @settings.successful_modal_page_header.to_s.html_safe %>
+          </div>
+            <div class="modal-header">
+              <h5 class="modal-title" id="failed-modal-label" style="margin-left: 25%; color: #721C24;">Payment Failed</h5>
+            </div>
+            <div class="modal-body">
+              <p id="thankyou_message" style="text-align: center;"></p>
+              <p id="email_info" style="text-align: center;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="modal fade" id="error-message-modal" tabindex="-1" role="dialog" aria-labelledby="error-message-modal-label" aria-hidden="true">
+    <div class="modal-dialog error-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+              <p id="error-message1" style="color: #721C24; text-align: center;"></p>
+              <p id="error-message2" style="color: #721C24; text-align: center;"></p>
+            </div>
+        </div>
+    </div>
+  </div>
+
+</body>
+<% if @stripe_env %>
+  <script>
+    const stripe = Stripe('<%= @stripe_env %>');
+    var event_id = "<%= @event_id %>";
+    let elements;
+
+    initialize();
+
+    document
+      .querySelector("#payment-form")
+      .addEventListener("submit", handleSubmit);
+
+    // Fetches a payment intent and captures the client secret
+    
+    function initialize(){
+      return $.post("/orders/stripe/create_payment_attendee", $('#payment-form').serialize())
+          .then(function(data) {
+            console.log('data', data);
+            clientSecret = data.client_secret
+
+            const appearance = {
+              theme: 'stripe',
+            };
+
+            elements = stripe.elements({ appearance, clientSecret });
+            const paymentElementOptions = {
+              layout: "tabs",
+            };
+            const paymentElement = elements.create("payment", paymentElementOptions);
+            paymentElement.mount("#payment-element");
+          })
+          .catch(function(response) {
+            showMessage(response.responseJSON.error)
+          })
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      setLoading(true);
+      order_id = $('#transaction_order_id').val()
+      mode_of_payment_id = $('#transaction_id').val()
+      return stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/${event_id}/orders/stripe/complete_payment_order/${mode_of_payment_id}?orderId=${order_id}`,
+        },
+      })
+      .then(function (data){
+        if (data.error){
+          showMessage(data.error.message)
+          setLoading(false);
+        }
+      })
+      .catch(function (response) {
+        showMessage(response)
+      })
+    }
+
+    // ------- UI helpers -------
+
+    function showMessage(messageText) {
+      const messageContainer = document.querySelector("#payment-message");
+
+      messageContainer.classList.remove("hidden");
+      messageContainer.textContent = messageText;
+
+      setTimeout(function () {
+        messageContainer.classList.add("hidden");
+        messageText.textContent = "";
+      }, 4000);
+    }
+
+    // Show a spinner on payment submission
+    function setLoading(isLoading) {
+      if (isLoading) {
+        // Disable the button and show a spinner
+        document.querySelector("#submit").disabled = true;
+      } else {
+        document.querySelector("#submit").disabled = false;
+      }
+    }
+  </script>
+<% elsif @client_id %>
+  <script>
+
+    function submitForm(chargeID) {
+      var $form = $("#payment-form");
+      $form.append($('<input type="hidden" name="transaction[charge_id]"/>').val(chargeID));
+      formData = new FormData($form[0]);
+      action = $form.attr('action');
+      $.ajax({
+              url: action,
+              type: 'post',
+              data: formData,
+              async: true,
+              cache: false,
+              contentType: false,
+              enctype: 'multipart/form-data',
+              processData: false,
+              success: function (url) {
+                window.location.href = url.url
+              },
+              error: function (error) {
+                $('.for-error').text(error.responseJSON.message)
+              }
+          })
+    }
+
+
+    (function setupPaypal() {
+      paypal.Buttons({
+        env: '<%= @paypal_env %>',
+        createOrder: function() {
+          $('.for-error').text('')
+          timerPaused = true
+          return $.post("/orders/paypal/create_payment_for_exhibitor", $('#payment-form').serialize())
+          .then(function(data) {
+            return data.token;
+          })
+          .catch(function(response) {
+            $('.for-error').text(response.responseJSON.error)
+          })
+        },
+        onCancel: function(data){
+          timerPaused = false;
+        },
+        onApprove: function(data) {
+          return $.post("/orders/paypal/execute_payment_for_exhibitor", {
+            paymentID: data.paymentID,
+            orderID: data.orderID,
+            payerID:   data.payerID
+          }).then(function(response) {
+            timerPaused = true
+            submitForm(data.paymentID || data.orderID)
+          }).catch(function(error){
+            timerPaused = false
+            $('.for-error').text(error.responseJSON.error)
+            window.location.href = error.responseJSON.url
+          });
+        }
+      }).render('#submit-paypal');
+
+    }());
+
+  </script>
+<% end %>
+
+<% if @mode_of_payment.iid == 'affinipay' %>
+  <style>
+    #afiniform, form {
+      margin: 0 auto;
+    }
+    #afiniform, form input, form iframe {
+      width: 100%;
+      margin: 5px;
+    }
+    #afiniform, form iframe {
+      border: none;
+      height: 30px;
+    }
+  </style>
+  <script>
+     $(document).ready(function () {
+        var order_id = "<%= @order.id %>";
+        var event_id = "<%= @event_id %>"
+        var timer_time = "<%= @order.created_at %>"
+        var registration_url = "<%=  @registration_url %>"
+        var countdownInterval; // Declare countdownInterval here in the global scope
+
+        function timeRemaining(endTime) {
+          var date1 = new Date(endTime);
+          var date2 = new Date(date1);
+          date2.setMinutes(date1.getMinutes() + 10);
+          return date2;
+        }
+
+        var timer = document.getElementById('timer');
+
+        function startCountdown(finish_date, timer) {
+          countdownInterval = setInterval(function () {
+            var now = new Date().getTime();
+            var distance = finish_date - now;
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            timer.innerHTML = minutes + "m " + seconds + "s left";
+            if (distance <= 0) {
+              clearInterval(countdownInterval); // Stop the timer
+              window.location.replace(registration_url);
+            }
+          }, 1000);
+        }
+
+        startCountdown(timeRemaining(timer_time.replace(/-/g, '/')), timer);
+
+        var event_id = "<%= @event_id %>";
+        var order_id = "<%= @order.id %>";
+        var mode_of_payment_id = "<%= @mode_of_payment.id %>"
+        var registraion_form_id = "<%= @is_registered_user ? @order.user_id : @order.registration_form_id %>"
+        var client_key = "<%= @mode_of_payment.client_key %>"
+        var user_email = "<%= @user.email %>"
+        var user_name = "<%= @user.full_name %>"
+
+        const style = {
+          'font-size': '18px',
+          'border-radius': '4px',         
+          'padding': '0.375rem 0.75rem', 
+          'width': '100%',
+          'box-shadow': 'none',
+          'transition': 'border-color 0.2s ease-in-out',
+          'outline': 'none',
+          ':focus': {
+            'border-color': '#4CAF50',
+            'box-shadow': '0px 2px 4px rgba(76, 175, 80, 0.4)',
+          }
+        };
+        const hostedFieldsConfiguration = {
+          publicKey: client_key,
+          fields: [
+            {
+              selector: "#my_credit_card_field_id",
+              input: {
+                type: "credit_card_number",
+                css: style, 
+                class: 'form-control'
+              }
+            },
+            {
+              selector: "#my_cvv_field_id",
+              input: {
+                type: "cvv",
+                css: style
+              }
+            }
+          ]
+        };
+    
+        const hostedFieldsCallBack = function(state) {
+          console.log(state);
+        };
+    
+        const hostedFields = window.AffiniPay.HostedFields.initializeFields(
+          hostedFieldsConfiguration, hostedFieldsCallBack
+        );
+        $('#afiniform').on('submit', function(event){
+          // console.log('submitted')
+          event.preventDefault();
+          console.log(hostedFields.getState())
+    
+          const postal_code = document.getElementById('postal_code').value
+          const exp_year = document.getElementById('exp_year').value
+          const exp_month = document.getElementById('exp_month').value
+          const address_1 = document.getElementById('address_1').value
+          const city = document.getElementById('city').value
+          const state = document.getElementById('state').value
+          const country = document.getElementById('country').value
+          $('#primary-payment-btn').prop("disabled", true)
+          if(!hostedFields.getState()){
+            //send error
+            return;
+          }
+          
+          hostedFields.getPaymentToken({ 
+            "postal_code": postal_code, 
+            "exp_year": exp_year, 
+            "exp_month": exp_month, 
+            "email": user_email, 
+            "name": user_name,
+            "address1" : address_1,
+            "city": city,
+            "state": state,
+            "country": country,
+          })
+          .then(function(result){
+            console.log('<--------Id--------->', result.id)
+            var loader = document.getElementById("loader");
+            var loaderMessage = document.getElementById("loading-message");
+            loader.style.display = "block";
+            loaderMessage.style.display = "block";
+            hostedFields.disableIframeInput("#my_credit_card_field_id")
+            $.ajax({
+              type: "post",
+              url: "/orders/affinipay/create_payment",
+              data: {"payment_id": result.id, "event_id": event_id, "order_id": order_id, "mode_of_payment_id": mode_of_payment_id },
+              success: function (response) {
+                if (response.status == true){
+                  hostedFields.clearIframeInput("#my_credit_card_field_id")
+                    clearInterval(countdownInterval);
+                    // Open the Bootstrap modal
+                    $('#success-modal').modal('show');
+                    loader.style.display = "none";
+                    loaderMessage.style.display = "none";
+                    $('#user-id-cell').text(response.order_id);
+                    $('#transaction-id-cell').text(response.transaction_id);
+                    $('#email-cell').text(response.email);
+                    var amount = parseFloat(response.amount).toFixed(2);
+                    $('#amount-cell').text(`$ ${amount}`);
+                    var date = new Date(response.time);
+                    var day = date.getDate();
+                    var month = date.getMonth() + 1; // Months are zero-based
+                    var year = date.getFullYear();
+                    var hours = date.getHours();
+                    var minutes = date.getMinutes();
+                    var ampm = hours >= 12 ? 'pm' : 'am';
+
+                    hours = hours % 12;
+                    hours = hours ? hours : 12;
+
+                    var formattedTime = `${day}/${month}/${year} ${hours}.${minutes} ${ampm}`;
+                    $('#time-cell').text(formattedTime);
+
+                    // $('#time-cell').text(response.time);
+                    $('.modal-title').text("Payment Successful");
+                    $('#thankyou_message').text(' Thank you for registering for COMPOST2024. we are so thrilled to have you atteend and network with the worlds best composters and equipment providers.')
+                    $('#email_info').text("Make sure to save both emails you just received. the Username and password for this registration are uniq to you and Not your USCC Login.")
+    
+                    $('#success-modal').on('hidden.bs.modal', function (e) {  
+                      window.location.replace(`${window.location.origin}/${event_id}/registrations/${response.user_id}/${registraion_form_id}/payment_success`);
+                    });
+                }
+                else{
+                  creditCardError = document.getElementById("credit_card_error")
+                  cvvError = document.getElementById("cvv_error")
+                  var card_error_code = ["card_declined", "card_declined_insufficient_funds", "card_declined_limit_exceeded", "card_expired", "card_declined_processing_error", "card_declined_hold", "card_number_invalid", "card_type_not_accepted", "card_processor_not_available", "server_error"]
+                  var cvv_error = ["card_cvv_incorrect", "invalid_data"]
+            
+                  $('#primary-payment-btn').prop("disabled", false)
+                  // enabling the input field
+                  loader.style.display = "none";
+                  loaderMessage.style.display = "none";
+                  hostedFields.enableIframeInput("#my_credit_card_field_id")
+                  if (response["message"].length > 0){
+                    for(let i = 0; i < response["message"].length; i++ ){
+                      if(card_error_code.includes(response["message"][i]["code"])){
+                        console.log("Error", response["message"][i]["code"])
+                        creditCardError.textContent = response["message"][i]["message"]
+                        break;
+                      }else if(cvv_error.includes(response["message"][i]["code"])){
+                        cvvError.textContent = response["message"][i]["message"];
+                        $('#error-message-modal').modal('show');
+                        $('#error-message1').text('Your CVV number entered was incorrect and your transaction was VOIDED.');
+                        $('#error-message2').text('If your payment was processed, you will be refunded shortly afterward.');
+                        break;
+                      }
+                      else if(response["message"][i]['code'] == "exceeds_authorized_amount"){
+                        $('#failed-modal').modal('show');
+                        $('#thankyou_message').text(response["message"][i]['message'])
+                        break;
+                      }
+                    }
+                  }
+                  else{
+                    if (response["message"]["cvv_result"]){
+                      cvvError.textContent = `CVV ${response["message"]["cvv_result"]}`
+                    }
+                  }
+    
+                }
+    
+              },
+              error: function (error) {
+                console.log('Error while doing the payment',error);
+                $('#failed-modal').modal('show');
+                $('#thankyou_message').text('Error while doing the payment')
+                $('#primary-payment-btn').prop("disabled", false)
+              }
+            });
+    
+          }).catch(function(error){
+            console.log('Error', error)
+            $('#failed-modal').modal('show');
+            $('#thankyou_message').text('Error while doing the payment')
+            $('#primary-payment-btn').prop("disabled", false)
+          })
+        })
+
+
+        $('#coupon').on('submit', function(event){
+          event.preventDefault();
+          $('#coupon-error').text('');
+          $('#coupon-success').text('');
+          
+          const coupon_code = $('#coupon-code').val()
+          
+          $.ajax({
+            type: 'POST',
+            url: `/registrations/${order_id}/apply_coupon`,
+            data: { "coupon_code": coupon_code },
+            success: function(response){
+              console.log("success", response )
+              if (!response['status']){
+                $('#coupon-error').text(response['message']);
+              }else{
+                $('#coupon-success').text(response['message']);
+                var item_id      = response['data']['item_id'];
+                var item_price   = response['data']['item_price'];
+                var total_amount = response['data']['total'];
+                if(total_amount == 0){
+                  $('.form-information').hide()
+                  $('#afiniform').hide()
+                  const proceedWithoutPaymentContent = $(
+                    '<div class="proceed_without_payment">' +
+                    '  <form id="proceed_payment">' +
+                    '    <input type="submit" value="Proceed" class="btn btn-primary" id="proceed_payment_btn">' +
+                    '  </form>' +
+                    '</div>'
+                  );
+                  $('.coupon-code-container').append(proceedWithoutPaymentContent);
+                  var is_fixed_amoint = response['data']['is_fixed_amoint'];
+                  var proc = Math.round(total_amount * 3 / 100);
+                  $(`#price-${item_id}`).text(`$ ${item_price}.00`);
+                  $('#total_amount').text(`$ ${Number(total_amount) + proc}.00`);
+
+                  $('#processing_fee').text(`$ ${proc}.00`);
+                  $('#coupon_submit_button').prop('disabled', true);
+                  $('#coupon_remove_button').prop('disabled', false);
+
+                  $('#proceed_payment').on('submit', function(event){
+                    event.preventDefault();
+                    const data = {"event_id": event_id, "order_id": order_id, "mode_of_payment_id": mode_of_payment_id }
+                    $.ajax({
+                      type: 'POST',
+                      url: "/orders/zero_payment",
+                      data: data,
+                      success: function(response){
+                        clearInterval(countdownInterval);
+                        // Open the Bootstrap modal
+                        var loaderMessage = document.getElementById("loading-message");
+                        $('#success-modal').modal('show');
+                        loader.style.display = "none";
+                        loaderMessage.style.display = "none";
+                        $('#user-id-cell').text(response.order_id);
+                        $('#transaction-id-cell').text(response.transaction_id);
+                        $('#email-cell').text(response.email);
+                        var amount = parseFloat(response.amount).toFixed(2);
+                        $('#amount-cell').text(`$ ${amount}`);
+                        var date = new Date(response.time);
+                        var day = date.getDate();
+                        var month = date.getMonth() + 1; // Months are zero-based
+                        var year = date.getFullYear();
+                        var hours = date.getHours();
+                        var minutes = date.getMinutes();
+                        var ampm = hours >= 12 ? 'pm' : 'am';
+
+                        hours = hours % 12;
+                        hours = hours ? hours : 12;
+
+                        var formattedTime = `${day}/${month}/${year} ${hours}.${minutes} ${ampm}`;
+                        $('#time-cell').text(formattedTime);
+                        // $('#time-cell').text(response.time);
+                        $('.modal-title').text("Payment Successful");
+                        $('#thankyou_message').text(' Thank you for purchasing for COMPOST2024. we are so thrilled to have you atteend and network with the worlds best composters and equipment providers.')
+    
+                        $('#success-modal').on('hidden.bs.modal', function (e) {  
+                          window.location.replace(`${window.location.origin}/${event_id}/registrations/${response.user_id}/${registraion_form_id}/payment_success`);
+                        });
+                      },
+                      error: function(error){
+                        $('#failed-modal').modal('show');
+                        $('#thankyou_message').text('Error while doing the order');
+                        $('#failed-modal').on('hidden.bs.modal', function (e) {  
+                          window.location.replace(`${window.location.origin}/${event_id}/registrations`);
+                        });
+                      }
+                    })
+                  })
+                }else{
+                  var is_fixed_amoint = response['data']['is_fixed_amoint'];
+                  var proc = Math.round(total_amount * 3 / 100)
+                  $(`#price-${item_id}`).text(`$ ${item_price}.00`)
+                  $('#total_amount').text(`$ ${Number(total_amount) + proc}.00`)
+  
+                  $('#processing_fee').text(`$ ${proc}.00`)
+                  $('#coupon_submit_button').prop('disabled', true)
+                  $('#coupon_remove_button').prop('disabled', false)
+                }
+              }
+            },
+            error: function(error){
+              if (error.responseJSON && error.responseJSON.message) {
+                console.log('error', error.responseJSON)
+              } else {
+                console.error('An unknown error occurred.');
+              }
+            }
+          })
+        })
+        var coupon_code = "<%= @coupon&.coupon_code %>";
+        if (coupon_code){
+          $('#coupon-code').val(coupon_code)
+          $('#coupon_submit_button').prop('disabled', true)
+        }else{
+          $('#coupon_remove_button').prop('disabled', true)
+        }
+
+        $('#coupon_remove_button').on('click', function(){
+          $('#coupon-error').text('');
+          $('#coupon-success').text('');
+
+          var code = $('#coupon-code').val()
+          if (!code){
+            code = coupon_code
+          }
+
+          $.ajax({
+            type: 'POST',
+            url: `/registrations/${order_id}/remove_coupon`,
+            data: { "coupon_code": code },
+            success: function(response){
+              if (!response['status']){
+                $('#coupon-error').text(response['message']);
+              }else{
+                $('#coupon-success').text(response['message']);
+                var item_id      = response['data']['item_id'];
+                var item_price   = response['data']['item_price'];
+                var total_amount = response['data']['total'];
+                var proc = Math.round(total_amount * 3 / 100);
+                $(`#price-${item_id}`).text(`$ ${item_price}.00`);
+                $('#total_amount').text(`$ ${total_amount + proc}.00`);
+
+                $('#processing_fee').text(`$ ${proc}.00`);
+                $('#coupon-code').val('')
+                $('#coupon_submit_button').prop('disabled', false)
+                $('.form-information').show();
+                $('#afiniform').show();
+                $('.proceed_without_payment').remove()
+              }
+            },
+            error: function(response){
+              if (error.responseJSON && error.responseJSON.message) {
+                console.log('error', error.responseJSON)
+              } else {
+                console.error('An unknown error occurred.');
+              }
+            }
+          })
+        })
+
+        $('#failed-modal').on('hidden.bs.modal', function (e) {  
+          window.location.replace(`${window.location.origin}/${event_id}/registrations`);
+        });
+        
+      });
+
+  </script>
+<% end %>
+
+<style>
+  /* Loader styles */
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: none;
+}
+
+.loading-message {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  display: none;
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.payment{
+  max-width: 66% !important;
+  margin: 10.75rem auto !important;
+}
+
+.error-modal{
+  margin: 14.75rem auto !important;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  top: 20px;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+.input-icon i {
+  font-size: 18px; 
+  color: #4b4343; 
+}
+
+#my_credit_card_field_id {
+  border-radius: 4px; 
+  padding-left: 30px; 
+  width: 100%;
+  border: 1px solid #ced4da;
+  background-color: #f3f3f3;
+}
+
+#my_cvv_field_id {
+  border: 1px solid #ced4da;
+  border-radius: 4px; 
+  padding-left: 30px; 
+  background-color: #f3f3f3;
+}
+
+label[for="my_credit_card_field_id"], label[for="my_cvv_field_id"] {
+  display: block; 
+  margin-bottom: 5px; 
+}
+
+.custom-input-field {
+  border-radius: 4px;
+  padding-left: 30px;
+  width: 84% !important;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>

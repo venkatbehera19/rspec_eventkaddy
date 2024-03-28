@@ -1,0 +1,61 @@
+%h4 Video Portal Styles
+%br/
+.bg-light.custom-border.px-4.py-4{style:'min-height:500px;'}
+
+    .alert.alert-info Styles edited here may not be reflected in your browser on the video portal until you do a hard refresh (Apple Key + R on Mac, shift + f5 on Windows).
+    = form_tag '/settings/update_video_portal_styles' do
+        = submit_tag 'Update Video Portal Styles', class:'btn btn-primary'
+        %br
+        %br
+        =label_tag do
+            = check_box_tag :copy_settings_to_event, '1', false
+            %strong
+                Copy Styles to Event    
+        = select_tag(:event_id, options_for_select(Event.order('id DESC').map { |event| ["#{event.name}", event.id] }, "Event"), class: "custom-select")
+        %br
+        .small Please leave the input field empty for color to be transparent
+        %hr
+        -# = label_tag do
+        -#     %strong 
+        -#         Font Family   
+        -# = select_tag(:font_family, options_for_select(Event.order('id DESC').map { |event| ["#{event.name}", event.id] }, "Event"), class: "custom-select")
+        -# %br
+        -# %br        
+        #accordion
+            - @styles_by_category.each do |category,styles|
+                %h4= category
+                .acc-div
+                    - styles.each do |style|
+                        - if category == "Dashboard"
+                            - p style
+                        .form-group
+                            %label= style.label ? style.label : "#{style.selector} #{style.property}" 
+                            %br/
+                            = text_field_tag "styles[#{style.selector}_#{style.property}]", style.value, class: "#{'jpicker d-inline' if style.property.include? 'color'} form-control", style:'width: 80%'
+
+        %br/
+
+        = submit_tag 'Update Video Portal Styles', class:'btn btn-primary'
+
+:javascript
+    $(document).ready(function() {  
+        $('.jpicker').jPicker({
+            window:{
+                position:{x:'50%',y:'50%'}
+                }
+        });
+        $("#copy_settings_to_event").click(function(){
+            if($(this).is(':checked')) {
+                alert('Are you sure you want to copy the styles to the selected event? This action cannot be undone.');
+            }
+        });
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true
+        });
+    });
+
+:css
+    .ui-widget-content{
+        background-color: inherit;
+    }

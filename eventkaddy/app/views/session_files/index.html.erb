@@ -1,0 +1,117 @@
+<h4>Session Files</h4>
+<% if (session[:layout] === 'trackownerportal') then %>
+  <%= link_to 'Back to Session', "/sessions/#{@session_id}" ,class:"btn btn-link" %><br><br>
+  <%= link_to 'New File', "/session_files/#{@session_id}/new",class:"btn btn-primary" %>
+<% elsif (session[:layout] === 'speakerportal_2013') then %>
+  <%= link_to 'Back', "/speaker_portals/sessions" ,class:"btn btn-outline-secondary" %>
+
+  <% if !(@event_setting.nil?) then %>
+    <% if (@event_setting.session_files) then %>
+    <br><br><%= link_to 'New File', "/session_files/#{@session_id}/new",class:"btn btn-primary" %>
+    <% end %>
+  <% end %>
+
+	<!--custom messaging for avma-->
+<!-- 	<br/><br/>
+
+	<p><u><strong>General Guidelines</strong></u></p>
+
+
+<ul>
+	<li>Convention Notes are handouts that speakers provide for Convention attendees, for both:</li>
+</ul>
+
+<ol style="margin-left: 40px;">
+	<li>Those who attended your session(s) and would like to reinforce what they learned</li>
+	<li>Those who did not attend your session(s) but are interested in learning about the topic</li>
+</ol>
+
+<ul>
+	<li><strong>PowerPoint Presentations are NOT the same as Convention Notes.</strong> You will upload PowerPoint Presentations through an external website that will be linked in the Speaker Portal closer to the Convention.</li>
+	<li>Upload Convention Notes as either Microsoft Word documents or PDFs.</li>
+	<li>Files must be <strong>smaller than .5 MB</strong> due to space constraints.</li>
+	<li>Convention Notes should be a <strong>maximum of four pages</strong> per speaking hour. Outlines are acceptable.</li>
+	<li>Panelists, Inside the Issues, and Practice Tip speakers are NOT REQUIRED to submit Convention Notes.</li>
+	<li>Interactive Lab speakers are required to supply handouts by May 2, 2014. These handouts will be duplicated by AVMA staff and distributed on-site.&nbsp; For more details view <strong><a class="portal_email" href="http://www.avmaconvention.org//avma14/CUSTOM/images/2014_Convention_Notes_Guidelines.pdf" target="_blank">Convention Notes Guidelines</a></strong>.</li>
+	<li>Commercially-Developed CE sessions will need to have their Convention Notes reviewed prior to inclusion.</li>
+	<li>Only one file can be associated with a single CE session as a Convention Note.&nbsp; If more than one file is uploaded, the most recent file uploaded will be used.</li>
+	<li>If you have more than one speaker in a session, please work with each other to compile a single document that will be submitted.</li>
+	<li>If you are a speaker who is one author on a document that you are submitting for your Convention Notes and would like to acknowledge your co-authors, please put any co-author information in the Convention Notes file itself.</li>
+	<li>Failure to submit Convention Notes will result in a 50% reduction in honorarium.</li>
+</ul>
+For formatting and other requirements, view the <strong><a class="portal_email" href="http://www.avmaconvention.org//avma14/CUSTOM/images/2014_Convention_Notes_Guidelines.pdf" target="_blank">Convention Notes Guidelines</a></strong>.<br><br> -->
+
+<% else %>
+  <%= link_to 'Back to Session', "/sessions/#{@session_id}" ,class:"btn btn-link" %><br><br>
+  <%= link_to 'New File', "/session_files/#{@session_id}/new",class:"btn btn-primary" %>
+<% end %>
+<br/><br/>
+
+<table id="session_files" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th class="d-none d-md-table-cell">Published?</th>
+      <th>Latest Version</th>
+      <th class="d-none d-md-table-cell">Type</th>
+      <th>Speaker Name</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @session_files.each do |session_file| %>
+      <tr>
+        <td><%= session_file.title %></td>
+        <td class="d-none d-md-table-cell"><%= session_file.unpublished ? 'No' : 'Yes' %></td>
+        <td class="button">
+          <%if (session_file.session_file_versions.length > 0 && session_file.session_file_versions.order('updated_at DESC').first.event_file!=nil) then %>
+              <% sfile = session_file.session_file_versions.order('created_at DESC').first.event_file %>
+              <% if sfile.cloud_storage_type_id.blank?  %>
+                <%= link_to("Download",sfile.path,class:"btn btn-link")%>
+              <% else %>
+                <%= link_to("Download",sfile.return_authenticated_url()['url'],class:"btn btn-link", target:'_blank')%>
+              <% end %>
+          <%else%>
+            No File Available
+          <%end%>
+        </td>
+        <td class="d-none d-md-table-cell">
+          <%if (session_file.session_file_versions.length > 0 && session_file.session_file_versions.order('updated_at DESC').first.event_file!=nil) then %>
+            <%= session_file.session_file_versions.order('created_at DESC').first.event_file.mime_type %>
+          <%end%>
+        </td>
+        <td>
+          <% speakers = session_file.session.speakers %>
+          <%= speakers.size == 0 ? "" : 
+            speakers.size > 1 ? "Mulitple speakers" : "#{speakers.first.first_name} #{speakers.first.last_name}" %>
+        </td>
+        <td class="table-actions">
+          <div class="dropdown dropleft">
+            <a class="ellipse-style" data-toggle="dropdown">
+              <i class="fa fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu">
+              <%= link_to 'Show Versions', "/session_file_versions/#{session_file.id}/index" ,class:"btn dropdown-item text-info" %>
+              <% if ( current_user.role?(:client) || current_user.role?(:trackowner) || current_user.role?(:super_admin) ) then %>
+                <%= link_to 'Edit', edit_session_file_path(session_file) ,class:"btn dropdown-item text-success" %>
+                <%= link_to 'Delete', session_file, :confirm => 'Are you sure?', :method => :delete ,class:"btn dropdown-item text-danger" %>
+              <% end %>
+            </div>
+          </div>
+          <div class="btn-group d-flex">
+            <%= link_to 'Show Versions', "/session_file_versions/#{session_file.id}/index" ,class:"btn btn-outline-info" %>
+            <% if ( current_user.role?(:client) || current_user.role?(:trackowner) || current_user.role?(:super_admin) ) then %>
+              <%= link_to 'Edit', edit_session_file_path(session_file) ,class:"btn btn-outline-success" %>
+              <%= link_to 'Delete', session_file, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+
+</table>
+
+<br />
+

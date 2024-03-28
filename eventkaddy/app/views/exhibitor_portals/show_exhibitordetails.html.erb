@@ -1,0 +1,266 @@
+<%= form_for(
+    @exhibitor,
+    :html => { :multipart => true, :class => "bg-light px-4 mt-3 custom-border" },
+    :url => {:action => "update_exhibitordetails"}   
+) do |f| %>
+
+    <div class="actions">
+        <br>
+		<% event = Event.find(session[:event_id]) %>
+        <%= f.submit class:"btn btn-primary" %>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            <% if @exhibitor.errors.any? %>
+                <div id="error_explanation">
+                    <h2><%= pluralize(@exhibitor.errors.count, "error") %> prohibited this exhibitor from being saved:</h2>
+
+                    <ul>
+                        <% @exhibitor.errors.full_messages.each do |msg| %>
+                            <li><%= msg %></li>
+                        <% end %>
+                    </ul>
+                </div>
+            <% end %>
+
+            <div class="field">
+                <%= f.hidden_field :event_id, :value => @exhibitor.event_id %>
+            </div>
+
+            <%# Probably don't need this at all anymore %>
+            <%# <div class="field"> %>
+            <%#     <label> %>
+            <%#         Tags (please email support if you would like to request a change) %>
+            <%#     </label> %>
+            <%#     <br> %>
+
+            <%#     <b> %>
+            <%#         <a href="mailto:<%=@event_setting.support_email_address %1>?subject=Exhibitor Portal Inquiry" class="portal_email"> %>
+            <%#                 <%= @event_setting.support_email_address %1> %>
+            <%#         </a> %>
+            <%#     </b> %>
+            <%#     <br> %>
+            <%#     <br> %>
+
+            <%#     <% @tag_groups.each do |tag_group| %1> %>
+            <%#         <%= tag_group.join(' > ') %1> %>
+            <%#         <br> %>
+            <%#     <% end %1> %>
+
+            <%# </div> %>
+
+               <!--   <table>
+				<%= image_tag @exhibitor.logo_path, :style=>'height:100px' if @exhibitor.event_file %>
+				<br><br>
+
+                <% if @exhibitor.event_file_portal_logo then %>
+                <tr><td><%= image_tag(@exhibitor.event_file_portal_logo.path, :height=>'100') %></td></tr>
+
+                <tr><td>&nbsp;</td></tr>
+
+                <tr><td>Download your current logo photo: <%= link_to @exhibitor.event_file_portal_logo.name, @exhibitor.event_file_portal_logo.path %></td></tr>
+                <tr><td>&nbsp;</td></tr>
+                <tr><td>
+                <div class="field">
+                <%= label_tag "Upload a new Exhibitor Logo:" %>
+                <%= file_field_tag :portal_logo_file %>
+                </div><br />
+                </td></tr>
+                <% else %>
+                <tr><td>
+                <div class="field">
+                <%= label_tag :portal_logo_file, "Choose an Exhibitor Logo" %><br />
+                <%= file_field_tag :portal_logo_file %>
+                </div><br />
+                </td></tr>
+                <% end %>
+                </table> 
+
+                <% unless Event.find(session[:event_id]).master_url.blank? %>
+                  <div class="field">
+                    <%= label_tag :online_url do %>
+                         <%= check_box_tag :online_url, 1, {:checked => "checked"} %>
+                               Include Online Copy of Latest Exhibitor Logo
+                     <% end %><br>
+
+  			      </div>
+                <% end %>
+			 
+
+            <% form = FormWithSettings.new 'exhibitor_portal_settings', session[:event_id] %>
+            <%= form.text_field f, "logo", "Logo URL" %>
+            <%= form.text_field f, "company_name" %>
+
+            <% form.unless_setting :hide_description do %>
+                <div class="field" style="max-width:800px;">
+                    <%= f.label 'Description' %><br />
+                    <%= f.cktext_area :description, style:"min-width:350px;height:200px", ckeditor:{toolbar: "Full"}, disabled: form.locked?("description") %>
+                    <br><br>
+                </div>
+            <% end %>
+
+            <% form.unless_setting :hide_message do %>
+                <div class="field" style="max-width:800px;">
+                    <%= f.label 'Message' %><br />
+                    <%= f.cktext_area :message, style:"min-width:350px;height:200px", ckeditor:{toolbar: "Simple"}, disabled: form.locked?("message") %>
+                    <br><br>
+                </div>
+            <% end %>
+			
+            <%= form.text_field f, "url_web", "Website" %>
+            <%= form.text_field f, "url_twitter" %>
+            <%= form.text_field f, "url_facebook" %>
+            <%= form.text_field f, "url_linkedin" %>
+            <%= form.text_field f, "url_rss" %>
+            <%= form.text_field f, "url_instagram" %>
+            <%= form.text_field f, "url_youtube" %>
+            <%= form.text_field f, "email" %>
+            <%= form.text_field f, "address_line1" %>
+            <%= form.text_field f, "address_line2" %>
+            <%= form.text_field f, "city" %>
+            <%= form.text_field f, "state" %>
+             <% if event.name != "FEP National Conference" then %><%= form.text_field f, "country" %><% end %>
+            <%= form.text_field f, "zip" %>
+            <%= form.text_field f, "phone" %>
+            <%= form.text_field f, "fax" %>
+            <%= form.text_field f, "contact_name" %>
+            <%= form.text_field f, "contact_title" %>
+
+            <%= form.text_field f, "contact_name_two" %>
+            <%= form.text_field f, "contact_title_two" %>
+			<%= form.text_field f, "contact_email_two" %>
+            <%= form.text_field f, "contact_mobile_two" %>
+
+            <%# <% event = Event.find(session[:event_id]) %1> %>
+            <%# <% if event.name == "IDEM 2018" %1> %>
+
+            <%#     <% %>
+
+            <%#        join_by_arrows = ->(s) { s.join(' -> ') } %>
+
+            <%#        tag_sets_by_top_tag_name = ->(name) { %>
+            <%#            ->(tag_set) { tag_set[0] == name } %>
+            <%#        } %>
+
+            <%#        company_type_tags = tag_sets_by_top_tag_name["Company Type"] %>
+            <%#        dental_sector_tags = tag_sets_by_top_tag_name["Dental Sector"] %>
+            <%#        looking_for_agents_tags = tag_sets_by_top_tag_name["Looking For Agents"] %>
+
+            <%#        product_segment_tags = tag_sets_by_top_tag_name["Product Segment"] %>
+
+
+            <%#        leaf_tag_to_heirarchy_string = ->(leaf_tag) { %>
+            <%#          ( %>
+            <%#            ( leaf_tag.get_all_parents.map(&:name) ) << leaf_tag.name %>
+            <%#          ).join(' -> ') %>
+            <%#        } %>
+
+            <%#        tagsets = @exhibitor.tags.map &leaf_tag_to_heirarchy_string %>
+
+            <%#        company_type_tags = event.tag_sets_hash["2"] %>
+            <%#          .select(&company_type_tags) %>
+            <%#          .map(&join_by_arrows) %>
+            <%#     %1> %>
+
+            <%#   Company Type<br><br> %>
+
+            <%#   <%= select_tag(:tagsets, options_for_select(company_type_tags, tagsets), :multiple => true, :size=>15, :style => "width:700px") %1> %>
+
+            <%# <% end %1> %>
+
+            <hr>
+
+            <div class="actions">
+                <%= f.submit class:"btn btn-primary" %>
+            </div>
+        </div>
+    </div>
+<%# end %> -->
+            <%= image_tag @exhibitor.logo_path, :class => "img-thumbnail", height: "100" if @exhibitor.event_file %>
+            <br><br>
+            <% if @exhibitor.event_file_portal_logo then %>
+                <%= image_tag(@exhibitor.event_file_portal_logo.path, :class => "img-thumbnail") %>
+                <br>
+                Download your current logo photo: <%= link_to @exhibitor.event_file_portal_logo.name, @exhibitor.event_file_portal_logo.path %>
+                <div class="field">
+                    <%= label_tag :portal_logo_file, "Upload a new Exhibitor Logo:" %> <br>
+                    <%= file_field_tag :portal_logo_file %>
+                </div>
+            <% else %>
+                <div class="field">
+                    <%= label_tag :portal_logo_file, "Choose an Exhibitor Logo" %> <br>
+                    <%= file_field_tag :portal_logo_file %>
+                </div>
+            <% end %><br><br><br>
+
+            <% unless Event.find(session[:event_id]).master_url.blank? %>
+                <div class="form-check">
+                    <%= label_tag :online_url, class: "form-check-label" do %>
+                        <%= check_box_tag :online_url, 1, {:checked => "checked"}, class: "form-checked-input" %>
+                            Include Online Copy of Latest Exhibitor Logo
+                    <% end %>
+                </div>
+                <br>
+            <% end %>
+            <% form = FormWithSettings.new 'exhibitor_portal_settings', session[:event_id] %>
+            <%= form.text_field f, "logo", "Logo URL", { class: "form-control" } %>
+            <%= form.text_field f, "company_name", "Company name", { class: "form-control" } %>
+
+            <% form.unless_setting :hide_description do %>
+                <div class="form-group">
+                    <%= f.label 'Description' %><br />
+                    <%= f.cktext_area :description, class: "form-control", style:"height:200px;", ckeditor:{toolbar: "Full"}, disabled: form.locked?("description") %>
+                    <br><br>
+                </div>
+            <% end %>
+
+            <% form.unless_setting :hide_message do %>
+                <div class="form-group">
+                    <%= f.label 'Message' %>
+                    <%= f.cktext_area :message, style:"height:200px;", class: "form-control", ckeditor:{toolbar: "Simple"}, disabled: form.locked?("message") %>
+                    <br><br>
+                </div>
+            <% end %>
+            <%= form.text_field f, "url_web", "Website", { class: "form-control" } %>
+            <%= form.text_field f, "url_twitter", "", { class: "form-control" } %>
+            <%= form.text_field f, "url_facebook", "", { class: "form-control" } %>
+            <%= form.text_field f, "url_linkedin", "", { class: "form-control" } %>
+            <%= form.text_field f, "url_rss", "", { class: "form-control" } %>
+            <%= form.text_field f, "url_instagram", "", { class: "form-control" } %>
+            <%= form.text_field f, "url_youtube", "", { class: "form-control" } %>
+            <%= form.text_field f, "url_tiktok", "", { class: "form-control" } %>
+            <%= form.text_field f, "email", "", { class: "form-control", style: "cursor: not-allowed;" } %>
+            <%= form.text_field f, "address_line1", "", { class: "form-control" } %>
+            <%= form.text_field f, "address_line2", "", { class: "form-control" } %>
+            <%= form.text_field f, "city", "", { class: "form-control" } %>
+            <%= form.text_field f, "state", "", { class: "form-control" } %>
+             <% if event.name != "FEP National Conference" then %><%= form.text_field f, "country", "", { class: "form-control" } %><% end %>
+            <%= form.text_field f, "zip", "", { class: "form-control" } %>
+            <%= form.text_field f, "phone", "", { class: "form-control" } %>
+            <%= form.text_field f, "fax", "", { class: "form-control" } %>
+            <%= form.text_field f, "contact_name", "", { class: "form-control" } %>
+            <%= form.text_field f, "contact_title", "", { class: "form-control" } %>
+            <%= form.text_field f, "contact_email", "", { class: "form-control" } %>
+
+            <%= form.text_field f, "contact_name_two", "", { class: "form-control" } %>
+            <%= form.text_field f, "contact_title_two", "", { class: "form-control" } %>
+			<%= form.text_field f, "contact_email_two", "", { class: "form-control" } %>
+            <%= form.text_field f, "contact_mobile_two", "", { class: "form-control" } %>
+
+            <hr>
+
+            <div class="actions">
+                <%= f.submit class:"btn btn-primary" %>
+            </div>
+        </div>
+    </div> <!-- row -->
+<% end %>  
+
+
+
+

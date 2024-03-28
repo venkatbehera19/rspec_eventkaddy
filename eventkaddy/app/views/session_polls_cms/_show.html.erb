@@ -1,0 +1,26 @@
+<h4>Title: <%= session_poll.title %></h4>
+<div class="row">
+  <div class="col-md-8">
+    <%= hidden_field_tag :session, session_poll.session_id %>
+    <%= hidden_field_tag :labels, session_poll.session_poll_options.map{ |option| option.option_text}.join('-') %>
+    <%= hidden_field_tag :data, session_poll.session_poll_options.map(&:option_result) %>
+    <%= hidden_field_tag :title, session_poll.title %>
+    <%= hidden_field_tag :max, @max %>
+    <%= hidden_field_tag :url, session_poll.event.chat_url %>
+    <div class="forChart" style="position: relative; margin: auto;height: 480px;">
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="options-list">
+      <h5>Options</h5>
+      <ul class="list-group">
+        <% session_poll.session_poll_options.each do |option| %>
+          <span class="border-0"></span>
+          <li class="options list-group-item"><%= option.option_text%></li>
+        <%end%>
+      </ul>
+    </div>
+    <span class="text-muted">Timeout Time: </span><b><%= session_poll.timeout_time %></b><span class="text-muted"></span><br>
+    <span class="text-muted">Activate History: </span><b><%= session_poll.activate_history %></b><span class="text-muted"></span>
+  </div>
+</div>

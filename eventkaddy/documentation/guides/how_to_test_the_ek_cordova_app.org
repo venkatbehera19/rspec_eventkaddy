@@ -1,0 +1,7 @@
+#+TITLE: How to Test the EK Cordova App
+
+* Preamble
+A checklist of common things that need to be checked.
+
+- After authentication, app can be closed and reopened without side effects.
+

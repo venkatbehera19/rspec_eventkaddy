@@ -1,0 +1,29 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="pollModalCenterTitle"><%=poll.title%></h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="list-group">
+        <% poll.session_poll_options.each do |option|%>
+          <li class="list-group-item list-group-item-action"><%=option.option_text%></li>
+        <% end %>
+      </div>
+    <br/>
+    <p>Timeout Time: <span id="pollTimeout-<%=poll.id%>"><%=poll.timeout_time%></span> secs</p>
+    </div>
+    <div class="modal-footer">
+      <button onclick="activateDeactivatePoll()" type="button" class="btn btn-secondary" data-poll-id="<%=poll.id%>"
+      data-session-id="<%=@session.id%>" data-dismiss="modal">
+        <% if session_poll_activated? poll.id, @session.id %>
+          Deactivate
+        <% else %> 
+          Activate
+        <%end%>
+      </button>
+    </div>
+  </div>
+</div>

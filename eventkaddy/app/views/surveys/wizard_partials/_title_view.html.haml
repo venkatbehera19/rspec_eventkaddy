@@ -1,0 +1,70 @@
+.wizard-view.title-view{data:{hash:'#title'}}
+
+    .top-panel.btn-toolbar
+        .save_button.btn.btn-success{data:{'model' => 'survey', 'hash' => '#time'}, style: 'border-bottom-left-radius:5px;'}>
+            Save and Proceed
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}>
+                Save & . . .
+            %div.dropdown-menu
+                %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#index'}}
+                    = '. . . Go to Surveys Index'
+                - unless current_user.role? :exhibitor
+                    %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#sessionassoc'}}
+                        = '. . . Go to Create Session Associations Page'
+                    %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#exhibitorassoc'}}
+                        = '. . . Go to Create Exhibitor Associations Page'
+                    - if @survey.survey_type_id == 1
+                        %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#certificateassoc'}}
+                            = '. . . Go to CE Certificate Associations Page'
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-primary.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                Don't Save & . . .
+            %div.dropdown-menu.wizard-special-actions
+                %a.dropdown-item{:href => "/surveys"}
+                    = '. . . Go to Surveys Index'
+
+    .wizard-form.survey_form
+
+        .field
+            .wizard-extra-details
+
+        .form-group
+            %label.wizard-label{for: "survey_title"} Survey Title
+            %input#survey_title.wizard-input.form-control
+
+        .form-group
+            %label.wizard-label{for: "survey_description"} Survey Description
+            %textarea#survey_description.wizard-input.form-control
+
+        - unless current_user.role? :exhibitor
+            .form-group
+                %label.form-check-label.wizard-label-inline
+                    = check_box_tag "survey_disallow_editing", 0, class: "form-check-input"
+                    Survey Disallow Editing (User can submit only once)
+
+        - unless current_user.role? :exhibitor
+            .form-group
+                %label.form-check-label.wizard-label-inline 
+                    = check_box_tag "survey_publish_to_attendee_survey_results", 0, class: "form-check-input"
+                    Publish To Attendee Biography
+
+        - unless current_user.role? :exhibitor
+            .form-group
+                %label.wizard-label{for: "survey_special_location"} Survey Special Location
+                %select#survey_special_location.wizard-input.custom-select
+                    %option{:value => ""} None
+                    %option{:value => "Attendee Profile Page"} Attendee Profile Page
+
+        - unless current_user.role? :exhibitor
+            Extra Fields; Leave blank if unsure.
+            .form-group
+                %label.wizard-label{for: "survey_post_action"} Survey Post Action
+                %input#survey_post_action.wizard-input.form-control
+            .form-group
+                %label.wizard-label{for: "survey_submit_success_message"} Survey Submit Success Message
+                %input#survey_submit_success_message.wizard-input.form-control
+            .form-group
+                %label.wizard-label{for: "survey_submit_failure_message"} Survey Submit Failure Message
+                %input#survey_submit_failure_message.wizard-input.form-control

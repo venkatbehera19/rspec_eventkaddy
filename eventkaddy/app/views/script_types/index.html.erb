@@ -1,0 +1,38 @@
+<h3>Button Templates</h3>
+
+<%= link_to 'Back', scripts_path, class: "btn btn-link" %>
+<%= link_to 'New Template', new_script_type_path, class: "btn btn-link" %> <br> <br>
+
+<table class="table">
+  <tr>
+    <th>Button Label</th>
+    <th>Add Button</th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @script_types.each do |script_type| %>
+  <tr>
+    <td><%= script_type.name %></td>
+    <td><%= link_to "Add to #{@event.name}", "/script_types/new_button_from_script_type/#{script_type.id}" ,class:"btn edit" %></td>
+    <td class="table-actions">
+      <div class="dropdown">
+        <a class="ellipse-style" data-toggle="dropdown">
+          <i class="fa fa-ellipsis-v"></i>
+        </a>
+        <div class="dropdown-menu">
+          <%= link_to 'Show', script_type, class:"btn dropdown-item text-info" %>
+          <%= link_to 'Edit', edit_script_type_path(script_type.id) ,class:"btn dropdown-item text-success" %>
+          <%= link_to 'Delete', script_type, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn dropdown-item text-danger" %>
+        </div>
+      </div>
+      <div class="btn-group d-flex">
+        <%= link_to 'Show', script_type, class:"btn btn-outline-info" %>
+        <%= link_to 'Edit', edit_script_type_path(script_type.id) ,class:"btn btn-outline-success" %>
+        <%= link_to 'Delete', script_type, data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %>
+      </div>
+    </td>
+  </tr>
+<% end %>
+</table>
+

@@ -1,0 +1,65 @@
+<div class="cms-video-views">
+  <span class="toolbar">
+    <h4 class="toolbar-title"><%="Attendees List for CE checked-in Session: #{@session_code}" %></h4>
+   <h4 class="toolbar-title"><%=" #{@session_title} " %></h4>
+
+  </span>
+  <div class="dropdown download-menu">
+    <div
+      class="btn report-dropdown"
+      data-toggle="dropdown"
+      class="dropdown-toggle"
+    >
+      CE Checked-ins Downloads <b class="caret"></b>
+    </div>
+    <ul class="dropdown-menu report-dropdown-list">
+      <li>
+        <%= link_to "Export CE Checked-ins To Spreadsheet", "/video_views/ce_checkins/#{@session_code}/report"%>
+      </li>
+    </ul>
+  </div>
+  <br />
+  <br />
+  <%= link_to 'Back',"/video_views", class: "btn btn-secondary" %>
+  <br />
+  <br />
+  <br />
+  <br />
+  <table
+    id="cms-video-views-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped table-bordered"
+  >
+    <thead>
+      <th>first name&nbsp; &nbsp; &nbsp;</th>
+      <th>last name&nbsp; &nbsp; &nbsp;</th>
+      <th>company&nbsp; &nbsp; &nbsp;</th>
+      <th>email&nbsp; &nbsp; &nbsp;</th>
+      <th>phone&nbsp;</th>
+    </thead>
+  <% !@ce_checkedin_attendees.blank? && @ce_checkedin_attendees.each do |attendee| %>
+    <tr>
+      <td><%=attendee.first_name%></td>
+      <td><%=attendee.last_name%></td>
+      <td><%=attendee.company%></td>
+      <td><a href="mailto: <%=attendee.email%>"><%=attendee.email%> </a></td>
+      <td><%=attendee.mobile_phone.to_s + ' ' + attendee.business_phone.to_s%></td>
+    </tr>
+    <% end %>
+  </table>
+</div>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline'
+    })
+    $('#cms-video-views-table').dataTable({
+      sDom: "<'row'<'span5'l><'span5'f>r>t<'row'<'span5'i><'span5'p>>",
+      sPaginationType: 'bootstrap'
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

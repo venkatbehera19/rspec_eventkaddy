@@ -1,0 +1,192 @@
+<% if current_user.role?(:diyclient) %>
+	<div class="diy-form-part">
+	  <div class="diy-form-title pull-left"><i class="fa fa-mobile-phone"></i> Home Button Icons</div><br>
+	  <br>
+<% else %>
+	<h4>Listing Home Button Icons for:<b> <%= session[:event_name] %></b></h4>
+<% end %>
+			<% unless current_user.role?(:diyclient) %>
+				<%= link_to "/home_buttons/new", :class => "btn btn-primary" do %>
+					New Home Button <i class="fa fa-plus"></i>
+				<% end %>
+			<% end %>
+	    <!-- <button class="btn show show-rooms" data-toggle="modal" data-target="#phone_preview">View Phone Preview</button> -->
+<!-- 	    <div class="modal fade phone_preview modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="phone_preview" style="top:20px;">
+	      <div class="modal-dialog">
+	        <div class="modal-content">
+	          <div class="modal-body diy-modal-body ui-front" style="max-height: 650px;">
+	            <%#= render "home_buttons/phone_preview" %>
+
+	          </div>
+	        </div>
+	      </div>
+	    </div> -->
+		<div class="dropdown dropleft pull-right">
+			<%= link_to  "/home_buttons_mobile_preview", class: "btn btn-primary mt-1" do %>
+				<i class="fa fa-eye"></i>
+			<% end %>
+			<a data-toggle="dropdown" class="btn pull-right" style="font-size: 1.7rem;">
+				<i class="fa fa-ellipsis-v"></i>
+			</a>
+			<div class="dropdown-menu" style="max-width: 99vw;">
+				<%= link_to "Show Old Home Buttons (info purposes only)", "/home_button_groups", :class => "dropdown-item", style: "word-wrap: break-word; white-space: normal;" %>
+				<%= link_to "Reset To Default Buttons", "/home_buttons/reset_buttons", :class => "dropdown-item text-danger", :method => :put, :confirm => 'This will reset all buttons to their default state, including custom lists and their items. Continue?' unless current_user.role?(:diyclient) %>
+			</div>
+		</div> <br>
+		<div id="stable-height">
+			<div id="response"></div>
+		</div>
+	  <table id="<%= "home_button_icons" unless current_user.role?(:diyclient) %>" cellpadding="0" cellspacing="0" border="0" class="table table-stripped <%= current_user.role?(:diyclient) ? 'table-hover diy-table' : 'table-striped' %>">
+	    <thead>
+	    <tr>
+	      <th></th>
+	      <th class="text-center">Icon Image <input type="color" id="change-bg-color" 
+					data-toggle="tooltip" title="Try changing background to see icons properly">
+				</th>
+	      <th>Home Button Name</th>
+				<th></th>
+				<th></th>
+	    </tr>
+	    </thead>
+
+	    <tbody class="sortable-tbody">
+	  <% @home_buttons.each do |home_button| %>
+
+			<tr id="<%= home_button.id %>">
+	      <td class="drag-handle"><i class="fa fa-arrows"></i></td>
+				<% if home_button.event_file %>
+					<td class="icon-img-cell text-center" style="<%= @background_style %>">
+						<% if home_button.event_file.cloud_storage_type_id.blank?  %>
+							<%= image_tag(home_button.event_file.path, :height=>'50') %>
+						<% else %>
+							<%= image_tag(home_button.event_file.return_authenticated_url()['url'], :height=>'50') %>
+						<% end %>
+					</td>
+				<% end %>				
+				<td><%= home_button.name %></td>
+				<td class="table-actions">
+					<div class=" btn-group d-flex">
+	      		<%= link_to "Edit", "/home_buttons/#{home_button.id}/edit", :class => "btn  btn-outline-success" %>
+						<%= link_to "Edit Custom Button", "/custom_lists/#{home_button.custom_lists.first.id}", :class => "btn btn-outline-info" unless home_button.home_button_type.name!="Custom List" %>
+					</div>
+					<div class="dropdown">
+						<a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+							<i class="fa fa-ellipsis-v"></i>
+						</a>
+						<div class="dropdown-menu">
+							<!-- <%= link_to "Disable", "/home_buttons/#{home_button.id}/disable_home_button", :class => "btn text-danger dropdown-item", :method => :put, style: current_user.role?(:diyclient)? 'display: none;':'' %> -->
+							<%= link_to "Edit", "/home_buttons/#{home_button.id}/edit", :class => "btn  dropdown-item text-success" %>
+							<%= link_to "Edit Custom Button", "/custom_lists/#{home_button.custom_lists.first.id}", :class => "btn dropdown-item text-info" unless home_button.home_button_type.name!="Custom List" %>
+						</div>
+					</div>
+				</td>
+				<td>
+					<%= link_to "/home_buttons/#{home_button.id}/disable_home_button", :class => "custom-control custom-switch pull-right", :method => :put, style: current_user.role?(:diyclient)? 'display: none;':'' do %>
+						<input type="checkbox" class="custom-control-input" id="switch1" checked>
+						<label class="custom-control-label" for="switch1"></label>
+					<% end %>
+				</td>
+	    </tr>
+	  <% end %>
+	  </tbody>
+	  </table>
+	  <br />
+
+<% unless current_user.role?(:diyclient) %>
+
+    <h4>Disabled Home Buttons</h4>
+		<div class="table-responsive">
+    <table  id="home_buttons" cellpadding="0" cellspacing="0" class="table <%= current_user.role?(:diyclient) ? 'table-hover diy-table' : 'table-striped' %>">
+        <thead>
+            <tr>
+                <th class="text-center">Icon Image</th>
+                <th>Type</th>
+                <th>Home Button Name</th>
+                <th></th>
+								<th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% @disabled_home_buttons.each do |home_button| %>
+                <tr>
+                    <td class="icon-img-cell text-center" style="<%= @background_style %>"><%= image_tag(home_button.event_file.path, :height=>'50') if home_button.event_file %></td>
+                    <td><%= home_button.home_button_type.name==="Custom List" ? "Custom List" : "Non-Custom List"; %></td>
+                    <td><%= home_button.name %></td>
+                    <td class="table-actions">
+											<div class="btn-group d-flex"> 
+												<%= link_to "Edit", "/home_buttons/#{home_button.id}/edit", :class => "btn btn-outline-success" %>
+												<!-- <%= link_to "Enable", "/home_buttons/#{home_button.id}/enable_home_button", :class => "btn btn-outline-primary", :method => :put %> -->
+												<%= link_to "Delete", "/home_buttons/#{home_button.id}", :class => "btn btn-outline-danger", :method => :delete %>
+												<%= link_to "Edit Custom Button", "/custom_lists/#{home_button.custom_lists.first.id}", :class => "btn btn-outline-info" unless home_button.home_button_type.name!="Custom List" %>
+											</div>
+											<div class="dropdown">
+												<a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+													<i class="fa fa-ellipsis-v"></i>
+												</a>
+												<div class="dropdown-menu">
+													<%= link_to "Edit", "/home_buttons/#{home_button.id}/edit", :class => "btn dropdown-item text-success" %>
+													<!-- <%= link_to "Enable", "/home_buttons/#{home_button.id}/enable_home_button", :class => "btn dropdown-item text-primary", :method => :put %> -->
+													<%= link_to "Delete", "/home_buttons/#{home_button.id}", :class => "btn dropdown-item text-danger", :method => :delete %>
+													<%= link_to "Edit Custom Button", "/custom_lists/#{home_button.custom_lists.first.id}", :class => "btn dropdown-item text-info" unless home_button.home_button_type.name!="Custom List" %> 
+												</div>
+											</div>
+										</td>
+										<td>
+											<%= link_to "/home_buttons/#{home_button.id}/enable_home_button", :class => "custom-control custom-switch pull-right", :method => :put, style: current_user.role?(:diyclient)? 'display: none;':'' do %>
+												<input type="checkbox" class="custom-control-input" id="switch1">
+												<label class="custom-control-label" for="switch1"></label>
+											<% end %>
+										</td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+		</div>
+<% end %>
+
+<% current_user.role?(:diyclient) ? '</div>' : '' %>
+
+<script>
+	$('.sortable-tbody').sortable({
+		handle: $('.drag-handle'),
+		helper: fixWidthHelper,
+		update: function(){
+			let newStatus = updateStatus();
+			$.ajax({
+				type: "post",
+				url: "/update_positions",
+				data: {
+					json: JSON.stringify(newStatus)
+				},
+				success: function (response) {
+					$("#response").empty().append(response.data).show().fadeOut(1000);
+				}
+			});
+		}
+	});
+
+	function updateStatus(){
+		let newStatus = [], order, id;
+		$('.sortable-tbody').children().each(function(){
+			order = $(this).index();
+			id = $(this).attr('id');
+			//console.log(order, id);
+			newStatus.push({
+				id, order
+			})
+		});
+		return newStatus;
+	}
+
+	$("#change-bg-color").on('input', function(){
+		$('.icon-img-cell').css({'background-color': $(this).val()});
+	});
+
+function fixWidthHelper(e, ui) {
+	ui.children().each(function() {
+			$(this).width($(this).width());
+	});
+	return ui;
+}
+</script>

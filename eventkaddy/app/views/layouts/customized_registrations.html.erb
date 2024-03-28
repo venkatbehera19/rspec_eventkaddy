@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<% if params[:action] == 'exhibitor_payment' || params[:action] == 'exhibitor_select_booth' || params[:controller] == 'exhibitor_registrations' %>
+	<% settings = Setting.return_exhibitor_registration_portal_settings params[:event_id] %>
+<% else %>
+	<% settings = Setting.return_registration_portal_settings params[:event_id] %>
+<% end %>
+
+<% event_setting = EventSetting.where(event_id:params[:event_id]).first_or_create %>
+<title><%= settings.html_title || "EventKaddy" %></title>
+<head>
+
+  <!--%= stylesheet_link_tag "scaffold" %-->
+  	<%= stylesheet_link_tag    "application", :media => "all" %>
+		<%= stylesheet_link_tag    "customized_registrations", :media => "all" %>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "registrations" %>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= csrf_meta_tag %>
+
+</head>
+<body>
+		<%= yield %>
+		<br>
+		<br>
+		<div class="footer" style="text-align:center">
+			Questions?  Email support@eventkaddy.com
+		</div>
+</body>
+</html>
+<script>
+  
+    var _gaq = _gaq || [];
+		var key = "<%=@ga_key%>"
+    _gaq.push(['_setAccount', key]);
+    _gaq.push(['_trackPageview', window.location]);
+
+    (function() {
+        var ga   = document.createElement('script');
+        ga.type  = 'text/javascript';
+        ga.async = true;
+        ga.src   = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s    = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+<style>
+	h1{
+		color: #<%= settings.h1_color || '317eac' %> !important;
+		text-shadow:<%= settings.text_shadow_h1 ? '1px 2px black' : 'none' %>;
+
+	}
+	h2{
+		color: #<%= settings.h2_color || '317eac' %> !important;
+		text-shadow:<%= settings.text_shadow_h2 ? '1px 1px black' : 'none' %>;
+	}
+	h3{
+		color: #<%= settings.h3_color || '317eac' %> !important;
+	}
+	h4{
+		color: #<%= settings.h4_color || '317eac' %> !important;
+	}
+	body, p, ol, li, td {
+		/* font-weight: <%= settings.bold_text ? 'bold' : 'normal' %>;; */
+		/* text-shadow:<%= settings.text_shadow ? '1px 0 black !important' : 'none' %>; */
+		/* background-color:<%= settings.dark_bg_theme ? '#00000033 !important' : 'none' %>; */
+		/* color:<%= settings.dark_bg_theme ? '#fff !important' : 'black' %>;*/
+    /* color: #<%= settings.text_color %>; */
+	}
+
+body{
+	background-color: #<%= settings.body_background_color || 'ffffff' %> ; 
+	background-image: url(<%= settings.body_background_image.blank? ? '' : EventFile.find(settings.body_background_image.to_i).path %>);
+	background-position: <%=settings.body_background_position || 'center' %>;
+	background-size: <%=settings.body_background_size%>;
+	background-repeat: <%=settings.body_background_repeat%>;  
+}
+
+a {
+	color: #<%= settings.link_color %> !important;
+	text-shadow: <%= settings.navbar_text_shadow ? '' : 'none !important' %>;
+}
+
+#registration-page-header .social-links a{
+	color: <%= settings.dark_bg_theme ? '#fff !important' : 'black !important' %>;
+}
+
+.reg-btn{
+	color: <%= settings.reg_button_class.blank? ? '' :  ('#' + settings.reg_button_class + ' !important') %>;
+}
+
+/* Already Registered? link */
+.subscribe a {
+	color: <%= settings.already_reg_link_color.blank? ? (settings.dark_bg_theme ? '#fff !important' : '#2fa4e7 !important') : ('#' + settings.already_reg_link_color.to_s+' !important') %>;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: <%= settings.nav_links_color.blank? ? 'white !important' :  ('#' + settings.nav_links_color + ' !important') %>;
+}
+
+.register_btn {
+  background: #<%= @settings.registration_button_color %> !important;
+}
+
+a.register_btn {
+	color: #<%= @settings.registration_button_text_color %> !important;
+}
+
+.content-link a{
+	color: #<%= settings.content_link_color %> !important;
+}
+</style>

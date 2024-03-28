@@ -1,0 +1,16 @@
+<% attendees.each do |attendee| %>
+  <div class="filtered-attendees-cont d-flex" id="attendee_<%= attendee.id %>">
+    <div class="attendee-img">
+      <%= image_tag '/defaults/avatar.png', alt: "Profile pic", data: {original: attendee.get_photo_url}, onload: "lazyloadImgs()" %>
+    </div>
+    <div class="attendee-info pt-1 ml-1">
+      <b><%= attendee.first_name %> <%= attendee.last_name %></b> <br>
+      <div><%= attendee.title %></div>
+      <div><%= attendee.company %> </div>
+    </div>
+    <span class="remove-attendee" data-attendee-id="<%= attendee.id %>" onclick="removeAttendee()">
+      &times;
+    </span>
+  </div>
+<% end %>
+<%= hidden_field_tag :total_pages, total_pages %>

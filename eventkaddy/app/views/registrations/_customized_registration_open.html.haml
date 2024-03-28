@@ -1,0 +1,252 @@
+%body
+  - unless @settings.hide_banner_bar
+    / ======= Banner ======= /
+    %nav.navbar.navbar-light.bg-light.reg-banner
+      = @settings.reg_banner.to_s.html_safe
+
+  / ======= Main ======= /
+  .container-fluid.d-flex.flex-column.mx-auto.reg-main
+
+    / ======= Header ======= /
+    .d-flex.reg-section-container.align-items-center.reg-header{style: ("background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_index_page)}
+      .row.mx-auto.d-flex.reg-row
+        .col-12.d-flex.reg-col
+
+          / ======= Nav ======= /
+          .row
+            %nav.navbar.navbar-expand-sm.navbar-light.full-width
+              %a.navbar-brand.text-wrap{ id:"registration-top-nav"}
+                -if @event.logo_event_file_id.present?
+                  = image_tag(@event.event_file.return_authenticated_url["url"], :class =>'photo_preview', style: "max-height: 70px")
+                -else
+                  %img{:src => "/assets/defaults/ek_logo.png", :width => "100px"}/
+              %button.navbar-toggler.collapsed{type:"button", 'data-toggle':"collapse", 'data-target':".navbar-collapse", 'aria-expanded':"false" }
+                %span.navbar-toggler-icon
+              .collapse.navbar-collapse.justify-content-end
+                %ul.navbar-nav.ml-auto
+                  %li.nav-item
+                    %a.nav-link{:href => "/#{params[:event_id]}/registrations"}
+                      %i.fa.fa-home
+                  - if @settings.method("agenda").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/registrations/agenda"}
+                        AGENDA
+                  - if @settings.method("speakers").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/registrations/speakers"}
+                        SPEAKERS
+                  - if @settings.method("exhibitors").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/registrations/exhibitors"}
+                        EXHIBITORS
+                  - if @settings.method("sponsors").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/registrations/sponsors"}
+                        SPONSORS
+                  - if @settings.method("hotel_information").call()
+                    %li.nav-item
+                      %a.nav-link{:href => "/#{params[:event_id]}/registrations/hotel_information"}
+                        HOTEL INFORMATION
+                  = link_to 'REGISTER NOW', "/#{params[:event_id]}/registrations/new", class:"btn btn-primary round-btn register_btn"  
+                  = link_to 'REGISTER AS MEMBER', "https://www.compostingcouncil.org/lock.aspx?app_id=#{@app_id}&redirect_uri=https://dev-athena-cms.eventkaddy.net/319/registrations/member&scope=full_profile", class: "btn btn-primary round-btn register_btn"    
+
+          / ======= Header Content ======= /
+          - if @settings.show_header_index_page
+            .row
+              .reg-header-content
+                -if !@settings.reg_header_content.blank?
+                  - efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(@settings.reg_header_content.to_i)
+                  - if efile.cloud_storage_type_id.blank?
+                    = image_tag(efile.path, :class=>'photo_preview')
+                  - else
+                    = image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview')
+                  %br/
+
+                  %br/
+    
+    / ======= Notice ======= /
+    - if notice
+      .alert.alert-info.shadow{:role => "alert", :style => "border-left:#178acc 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#178acc"} ×
+        .row
+          %i.fa.fa-check-circle-o.info-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px;color:#178acc !important;"}= notice
+    - if alert
+      .alert.alert-danger.shadow{:role => "alert", :style => "border-left:#721C24 5px solid; border-radius: 0px"}
+        %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true", :style => "color:#721C24"} ×
+        .row
+          %i.fa.fa-exclamation-circle.danger-font
+          %p.mb-0.font-weight-light{:style => "font-size:12px"}= alert
+    
+    - !!@settings.no_of_content_sections && @settings.no_of_content_sections.times do |i|
+      .content-link.d-flex.reg-section-container.align-items-center{id: "reg_section_container#{i+1}", style:(@settings.send("reg_section_container#{i+1}_style").to_s if @settings.respond_to?("reg_section_container#{i+1}_style"))}
+        .row.mx-auto.d-flex
+          .col-12.d-flex.p-0
+            .row.mx-auto.d-flex
+              - !!@settings.column_list && !!@settings.column_list[i+1] && @settings.column_list[i+1].times do |j|
+                .col-12.col-center{id: "reg_section_container#{i+1}_col#{j+1}", class: "col-md flex-column", style:(@settings.send("reg_section_container#{i+1}_col#{j+1}_style").to_s if @settings.respond_to?("reg_section_container#{i+1}_col#{j+1}_style"))}
+                  = @settings.send("reg_section_container#{i+1}_col#{j+1}").to_s.html_safe
+    .d-flex.align-items-center.justify-content-center
+      .d-flex.align-items-center.text-center
+        .days 
+          %p#day 316
+          %p Days 
+        .hours
+          %p#hour 21
+          %p Hours
+        .minutes 
+          %p#minute 29
+          %p Minutes
+        .seconds 
+          %p#second 45
+          %p Seconds
+
+    -# / ======= Content 2 ======= /
+    -# .d-flex.reg-section-container.align-items-center
+    -#   .row.mx-auto.d-flex.reg-row
+    -#     .col-12.d-flex
+    -#       .row.mx-auto.d-flex
+    -#         -# Loop through columns
+    -#         .col.text-center
+    -#         .col.text-center
+    -#           reflect.
+    -#         .col.text-center
+    -#           rethink.
+    -#         .col.text-center
+    -#           reimagine.   
+    -#         .col.text-center
+
+    -# / ======= Content 3 ======= /
+    -# .d-flex.reg-section-container.align-items-center
+    -#   .row.mx-auto.d-flex.reg-row
+    -#     .col-12.d-flex
+    -#       .row.mx-auto.d-flex
+    -#         -# Loop through columns
+    -#         .col.text-center
+    -#           .btn.btn-primary
+    -#             View Agenda
+      
+    -# / ======= Content 4 ======= /
+    -# .d-flex.reg-section-container.align-items-center
+    -#   .row.mx-auto.d-flex.reg-row
+    -#     .col-12.d-flex
+    -#       .row.mx-auto.d-flex
+    -#         -# Loop through columns
+    -#         .col.text-center
+    -#           Don't miss it. Reserver your spot today.
+    -#         .col.text-center
+    -#           .btn.btn-primary
+    -#             Register Now
+
+    / ======= Footer ======= /
+
+
+:css
+  .reg-header{
+    background-image: url("#{(!!@settings.reg_header_bg_img && @settings.show_header_index_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : ''}");
+  }
+
+  .register_btn {
+    background: ##{@settings.registration_button_color} !important;
+  }
+
+  .days {
+    padding: 10px;
+  }
+  .hours {
+    padding: 10px;
+  }
+  .minutes {
+    padding: 10px
+  }
+  .seconds {
+    padding: 10px
+  }
+
+  #day {
+    color: #efb99e;
+    font-size: 40px;
+  }
+  #hour {
+    color: #efb99e;
+    font-size: 40px;
+  }
+  #minute {
+    color: #efb99e;
+    font-size: 40px;
+  }
+  #second {
+    color: #efb99e;
+    font-size: 40px;
+  }
+
+  p {
+    color: #efb99e !important;
+    font-size: 30px !important;
+  }
+
+  @media screen and (max-width: 768px){
+    #day {
+    color: #efb99e;
+    font-size: 30px;
+  }
+  #hour {
+    color: #efb99e;
+    font-size: 30px;
+  }
+  #minute {
+    color: #efb99e;
+    font-size: 30px;
+  }
+  #second {
+    color: #efb99e;
+    font-size: 30px;
+  }
+
+  p {
+    color: #efb99e !important;
+    font-size: 20px !important;
+  }
+  }
+ 
+:javascript
+  function timeRemaning(endTime){
+    date = new Date(endTime);
+    const timeLeft = Date.parse(date)-Date.parse(new Date()) 
+    var seconds = Math.floor( (timeLeft/1000) % 60 );
+    var minutes = Math.floor( (timeLeft/1000/60) % 60 );
+    var hours = Math.floor( (timeLeft/(1000*60*60)) % 24 );
+    var days = Math.floor( timeLeft/(1000*60*60*24) );
+    return {
+      'total':timeLeft, 
+      'days':days, 
+      'hours':hours, 
+      'minutes':minutes, 
+      'seconds':seconds
+    }
+  }
+  
+  function runClock(){
+    var dayId = document.getElementById('day')
+    var hourId = document.getElementById('hour')
+    var minuteId = document.getElementById('minute')
+    var secondId = document.getElementById('second')
+    var closing_date = "#{@settings.closing_date}";
+    function updateClock(){
+      var t = timeRemaning(closing_date)
+      dayId.innerHTML = t.days
+      hourId.innerHTML = t.hours
+      minuteId.innerHTML = t.minutes
+      secondId.innerHTML = t.seconds
+      if(t.total <=  0){
+        clearInterval(timeinterval)
+      }
+    }
+    updateClock();
+    var timeinterval = setInterval(updateClock,1000);
+    console.log('TimeRemaning', closing_date );
+  }
+
+  runClock()

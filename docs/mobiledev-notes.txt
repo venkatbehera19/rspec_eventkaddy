@@ -1,0 +1,19 @@
+HTML5/CSS3/JS MOBILE DEV NOTES
+
+	
+	BACKBONE.JS
+		http://www.jamesyu.org/2011/01/27/cloudedit-a-backbone-js-tutorial-by-example/
+		http://ryandotsmith.heroku.com/2010/10/a-backbone-js-demo-app-sinatra-backend.html
+		http://www.elfsternberg.com/2010/12/08/backbonejs-introducing-backbone-store/
+		http://bennolan.com/2010/11/24/backbone-jquery-demo.html
+		http://www.ifandelse.com/?p=61
+		http://stackoverflow.com/questions/5112899/knockout-js-vs-backbone-js-vs
+		http://stef.posterous.com/culture-hack-day-culturegrid-hacks-a-mobile-a
+		
+		
+		
+	HTML5 DATA STORAGE
+		http://www.weboshelp.net/webos-tutorials/156-palm-webos-html5-database-storage-tutorial
+		http://www.html5rocks.com/tutorials/webdatabase/todo/#toc-step2
+		http://diveintohtml5.org/storage.html
+		http://stackoverflow.com/questions/3357553/how-to-store-an-array-in-localstorage

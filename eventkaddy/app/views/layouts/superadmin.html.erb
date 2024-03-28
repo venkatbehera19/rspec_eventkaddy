@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>EventKaddy CMS</title>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+  
+		<%= csrf_meta_tag %>
+</head>
+
+<body>
+
+	<div class="container">
+	
+		<div id="header" class="span-24 last">
+			
+			<div id="logo" class="span-6">
+				<h2>EventKaddy CMS</h2>
+			</div><!--logo-->
+			
+			<div id="vertical-menu-bar" class="span-17 last">
+				
+				<div id="vertical-menu-1">
+					<table>
+						<tr>
+						<% if user_signed_in? then %>
+<!-- 						<td><%= link_to "Logout #{current_user.email}", "/users/sign_out" %></td> -->
+						<td><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete %></td>
+						
+						<% else %>
+						<td><%= link_to "login", "/users/sign_in" %></td>
+						<% end %>
+						</tr>
+					</table>
+				</div>
+				
+				<div id="vertical-menu-2">
+					<table>
+						<tr>
+							<td><%= link_to "administrate", "/home/index" %></td> 
+						</tr>
+						
+					</table>
+				</div>
+				
+			</div><!--vertical-menu-bar-->
+			
+		</div><!--header-->
+		
+		<div id="left-sidebar" class="span-3 colborder">
+			<div id="first-left-sidebar">
+				<table>
+					<tr><td><%= link_to 'Users', "/users" %></td</tr>
+					<tr><td><%= link_to 'Organizations', "/organizations" %></td</tr>		
+				</table>
+			</div><!--first-left-sidebar-->
+			
+			<div id="second-left-sidebar">
+				<%= yield :event_sub_menu %>
+			</div><!--second-left-sidebar-->
+			
+		</div><!--left-sidebar-->
+		
+		<div id="content" class="span-20 last">
+			<% if notice %>
+				<p class="notice"><%= notice %></p>
+       		<% end %>
+       		<% if alert %>
+       			<p class="alert"><%= alert %></p>
+			<% end %>
+			
+			<%= yield %>
+		</div>
+		
+		<div id="footer" class="span-24 last">
+			<div id="footer-text">
+				Questions?  Email support@eventkaddy.com
+			</div><!--footer-text-->
+		</div>
+	
+	</div><!--container-->
+	
+</body>
+</html>

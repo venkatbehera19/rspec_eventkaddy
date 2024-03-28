@@ -1,0 +1,147 @@
+<%= form_for(@attendee, :html => { :multipart => true, :class => "form-horizontal well" }) do |f| %>
+  <% if @attendee.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@attendee.errors.count, "error") %> prohibited this attendee from being saved:</h2>
+
+      <ul>
+      <% @attendee.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% settings = Setting.return_cms_settings session[:event_id] %>
+
+  <% text_field = ->(col, label, options={}) {
+      unless settings.method("hide_attendee_form_#{col}").call
+        "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}</div>".html_safe
+      end
+  } %>
+
+  <% check_box = ->(col, label) {
+      unless settings.method("hide_attendee_form_#{col}").call
+          f.label(col) { f.check_box(col) + " #{label}" } + "<br>".html_safe
+      end
+  } %>
+
+  <%# works only for types which follow the correct id, name %>
+  <%# table_name_id, table_name convention %>
+  <% select_type = ->(col, label, html_options={}) {
+      unless settings.method("hide_attendee_form_#{col}").call
+          "<div class='form-group'>#{f.label col, label}#{f.collection_select col, col.to_s.gsub(/id$/, '').classify.constantize.all, :id, :name, {}, html_options}</div>".html_safe
+      end
+  } %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+  <% unless settings.method("hide_attendee_form_photo_file").call %>
+    <div class="row">
+      <%= file_field_tag :photo_file, class: "profile-pic-file" %>
+      <% if (@attendee.event_file_photo == nil) then %>
+        <div class="pic-upload-container mx-auto my-2">
+          <%= image_tag '/defaults/profile_default.png', class: "profile-pic" %>
+          <%= label_tag :photo_file do %>
+            <i class="fa fa-camera pic-action"></i>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="pic-upload-container mx-auto my-2">
+          <%= image_tag @attendee.event_file_photo.path, class: "profile-pic" %>
+          <%= label_tag :photo_file do %>
+            <i class="fa fa-camera pic-action"></i>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% unless Event.find(session[:event_id]).master_url.blank? %>
+      <div class="field" style="<%= 'display:none;' if settings.method("hide_attendee_form_online_url").call %>">
+          <%= label_tag :online_url do %>
+              <%= check_box_tag :online_url, 1, !(@attendee.photo_filename.blank?) %>
+              Include Online Copy of Latest Attendee Photo
+          <% end %>
+      </div>
+  <% end %>
+
+  <br>
+
+  <%= text_field["account_code",    "Registration ID", class: "form-control" ] %>
+  <%= text_field["first_name",      "First Name", class: "form-control" ] %>
+  <%= text_field["last_name",       "Last Name", class: "form-control" ] %>
+  <%= text_field["honor_prefix",    "Honor Prefix", class: "form-control" ] %>
+  <%= text_field["honor_suffix",    "Honor Suffix", class: "form-control" ] %>
+  <%= text_field["business_unit",   "Business Unit", class: "form-control" ] %>
+  <%= text_field["title",           "Title", class: "form-control" ] %>
+  <%= text_field["business_phone",  "Business Phone", class: "form-control" ] %>
+  <%= text_field["mobile_phone",    "Mobile_phone", class: "form-control" ] %>
+  <%= text_field["email",           "Email", class: "form-control" ] %>
+  <%= text_field["company",         "Company", class: "form-control" ] %>
+  <%= text_field["assignment",      "Assignment", class: "form-control" ] %>
+  <%= text_field["custom_filter_1", "Attendee Type", class: "form-control" ] %>
+  <%= text_field["username",        "Username", class: "form-control" ] %>
+  <%= text_field["password",        "Password", class: "form-control" ] %>
+  <%= text_field["authy_id",        "Authy ID (Remove to skip 2FA)", class: "form-control" ] %><br />
+  <%= text_field["biography",       "Biography", class: "form-control" ] %>
+
+  <%= check_box[:messaging_opt_out,   "Messaging Opt Out"] %>
+  <%= check_box[:app_listing_opt_out, "App Listing Opt Out"] %>
+  <%= check_box[:game_opt_out,        "Game Opt Out"] %>
+  <%= check_box[:is_demo,             "Demo User"] %>
+  <%= check_box[:premium_member,      "Premium Member"] %>
+
+
+  <% event = Event.find session[:event_id] %>
+  <% filters = !event.pn_filters ? nil : JSON.parse(event.pn_filters) %>
+  <% selected = !@attendee.pn_filters ? [] : JSON.parse(@attendee.pn_filters) %>
+
+  <% if filters %>
+      <%= label_tag(:pn_filters, "Select filters for notifications an attendee will receive.") %>
+      <%= select_tag(:pn_filters, options_for_select(filters, selected), :multiple => true, :size=>10, class: "form-control custom-select") %>
+  <% end %>
+
+  <br />
+  <br />
+  <%= text_field["travel_info",     "Travel Info", class: "form-control" ] %>
+  <%= text_field["table_assignment", "Table Assignment", class: "form-control" ] %>
+  <%= text_field["custom_fields_1", "Custom Fields 1", class: "form-control" ] %>
+  <%= text_field["custom_fields_2", "Custom Fields 2", class: "form-control" ] %>
+  <%= text_field["custom_fields_3", "Custom Fields 3", class: "form-control" ] %>
+
+  <%= text_field["country",                       "Country", class: "form-control" ] %>
+  <%= text_field["state",                         "State", class: "form-control" ] %>
+  <%= text_field["city",                          "City", class: "form-control" ] %>
+  <%= text_field["notes_email",                   "Notes Email", class: "form-control" ] %>
+
+  <%= check_box["notes_email_pending",           "Notes Email Pending"] %>
+
+  <%= text_field["temp_photo_filename",           "Temp Photo Filename", class: "form-control" ] %>
+  <%= text_field['photo_filename',                'Photo Filename', class: "form-control" ] %>
+  <%= text_field['iattend_sessions',              'I Attend Sessions', class: "form-control" ] %>
+  <%= text_field['validar_url',                   'Validar URL', class: "form-control" ] %>
+  <%= text_field['publish',                       'Publish', class: "form-control" ] %>
+  <%= text_field['twitter_url',                   'Twitter URL', class: "form-control" ] %>
+  <%= text_field['facebook_url',                  'Facebook URL', class: "form-control" ] %>
+  <%= text_field['linked_in',                     'Linked In', class: "form-control" ] %>
+
+  <%= select_type['attendee_type_id',              'Attendee Type', class: "custom-select" ] %>
+
+  <%= check_box['first_run_toggle',              'First Run Toggle' ] %>
+  <%= check_box['video_portal_first_run_toggle', 'Video Portal First Run Toggle' ] %>
+
+  <%= text_field['custom_filter_2',               'Custom Filter 2', class: "form-control" ] %>
+  <%= text_field['custom_filter_3',               'Custom Filter 3', class: "form-control" ] %>
+  <%= text_field['token',                         'Token', class: "form-control" ] %>
+  <%= text_field['tags_safeguard',                'Tags Safeguard', class: "form-control" ] %>
+  <%= text_field['badge_name',                    'Badge Name', class: "form-control" ] %>
+
+
+  <%# I believe this was a cheat field for an integration Hannah did %>
+  <%= text_field['speaker_biography',             'Speaker Biography', class: "form-control" ] %>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

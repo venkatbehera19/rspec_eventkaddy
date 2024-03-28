@@ -1,0 +1,34 @@
+<%= link_to 'Back', attendee_path(params[:attendee_id]), class:"btn btn-link" %><br>
+
+<h4>New sessions_attendee for <%= Attendee.find(params[:attendee_id]).first_name %> <%=Attendee.find(params[:attendee_id]).last_name %></h4>
+
+<%= form_for(@sessions_attendee,:html=>{:class=>"bg-light custom-border px-3 py-3"} ) do |f| %>
+  <% if @sessions_attendee.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sessions_attendee.errors.count, "error") %> prohibited this sessions_attendee from being saved:</h2>
+
+      <ul>
+      <% @sessions_attendee.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+   <div class="field">
+    <%= f.hidden_field :attendee_id, :value => params[:attendee_id] %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :session_code %>
+    <%= f.text_field :session_code, class: "form-control" %>
+  </div>
+
+
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>
+
+

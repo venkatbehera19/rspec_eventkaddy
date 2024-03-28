@@ -1,0 +1,40 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Refunded Purchase Details</h4>
+      <div class="btn-toolbar my-2">
+        <div class="btn-group mr-2">
+          <%= link_to 'Non-Refunded Purchases', purchases_path, class: 'btn btn-primary' %>
+        </div>
+      </div>
+      <br>
+        <table class="table table-striped" id="event_ticket_table">
+          <thead>
+            <tr>
+              <th>Attendee</th>
+              <th>Transaction ID</th>
+              <th>Transaction Status</th>
+              <th>Payment Mode</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @purchases.each do |purchased| %>
+              <% is_refunded = purchased.transactions.pluck(:external_status).include? 'REFUNDED' %>
+              <% if is_refunded%>
+                <% completed_transaction = purchased.transactions.select{|transaction| transaction.external_status == 'REFUNDED'}.first %>
+                <tr>
+                  <td><%= purchased.attendee.full_name %></td>
+                  <td><%= completed_transaction.external_transaction_id %></td>
+                  <td><%= completed_transaction.external_status %></td>
+                  <td><%= completed_transaction.mode_of_payment.name %></td>
+                  <td><%= completed_transaction.amount %></td>
+                </tr>
+              <% end %>  
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+

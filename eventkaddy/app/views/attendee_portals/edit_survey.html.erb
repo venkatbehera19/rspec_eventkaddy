@@ -1,0 +1,84 @@
+<%= form_for(@attendee, :html => { :class => "form" }, :url => { :action => "update_survey" }, :method => :put ) do |f| %>
+  <% if @attendee.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@session.errors.count, "error") %> prohibited this session from being saved:</h2>
+      <ul>
+        <% @session.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <% JSON.parse(@attendee.custom_fields).each do |field| %>
+  <% if field["type"] == 'text' %>
+  <%= field["label"].html_safe %>
+  <%= text_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"], value: field["value"] %>
+  <br>
+<% elsif field["type"] == 'checkbox-group' %>
+  <%= field["label"].html_safe %>
+  <br/>
+  <br>
+  <% field["values"].each do |option| %>
+    <%= check_box_tag "user[#{field["name"]}][]", option["label"], option["selected"] ? option["selected"] : false %>
+    <%= label_tag option["label"], strip_tags(option["label"].gsub!(/(&nbsp;|\s)+/, " ")) %>
+    <br>
+  <% end %>
+  <br>
+<% elsif field["type"] == 'radio-group' %>
+  <%= field["label"].html_safe %>
+  <br>
+  <% field["values"].each do |option| %>
+    <%= radio_button_tag "user[#{field["name"]}]", option["label"], option["selected"] ? option["selected"] : false %>
+    <%= label_tag option["label"], option["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+    <br/>
+  <% end %>
+  <br>
+<% elsif field["type"] == 'textarea' %>
+  <%= field["label"].html_safe %>
+  <br>
+  <%= text_area_tag "user[#{field["name"]}]", field["value"], class: field["className"], required: field["required"] %>
+  <br>
+<% elsif field["type"] == 'date' %>
+  <br>
+  <%= field["label"].html_safe %>
+  <%= date_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"], value: field["value"] %>
+<% elsif field["type"] == 'number' %>
+  <br>
+  <%= field["label"].html_safe %>
+  <%= number_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"], value: field["value"] %>
+<% elsif field["type"] == 'header' %>
+  <br>
+    <% subtype = field["subtype"] %>
+    <% if subtype == "h1" %>
+      <h1>
+        <%= field["label"].html_safe %>
+      </h1>
+    <% elsif subtype == "h2" %>
+      <h2>
+        <%= field["label"].html_safe %>
+      </h2>
+    <% elsif subtype == "h3" %>
+      <h3>
+        <%= field["label"].html_safe %>
+      </h3>
+    <% elsif subtype == "h4" %>
+      <h4>
+        <%= field["label"].html_safe %>
+      </h4>
+    <% elsif subtype == "h5" %>
+      <h5>
+        <%= field["label"].html_safe %>
+      </h5>
+    <% else %>
+      <h6>
+        <%= field["label"].html_safe %>
+      </h6>
+    <% end %>
+<% elsif field["type"] == 'paragraph' %>
+  <br>
+  <p><%= field["label"].html_safe %></p>
+<% end %>
+  <% end %>
+  <br>
+  <p><%= f.submit "Update Survey", class: "btn btn-primary" %></p>
+<% end %>

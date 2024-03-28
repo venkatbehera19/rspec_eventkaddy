@@ -1,0 +1,17 @@
+SVN TO GIT PATCHING TECHNIQUE
+
+Found that using svn diff to generate patch file and then using patch command or git apply in
+git repo produced errors.
+
+This technique worked:
+
+Use the linux diff command between two separate svn checkouts
+	-exclude .svn directories
+	-use the -u for 3 lines of unified context
+	-recursive
+
+diff -ru --exclude=.svn eventkaddy-rev1040 ek-wvc2014-speaker-portal > ekpatch.diff
+
+then, cd into relevant git sub-directory and patch at that sublevel, in this case p1 (ignoring top-level directory names)
+
+patch -p1 -i ../../ekpatch.diff

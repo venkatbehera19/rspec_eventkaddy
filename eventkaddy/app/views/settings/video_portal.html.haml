@@ -1,0 +1,355 @@
+%h4 Video Portal Booleans
+%br/
+.bg-light.custom-border.px-2.py-2.container-fluid{style:'min-height:500px;'}
+    .control-buttons.mt-2.mb-2
+        %button#left-button.btn.btn-outline-primary
+            %i.fa.fa-angle-double-left
+        %button#right-button.btn.btn-outline-primary.pull-right
+            %i.fa.fa-angle-double-right
+    = form_for @video_portal_booleans, :html => { :method => :post }, :url => '/settings' do |f| 
+        
+        .d-flex.flex-row.flex-nowrap.horizontal-scroll#cards-container
+            .card.card-body.settings-card
+                %h5 General Settings
+                .custom-control.custom-switch
+                    = f.check_box :video_portal, class: "custom-control-input"
+                    = f.label :video_portal, "Video Portal Enabled", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :single_page_app, class: "custom-control-input"
+                    = f.label :single_page_app,"Single Page App", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :login_with_devise, class: "custom-control-input"
+                    = f.label :login_with_devise,"Login with Devise", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :auto_sign_in, class: "custom-control-input"
+                    = f.label :auto_sign_in,"Auto Sign In (as guest attendee)", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :forgot_password, class: "custom-control-input"
+                    = f.label :forgot_password,"Forgot Password Enabled", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :option_to_skip_survey, class: "custom-control-input"
+                    = f.label :option_to_skip_survey, "Give user button to skip survey (they can find it later on the dashboard)", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :ask_attendee_details, class: "custom-control-input"
+                    = f.label :ask_attendee_details,"Ask Attendee to Provide Extra Info on First Sign In", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :prefer_last_name, class: "custom-control-input"
+                    = f.label :prefer_last_name, "Use Last Name Instead of Username in Corner if Available", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_icons_show, class: "custom-control-input"
+                    = f.label :nav_icons_show, "Show Icons in Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :premium_access, class: "custom-control-input"
+                    = f.label :premium_access, "Enable Premium (Two-Tier) Access", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :two_factor, class: "custom-control-input"
+                    = f.label :two_factor, "Enable Two-Factor (2FA) Access", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :ce_with_survey, class: "custom-control-input"
+                    = f.label :ce_with_survey, "Add Survey to CE certificate", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :banner_enabled, class: "custom-control-input"
+                    = f.label :banner_enabled, "Enable Banner Ads", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :shuffle_banner, class: "custom-control-input"
+                    = f.label :shuffle_banner, "Shuffle Banner Ads", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :redirect_to_survey, class: "custom-control-input"
+                    = f.label :redirect_to_survey, "Redirect To Survey (On Login)", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :standby_screen, class: "custom-control-input"
+                    = f.label :standby_screen, "Display Standby Screen", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :session_video_from_media_files, class: "custom-control-input"
+                    = f.label :session_video_from_media_files, "Use Media File Table For Session Videos", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :featured_sessions, class: "custom-control-input featured-toggle"
+                    = f.label :featured_sessions, "Enable Featured Sessions", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :live_sessions, class: "custom-control-input live-toggle"
+                    = f.label :live_sessions, "Enable Live Sessions", class: "custom-control-label"
+
+            .card.card-body.settings-card
+                %h5 Sessions Filter Page
+
+                .custom-control.custom-switch
+                    = f.check_box :favourites, class: "custom-control-input"
+                    = f.label :favourites, "Favorites (show personal schedule)", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :full_schedule, class: "custom-control-input"
+                    = f.label :full_schedule, "Show Sessions Not In Favorites", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :on_demand, class: "custom-control-input"
+                    = f.label :on_demand, "Show On Demand Videos", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_date, class: "custom-control-input"
+                    = f.label :sessions_by_date, "Filter Sessions by Date", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_tag, class: "custom-control-input"
+                    = f.label :sessions_by_tag, "Filter Sessions by Tag", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_audience_tag, class: "custom-control-input"
+                    = f.label :sessions_by_audience_tag, "Filter Sessions by Audience Tag", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_speaker, class: "custom-control-input"
+                    = f.label :sessions_by_speaker, "Filter Sessions by Speaker", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_search, class: "custom-control-input"
+                    = f.label :sessions_search, "Filter Sessions by Search", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :sessions_by_my_ce, class: "custom-control-input"
+                    = f.label :sessions_by_my_ce, "Filter Sessions by CE", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :show_session_codes, class: "custom-control-input"
+                    = f.label :show_session_codes, "Show Session Codes", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :show_speaker_names, class: "custom-control-input"
+                    = f.label :show_speaker_names, "Show Speaker Names", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :reverse_day_order, class: "custom-control-input"
+                    = f.label :reverse_day_order, "Reverse Day Order", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :hide_ondemands_time, class: "custom-control-input"
+                    = f.label :hide_ondemands_time, "Hide Time for On-Demand Videos", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :keep_accordion_sections_closed, class: "custom-control-input"
+                    = f.label :keep_accordion_sections_closed, "Keep Accordion Sections All Closed", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :enable_switching_timezone, class: "custom-control-input"
+                    = f.label :enable_switching_timezone, "Enable Switching Timezone to Local", class: "custom-control-label"
+
+            .card.card-body.settings-card
+                %h5 Exhibitors Filter Page
+
+                .custom-control.custom-switch
+                    = f.check_box :exhibitors_by_sponsors, class: "custom-control-input"
+                    = f.label :exhibitors_by_sponsors, "Filter Exhibitors by Sponsor", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitors_by_alphabet, class: "custom-control-input"
+                    = f.label :exhibitors_by_alphabet, "Filter Exhibitors Alphabetically", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitors_by_categories, class: "custom-control-input"
+                    = f.label :exhibitors_by_categories, "Filter Exhibitors by Category", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitors_by_search, class: "custom-control-input"
+                    = f.label :exhibitors_by_search, "Filter Exhibitors by Search", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitors_by_alphabetic_card_view, class: "custom-control-input"
+                    = f.label :exhibitors_by_alphabetic_card_view, "Filter Exhibitors by Alphabetic Card View", class: "custom-control-label"
+
+            .card.card-body.settings-card
+                %h5 Attendees Filter Page
+
+                .custom-control.custom-switch
+                    = f.check_box :attendees_by_alphabet, class: "custom-control-input"
+                    = f.label :attendees_by_alphabet, "Filter Attendees Alphabetically", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :attendees_by_categories, class: "custom-control-input"
+                    = f.label :attendees_by_categories, "Filter Attendees by Category", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :attendees_by_search, class: "custom-control-input"
+                    = f.label :attendees_by_search, "Filter Attendees by Search", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :attendees_messaging_option, class: "custom-control-input"
+                    = f.label :attendees_messaging_option, "Enable Messaging Option on Attendee Page", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :attendees_by_alphabetic_card_view, class: "custom-control-input"
+                    = f.label :attendees_by_alphabetic_card_view, "Filter Attendees by Alphabetic Card View", class: "custom-control-label"
+
+            .card.card-body.settings-card
+                %h5 Livestream Page
+
+                .custom-control.custom-switch
+                    = f.check_box :session_info, class: "custom-control-input"
+                    = f.label :session_info, "Session Info", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :speaker_info, class: "custom-control-input"
+                    = f.label :speaker_info, "Speaker Info", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :session_files, class: "custom-control-input"
+                    = f.label :session_files, "Session Files", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :polling, class: "custom-control-input"
+                    = f.label :polling, "Polling", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :polling_live, class: "custom-control-input"
+                    = f.label :polling_live, "Polling Live", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :q_a, class: "custom-control-input"
+                    = f.label :q_a, "Questions & Answers", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :q_a_answers, class: "custom-control-input"
+                    = f.label :q_a_answers, "Questions & Answers (Questions Feed)", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :notes, class: "custom-control-input"
+                    = f.label :notes, "Notes", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :attendee_chat, class: "custom-control-input"
+                    = f.label :attendee_chat, "Attendee Chat", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :show_speaker_email, class: "custom-control-input"
+                    = f.label :show_speaker_email, "Show Speaker's Email", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :enable_livestream_banner, class: "custom-control-input"
+                    = f.label :enable_livestream_banner, "Enable Live Stream Banner", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :attendee_poll, class: "custom-control-input"
+                    = f.label :attendee_poll, "Attendee Poll", class: "custom-control-label"
+                
+            .card.card-body.settings-card
+                %h5 Exhibitor Page
+
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_info, class: "custom-control-input"
+                    = f.label :exhibitor_info, "Exhibitor Info", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_products, class: "custom-control-input"
+                    = f.label :exhibitor_products, "Exhibitor Products and Services Info", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_files, class: "custom-control-input"
+                    = f.label :exhibitor_files, "Exhibitor Files", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_survey, class: "custom-control-input"
+                    = f.label :exhibitor_survey, "Exhibitor Survey", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_notes, class: "custom-control-input"
+                    = f.label :exhibitor_notes, "Exhibitor Notes", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_links, class: "custom-control-input"
+                    = f.label :exhibitor_links, "Exhibitor Links", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_chat, class: "custom-control-input"
+                    = f.label :exhibitor_chat, "Exhibitor Chat", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_messages, class: "custom-control-input"
+                    = f.label :exhibitor_messages, "Exhibitor Messages", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_misc, class: "custom-control-input"
+                    = f.label :exhibitor_misc, "Exhibitor Miscellaneous", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :exhibitor_checkin, class: "custom-control-input"
+                    = f.label :exhibitor_checkin, "Exhibitor Check In", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :enable_exhibitor_booth_banner, class: "custom-control-input"
+                    = f.label :enable_exhibitor_booth_banner, "Enable Exhibitor Booth Banner", class: "custom-control-label"
+                -# .custom-control.custom-switch
+                -#     = f.check_box :exhibitor_staffs, class: "custom-control-input"
+                -#     = f.label :exhibitor_staffs, "Exhibitor Staffs", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :timeslots_booking, class: "custom-control-input"
+                    = f.label :timeslots_booking, "Book a Meeting", class: "custom-control-label"
+            
+            .card.card-body.settings-card
+                %h5 Attendee Page
+                .custom-control.custom-switch
+                    = f.check_box :attendee_email, class: "custom-control-input"
+                    = f.label :attendee_email, "Attendee Email", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :attendee_phone, class: "custom-control-input"
+                    = f.label :attendee_phone, "Attendee Phone Number", class: "custom-control-label"
+
+            .card.card-body.settings-card
+                %h5 Main Navigation Menu
+
+                .custom-control.custom-switch
+                    = f.check_box :nav_dashboard, class: "custom-control-input"
+                    = f.label :nav_dashboard, "Dashboard Icon in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_sessions, class: "custom-control-input"
+                    = f.label :nav_sessions, "Session Schedule in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_exhibitors, class: "custom-control-input"
+                    = f.label :nav_exhibitors, "Exhibitors in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_exhibitors_simple, class: "custom-control-input"
+                    = f.label :nav_exhibitors_simple, "Simple Exhibitors in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_exhibitors_alphabet, class: "custom-control-input"
+                    = f.label :nav_exhibitors_alphabet, "Exhibitors Listed by Alphabet in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_networking, class: "custom-control-input"
+                    = f.label :nav_networking, "Attendees in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_messages, class: "custom-control-input"
+                    = f.label :nav_messages, "Messages in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_help, class: "custom-control-input"
+                    = f.label :nav_help, "Help in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_photo_gallery, class: "custom-control-input"
+                    = f.label :nav_photo_gallery, "Photo Gallery in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :enable_livestream_banner, class: "custom-control-input"
+                    = f.label :enable_livestream_banner, "Enable Live Stream Banner", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_on_demand, class: "custom-control-input"
+                    = f.label :nav_on_demand, "On-demand in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_notifications, class: "custom-control-input"
+                    = f.label :nav_notifications, "Notifications in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_event_survey, class: "custom-control-input"
+                    = f.label :nav_event_survey, "Survey in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_blog, class: "custom-control-input"
+                    = f.label :nav_blog, "Info in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_game, class: "custom-control-input"
+                    = f.label :nav_game, "Leaderboard in Navigation Menu", class: "custom-control-label"
+                .custom-control.custom-switch
+                    = f.check_box :nav_booked_slots, class: "custom-control-input"
+                    = f.label :nav_booked_slots, "My Booked Slot in Navigation Menu", class: "custom-control-label"
+            .card.card-body.settings-card
+                %h5 CE Certificate
+
+                .custom-control.custom-switch
+                    = f.check_box :send_ce_after_survey, class: "custom-control-input", onchange: "toggleCeSelect()"
+                    = f.label :send_ce_after_survey, "Send CE Certificate after Global Survey complete", class: "custom-control-label"
+                %br/
+                .field#default-ce-select
+                    = f.label :default_ce_id, "Default Ce Certifacte for Global Poll"
+                    = f.select :default_ce_id, options_from_collection_for_select(CeCertificate.where(event_id: session[:event_id]), :id, :name, @video_portal_booleans.default_ce_id), {}, class: "form-control"
+                %h5 Video Viewed
+
+                %br/
+                .field#default-ce-select
+                    = f.label :percentage_video_viewed_for_iattend, "Percentage Of Video Watched To Add Session To iattend"
+                    = f.number_field  :percentage_video_viewed_for_iattend, class: "form-control"
+
+        %br
+        = f.submit 'Update Video Portal Settings', class:'btn btn-primary'
+:javascript
+    let cardWidth = parseInt($('.settings-card').css('width'));
+    $("#left-button").click(function(){
+        let scrollPosition = Math.ceil($("#cards-container").scrollLeft());
+        let scrollDist = (scrollPosition % cardWidth > 0)? (scrollPosition % cardWidth) : cardWidth;
+        $("#cards-container").scrollLeft(scrollPosition - scrollDist);
+    });
+    $("#right-button").click(function(){
+        let scrollPosition = Math.ceil($("#cards-container").scrollLeft());
+        let scrollDist = (scrollPosition % cardWidth > 0)? cardWidth - (scrollPosition % cardWidth) : cardWidth;
+        $("#cards-container").scrollLeft(scrollPosition + scrollDist);
+    });
+    if ($('#setting_send_ce_after_survey').is(':checked')) $('#default-ce-select').show()
+    else $('#default-ce-select').hide()
+
+    function toggleCeSelect () {
+        if ($('#setting_send_ce_after_survey').is(':checked')) $('#default-ce-select').show()
+        else $('#default-ce-select').hide()
+    }
+    $(".featured-toggle").on('click', function(){
+      
+        if ($(this).is(':checked')){
+            if ($(".live-toggle").is(':checked')){
+                $(".live-toggle").click();
+            }
+        }   
+    })
+    $(".live-toggle").on('click', function(){
+     
+        if ($(this).is(':checked')){
+            if ($(".featured-toggle").is(':checked')){
+                $(".featured-toggle").click();
+            }
+        }   
+    })

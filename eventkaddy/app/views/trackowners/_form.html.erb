@@ -1,0 +1,82 @@
+<%= form_for(@trackowner, :html => { :multipart => true, :class=>"form-horizontal well" } ) do |f| %>
+  <% if @trackowner.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@trackowner.errors.count, "error") %> prohibited this trackowner from being saved:</h2>
+
+      <ul>
+      <% @trackowner.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+
+  <div class="row">
+    <%= file_field_tag :photo_file, class: "profile-pic-file" %>
+    <% if (@trackowner.event_file_photo.nil?) then %>
+      <div class="pic-upload-container mx-auto my-2">
+        <%= image_tag '/defaults/profile_default.png', class: "profile-pic" %>
+        <%= label_tag :photo_file do %>
+          <i class="fa fa-camera pic-action"></i>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="pic-upload-container mx-auto my-2">
+        <%= image_tag @trackowner.event_file_photo.path, class: "profile-pic" %>
+        <%= label_tag :photo_file do %>
+          <i class="fa fa-camera pic-action"></i>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  
+  <div class="form-group">
+    <%= f.label :honor_prefix %>
+    <%= f.text_field :honor_prefix, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :first_name %>
+    <%= f.text_field :first_name, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :last_name %>
+    <%= f.text_field :last_name, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :honor_suffix %>
+    <%= f.text_field :honor_suffix, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :email %>
+    <%= f.text_field :email, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= label_tag :password %>
+    <%= text_field_tag :password, "", class: "form-control", type: "password" %>
+    <span class="warn-text mt-1"></span>
+  </div>
+
+  <br/>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>
+
+<script>
+  $('#password').on('input', function(){
+    let val = $(this).val();
+    $('.warn-text').text(val.length >= 6 ? "" : "Password must be atleast 6 characters*")
+  });
+</script>
+
+<style>
+  .warn-text{
+    font-size: 0.9rem;
+    color: red;
+  }
+</style>

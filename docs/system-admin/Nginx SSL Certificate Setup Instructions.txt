@@ -1,0 +1,34 @@
+Nginx SSL Certificate Setup Instructions
+
+	Look for the two lines in /opt/nginx/nginx.conf that indicate the certificate information location:
+
+	    ssl_certificate      /srv/ssl/eventkaddy.net.crt;
+	    ssl_certificate_key  /srv/ssl/eventkaddy.net.key;
+
+
+
+	Each year upon renewal GoDaddy sends us a new certificate and the gd_bundle.crt file.
+
+		ex.  XXXXXXXXXXX.crt  #our new certificate
+
+	They use the same (or at least did in 2014) gd_bundle.crt as the year before.
+
+	Unzip the GoDaddy files in a temp directory.
+
+	For Nginx the gd_bundle file needed to be appended to the .crt file:
+
+		cat gd_bundle.crt >> 2b7be9ae261941.crt
+
+	Make a copy of last year's certificate file just in case the new one fails:
+
+		cp /srv/ssl/eventkaddy.net.crt /srv/ssl/eventkaddy.net.crt_2013
+
+	Then rename and simultaneously replace the old certificate:
+
+		sudo cp ./2b7be9ae261941.crt /srv/ssl/eventkaddy.net.crt
+
+	Reboot Nginx and verify the new certificate is working by browsing to one of our sites using SSL
+	You may have to clear out browser data caches to get the certificate to refresh.
+
+
+

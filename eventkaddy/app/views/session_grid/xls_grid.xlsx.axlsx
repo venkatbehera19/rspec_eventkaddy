@@ -1,0 +1,612 @@
+require 'timeout'
+status = Timeout::timeout(30) {
+
+def return_array_of_dates
+  Session.where("event_id=? AND date IS NOT NULL", @event_id).pluck(:date).uniq
+end
+
+def add_top_left_heading
+  @grid_hash["Sheets"].each do |s|
+    @row_num = 0
+    id = new_id
+    4.times do
+      s["Columns"][0]["Cells"] << {"ID" => id, "Row Number" => @row_num, "Content" => "Legend:", "Style" => "top_left"}
+      @row_num += 1
+    end
+  end
+end
+
+def add_grid_legend(array_of_tags_and_colors)
+  @grid_hash["Sheets"].each do |s|
+    @col_num = 1
+    array_of_tags_and_colors.each_with_index do |obj, i|
+      @row_num = 0
+      id = new_id
+      s["Columns"] << { "Column Number" => @col_num, "Cells" => [] }
+      @col_num += 1
+      4.times do
+        s["Columns"][i+1]["Cells"] << {"ID" => id, "Row Number" => @row_num, "Content" => obj["tag"], "Style" => obj["tag"] }
+        @row_num += 1
+      end
+    end
+  end
+  @row_num_after_header = @row_num
+end
+
+def add_heading_separator_row
+  @grid_hash["Sheets"].each do |s|
+    s["Columns"].each do |c|
+      @row_num = @row_num_after_header
+      id = new_id
+      4.times do
+        c["Cells"] << {"ID" => id, "Row Number" => @row_num, "Content" => "", "Style" => "separator" }
+        @row_num += 1
+      end
+    end
+  end
+  @row_num_after_separator_row = @row_num
+end
+
+def return_rooms_array(date)
+  Session.find_by_sql ["
+    SELECT DISTINCT location_mappings.name AS room
+    FROM sessions
+    JOIN location_mappings ON location_mappings.id=sessions.location_mapping_id
+    WHERE sessions.event_id = ? AND sessions.date = ?
+    ORDER BY room", @event_id, date]
+end
+
+def fill_empty_header_cells(column)
+  # id = new_id
+  while column["Cells"].length < @row_num_after_separator_row
+    id = new_id
+    column["Cells"] << {"ID" => id, "Row Number" => column["Cells"].length, "Content" => "", "Style" => "separator" }
+  end
+end
+
+def fill_empty_cells_until_row(column, row)
+  # id = new_id
+  while column["Cells"].length < row
+    id = new_id
+    column["Cells"] << {"ID" => id, "Row Number" => column["Cells"].length, "Content" => "", "Style" => "separator" }
+  end
+end
+
+# def add_rooms(dates, orientation)
+#   dates.each do |date|
+#     rooms_array = return_rooms_array(date)
+
+#     @grid_hash["Sheets"].each do |s|
+#       next unless s["Name"] == date.to_s
+#       @row_num = @row_num_after_separator_row
+#       rooms_array.each_with_index do |room, i|
+#         s["Columns"] << { "Column Number" => i+1, "Cells" => [] } if s["Columns"].length < i+2
+
+#         fill_empty_header_cells(s["Columns"][i+1])
+
+#         id = new_id
+#         6.times do
+#           s["Columns"][i+1]["Cells"] << {"ID" => id, "Row Number" => @row_num, "Content" => room, "Style" => "time_style"}
+#           @row_num += 1
+#         end
+#       end
+#     end
+
+#   end
+# end
+
+def add_times(dates, orientation)
+
+  dates.each do |date|
+
+    earliest_time = Session.find_by_sql ["
+        SELECT DISTINCT start_at,
+        (TO_SECONDS(end_at) - TO_SECONDS(start_at)) AS time_diff
+        FROM sessions
+        WHERE event_id=?
+          AND date = ?
+          AND (TO_SECONDS(end_at) - TO_SECONDS(start_at) > 5*60)
+        ORDER BY start_at", @event_id, date]
+        #AND start_at > '06:00'
+    earliest_time = earliest_time.first.start_at
+    if Time.parse(earliest_time.strftime('%T')) < @earliest_allowed_time
+      earliest_time = earliest_time.change({ hour: @earliest_allowed_time.hour,
+                                             min: @earliest_allowed_time.min,
+                                             sec: @earliest_allowed_time.sec })
+    end
+
+    lastest_time  = Session.find_by_sql ["
+        SELECT DISTINCT end_at,
+        (TO_SECONDS(end_at) - TO_SECONDS(start_at)) AS time_diff
+        FROM sessions
+        WHERE event_id=?
+          AND date = ?
+          AND (TO_SECONDS(end_at) - TO_SECONDS(start_at) > 5*60)
+        ORDER BY end_at DESC", @event_id, date]
+      lastest_time = lastest_time.first.end_at
+
+    times_array = []
+
+    until earliest_time > lastest_time
+      times_array << earliest_time
+      earliest_time = add_thirty_minutes(earliest_time)
+    end
+
+    @grid_hash["Sheets"].each do |s|
+      next unless s["Name"] == date.to_s
+      @row_num = @row_num_after_separator_row
+
+      ##space for room names
+      id = new_id
+      6.times do
+        s["Columns"][0]["Cells"] << {"ID" => id, "Row Number" => @row_num, "Content" => s["Name"], "Style" => "date_style"}
+        @row_num += 1
+      end
+
+      times_array.each_with_index do |time, i|
+        puts time
+        id = new_id
+        6.times do
+          s["Columns"][0]["Cells"] << {"ID" => id, "Row Number" => @row_num, "Content" => time.strftime("%I:%M %p"), "Style" => "time_style"}
+          @row_num += 1
+        end
+      end
+    end
+  end
+end
+
+def add_room_header(sheet, room)
+  first_empty_column = false
+
+  c_length = sheet["Columns"].length
+  i = 0
+  while c_length > i && !first_empty_column
+    puts sheet["Columns"][i]["Column Number"]
+    first_empty_column = sheet["Columns"][i]["Column Number"] if !sheet["Columns"][i]["Cells"] || !sheet["Columns"][i]["Cells"][8]
+    i += 1
+  end
+  # sheet["Columns"].each {|c| first_empty_column = c["Column Number"] if !c["Cells"] || !c["Cells"][8] }
+  unless first_empty_column
+    sheet["Columns"] << { "Column Number" => sheet["Columns"].length, "Cells" => [] }
+    first_empty_column = sheet["Columns"].length - 1
+  end
+
+  fill_empty_header_cells(sheet["Columns"][first_empty_column])
+
+  @row_num = @row_num_after_separator_row
+
+  id = new_id
+  6.times do
+    sheet["Columns"][first_empty_column]["Cells"] << {"ID" => id, "Row Number" => @row_num, "Content" => room, "Style" => "room_style"}
+    @row_num += 1
+  end
+  first_empty_column
+end
+
+def find_room_column_number(sheet, room)
+  result = false
+  sheet["Columns"].each {|c| result = c["Column Number"] if c["Cells"][8] && c["Cells"][8]["Content"] == room}
+  if result
+    result
+  else
+    add_room_header(sheet, room)
+  end
+end
+
+def return_first_time_row(sheet)
+  sheet["Columns"][0]["Cells"].each {|c| return c["Row Number"] if c["Style"] == "time_style" }
+end
+
+def return_time_row_number(sheet, session)
+  first_time_row_num    = return_first_time_row(sheet)
+  first_time            = Time.parse(sheet["Columns"][0]["Cells"][first_time_row_num]["Content"])
+  puts sheet["Columns"][0]["Cells"][first_time_row_num]["Content"]
+  time_since_first_time = Time.parse(session.start_at.strftime('%T')) - first_time
+  rows                  = time_since_first_time / (5*60)
+
+  first_time_row_num + rows
+end
+
+def return_session_length(session)
+  Time.parse(session.start_at.strftime('%T')) < @earliest_allowed_time ? start_at = @earliest_allowed_time : start_at = session.start_at
+  t = (Time.parse(session.end_at.strftime('%T')) - Time.parse(start_at.strftime('%T'))) / (5*60)
+  t.to_i
+end
+
+def is_overlapping?(sheet, col_num, session)
+  sheet["Columns"][col_num]["Cells"].each do |c|
+    next if !c["Start"]
+
+    s_start = Time.parse(session.start_at.strftime('%T')).to_i
+    s_end   = Time.parse(session.end_at.strftime('%T')).to_i
+    c_start = Time.parse(c["Start"]).to_i
+    c_end   = Time.parse(c["End"]).to_i
+
+    r1 = s_start.between? c_start+1, c_end-1
+    r2 = s_end.between?   c_start+1, c_end-1
+    r3 = c_start.between? s_start+1, s_end-1
+    r4 = c_end.between?   s_start+1, s_end-1
+    r5 = s_start == c_start
+    r6 = s_end   == c_end
+
+    return true if r1 || r2 || r3 || r4 || r5 || r6
+  end
+  false
+end
+
+def add_session(session, room, date)
+  @grid_hash["Sheets"].each do |s|
+    next unless s["Name"] == date.to_s
+    @row_num     = @row_num_after_separator_row
+    col_num      = find_room_column_number(s, room)
+    time_row_num = return_time_row_number(s, session)
+
+    col_num = add_room_header(s, room) while is_overlapping?(s, col_num, session)
+
+    fill_empty_cells_until_row(s["Columns"][col_num], time_row_num)
+    style = 'tagless'
+    style = session.tags.first.name if session.tags.length > 0 && @styles[session.tags.first.name]
+    id    = new_id
+    # tags = []
+    # session.tags.each {|t| tags << t.name}
+    # tags = tags.split(' ')
+
+
+    ## Rich text not available in current release of aslsx (not standard)
+    # content = Axlsx::RichText.new
+
+    # content.add_run "#{session.title}\n\n"
+    # content.add_run "#{session.session_code}\n\n", :b=>true
+    # content.add_run "#{session.start_at.strftime('%I:%M %p')} - #{session.end_at.strftime('%I:%M %p')}\n\n #{session.location_mapping.name}"# \n\n #{tags}"
+
+    content = "#{session.title}\n\n #{session.session_code}\n\n #{session.start_at.strftime('%I:%M %p')} - #{session.end_at.strftime('%I:%M %p')}\n\n #{session.location_mapping.name}"# \n\n #{tags}"
+
+    actual_start_at = Time.parse( session.start_at.strftime('%T') )
+    six_am            = Time.parse('06:00:00')
+    actual_start_at < six_am ? start_at = six_am : start_at = actual_start_at
+
+    return_session_length(session).times do
+      s["Columns"][col_num]["Cells"] << {"ID" => id, "Row Number" => time_row_num, "Content" => content, "Style" => style, "Start" => actual_start_at.strftime('%T'), "End" => session.end_at.strftime('%T')}
+      @row_num += 1
+    end
+  end
+end
+
+def add_sessions(dates, orientation)
+  dates.each do |date|
+
+    earliest_time = Session.find_by_sql ["
+        SELECT DISTINCT start_at,
+        (TO_SECONDS(end_at) - TO_SECONDS(start_at)) AS time_diff
+        FROM sessions
+        WHERE event_id=?
+          AND date = ?
+          AND (TO_SECONDS(end_at) - TO_SECONDS(start_at) > 5*60)
+        ORDER BY start_at", @event_id, date]
+    #AND start_at > '06:00'
+
+    earliest_time = earliest_time.first.start_at
+
+    earliest_time = @earliest_allowed_time if Time.parse(earliest_time.strftime('%T')) < @earliest_allowed_time
+
+    rooms_array = return_rooms_array(date)
+    rooms_array.each do |room|
+      lm_id    = LocationMapping.where(event_id:@event_id, name:room.room).first.id
+      sessions = Session.find_by_sql ["
+        SELECT *,
+        (TO_SECONDS(end_at) - TO_SECONDS(start_at)) AS time_diff
+        FROM sessions
+        WHERE event_id=?
+          AND location_mapping_id=?
+          AND date = ?
+          AND (TO_SECONDS(end_at) - TO_SECONDS(start_at) > 5*60)
+        ORDER BY start_at", @event_id, lm_id, date]
+      sessions.each {|s| add_session(s, room.room, date) }
+    end
+  end
+end
+
+def return_contrast_yiq(hexcolor)
+  rgb = hexcolor[1..-1].scan(/../).map {|color| color.to_i(16)}
+  yiq = ((rgb[0]*299)+(rgb[1]*587)+(rgb[2]*114))/1000
+  (yiq >= 128) ? '00' : 'FF'
+end
+
+def return_styles_obj(array_of_tags_and_colors, wb)
+
+  styles = {}
+  wb.styles do |s|
+
+    styles['top_left'] = s.add_style :bg_color    => 'F6FDF9',
+                                       :height    => 50,
+                                       :fg_color  => '00',
+                                       :sz        => 14,
+                                       :b         => true,
+                                       :border    => { :style => :thick, :color => '00' },
+                                       :alignment => { :horizontal=> :center, :vertical => :center, :wrap_text => true }
+
+    styles['date_style'] = s.add_style :bg_color  => 'FAFFFF',
+                                       :height    => 50,
+                                       :fg_color  => '00',
+                                       :sz        => 14,
+                                       :b         => true,
+                                       :border    => { :style => :thick, :color => '00' },
+                                       :alignment => { :horizontal=> :center, :vertical => :center, :wrap_text => true }
+
+    styles['time_style'] = s.add_style :bg_color  => 'FAFFFF',
+                                       :height    => 50,
+                                       :fg_color  => '00',
+                                       :sz        => 14,
+                                       :b         => true,
+                                       :border    => { :style => :thick, :color => '00' },
+                                       :alignment => { :horizontal=> :center, :vertical => :center, :wrap_text => true }
+
+    styles['room_style'] = s.add_style :bg_color  => 'FAFFFF',
+                                       :height    => 50,
+                                       :fg_color  => '00',
+                                       :sz        => 14,
+                                       :b         => true,
+                                       :border    => { :style => :thick, :color => '00' },
+                                       :alignment => { :horizontal=> :center, :vertical => :center, :wrap_text => true }
+
+    styles['separator'] = s.add_style :bg_color  => 'FF',
+                                      :height    => 50,
+                                      :fg_color  => '00',
+                                      :sz        => 14,
+                                      :alignment => { :horizontal=> :center, :vertical => :center }
+
+    styles['separator_with_left_border'] = s.add_style :bg_color  => 'FF',
+                                      :height    => 50,
+                                      :fg_color  => '00',
+                                      :sz        => 14,
+                                      :border    => { :style => :dotted, :color => 'D1D6D4', :edges => [:left] },
+                                      :alignment => { :horizontal=> :center, :vertical => :center }
+
+    styles['separator_end'] = s.add_style :bg_color  => 'FF',
+                                          :height    => 50,
+                                          :fg_color  => '00',
+                                          :sz        => 14,
+                                          :border    => { :style => :dotted, :color => 'D1D6D4', :edges => [:bottom] },
+                                          :alignment => { :horizontal=> :center, :vertical => :center }
+
+    styles['separator_end_with_left_border'] = s.add_style :bg_color  => 'FF',
+                                          :height    => 50,
+                                          :fg_color  => '00',
+                                          :sz        => 14,
+                                          :border    => { :style => :dotted, :color => 'D1D6D4', :edges => [:bottom, :left] },
+                                          :alignment => { :horizontal=> :center, :vertical => :center }
+
+    styles['tagless'] = s.add_style :bg_color  => 'E1E7E4',
+                                    :height    => 50,
+                                    :fg_color  => '00',
+                                    :sz        => 14,
+                                    :border    => { :style => :thick, :color => '00' },
+                                    :alignment => { :horizontal=> :center, :vertical => :center, :wrap_text => true }
+
+    array_of_tags_and_colors.each do |obj|
+      styles[obj['tag']] = s.add_style :bg_color  => obj['color'][1..-1],
+                                       :height    => 50,
+                                       :fg_color  => return_contrast_yiq(obj['color']),
+                                       :sz        => 14,
+                                       :border    => { :style => :thick, :color => '00' },
+                                       :alignment => { :horizontal=> :center, :vertical => :center, :wrap_text => true }
+    end
+  end
+  styles
+end
+
+def add_five_minutes(time)
+  time + 5 * 60
+end
+
+def add_thirty_minutes(time)
+  time + 30 * 60
+end
+
+def reduce_five_minutes(time)
+  time - 5 * 60
+end
+
+def get_array_of_tags_and_colors
+  settings = SessionGridSetting.where(event_id:@event_id)
+  if settings.length > 0 && !settings.first.settings.blank?
+    JSON.parse(settings.first.settings)["highlighted_tags"]
+  else
+    []
+  end
+end
+
+def new_id
+  new_id = @unused_id; @unused_id += 1; "#{new_id}";
+end
+
+def add_sheets(sheet_names)
+  sheet_names.each {|n| @grid_hash["Sheets"] << {"Name" => n.to_s, "Columns" => [ {"Column Number" => 0, "Cells" => [] } ] } }
+end
+
+def get_largest_number_of_rows(columns)
+  length = 0
+  columns.each {|c| c["Cells"].length > length ? length = c["Cells"].length : false}
+  length
+end
+
+def return_cell_value(sheet, cell, column)
+  sheet["Columns"][column]["Cells"][cell] ? sheet["Columns"][column]["Cells"][cell]["Content"] : ""
+end
+
+def return_last_id(sheet, cell, column)
+  sheet["Columns"][column]["Cells"][cell-1] ? sheet["Columns"][column]["Cells"][cell-1]["ID"] : nil
+end
+
+def return_next_id(sheet, cell, column)
+  sheet["Columns"][column]["Cells"][cell+1] ? sheet["Columns"][column]["Cells"][cell+1]["ID"] : nil
+end
+
+def return_current_id(sheet, cell, column)
+  sheet["Columns"][column]["Cells"][cell] ? sheet["Columns"][column]["Cells"][cell]["ID"] : nil
+end
+
+def return_cell_style(sheet, cell, column)
+  sheet["Columns"][column]["Cells"][cell] ? @styles[sheet["Columns"][column]["Cells"][cell]["Style"]] : 0
+end
+
+def merge_rooms_with_same_name(ws, sheet)
+  previous_cell_content = false
+  rooms_to_merge        = []
+
+  sheet['Columns'].each do |col|
+    col['Cells'].each_with_index do |cell, i|
+      next if cell['Style'] != 'room_style'
+
+      if previous_cell_content && cell['Content'] == previous_cell_content
+        rooms_to_merge << ws.rows[cell['Row Number']].cells[col['Column Number']]
+      elsif previous_cell_content && cell['Content'] != previous_cell_content
+        ws.merge_cells rooms_to_merge
+        rooms_to_merge = []
+        rooms_to_merge << ws.rows[cell['Row Number']].cells[col['Column Number']]
+      else
+        rooms_to_merge << ws.rows[cell['Row Number']].cells[col['Column Number']]
+      end
+      previous_cell_content = cell['Content']
+    end
+  end
+end
+
+def add_row_and_column_borders_to_match_times(ws, sheet, number_of_rows, number_of_columns)
+
+  def last_room_same_as_current_room(ws, current_column)
+    ws.rows[8].cells[current_column - 1].value == ws.rows[8].cells[current_column].value
+  end
+
+  first_time_row = 19
+
+  current_column = 1
+
+  while current_column < number_of_columns
+    current_row = first_time_row
+
+    while current_row < number_of_rows
+      if ws.rows[current_row].cells[current_column].style == @styles['separator']
+        ws.rows[current_row].cells[current_column].style = @styles['separator_end']
+      end
+      current_row += 6
+    end
+    current_column += 1
+  end
+
+  current_column = 1
+  first_time_row = first_time_row - 6
+
+  while current_column < number_of_columns
+    current_row = first_time_row
+
+    while current_row < number_of_rows
+
+      if current_column == 1 || last_room_same_as_current_room(ws, current_column)
+        #do nothing
+      elsif ws.rows[current_row].cells[current_column].style == @styles['separator']
+        ws.rows[current_row].cells[current_column].style = @styles['separator_with_left_border']
+      elsif ws.rows[current_row].cells[current_column].style == @styles['separator_end']
+        ws.rows[current_row].cells[current_column].style = @styles['separator_end_with_left_border']
+      end
+      current_row += 1
+    end
+    current_column += 1
+  end
+end
+
+
+
+wb                       = xlsx_package.workbook
+
+five_minutes_height      = 25
+@row_num                 = 0
+@column_num              = 0
+
+@earliest_allowed_time = Time.parse('06:00:00')
+
+array_of_tags_and_colors = get_array_of_tags_and_colors
+
+dates                    = return_array_of_dates
+date                     = dates.first
+
+@styles                  = return_styles_obj(array_of_tags_and_colors, wb)
+
+@grid_hash               = {"Sheets" => []}
+
+@unused_id               = 0
+@orientation             = "vertically" ## no code written to transpose to horizontal orientation; will be difficult to implement
+
+
+add_sheets(dates)
+add_top_left_heading
+add_grid_legend(array_of_tags_and_colors)
+add_heading_separator_row
+# add_rooms(dates, @orientation)
+add_times(dates, @orientation)
+add_sessions(dates, @orientation)
+
+# require "pp"
+# pp @grid_hash
+
+# Axlsx::SheetView[:zoom_scale] = 50 ## not sure how to make this work
+# wb.zoom_scale = 50
+
+@grid_hash["Sheets"].each do |sheet|
+
+  wb.add_worksheet(name: sheet["Name"]) do |ws|
+
+    number_of_columns = sheet["Columns"].length
+    number_of_rows    = get_largest_number_of_rows(sheet["Columns"])
+    empty_row         = Array.new(number_of_columns, "")
+
+    sheet["Columns"].each {|c| fill_empty_cells_until_row(c, number_of_rows)}
+
+    ## Cannot set value of cells that have not been added yet, so pre-add them
+    number_of_rows.times {|r| ws.add_row empty_row}
+
+    column = 0
+
+    while column < number_of_columns
+
+      cell        = 0
+      like_cells = []
+
+      while cell < number_of_rows
+
+        last_id = return_last_id(sheet, cell, column)
+        this_id = return_current_id(sheet, cell, column)
+        next_id = return_next_id(sheet, cell, column)
+
+        ws.rows[cell].cells[column].value = return_cell_value(sheet, cell, column)
+        ws.rows[cell].cells[column].style = return_cell_style(sheet, cell, column)
+
+        if next_id && this_id && this_id == next_id
+          like_cells << ws.rows[cell].cells[column]
+        elsif this_id
+          like_cells << ws.rows[cell].cells[column] if last_id && this_id == last_id
+          ws.merge_cells like_cells if like_cells.length > 1
+          like_cells = []
+        end
+
+        cell += 1
+      end
+
+      column += 1
+    end
+
+
+    merge_rooms_with_same_name(ws, sheet)
+
+    add_row_and_column_borders_to_match_times(ws, sheet, number_of_rows, number_of_columns)
+
+    widths_array = [20]
+    number_of_columns.times {widths_array << 50}
+
+    ws.column_widths *widths_array
+
+  end
+
+end
+
+}

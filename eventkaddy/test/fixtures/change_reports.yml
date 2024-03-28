@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  upload_action: MyString
+  user: one
+  event: one
+  event_file: one
+
+two:
+  upload_action: MyString
+  user: two
+  event: two
+  event_file: two

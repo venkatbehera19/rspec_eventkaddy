@@ -1,0 +1,18 @@
+- content_for :job_form do
+  .well
+    = form_tag("/session_files/publish_session_files", :html => {:method => :post, remote: true, :class => "form-horizontal well" }, :url => {:action => "publish_session_files"} ) do
+      = hidden_field_tag(:job_id)
+      .field
+        = label_tag(:session_files, "Select session files to publish, deselect to unpublish.")
+        = select_tag(                                                                                                                                     |
+              :session_file_ids,                                                                                                                          |
+              options_for_select(@session_files.map { |f| ["#{f.session_code} #{f.title}", f.id] }, @session_files.reject {|f| f.unpublished}.map(&:id)), |
+              :multiple => true,                                                                                                                          |
+              :size     => 30,                                                                                                                            |
+              class: "custom-select"                                                                                                                  |
+          )                                                                                                                                               |
+      %br/
+      %br/
+      = submit_tag "Publish Session Files", class:"job-submit btn btn-primary", data: {sname:'session-files-publish-sessions'}
+
+= render 'jobs/jobs_gui', event: @event

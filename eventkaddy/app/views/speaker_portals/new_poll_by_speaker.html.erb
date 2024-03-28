@@ -1,0 +1,5 @@
+<h1>New Poll</h1>
+
+<%= render 'polls/form', poll: @poll %>
+
+<%= link_to 'Back', "/speaker_portals/session_polls_list/#{params[:session_id]}", class:'btn btn-secondary' %>

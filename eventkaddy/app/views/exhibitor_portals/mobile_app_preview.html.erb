@@ -1,0 +1,20 @@
+<button class="pull-left btn btn-primary" id='toggle-tab'><i class="fa fa-tablet"></i></button> <br><br> <br>
+<div class="smartphone">
+  <div class="content">
+    <iframe src="/exhibitor_portals/mobile_app_content" style="width:100%;border:none;height:100%" >
+    </iframe>
+  </div>
+</div>
+<script>
+  $('#toggle-tab').on('click', function(){
+    $('.smartphone').toggleClass('tablet');
+    let iconElm = $(this).find('i');
+    if (iconElm.hasClass('fa-tablet')){
+      iconElm.removeClass('fa-tablet');
+      iconElm.addClass('fa-mobile');
+    } else {
+      iconElm.removeClass('fa-mobile');
+      iconElm.addClass('fa-tablet');
+    }
+  });
+</script>

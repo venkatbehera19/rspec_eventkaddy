@@ -1,0 +1,53 @@
+<h4>New Banner</h4>
+
+<%= link_to 'Back', "/event_settings/edit_banners", class:"btn" %><br/><br/> 
+<%= form_for(@event_file, :html => { :multipart => true, :class => "form-horizontal well" }, :url => {:action => "create_banner"}) do |f| %>
+  <% if @event_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event_file.errors.count, "error") %> prohibited this event_file from being saved:</h2>
+
+      <ul>
+      <% @event_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <table>
+  <% if (@event_file.path!=nil) then %>
+    <tr><td><%= image_tag(@event_file.path, :class=>'photo_preview') %></td></tr>
+    <tr><td>&nbsp;</td></tr>
+
+    <tr><td>Download your current banner: <%= link_to @event_file.name, @event_file.path %></td></tr>
+    <tr><td>&nbsp;</td></tr>        
+    <tr><td>
+      <div class="field">
+        <%= label_tag "Upload a replacement Event Banner:" %>
+        <%= file_field_tag :event_banner_file %>
+      </div><br />
+    </td></tr>  
+  <% else %>
+      <tr><td>
+        <div class="field">
+          <%= label_tag :event_banner_file, "Upload an Event Banner" %><br />
+          <%= file_field_tag :event_banner_file %>
+        </div><br />
+      </td></tr>  
+  <% end %>
+  </table>
+
+  <div class="field">
+    <%= f.label :name %>
+    <%= f.text_field :name %><br /><br />
+  </div>
+
+ <div class="field">
+    <%= f.label :event_file_type_id, 'Banner Type' %>
+    <%= f.select :event_file_type_id, @event_file_types.map{ |c| [c.name.split('_').map(&:capitalize).join(' '), c.id] } %><br /><br />
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Create Banner", class:"btn btn-primary"   %>
+  </div>
+<% end %>

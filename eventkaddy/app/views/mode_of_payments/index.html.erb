@@ -1,0 +1,40 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div id="content">
+			<h4>Mode Of Payments</h4>
+			<br>
+
+				<table class="table table-striped" id="event_ticket_table">
+					<thead>
+			      <tr>
+			        <th>Name</th>
+			        <th>Actions</th>
+			      </tr>
+					</thead>
+					<tbody>
+						<% @payments.each do |payment| %>
+							<tr>
+								<td><%= payment.name %></td>
+								<td>
+									<div class="table-actions">
+										<div class="btn-group d-flex">
+											<%= link_to('Edit', edit_mode_of_payment_path(payment), class: "btn btn-outline-success") %>
+									</div>
+									<div class="dropdown">
+										<a data-toggle= 'dropdown' style="font-size:1.4rem; cursor: pointer;">
+											<i class="fa fa-ellipsis-v"></i>
+										</a>
+										<div class="dropdown-menu">
+												<%= link_to('Edit', edit_mode_of_payment_path(payment), class: "btn text-info dropdown-item") %>
+											</div>
+										</div>
+									</div>
+								 </td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+		</div>
+	</div>
+</div>
+

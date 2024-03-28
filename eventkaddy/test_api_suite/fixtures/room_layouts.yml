@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  event_file: one
+  room_layout_configuration: one
+  title: MyString
+  location_mapping: one
+  default: false
+
+two:
+  event: two
+  event_file: two
+  room_layout_configuration: two
+  title: MyString
+  location_mapping: two
+  default: false

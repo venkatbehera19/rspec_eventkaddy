@@ -1,0 +1,39 @@
+PHONEGAP BUILD
+	Android tools and android platform-tools folders listed in your system path
+	`android list targets`
+	`android update project -p . -t #` (replace # with target id number)
+	Now kick up an emulator or plug in a device
+	`adb devices`
+	`ant debug install`
+	
+
+HOW TO IMPORT EXISTING ANDROID PHONEGAP FOLDER INTO ECLIPSE
+	
+File > New > Project...
+Android > Android Project
+Create project from existing source (point to the generated app found in tmp/android)
+Right click on libs/phonegap.jar and add to build path
+Right click on the project root: Run as > Run Configurations
+Click on the Target tab and select Manual (this way you can choose the emulator or device to build to)
+	
+	
+	
+	
+DEPLOY TO ANDROID MARKET
+
+http://wiki.phonegap.com/w/page/16494773/Getting%20Ready%20to%20Deploy%20to%20Android%20Market%20(Android)
+
+
+These instructions assume that you are using an Eclipse-based IDE to develop your PhoneGap application.
+Rename the project in Eclipse
+Rename the package:
+
+Change the Android Manifest. You should remove features that you are not using if possible. The only two that need to remain are READ_PHONE_STATE and INTERNET if you are only using it for the web. Also, remember to change the package, versionCode and versionName since these appear on the Android Market.
+Fix Reference Errors if they occur by deleting the line that is highlighted in the Java files. (Eclipse autogenerates references)
+Change the name of the app in res/values/strings.xml
+Right click on the package, go to Android Tools, Export Signed Application Package
+
+Create a keystore. Remember where this keystore is!
+Follow the wizard and sign the application.
+Once the apk has been exported, please remember to deploy it to the Android Market.	
+	

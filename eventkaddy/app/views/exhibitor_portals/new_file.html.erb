@@ -1,0 +1,28 @@
+<%= link_to  "Back", "/exhibitor_portals/index_pdf", class: "btn btn-link" %>
+<%= form_for(@file, :html => { :multipart => true, :class => "well" }, :url => { :action => "create_file"}) do |f| %>
+  <% if @file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@file.errors.count, "error") %> prohibited this event_file from being saved:</h2>
+      <ul>
+        <% @pdf.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+    </div>
+  <% end %>
+  <div class="form-group">
+    <%= f.label :name %><br />
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+  <table>
+    <tr><td>
+      <div class="field">
+        <%= label_tag :file, "Choose a File" %><br />
+        <%= file_field_tag :file %>
+      </div><br />
+    </td></tr>  
+  </table>
+  <div class="actions">
+    <%= f.submit "Add", class:"btn btn-primary"    %>
+  </div>
+<% end %>

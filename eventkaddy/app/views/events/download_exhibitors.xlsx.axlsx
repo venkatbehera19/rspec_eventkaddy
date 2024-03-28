@@ -1,0 +1,117 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+
+	heads = ['Company Name', 'Exhibitor Code', 'Booth Name','Logo','Description','Address 1','Address 2','City','State','Zip','Country','Phone','Fax','Toll Free','Contact Name','Email','Contact Title','Message','URL Facebook','URL LinkedIn','URL RSS','URL Twitter','URL Web','Is Sponsor?','Sponsor Level Name','Exhibitor Tags','Exhibitor File Titles','Exhibitor File Filenames',  'Exhibitor File Extensions', 'Attendee Codes', 'Complimentary Passes','Discount Passes']
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Exhibitor Data") do |sheet|
+	  sheet.add_row heads, :style => style
+
+    exhibitors = Exhibitor.where(event_id:@event_id)
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: exhibitors.length)
+      @job.write_to_file
+    end
+
+		exhibitors.each do |exhibitor|
+
+  		exhibitor_tags = ''
+
+			tagType = TagType.where(name:"exhibitor").first
+
+			#find all the existing tag groups
+			tags_exhibitor = TagsExhibitor.select('exhibitor_id,tag_id,tags.parent_id AS tag_parent_id,tags.name AS tag_name').joins('
+				JOIN tags ON tags_exhibitors.tag_id=tags.id'
+				).where('exhibitor_id=? AND tags.tag_type_id=?',exhibitor.id,tagType.id)
+
+			tag_groups = []
+
+			tags_exhibitor.each_with_index do |tag_exhibitor, i|
+
+				tag_groups[i] = []
+
+				#add leaf tag
+				tag_groups[i] << tag_exhibitor.tag_name
+				parent_id = tag_exhibitor.tag_parent_id #acquired from above table join
+
+				#add ancestor tags, if any
+				while (parent_id!=0)
+					tag = Tag.where(event_id:@event_id,id:parent_id)
+					if (tag.length==1) then
+						tag_groups[i] << tag[0].name
+						parent_id = tag[0].parent_id
+					else
+						parent_id = 0
+					end
+				end
+				tag_groups[i].reverse! #reverse the order, as we followed the tag tree from leaf to root
+			end
+
+			if tag_groups.length > 0 then
+				tag_groups.each_with_index do |tag_group, i|
+					tag_group.each_with_index do |tag, i|
+						unless (i+1)===tag_group.length
+						 exhibitor_tags += "#{tag}||"
+						else
+						 exhibitor_tags += "#{tag}"
+						end
+					end
+					unless (i+1)===tag_groups.length
+						exhibitor_tags += "^^"
+					end
+				end
+			end
+
+  		if exhibitor.location_mapping_id!=nil
+  			booth_name = exhibitor.location_mapping.name
+  		end
+
+			exhibitor_file_urls   = ''
+			exhibitor_file_titles = ''
+			exhibitor_filetypes   = ''
+
+			exhibitor.exhibitor_files.each_with_index do |file, i|
+				if (i < (exhibitor.exhibitor_files.length-1) ) then
+					exhibitor_file_urls   += "#{file.event_file.name}, "
+					exhibitor_file_titles += "#{file.title}, "
+					exhibitor_filetypes   += "#{file.event_file.path.split('.').last}, "
+				else
+					exhibitor_file_urls   += "#{file.event_file.name}"
+					exhibitor_file_titles += "#{file.title}"
+					exhibitor_filetypes   += "#{file.event_file.path.split('.').last}"
+				end
+			end
+
+      attendee_codes = exhibitor.attendees.map(&:account_code).join(',')
+			
+			sponsor_type = exhibitor.sponsor_level_type.blank? ? nil : exhibitor.sponsor_level_type.sponsor_type
+
+			complimentary_passes = 0
+			discount_passes      = 0
+
+			if exhibitor.staffs.present?
+				if exhibitor.staffs["discount_staff_count"].present?
+					discount_passes = exhibitor.staffs["discount_staff_count"]
+				end
+
+				if exhibitor.staffs["complimentary_staff_count"].present?
+					complimentary_passes = exhibitor.staffs["complimentary_staff_count"]
+				end
+			end
+
+  		sheet.add_row [exhibitor.company_name, exhibitor.exhibitor_code, booth_name,exhibitor.logo,exhibitor.description,exhibitor.address_line1,exhibitor.address_line2,exhibitor.city,exhibitor.state,"#{ exhibitor.zip }",exhibitor.country,exhibitor.phone,exhibitor.fax,exhibitor.toll_free,exhibitor.contact_name,exhibitor.email,exhibitor.contact_title,exhibitor.message,exhibitor.url_facebook,exhibitor.url_linkedin,exhibitor.url_rss,exhibitor.url_twitter,exhibitor.url_web,exhibitor.is_sponsor,sponsor_type,exhibitor_tags,exhibitor_file_titles,exhibitor_file_urls,exhibitor_filetypes, attendee_codes, complimentary_passes, discount_passes, ],:height => 15, :types => heads.map {|h| :string }
+      @job.plus_one_row if @job
+  		sheet.column_widths 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20
+		end
+	end
+end

@@ -1,0 +1,2 @@
+module AppSubmissionFormsHelper
+end

@@ -1,0 +1,37 @@
+<h4>Media Files</h4>
+<%if !current_user.role? :exhibitor and !current_user.role? :speaker %>
+  <% if @exhibitor %>
+    <%= link_to 'Back', "/exhibitors/#{@exhibitor.id}" ,class:"btn btn-link" %> 
+  <%elsif @session%>
+    <%= link_to 'Back', "/sessions/#{@session.id}" ,class:"btn btn-link" %> 
+  <%end%>
+<%end%>
+<% if @session && @media_files.length > 0 %>
+ <!-- only let them add one file -->
+<%else%>
+  <%= link_to 'New File', "/media_files/new",class:"btn btn-primary" %>
+<%end%>
+<br><br>
+
+<% unless @session.blank? %>
+ <p><%="Session: #{@session.title}"%></p>
+<%end%>
+
+<div class="pull-right">
+  <button type="button" class="btn btn-light mr-2 media-view-type" id="grid_view" data-toggle="tooltip" title="Grid view">
+    <i class="fa fa-th"></i>
+  </button>
+  <button type="button" class="btn btn-light media-view-type" id="table_view" data-toggle="tooltip" title="Table view">
+    <i class="fa fa-list"></i>
+  </button>
+</div>
+<br>
+<br>
+<br>
+
+<div class="media-files-container">
+  <%= render partial: 'grid_view', locals: {media_files: @media_files, exhibitor: @exhibitor} %>
+</div>
+<br />
+<br />
+

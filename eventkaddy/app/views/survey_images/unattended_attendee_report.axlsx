@@ -1,0 +1,20 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	heads = ['Name', 'Email', 'Phone Number']
+	style =  []
+
+	heads.each do |h|
+		style << black_cell
+	end
+	wb.add_worksheet(name: "Attendee List") do |sheet|
+    	sheet.add_row heads, :style => style
+    	@attendee_not_gave_survey.each do |attendee|
+    		sheet.add_row [attendee.full_name, attendee.email, attendee.mobile_phone]
+    	end
+	end
+end

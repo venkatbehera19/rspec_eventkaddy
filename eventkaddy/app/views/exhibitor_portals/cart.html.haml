@@ -1,0 +1,5 @@
+- if @cart.is_exhibitor_user_product?
+  =@settings.exhibitor_product_cart_page_header.to_s.html_safe
+= render "cart_page"
+.d-flex.align-items-center.justify-content-center
+  = link_to 'Proceed To Payment', "/#{session[:event_id]}/exhibitor_portals/cart_order/#{@cart.id}", class: "btn btn-outline-primary"

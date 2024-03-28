@@ -1,0 +1,16 @@
+PROD CONFIG
+
+	ALLOW REMOTE ACCESS
+		http://www.cyberciti.biz/tips/how-do-i-enable-remote-access-to-mysql-database-server.html
+		 
+		 /etc/mysql/my.cnf
+		 	bind-address    = 65.55.55.2
+		 	# skip-networking
+		 
+		 /etc/init.d/mysql restart
+		 
+		 update user set Host='202.54.10.20' where user='webadmin'; #grant access to user in mysql table
+		 
+		 linux firewall config
+		 	/sbin/iptables -A INPUT -i eth0 -p tcp --destination-port 3306 -j ACCEPT
+		 	 mysql -u webadmin Ðh 65.55.55.2 Ðp

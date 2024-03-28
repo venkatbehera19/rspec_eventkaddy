@@ -1,0 +1,47 @@
+/* FOR EXHIBITOR PORTAL */
+
+.toolbar {
+  overflow: hidden;
+  float: left;
+}
+
+.toolbar .toolbar-title {
+  margin-top: 0px;
+  float: left;
+}
+
+.show-reports #exhibitor-show-reports-table_filter {
+  width: 100%;
+}
+
+.show-reports .form-inline input {
+  display: inline-block;
+  width: 209px;
+}
+
+.show-reports .span5 {
+  width: 420px;
+}
+
+.download-menu {
+  float: right;
+}
+
+/* FOR CMS-VIDEO_VIEWS */
+
+.cms-video-views #cms-video-views-table_filter {
+  width: 100%;
+}
+
+.cms-video-views .form-inline input {
+  display: inline-block;
+  width: 209px;
+}
+
+.cms-video-views .span5 {
+  width: 380px;
+}
+
+.cms-ce-certificates div.span5 {
+  width: 360px;
+}

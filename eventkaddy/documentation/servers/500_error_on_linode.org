@@ -1,0 +1,20 @@
+#+TITLE: MySql 500 Error on Linode
+
+* Explanation
+I encountered this error twice when servers were cloned on linode.I found two issues. The first is that the new linode server was not assigned an internal ip address and the second was that the mysql file needed to be updated. 
+
+*Steps to Resolve the error
+1. Log into Linode, navigate to the Linode (server) you are interested in, and go to the Networking tab
+2. Click "Add Private IPv4" and then reboot the server
+3. Log into the Linode and navigate to /etc/mysql/mysql.conf.d/mysqld.cnf
+4. In this file, add the new external and internal ip addresses, referencing linode. 
+   bind-address      = 127.0.0.1 #The default.
+   bind-address      = XXX.XXX.XXX.XXX #The ip address of your Public Net interface.
+   bind-address      = ZZZ.ZZZ.ZZZ.ZZZ #The ip address of your Service Net interface. 
+   bind-address      = 0.0.0.0 #All ip addresses.
+5. Restart NGINX and your rails server (sudo /etc/init.d/thin-NameOfRailsServer restart). 
+
+
+
+
+

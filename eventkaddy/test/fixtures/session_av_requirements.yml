@@ -1,0 +1,15 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   session_id: 1
+#   speaker_id: 1
+#   av_list_item_id: 1
+#   additional_notes: MyText
+
+# two:
+#   event_id: 1
+#   session_id: 1
+#   speaker_id: 1
+#   av_list_item_id: 1
+#   additional_notes: MyText

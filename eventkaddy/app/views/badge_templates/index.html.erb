@@ -1,0 +1,51 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4> Badge Template </h4>
+      <div class="btn-toolbar my-2">
+        <div class="btn-group mr-2">
+          <a class="btn btn-primary" href="/badge_templates/new">New Badge Template
+            <i class="fa fa-plus"></i>
+          </a>
+        </div>
+      </div>
+      <br>
+
+        <table class="table table-striped" id="event_ticket_table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Updated At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @badges.each do |badge| %>
+              <tr>
+                <td><%= badge.name %></td>
+                <td><%= badge.updated_at %></td>
+                <td>
+                  <div class="table-actions">
+                    <div class="btn-group d-flex">
+                      <%= link_to('Edit', edit_badge_template_path(badge), class: "btn btn-outline-success") %>
+                      <%= link_to('Delete', badge_template_path(badge), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger") %>
+                  </div>
+                  <div class="dropdown">
+                    <a data-toggle= 'dropdown' style="font-size:1.4rem; cursor: pointer;">
+                      <i class="fa fa-ellipsis-v"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <%= link_to('Edit', edit_badge_template_path(badge), class: "btn text-info dropdown-item") %>
+                        <%= link_to('Delete', badge_template_path(badge), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn text-danger dropdown-item") %>
+                      </div>
+                    </div>
+                  </div>
+                 </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+

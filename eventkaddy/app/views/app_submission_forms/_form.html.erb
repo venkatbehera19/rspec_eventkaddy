@@ -1,0 +1,118 @@
+<%= form_with(model: app_submission_form, class: "mt-2 col-sm-8 mx-auto", id: form_html_id, html: { autocomplete: "off" }) do |form| %>
+  <% if app_submission_form.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(app_submission_form.errors.count, "error") %> prohibited this app_submission_form from being saved:</h2>
+
+      <ul>
+        <% app_submission_form.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form.hidden_field :app_form_type_id%>
+  <% store_name ==  "App Store" ? form_type="ios" : form_type="android"%>
+  <div class="card d-block shadow-sm p-0 mb-3 bg-white rounded form-details-card">
+    <div class="card-body">
+      <h4 class="card-title form-heading">EventKaddy <%=store_name%> / mobile web input form</h4>
+      <p class="card-text form-details-card-text">Please complete this form. The information collected here will be used to populate the <%=store_name%>.</p>
+    </div>
+  </div>
+
+  <div class="card d-block shadow-sm p-0 mb-3 bg-white rounded">
+    <div class="card-body position-relative">
+      <div class = "bd-clipboard">
+        <button type="button" class="btn btn-clipboard" data-clipboard-target="#app-name-<%=form_type%>">
+          <%= image_tag("copy-icon.png", alt: "COPY",class: "copy-icon")%>
+        </button>
+      </div>
+      <%= form.label :app_name do %>
+        <p class = "form-element-title card-title ">App Name (30 characters)</p>
+        <p class = "form-element-description card-subtitle">The name of your app as it will appear on the <%=store_name%>. The app name has to be unique in the <%=store_name%>.</p>
+      <%end%>
+      <%= form.text_field :app_name,id: "app-name-#{form_type}", class: "form-control custom-form-control border-top-0 border-right-0 border-left-0", placeholder: "Your answer", :required => true, maxlength: 30 %>
+    </div>
+  </div>
+  
+  <div class="card d-block shadow-sm p-0 mb-3 bg-white rounded">
+    <div class="card-body">
+      <div class = "bd-clipboard">
+        <button type="button" class="btn btn-clipboard" data-clipboard-target="#app-subtitle-<%=form_type%>">
+          <%= image_tag("copy-icon.png", alt: "COPY",class: "copy-icon")%>
+        </button>
+      </div>
+      <%= form.label :subtitle do %>
+        <p class = "form-element-title card-title ">Subtitle (optional)</p>
+        <p class = "form-element-description card-subtitle">A summary of your app that will appear under your app’s name on the <%=store_name%> for customers with devices running IOS 11 or later.</p>
+      <%end%>
+      <%= form.text_field :subtitle, id: "app-subtitle-#{form_type}", class: "form-control custom-form-control border-top-0 border-right-0 border-left-0", placeholder: "Your answer", :required => true, maxlength: 30 %>
+    </div>
+  </div>
+
+  <div class="card d-block shadow-sm p-0 mb-3 bg-white rounded">
+    <div class="card-body">
+      <div class = "bd-clipboard">
+        <button type="button" class="btn btn-clipboard" data-clipboard-target="#app-description-<%=form_type%>">
+          <%= image_tag("copy-icon.png", alt: "COPY",class: "copy-icon")%>
+        </button>
+      </div>
+      <%= form.label :description do %>
+        <p class = "form-element-title card-title ">Description (4000 characters)</p>
+        <p class = "form-element-description card-subtitle">A description of your app, detailing features and functionality.</p>
+      <%end%>
+      <%= form.text_area :description, id: "app-description-#{form_type}",class: "form-control border-top-0 border-right-0 border-left-0", rows: 10, placeholder: "Your answer", :required => true, maxlength: 4000 %>
+    </div>
+  </div>
+
+  <div class="card d-block shadow-sm p-0 mb-3 bg-white rounded">
+    <div class="card-body">
+      <div class = "bd-clipboard">
+        <button type="button" class="btn btn-clipboard" data-clipboard-target="#app-keywords-<%=form_type%>">
+          <%= image_tag("copy-icon.png", alt: "COPY",class: "copy-icon")%>
+        </button>
+      </div>
+      <%= form.label :keywords do %>
+        <p class = "form-element-title card-title ">Keywords (Minimum 3 keywords and 100 characters)</p>
+        <p class = "form-element-description card-subtitle">One or more keywords that describe your app. Keywords make <%=store_name%> search results more accurate. Separate keywords with a comma.</p>
+      <%end%>
+      <%= form.text_area :keywords, id: "app-keywords-#{form_type}", class: "form-control border-top-0 border-right-0 border-left-0", rows: 1, placeholder: "Your answer", :required => true, maxlength: 100 %>
+    </div>
+  </div>
+
+  <%if store_name ==  "App Store" %>
+    <%= render partial: "ios_files" , locals: { form: form, store_name: store_name } %>
+  <%else%>
+    <%= render partial: "android_files" , locals: { form: form, store_name: store_name } %>
+  <%end%>
+  <% if new_record %>
+    <div class="actions">
+      <%= form.submit "Submit",class: "btn-primary form-button"%>
+    </div>
+  <%else%>
+    <div class="actions">
+      <%= form.submit "Update",class: "btn-primary form-button"%>
+    </div>
+  <%end%>
+
+<% end %>
+<script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  var clipboard = new ClipboardJS('.btn');
+  clipboard.on('success', function(e) {
+      // console.info('Action:', e.action);
+      // console.info('Text:', e.text);
+      // console.info('Trigger:', e.trigger);
+      e.clearSelection();
+  });
+  clipboard.on('error', function(e) {
+      // console.error('Action:', e.action);
+      // console.error('Trigger:', e.trigger);
+  });
+
+  $('.btn').on('click', function(e) {
+    let copyImage = $(this).find(">");
+    copyImage.attr("src", "<%= asset_path('copied-icon.png') %>");
+    setTimeout(() => copyImage.attr("src", "<%= asset_path('copy-icon.png') %>"), 800);
+  });
+</script>

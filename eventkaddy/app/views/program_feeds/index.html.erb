@@ -1,0 +1,15 @@
+<%= hidden_field_tag 'page-type', params[:sel]  %>
+<%= render partial: 'topbar' %>
+<div class="sessions_by_schedule">
+  <%= render partial: 'sessions_by_schedule' %>
+</div>
+
+
+<script>
+  $(document).ready(function(){ 
+    cardView = <%= @settings.default_card_view || false %>
+    if(cardView){
+      toCardView()
+    }
+  })
+</script>

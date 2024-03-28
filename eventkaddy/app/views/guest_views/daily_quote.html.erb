@@ -1,0 +1,169 @@
+<style>
+html, body {
+    width: 100%;
+    padding:0px;
+    margin:0px;
+    height:100%;
+    <%# background-image: linear-gradient(to bottom left, #00254E, #00737F); %>
+}
+html {
+    <%# background-image: url('/event_data/208/daily_quote/208.png'); %>
+    <%# background-size: cover; /* Resize the background image to cover the entire container */ %>
+    <%# background-repeat: no-repeat; /* Do not repeat the image */ %>
+    <%# height:100%; %>
+    <%# width: 100%; %>
+}
+.daily_quote_background {
+    height:100%;
+    width:100%;
+    z-index:-1;
+    position: absolute;
+    top:0;
+    left:0;
+}
+.daily_quote_header {
+    padding-top:20px;
+    text-align: center;
+    <%# font-size:5vw; %>
+    <%# line-height:7vw; %>
+    height:20%;
+}
+.daily_quote_header img {
+    <%# width: 50%; %>
+    <%# max-width:300px; %>
+    height:70%
+}
+.daily_quote_header_text {
+    height:15%;
+    padding: 3%;
+    <%# padding:50px; %>
+}
+.daily_quote_container {
+    height:100%;
+    /* hidden is very important here... otherwise it just overflows and our size check doesn't work!*/
+    overflow: hidden;
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    color: white;
+}
+.daily_quote_quote {
+    <%# font-size: 4vw; %>
+    <%# line-height: 6vw; %>
+    padding-bottom:25px;
+    height:50%;
+}
+
+.daily_quote_footer {
+    height:10%;
+}
+.daily_quote_button_container {
+    height:10%;
+    <%# padding:20px; %>
+    text-align:center;
+}
+.daily_quote_button_container button {
+    height: 80%;
+    <%# padding screws this up in landscape %>
+    <%# padding:5%; %>
+    <%# margin:1%; %>
+    <%# border-radius:30px; %>
+}
+</style>
+<img class='daily_quote_background' src='/event_data/208/daily_quote/background.png'>
+
+<div class='daily_quote_container'>
+    <div class='daily_quote_header'>
+        <img src='/event_data/208/daily_quote/header.png'>
+        <div class='daily_quote_header_text'>
+            AVMA Wellbeing Tip
+        </div>
+    </div>
+    <div class='daily_quote_quote'> <%= @quote[0] %> </div>
+    <%# AVMA wants this to just always show up, but made mistake in their data... so hard coded for now %>
+    <div class='daily_quote_footer'>Stop by the Center for Wellbeing or AVMA Pavilion for more Wellbeing Tips.</div>
+    <%# <% if @quote[1] %1> %>
+    <%#     <div class='daily_quote_footer'><%= @quote[1] %1></div> %>
+    <%# <% end %1> %>
+    <div class='daily_quote_button_container'>
+        <button class='btn btn-primary daily_quote_button'>&nbsp;Show Another Tip&nbsp;</button>
+    </div>
+</div>
+
+
+<script>
+$(function() {
+    $('.daily_quote_button').click(function(){location = location}) 
+    increaseFontWithoutOverflowing( $('.daily_quote_header_text'), 0.8 )
+    if ( $('.daily_quote_quote').html().split(' ').length < 11 ) {
+        increaseFontWithoutOverflowing( $('.daily_quote_quote'), 0.5 )
+    } else {
+        increaseFontWithoutOverflowing( $('.daily_quote_quote'), 0.7 )
+    }
+    increaseFontWithoutOverflowing( $('.daily_quote_footer'), 0.8 )
+    increaseFontWithoutOverflowing( $('.daily_quote_button'), 0.5 )
+})
+
+// Basically I have an idea of a start width and height, and I have an idea of
+// not wanting a div to get larger than that
+
+// I would like to abstract this idea. To do that, I need a function which
+// receives the height and width which a div cannot exceed, and the element
+// whose font size is to be increased
+
+// function increaseFontWithoutOverflowing( max_height, max_width, $el) {
+
+// depends on an el which is a percent of the page already, or has some height defined
+// use modifier to get max size and then reduce to a percentage of it via 0 to 1 number.
+function increaseFontWithoutOverflowing( $el, modifier, dont_change_line_height ) {
+    if ($el.html() == '') return false;
+    var i = 0;
+    while ( !checkOverflow( $el[0] ) ) {
+        i++;
+        var font_size = parseInt($el.first().css('font-size')) + 5;
+        if ( dont_change_line_height ) {
+            $el.css({ 'font-size': font_size + "px"});
+        } else {
+            $el.css({ 'font-size': font_size + "px", 'line-height': font_size * 1.3 + "px" });
+        }
+        if (i > 400) break; // saftey for edge cases
+    }
+    var i = 0;
+    while ( checkOverflow( $el[0] ) ) {
+        i++
+        var font_size = parseInt($el.first().css('font-size')) - 1;
+        if ( dont_change_line_height ) {
+            $el.css({ 'font-size': font_size + "px"});
+        } else {
+            $el.css({ 'font-size': font_size + "px", 'line-height': font_size * 1.3 + "px" });
+        }
+        if (i > 400) break; // saftey for edge cases
+    }
+    if (modifier) {
+        font_size = font_size * modifier;
+        if ( dont_change_line_height ) {
+            $el.css({ 'font-size': font_size + "px"});
+        } else {
+            $el.css({ 'font-size': font_size + "px", 'line-height': font_size * 1.3 + "px" });
+        }
+    }
+}
+
+// function isOverflowing() {
+//     <%# return $("html").height() > $(window).height() || $("html").width() > $(window).width(); %>
+//     return $("html").height() > window.innerHeight || $("html").width() > window.innerWidth;
+// }
+
+// seems like a better way of testing this than the above;
+// apparently does not work in very old browsers
+function checkOverflow(el) {
+    var curOverflow = el.style.overflow;
+    if ( !curOverflow || curOverflow === "visible" ) {
+        el.style.overflow = "hidden";
+    }
+    var isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
+    el.style.overflow = curOverflow;
+    return isOverflowing;
+}
+
+</script>

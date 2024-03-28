@@ -1,0 +1,10 @@
+$("#twoFactorErrorsDiv").html("<%= j (render "profiles/profile_components/error_messages", resource: current_user, success_message: @success_message) %>");
+<% unless current_user.errors.any? %>
+  $("#twoFactorContainer").html("<%= j (render partial: "two_factor_settings/edit", locals: { backup_codes: @backup_codes, back_button_remote: true}) %>");
+  $("#backTwoFactor").click(function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    $("#twoFactorErrorsDiv").empty();
+    $("#two-factor").html("<%= j (render 'profiles/profile_components/two-factor') %>");
+  })
+<%end%>

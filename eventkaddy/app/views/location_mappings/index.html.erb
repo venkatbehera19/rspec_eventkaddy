@@ -1,0 +1,51 @@
+<h4>Listing Locations for:<b> <%= session[:event_name] %></b></h4>
+<%= link_to 'New Location', new_location_mapping_path,class:"btn btn-primary" %> <%= link_to 'Add Coordinates', "/location_mappings/select_map",class:"btn btn-primary" %><br/><br/>
+
+<table id="location_mappings" cellpadding="0" cellspacing="0" border="0" class="table table-striped">
+<!--
+	<col width="200" />
+	<col width="100" />
+	<col width="35" />
+	<col width="35" />
+	<col width="35" />
+-->
+
+<thead>
+  <tr>
+    <th>Location Name</th>
+    <th>Type</th>
+    <th></th>
+  </tr>
+</thead>
+
+<tbody>
+<% @location_mappings.each do |location_mapping| %>
+  <tr>
+    <td><%= location_mapping.name %></td>
+    <td><%= location_mapping.location_mapping_type_name %></td>
+    <td class="table-actions">
+      <div class="btn-group d-flex">
+        <%= link_to 'Show', location_mapping ,class:"btn btn-outline-info" %>
+        <%= link_to 'Edit', edit_location_mapping_path(location_mapping) ,class:"btn btn-outline-warning" %>
+        <%= link_to 'Delete', location_mapping, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+      </div>
+      <div class="dropdown">
+        <a data-toggle="dropdown" class="ellipse-style">
+          <i class="fa fa-ellipsis-v"></i>
+        </a>
+        <div class="dropdown-menu">
+          <%= link_to 'Show', location_mapping ,class:"btn text-info dropdown-item" %>
+          <%= link_to 'Edit', edit_location_mapping_path(location_mapping) ,class:"btn text-warning dropdown-item" %>
+          <%= link_to 'Delete', location_mapping, :confirm => 'Are you sure?', :method => :delete ,class:"btn text-danger dropdown-item" %>
+        </div>
+      </div>
+    </td>
+  </tr>
+<% end %>
+</tbody>
+
+</table>
+
+<br />
+
+

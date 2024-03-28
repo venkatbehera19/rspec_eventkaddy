@@ -1,0 +1,11 @@
+#+TITLE: Installing Ox Gemset on new server
+
+* Explanation
+
+I recently tried to install ox on a new Ubuntu 16.04 server and ran into ongoing issues 
+
+Some things that worked: 
+1. Bundler requires a special version, so start with "gem install bundler -v '1.15.3'"
+2. For Rmagick errors - export PATH="/usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16:$PATH", then gem install rmagick -v '2.13.2'
+3. The gems were bundled... but then the server didn't start. I tried - gem install mysql -v '0.3.21'. Didn't work so I tried 'bundle update mysql2'
+

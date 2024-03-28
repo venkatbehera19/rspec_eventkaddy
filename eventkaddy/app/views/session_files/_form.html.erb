@@ -1,0 +1,64 @@
+<%= form_for(@session_file, :html => { :multipart => true, :class=>"bg-light custom-border px-4 py-4" } ) do |f| %>
+
+    <% if @session_file.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@session_file.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+            <ul>
+                <% @session_file.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+        <%= f.hidden_field :event_id, :value => session[:event_id] %>
+        <%= f.hidden_field :session_id, :value => @session_id %>
+    </div>
+
+    <div class="form-group">
+        <%= f.label :title %>
+        <%= f.text_field :title, class: "form-control" %>
+    </div>
+
+    <div class="field">
+        <%= label_tag :event_files, "Choose a File" %> <br>
+        (if choosing multiple, leave title blank and check files have unique names)<br>
+        <%= file_field_tag "event_files[]", :multiple => true %>
+    </div><br />
+    <div class="form-check">
+        <%= f.label :unpublished, class: "form-check-label" do %>
+            <%= f.check_box :unpublished, class: "form-check-input" %>
+            Mark Unpublished (Hide in App)
+        <% end %>
+    </div>
+    <br>
+
+    <% if ( current_user.role?(:client) || current_user.role?(:super_admin) ) then %>
+        <div class="form-check">
+            <%= label_tag :final_version, "Final Version?", class: "form-check-label" do %>
+                <%= check_box_tag :final_version, class: "form-check-input" %>
+                Final Version
+            <% end %>
+        </div>
+        
+        <br>
+    <% end %>
+
+    <!--
+        <div class="form-group">
+        <%= f.label :description %>
+        <%= f.text_field :description, class: "form-control" %>
+        </div>
+    -->
+
+    <div class="form-group">
+        <%= label_tag(:select_session_file_type, "Session File Type:") %>
+        <%= f.collection_select(:session_file_type_id,SessionFileType.all, :id, :name, {}, class: "custom-select") %> <br />
+    </div>
+
+    <div class="actions">
+        <%= f.submit class:"btn btn-primary"   %>
+    </div>
+<% end %>

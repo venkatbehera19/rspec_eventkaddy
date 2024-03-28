@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+  	<p>Hi <%= @email %>,</p>
+		<p>This request has been sent to confirm your Exhibitor registration  for <%= @event.name %>. To purchase the order, please follow the link. Otherwise, ignore this email. <a href="<%=@url%>"><%=@url%></a></p>
+
+		<p>Have a great day!</p>
+  </body>
+</html>

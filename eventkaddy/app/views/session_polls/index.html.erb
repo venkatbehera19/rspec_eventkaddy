@@ -1,0 +1,170 @@
+<div class="polls-outer-container container mx-auto">
+  <%= link_to "Back", "/moderator_portals/qa_feed/#{@session.id}", class:"btn btn-secondary"%>
+  <br/>
+  <div class="session-title">
+    <h4>Session Polls</h4>
+    <h5 style="word-break: break-word;"><%=@session.title%></h5>
+  </div>
+  
+  <div id="polls_list_container">
+    <%= render partial: 'polls_list', locals: {session: @session, active_poll: @active_poll}%>
+  </div>
+
+  <% @session.poll_sessions.each do |poll| %> 
+    <div class="modal fade pollModal" id="pollModal-<%=poll.id%>" tabindex="-1" role="dialog" aria-labelledby="pollModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="pollModalCenterTitle"><%=poll.title%></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="list-group">
+              <% poll.session_poll_options.each do |option|%>
+                <li class="list-group-item list-group-item-action"><%=option.option_text%></li>
+              <% end %>
+            </div>
+          <br/>
+          <p>Timeout Time: <span id="pollTimeout-<%=poll.id%>"><%=poll.timeout_time%></span> secs</p>
+          </div>
+          <div class="modal-footer">
+            <button onclick="activateDeactivatePoll()" type="button" class="btn btn-secondary" data-poll-id="<%=poll.id%>"
+            data-session-id="<%=@session.id%>" data-dismiss="modal" id="switch-button-<%=poll.id%>" >
+              <% if session_poll_activated? poll.id, @session.id %>
+                Deactivate
+              <% else %> 
+                Activate
+              <%end%>
+            </button>
+          </div>
+        </div>
+    </div>
+    </div>
+  <% end %>
+  <% if @cordova_booleans.add_polls %>
+    <%= link_to "Create New Polls", "/moderator_portals/sessions/#{@session.id}/new_poll", class: "btn btn-info" %>
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+      Add Polls To This Sessions
+    </button>
+    <div class="collapse mt-2 row" id="collapseExample">
+      <div class="col-md-9">
+        <% @polls = [Poll.new(title: 'No Poll Available')] if @polls.blank? %>
+        <%= select_tag "poll", options_from_collection_for_select(@polls, "id", "title"), class: "custom-select", id: "polls_list" %>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-primary addSessionPoll" onclick="addSessionPoll(<%= @event.id%>, <%= @session.id %>, 'moderator')">Add Poll Question</button>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+
+<script>
+
+  $(document).ready(function() {
+
+    $(".getRequestButton").click(function(e) {
+      e.stopPropagation();
+    });
+
+    if ($('.activated-btn').length > 0){
+      let btn = $('.activated-btn');
+      let containerDiv = btn.parent();
+      containerDiv.children().first().addClass("disabled");
+      let poll = btn.parent().parent();
+      btn.removeClass('btn-primary').addClass('btn-success');
+      poll.siblings().addClass('disabled');
+      poll.siblings().find(".operationsBtn").addClass("disabled");
+    }
+    function publishToFaye(poll_id,session_id,statusOfPoll){
+      const poll_url = "<%= @event.chat_url %>"
+      let data = {
+        session_id: session_id,
+        poll_id: poll_id,
+        is_activated: statusOfPoll
+      }
+      PollSender.init(session_id, poll_url, data);
+    }
+
+    const onSucess = (event, data, xhr) => {
+      let statusOfPoll = false
+      let btn = $('.updatePollSession');
+      $("#polls_list_container").html(data);
+      if ($('.activated-btn').length > 0){
+        btn = $('.activated-btn');
+        statusOfPoll = true;
+        let containerDiv = btn.parent();
+        containerDiv.children().first().addClass("disabled");
+        let poll = btn.parent().parent();
+        btn.removeClass('btn-primary').addClass('btn-success');
+        poll.siblings().addClass('disabled');
+        poll.siblings().find(".operationsBtn").addClass("disabled");
+      }
+      $(".getRequestButton").click(function(e) {
+        e.stopPropagation();
+      });
+      publishToFaye(btn.data().pollId, btn.data().sessionId, statusOfPoll);
+      $('.updatePollSession').bind("ajax:success", onSucess);
+    }
+
+    $('.updatePollSession').bind("ajax:success", onSucess)
+
+  });
+
+  $(window).on('show.bs.modal', function(e) { 
+    id = e.target.id.split("-")[1]
+    text = $(`#a-switch-${id}`).text()
+    $(`#switch-button-${id}`).text(text)
+  });
+
+
+  // function onPollActivate(poll_id,session_id) {
+  //     let listItemToToggle = `#sessionPollLi-${session_id}-${poll_id}`;
+  //     $( listItemToToggle ).siblings().addClass("disabled");
+  //     $( listItemToToggle ).find(".updatePollSession").html('Deactivate').addClass("btn-success");
+  //     $( listItemToToggle ).siblings().find(".operationsBtn").addClass("disabled");
+  //     if($( `#editBtn-${poll_id}` ).length>0){
+  //       $( `#editBtn-${poll_id}` ).replaceWith( ' <a class="btn btn-danger operationsBtn mr-1" id=resetBtn-'+poll_id+' data-confirm="Are you sure you want to reset this Session Poll?" data-remote="true" rel="nofollow" data-method="post" href="/moderator_portals/session_polls/'+poll_id+'/restore">Reset</a> ' );
+  //     }
+  //     $( `#resetBtn-${poll_id}` ).addClass("disabled");
+  //     let pollTimeoutSpan = $(`#pollTimeout-${poll_id}`);
+  //     let totaltimeoutSeconds   = parseInt(pollTimeoutSpan.text());
+  //     let currenttimeoutSeconds = totaltimeoutSeconds;
+  //     let refreshId = setInterval(function() {
+  //         if (currenttimeoutSeconds === 0) {
+  //             stopInterval(refreshId);
+  //             pollTimeoutSpan.text(totaltimeoutSeconds);
+  //             xhrToActivateDeactivatePoll(poll_id,session_id);
+  //             return;
+  //         }
+  //         currenttimeoutSeconds--;
+  //         pollTimeoutSpan.text(currenttimeoutSeconds);
+  //     }, 1000);
+  // }
+
+  // function stopInterval(refreshId){
+  //     clearInterval(refreshId);
+  // }
+
+  function addSessionPoll(eventId, sessionId, location) {
+    poll_id = $("#polls_list").val()
+    if(poll_id){
+      $.ajax({
+        type: "post",
+        url: "/moderator_portals/session_polls/add_polls",
+        data: {event: eventId, session: sessionId, poll: poll_id, location: location},
+        success: function (response) {
+          $("#polls_list_container").html(response)
+          $(`#polls_list option[value='${poll_id}']`).remove()
+        },
+        error: function (error) {
+          alert(error);
+        }
+      });
+    }
+  }
+
+</script>
+

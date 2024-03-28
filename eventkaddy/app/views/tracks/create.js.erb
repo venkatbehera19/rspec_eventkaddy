@@ -1,0 +1,13 @@
+console.log("ajax response for create track");
+
+//append new entry to index table
+//$('#index-table .last-row').append('
+//$('#index-table > tbody:last').append('<tr><td>Name</td><td>Track Color</td><td>Show</td><td>Edit</td><td>Delete</td></tr>');
+
+
+$('#index-table > tbody:last').append('<tr><td><%= escape_javascript(@track.name ) %></td><td><div id="track-color-<%=@track.id %>" style="width:50px;height:20px;display:block"></div></td><td><%= escape_javascript (link_to "Show", @track) %></td><td><%= escape_javascript (link_to "Edit", edit_track_path(@track)) %></td><td><%= escape_javascript (link_to "Destroy", @track, :confirm => "Are you sure?", :method => :delete) %></td></tr>');
+$("#track-color-<%=@track.id %>").css('background-color',"#<%=@track.track_color %>");
+
+//clear form
+$('#new-track-form').find('input:text').val('');
+$('#new-track-form').find('.errors').empty();

@@ -1,0 +1,69 @@
+<style>
+.custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow:none !important;
+}
+</style>
+<div class="row">
+	<div class="col-md-10 mx-auto bg-light custom-border">
+		<h4>Add User</h4>
+ 
+		<%= form_for(@user) do |f| %>
+			<% if @user.errors.any? %>
+				<div id="error_explanation">
+					<h2><%= pluralize(@user.errors.count, "error") %> could not register the new user:</h2>
+
+					<ul>
+						<% @user.errors.full_messages.each do |msg| %>
+							<li><%= msg %></li>
+						<% end %>
+					</ul>
+				</div>
+			<% end %>
+
+		
+			<%= render :partial => 'user_fields', :locals => { :f => f } %>
+		
+			<div class="form-group d-none passwordField">
+				<%= f.label :password %>
+				<%= f.password_field :password, class: "form-control" %>
+			</div>
+			<div class="form-group d-none passwordField">
+				<%= f.label :password_confirmation %>
+				<%= f.password_field :password_confirmation, class: "form-control" %>
+			</div><br>
+
+			<%if true%>
+				
+			<div class="custom-control custom-switch d-none twoFactorSwitch">
+				<%= f.check_box :with_two_factor, class: "custom-control-input" %>
+				<%= f.label :with_two_factor,class: "custom-control-label" do%>
+					<b> Enable Two Factor Authentication </b>
+				<%end%>
+			</div><br>
+		
+			<%end%>
+			<%= f.submit "Add User", class:"btn btn-primary" %>
+		<% end %>
+	</div>
+</div>
+<script>
+		if(['1','2'].includes( $("#new_user input[type='radio']:checked").val() ) ){
+			$(".passwordField").addClass('d-none');
+			$(".twoFactorSwitch").removeClass('d-none');
+		}
+		else {
+			$(".passwordField").removeClass('d-none');
+			$(".twoFactorSwitch").addClass('d-none');
+		}
+
+		$("#new_user input[type='radio']").click(function(){
+		if(['1','2'].includes( $("#new_user input[type='radio']:checked").val() ) ){
+			$(".passwordField").addClass('d-none');
+			$(".twoFactorSwitch").removeClass('d-none');
+		}
+		else {
+			$(".passwordField").removeClass('d-none');
+			$(".twoFactorSwitch").addClass('d-none');
+		}
+	});
+</script>

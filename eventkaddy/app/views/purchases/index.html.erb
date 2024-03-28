@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Purchase Details</h4>
+      <div class="btn-toolbar my-2">
+        <div class="btn-group mr-2">
+          <%= link_to 'Refunded Purchases', refund_purchases_purchases_path, class: 'btn btn-primary' %>
+        </div>
+      </div>
+      <br>
+        <table class="table table-striped" id="event_ticket_table">
+          <thead>
+            <tr>
+              <th>Attendee</th>
+              <th>Transaction ID</th>
+              <th>Transaction Status</th>
+              <th>Payment Mode</th>
+              <th>Amount</th>
+              <th>Date/Time</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @purchases.each do |purchased| %>
+              <% is_refunded = purchased.transactions.pluck(:external_status).include? 'REFUNDED' %>
+              <% unless is_refunded%>
+                <% completed_transaction = purchased.transactions.select{|transaction| ['completed', 'succeeded'].include? transaction.external_status.downcase}.first %>
+                <% if completed_transaction %>
+                  <tr>
+                    <% mode_of_payment = completed_transaction.mode_of_payment %>
+                    <td><%= purchased.attendee.full_name %></td>
+                    <% if mode_of_payment.name == 'PayPal'%>
+                      <td><%= completed_transaction.external_transaction_id %></td>
+                    <% elsif mode_of_payment.name == 'Stripe'%>
+                      <td><%= completed_transaction.external_payment_id %></td>
+                    <% end%>  
+                    <td><%= completed_transaction.external_status %></td>
+                    <td><%= mode_of_payment.name %></td>
+                    <td><%= completed_transaction.amount %></td>
+                    <td><%= completed_transaction.updated_at %></td>
+                    <% if mode_of_payment.name == 'PayPal'%>
+                      <td><%= link_to 'Refund', refund_purchase_path(completed_transaction.id), data: {:confirm => 'Are you sure?'}, :method => :post, class: 'btn btn-outline-info' %></td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              <% end %>  
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>

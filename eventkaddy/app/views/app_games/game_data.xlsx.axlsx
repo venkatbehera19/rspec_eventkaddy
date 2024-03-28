@@ -1,0 +1,170 @@
+wb = xlsx_package.workbook
+
+wb.styles do |s|
+  black_cell                 = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+  black_cell_left_align      = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14
+  grey_cell                  = s.add_style :bg_color => "575656", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+  grey_cell_left_align       = s.add_style :bg_color => "575656", :fg_color => "FF", :sz => 14
+  light_grey_cell            = s.add_style :bg_color => "A6A0A2", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+  light_grey_cell_left_align = s.add_style :bg_color => "A6A0A2", :fg_color => "FF", :sz => 14
+
+  # AppGame.columns.map { |x| x.name }
+  # ["id", "event_id", "name", "description", "active", "created_at", "updated_at"]
+  # AppBadge.columns.map { |x| x.name }
+  # ["id", "event_id", "app_game_id", "image_event_file_id", "alt_image_url", "name", "description", "details", "position", "min_badge_tasks_to_complete", "min_points_to_complete", "created_at", "updated_at"]
+  # AppBadgeTask.columns.map { |x| x.name } 
+  # ["id", "event_id", "app_badge_id", "image_event_file_id", "alt_image_url", "name", "description", "details", "position", "app_badge_task_type_id", "scavenger_hunt_id", "scavenger_hunt_item_id", "survey_id", "points_per_action", "points_to_complete", "max_points_allotable", "created_at", "updated_at"]
+  # ScavengerHunt.columns.map { |x| x.name }  
+  # ["id", "event_id", "title", "description", "begins", "ends", "created_at", "updated_at"]
+  # ScavengerHuntItem.columns.map { |x| x.name }
+  # ["id", "event_id", "scavenger_hunt_id", "event_file_id", "exhibitor_id", "name", "description", "answer", "created_at", "updated_at"]
+  # Survey.columns.map { |x| x.name } 
+  # ["id", "event_id", "survey_type_id", "title", "description", "begins", "ends", "post_action", "submit_success_message", "submit_failure_message", "disallow_editing", "special_location", "json", "created_at", "updated_at"]
+
+  wb.add_worksheet(name: "Game Data") do |sheet|
+
+    sheet.add_row [ "Game Data" ], style: black_cell_left_align
+    heads = [ "Name", "Description", "Active" ]
+    style = heads.map {|h| black_cell }
+    sheet.add_row heads, :style => style
+
+    sheet.add_row [@app_game.name, @app_game.description, (!!@app_game.active).to_s]
+
+    sheet.add_row [ ]
+    sheet.add_row [ ]
+
+    sheet.add_row [ "Badge Data" ], style: black_cell_left_align
+    badge_heads = [ "Name",
+                    "Description",
+                    "Details",
+                    "Position",
+                    "Min Badge Tasks To Complete",
+                    "Min Points To Complete"
+    ]
+    badge_heads_style = badge_heads.map {|h| black_cell }
+    sheet.add_row badge_heads, :style => badge_heads_style
+
+    app_badges = @app_game.app_badges
+
+    app_badges.order(:position).each_with_index do |badge, app_badge_index|
+
+      sheet.add_row [
+        badge.name,
+        badge.description,
+        badge.details,
+        badge.position,
+        badge.min_badge_tasks_to_complete,
+        badge.min_points_to_complete
+      ]
+
+      # sheet.add_row [ "", "Badge Task Data" ], style: [false, grey_cell_left_align]
+      heads = [
+        "Badge Task Data",
+        "Name",
+        "Description",
+        "Details",
+        "Position",
+        "Type",
+        "Scavenger Hunt?",
+        "Survey?",
+        "Points Per Action",
+        "Points To Complete",
+        "Max Points Allotable",
+      ]
+      style = heads.map {|h| grey_cell }
+      style[0] = grey_cell_left_align
+      sheet.add_row heads, :style => style
+
+      badge.app_badge_tasks.order(:position).each_with_index do |task, task_index|
+
+        sheet.add_row [
+          "",
+          task.name,
+          task.description,
+          task.details,
+          task.position,
+          task.app_badge_task_type.name,
+          # looks like scavenger_hunt_id was the original design and was changed later
+          (!!task.scavenger_hunt_item_id).to_s,
+          (!!task.survey_id).to_s,
+          task.points_per_action,
+          task.points_to_complete,
+          task.max_points_allotable
+        ], :style => [grey_cell]
+
+        if task.survey
+          survey = task.survey
+
+          heads = [
+            "Survey Data",
+            "",
+            "Title",
+            "Survey Type Id",
+            "Description",
+            "Begins",
+            "Ends",
+            "Post Action",
+            "Submit Success Message",
+            "Submit Failure Message",
+            "Disallow Editing",
+            "Special Location",
+          ]
+          style = heads.map {|h| light_grey_cell }
+          style[0] = light_grey_cell_left_align
+          sheet.add_row heads, :style => style
+
+          sheet.add_row [
+            "",
+            "",
+            survey.title,
+            survey.survey_type.name,
+            survey.description,
+            survey.begins,
+            survey.ends,
+            survey.post_action,
+            survey.submit_success_message,
+            survey.submit_failure_message,
+            (!!survey.disallow_editing).to_s,
+            survey.special_location
+          ], :style => [light_grey_cell, light_grey_cell]
+
+        end
+
+        if task.scavenger_hunt_item
+          scavenger_hunt_item = task.scavenger_hunt_item
+
+          heads = [
+            "Scavenger Hunt Item Data",
+            "",
+            "Name",
+            "Description",
+            "Answer",
+          ]
+
+          style = heads.map {|h| light_grey_cell }
+          style[0] = light_grey_cell_left_align
+          sheet.add_row heads, :style => style
+
+          sheet.add_row [
+            "",
+            "",
+            scavenger_hunt_item.name,
+            scavenger_hunt_item.description,
+            scavenger_hunt_item.answer,
+          ], :style => [light_grey_cell, light_grey_cell]
+
+        end
+      end
+      sheet.add_row [""]
+      sheet.add_row [""]
+
+      if app_badge_index < app_badges.length - 1
+        badge_heads_style = badge_heads.map {|h| black_cell }
+        sheet.add_row badge_heads, :style => badge_heads_style
+      end
+    end
+
+    #   sheet.column_widths *row.map{ |i| 30 }
+  end
+
+end

@@ -1,0 +1,20 @@
+
+  <div class="filter-header">
+    <div class="filter-option" data-toggle="collapse" href="#keyword_filter_option" role="button" aria-expanded="false" aria-controls="keyword_filter_option">
+      <label class="filter_label label_bold">Speakers</label>
+      <i class="fa fa-arrow-down" aria-hidden="true"></i>
+      <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+    </div>
+  </div>
+  <div class="collapse" id="keyword_filter_option">
+    <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+      <div class="bg-light p-2">
+        <input id="speakerSearch" type="text" placeholder="Search Speaker" class="form-control rounded">
+      </div>
+      <% @speakers.each_with_index do |speaker| %>
+        <li class="parent-li speaker_list">
+          <label class='labels'><a href="<%= "/#{params[:event_id]}/program/speaker/#{speaker.id}"%>" class="speaker-name"><%= speaker.full_name %></a></label> 
+        </li>
+      <% end %>
+    </ul>
+  </div>

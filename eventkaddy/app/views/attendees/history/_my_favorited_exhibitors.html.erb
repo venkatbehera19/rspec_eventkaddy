@@ -1,0 +1,45 @@
+<div class="dropdown">
+  <div
+    class="btn report-dropdown dropdown-toggle"
+    data-toggle="dropdown"
+  >
+    Favorited Exhibitors Downloads
+  </div>
+  <div class="dropdown-menu report-dropdown-list">
+    <%= link_to "Export My Favorited Exhibitors To Spreadsheet", "/attendees/#{@attendee.id}/favorited_exhibitors_report", class: "dropdown-item"%>
+  </div>
+</div>
+<br>
+<h4 class="view-title">My Favorited Exhibitors</h4>
+<br />
+<br />
+<table
+    id="cms-my-favourited-exhibitors-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped table-bordered"
+  >
+    <thead>
+      <th>Name</th>
+      <th>Company&nbsp;&nbsp;&nbsp;&nbsp;</th>      
+    </thead>
+  <% !@my_favorited_exhibitors.blank? && @my_favorited_exhibitors.each do |exhibitor| %>
+    <tr>
+      <td><%= exhibitor[:company_name] %></td>
+      <td><%= exhibitor[:contact_name] %></td>
+    </tr>
+    <% end %>
+  </table>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline table-responsive'
+    })
+    $('#cms-my-favourited-exhibitors-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

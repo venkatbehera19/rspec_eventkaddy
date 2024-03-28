@@ -1,0 +1,24 @@
+# EmailsQueue.columns.map {|e| "#{ e.name }: #{e.type}" }.join ','
+ # id: integer,event_id: integer,email_type_id: integer,sent: boolean,status: string,email: string,message: string,attendee_id: integer,speaker_id: integer,exhibitor_id: integer,user_id: integer,trackowner_id: integer,created_at: datetime,updated_at: datetime
+one:
+  event_id:   1
+  email_type: send_password
+  sent:       0
+  status:     'pending'
+  email:      'edwardgallant@gmail.com'
+  message:    'Hello Bear, your account details are abc/123'
+  # attendee_id:   integer
+  # speaker_id:    integer
+  # exhibitor_id:  integer
+  # user_id:       integer
+  # trackowner_id: integer
+  # created_at:    datetime
+  # updated_at:    datetime
+
+two:
+  event_id:   2
+  email_type: send_password
+  sent:       0
+  status:     'pending'
+  email:      'edwardgallant@gmail.com'
+  message:    'Hello Bear, your account details are abc/123'

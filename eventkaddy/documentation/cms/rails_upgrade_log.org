@@ -1,0 +1,12 @@
+#+TITLE: Rails Upgrade Log
+
+* Explanation
+This is a journal of the steps taken during the rails upgrade. We will record steps taken at the end of each week. 
+
+* Log
+
+Week 1 - November 16th-20th
+
+Analyzing scope and requirements. Testing the rails:update method and resolving the config file changes. Researching transitioning to strong parameters. Upgrading ruby to 2.4.6.  
+
+

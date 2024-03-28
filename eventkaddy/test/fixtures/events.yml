@@ -1,0 +1,5 @@
+event_where_speakers_already_have_associated_users:
+  name: event_where_speakers_already_have_associated_users
+
+event_where_speakers_dont_all_have_associated_users:
+  name: event_where_speakers_dont_all_have_associated_users

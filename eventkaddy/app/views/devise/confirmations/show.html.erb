@@ -1,0 +1,23 @@
+<div id="forgot-password" class="col-md-6 mx-auto bg-light custom-border">
+  <h4>Generate Password And Verify Your Account</h4>
+  <%= form_for(resource, :as => resource_name, :url => confirm_without_two_factor_path, :html => { :method => :post }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+    <%= hidden_field_tag :confirmation_token, @user.confirmation_token %>
+    <div class="form-group">
+      <label for="inputEmail">Email</label>
+      <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" value = <%= @user.email%> readonly>
+      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :password, "Password" %><br />
+      <%= f.password_field :password, :autofocus => true, :class => 'form-control', :placeholder => "Password", :required => true%>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :password_confirmation, "Confirm Password" %><br />
+      <%= f.password_field :password_confirmation, :autofocus => true ,:class => 'form-control', :placeholder => "Confirm Password", :required => true %>
+    </div>
+    <div><%= f.submit "Submit",class:"btn btn-primary form-control" %></div><br>
+  <% end %>
+</div>

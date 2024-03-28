@@ -1,0 +1,9 @@
+<% content_for :content do %>
+  <h1>Mobile and App Settings</h1>
+  <!-- <ul id="mobile-tabs" class="nav nav-tabs">
+
+    <li id="edit_mobile_settings-tab"><%= link_to "Settings", "/event_settings/edit_mobile_settings" %></li>
+  </ul> -->
+  <%= content_for?(:event_settings_content) ? yield(:event_settings_content) : yield %>
+<% end %>
+<%= render template: "layouts/subevent_2013" %>

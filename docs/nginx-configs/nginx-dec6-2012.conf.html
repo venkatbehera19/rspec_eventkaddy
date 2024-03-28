@@ -1,0 +1,454 @@
+
+#user  nobody;
+worker_processes  4;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    ssl_certificate      /srv/ssl/eventkaddy.net.crt;
+    ssl_certificate_key  /srv/ssl/eventkaddy.net.key;
+
+
+    passenger_root /usr/local/rvm/gems/ruby-1.9.2-p290/gems/passenger-3.0.11;
+    passenger_ruby /usr/local/rvm/wrappers/ruby-1.9.2-p290/ruby;
+
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    gzip  on;
+    gzip_min_length  1000;
+    gzip_proxied     expired no-cache no-store private auth;
+    gzip_types text/plain text/css application/json application/x-javascript text/javascript text/xml application/xml;
+
+
+  # this is where you define your mongrel clusters. 
+  # you need one of these blocks for each cluster
+  # and each one needs its own name to refer to it later.
+  upstream ekcharlie_thin {
+   server   unix:/tmp/thin.0.sock;
+   server   unix:/tmp/thin.1.sock;
+   server   unix:/tmp/thin.2.sock;  
+  }
+
+  server {
+      listen 80;
+      server_name charlie.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+  }
+
+
+  #SSL setup for charlie.eventkaddy.net
+  server {
+    # port to listen on. Can also be set to an IP:PORT
+    listen 443;
+
+    ssl on;
+
+    ssl_protocols  SSLv2 SSLv3 TLSv1;
+    ssl_ciphers  HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers   on;
+    
+    # Set the max size for file uploads to 50Mb
+    client_max_body_size 50M;
+
+    # sets the domain[s] that this vhost server requests for
+    server_name charlie.eventkaddy.net;
+
+    # doc root
+    root /home/deploy/ek-cms-charlie/public;
+
+    # vhost specific access log
+    #access_log  /var/log/nginx.vhost.access.log  main;
+
+    # this rewrites all the requests to the maintenance.html
+    # page if it exists in the doc root. This is for capistrano's
+    # disable web task
+    if (-f $document_root/system/maintenance.html) {
+      rewrite  ^(.*)$  /system/maintenance.html last;
+      break;
+    }
+
+    location / {
+      # needed to forward user's IP address to rails
+      proxy_set_header  X-Real-IP  $remote_addr;
+
+      # needed for HTTPS
+      proxy_set_header X_FORWARDED_PROTO https;
+
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_max_temp_file_size 0;
+      
+      # If the file exists as a static file serve it directly without
+      # running all the other rewite tests on it
+      if (-f $request_filename) { 
+        break; 
+      }
+
+      # check for index.html for directory index
+      # if its there on the filesystem then rewite 
+      # the url to add /index.html to the end of it
+      # and then break to send it to the next config rules.
+      if (-f $request_filename/index.html) {
+        rewrite (.*) $1/index.html break;
+      }
+
+      # this is the meat of the rails page caching config
+      # it adds .html to the end of the url and then checks
+      # the filesystem for that file. If it exists, then we
+      # rewite the url to have explicit .html on the end 
+      # and then send it on its way to the next config rule.
+      # if there is no file on the fs then it sets all the 
+      # necessary headers and proxies to our upstream mongrels
+      if (-f $request_filename.html) {
+        rewrite (.*) $1.html break;
+      }
+
+      if (!-f $request_filename) {
+        proxy_pass http://ekcharlie_thin;
+        break;
+      }
+    }
+
+    error_page   500 502 503 504  /500.html;
+    location = /500.html {
+      root   /home/deploy/ek-cms-charlie/public;
+    }
+  }
+  
+    
+# HTTPS server - standalone passenger config
+
+# (use "passenger start --socket /tmp/ekcharlie.com.socket -d -e production" in web root to start standalone passenger)
+# "passenger stop --pid-file ./tmp/pids/passenger.pid" to stop standalone passenger
+#EK CMS (charlie)
+
+#upstream ekcharlie_upstream {
+#    server unix:/tmp/ekcharlie.com.socket;
+#}
+
+#server {
+#    listen 80;
+#    server_name charlie.eventkaddy.net;
+#    root /home/deploy/ek-cms-charlie/public;
+#    location / {
+#        proxy_pass http://ekcharlie_upstream;
+#        proxy_set_header Host $host;
+#    }
+#}	
+
+# HTTPS server - FOR DEV TESTING: standalone passenger config
+
+# (use "passenger start --socket /tmp/dev.ekcharlie.com.socket -d -e production" in web root to start standalone passenger)
+# "passenger stop --pid-file ./tmp/pids/passenger.pid" to stop standalone passenger
+
+upstream dev_ekcharlie_upstream {
+    server unix:/tmp/dev.ekcharlie.com.socket;
+}
+
+server {
+    listen 80;
+    server_name dev.eventkaddy.net;
+    root /home/deploy/ek-dev-cms-charlie/public;
+    location / {
+        proxy_pass http://dev_ekcharlie_upstream;
+        proxy_set_header Host $host;
+    }
+}	
+
+
+
+#EK CMS (original)
+
+server {
+      listen 80;
+      server_name eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+}
+
+server {
+      listen 80;
+      server_name www.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://eventkaddy.net$request_uri permanent;
+      }
+
+}
+
+server {
+      listen 443;
+      server_name www.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://eventkaddy.net$request_uri permanent;
+      }
+
+}
+
+
+server {
+        listen	443;
+        server_name eventkaddy.net;
+
+        ssl on;
+ 
+        ssl_protocols  SSLv2 SSLv3 TLSv1;
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers   on;
+        
+
+        root /home/deploy/ek-cms/public;   # <--- be sure to point to 'public'!	#root   html;   
+
+        location / {
+        	passenger_enabled on;
+       	rails_env production;  # This line tells passenger to start in production mode.
+		
+        }
+        
+	}
+
+#EK CMS (alpha)
+
+server {
+      listen 80;
+      server_name alpha.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+}
+
+
+server {
+        listen	443;
+        server_name alpha.eventkaddy.net;
+
+        ssl on;
+ 
+        ssl_protocols  SSLv2 SSLv3 TLSv1;
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers   on;
+        
+
+        root /home/deploy/ek-cms-alpha/public;   # <--- be sure to point to 'public'!	#root   html;   
+
+        location / {
+        	passenger_enabled on;
+       	rails_env production;  # This line tells passenger to start in production mode.
+		
+        }
+        
+	}
+
+#EK CMS (beta)
+
+server {
+      listen 80;
+      server_name beta.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+}
+
+
+server {
+        listen	443;
+        server_name beta.eventkaddy.net;
+
+        ssl on;
+ 
+        ssl_protocols  SSLv2 SSLv3 TLSv1;
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers   on;
+        
+
+        root /home/deploy/ek-cms-beta/public;   # <--- be sure to point to 'public'!	#root   html;   
+
+        location / {
+        	passenger_enabled on;
+       	rails_env production;  # This line tells passenger to start in production mode.
+		
+        }
+        
+	}
+
+    
+#ADP Proxy API    
+
+server {
+      listen	80;
+      server_name proxy.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+}
+
+
+server {
+        listen	443;
+        server_name proxy.eventkaddy.net;
+
+        ssl on;
+  
+        ssl_protocols  SSLv2 SSLv3 TLSv1;
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers   on;
+        
+        root /home/deploy/adp-sinatra/public;   # <--- be sure to point to 'public'!	#root   html;   
+	   passenger_enabled on;
+        
+	}
+
+
+
+
+#ADP MOTM mobile site
+
+server {
+      listen 80;
+      server_name motm.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+}
+
+server {
+        listen 443;
+        server_name motm.eventkaddy.net;
+
+        ssl on;
+    
+        ssl_protocols  SSLv2 SSLv3 TLSv1;
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers   on;
+        
+        root /home/deploy/mobilesite-deployments/adp-www;   
+}
+
+#ADP Global Sales mobile site
+
+server {
+      listen 80;
+      server_name adpsales.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+}
+
+server {
+        listen 443;
+        server_name adpsales.eventkaddy.net;
+
+        ssl on;
+    
+        ssl_protocols  SSLv2 SSLv3 TLSv1;
+        ssl_ciphers  HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers   on;
+        
+        root /home/deploy/mobilesite-deployments/adp-gsc-www;   
+}
+
+
+server {
+        listen	80;
+        server_name workday.eventkaddy.net;
+
+       
+        root /home/deploy/mobilesite-deployments/www-workday;  
+
+        
+        
+}
+
+
+
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+
+   
+        
+}
+
+
+      

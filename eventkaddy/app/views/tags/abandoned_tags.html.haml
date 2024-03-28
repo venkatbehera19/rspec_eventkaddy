@@ -1,0 +1,27 @@
+.notice.alert
+  There are
+  = @abandoned_tags.size
+  unused tags for this event.
+  %br
+  %br
+  An unused tag is one which does not have an association to a session, exhibitor, or attendee. If they will be used in the future, you do not need to take any action. If they won't be used, we recommend removing them here.
+  %br
+  Removing these tags will only remove their parents if those parents have no other children.
+  %br
+  %br
+= form_tag("/events/delete_abandoned_tags", :method => "delete") do
+  = hidden_field_tag :abandoned_tags_page, true
+  = submit_tag("Delete All Unused Tags", :confirm => 'Are you sure?', :class=>"btn btn-danger")
+- TagType.all.each do |tag_type|
+  %h5= tag_type.name.split('-').map(&:capitalize).join(' ')
+  - @abandoned_tags.each do |tag|
+    - if tag.tag_type_id == tag_type.id
+      = tag.name 
+      = link_to 'Delete', "/tags/#{tag.id}", :confirm => 'Are you sure?', :method => :delete, style:'color:#9A0D00;'
+      <br>
+      - parents = tag.parents_as_string
+      - unless parents.blank?
+        %span{style:'padding-left:10px;font-style:italic'} Parent(s):
+        = parents
+        %br
+  %hr

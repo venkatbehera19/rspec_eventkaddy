@@ -1,0 +1,227 @@
+- unless @settings.leaderboard_disabled
+
+  %link{rel:"stylesheet", href:"https://fonts.googleapis.com/css?family=#{@settings.leaderboard_google_apis_font && @settings.leaderboard_google_apis_font.split(' ').join('+')}"}
+  = stylesheet_link_tag "application"
+  = javascript_include_tag "application"
+  %script{ type:"text/javascript", src:"/non_pipeline_assets/util.js" }
+
+  :javascript
+    $(function() {
+
+      // code for just making the fonts a nice size on page load
+
+      var $table_headers  = $('.table > thead')
+      var original_height = $table_headers.height();
+      var original_width  = $table_headers.width();
+
+      // true if table headers would be more than one line of text
+      function overflowTest() {
+        return $table_headers.height() > original_height || $table_headers.width() > original_width
+      }
+
+      var table_header_font_size = Modules.Util.maximizeFontSize(
+        $table_headers, overflowTest
+      );
+
+      $('.leaderboard-table, .leaderboard-table > tbody > tr > td').css({
+        'font-size': table_header_font_size * 0.5 + 'px',
+        'line-height': table_header_font_size * 0.5 * 1.3 + 'px'
+      });
+
+      $('.leaderboard-header').css({
+        'font-size': table_header_font_size * 2 + 'px',
+        'line-height': table_header_font_size * 2 * 1.3 + 'px'
+      });
+
+      $('.leaderboard-name').css({
+        'font-size': table_header_font_size * 0.75 + 'px',
+        'line-height': table_header_font_size * 0.75 * 1.3 + 'px'
+      });
+
+      $('.leaderboard-rank').css({
+        'font-size': table_header_font_size + 'px',
+        'line-height': table_header_font_size * 1.3 + 'px'
+      });
+
+      $('.leaderboard-footnote').css({
+        'font-size': table_header_font_size * 0.75 + 'px',
+        'line-height': table_header_font_size * 0.75 * 1.3 + 'px'
+      });
+
+      // code for fitting everything to the screen
+
+      // True if window would have scrollbars
+      function windowOverflowTest() {
+        return Modules.Util.checkOverflow( $('body')[0] )
+      }
+
+      function modifyFonts( font_size ) {
+        $('.table > thead').css({
+          'font-size': font_size + 'px',
+          'line-height': font_size * 1.3 + 'px'
+        });
+
+        $('.leaderboard-table, .leaderboard-table > tbody > tr > td').css({
+          'font-size': font_size * 0.5 + 'px',
+          'line-height': font_size * 0.5 * 1.3 + 'px'
+        });
+
+        $('.leaderboard-header').css({
+          'font-size': font_size * 2 + 'px',
+          'line-height': font_size * 2 * 1.3 + 'px'
+        });
+
+        $('.leaderboard-name').css({
+          'font-size': font_size * 0.75 + 'px',
+          'line-height': font_size * 0.75 * 1.3 + 'px'
+        });
+
+        $('.leaderboard-points').css({
+          'font-size': font_size * 0.75 + 'px',
+          'line-height': font_size * 0.75 * 1.3 + 'px'
+        });
+
+        $('.leaderboard-rank').css({
+          'font-size': font_size + 'px',
+          'line-height': font_size * 1.3 + 'px'
+        });
+
+        $('.leaderboard-footnote').css({
+          'font-size': font_size * 0.75 + 'px',
+          'line-height': font_size * 0.75 * 1.3 + 'px'
+        });
+
+      }
+
+      function increase() {
+        var font_size = parseInt($('.table > thead').first().css('font-size')) + 1
+        modifyFonts( font_size )
+      }
+
+      function decrease() {
+        var font_size = parseInt($('.table > thead').first().css('font-size')) - 1
+        modifyFonts( font_size )
+      }
+
+      if (window.location.search === "?desktop=true") {
+        $('.leaderboard-content').css({
+          'margin-left': '10%',
+          'margin-right': '10%'
+        });
+        var table_header_font_size = Modules.Util.maximizeSize(
+          increase, decrease, windowOverflowTest
+        );
+      }
+
+    })
+
+  - bg_color = @settings.leaderboard_background_colour.blank? ? "#F9F9F8" : @settings.leaderboard_background_colour
+  :css
+    body {
+      background-color: #{bg_color};
+      font-family: '#{@settings.leaderboard_google_apis_font}', courier;
+    }
+
+    -# It would be nicer to not have to do this, but at some point long ago someone added
+    -# styles to basic tags; until we fix the asset pipeline, we kind of have to overwrite
+    -# it tediously, style by style. It may even be a bootstrap thing
+    body, p, ol, ul, td {
+      font-family: '#{@settings.leaderboard_google_apis_font}', courier;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: '#{@settings.leaderboard_google_apis_font}', courier;
+      color: #{@settings.leaderboard_header_text_colour}
+    }
+
+    .table-striped tbody > tr:nth-child(2n+1) > td, .table-striped tbody > tr:nth-child(2n+1) > th {
+      background-color: #{@settings.leaderboard_table_background_colour_two} ;
+    }
+
+    .table {
+      color: #{@settings.leaderboard_table_text_colour} ;
+      background-color: #{@settings.leaderboard_table_background_colour_one} ;
+    }
+
+    .google-api-font {
+      font-family: '#{@settings.leaderboard_google_apis_font}', courier;
+    }
+
+    .leaderboard-table {
+      table-layout: fixed;
+      border: 1px solid #D5D5D5;
+    }
+    .leaderboard-table > thead > tr > th {
+      line-height: 55px;
+    }
+    .leaderboard-table,
+    .leaderboard-table > tbody > tr > td {
+      line-height: 35px;
+    }
+    .leaderboard-content {
+      margin: auto;
+    }
+    .leaderboard-logo {
+      text-align:  center;
+    }
+    .leaderboard-header {
+      text-align:  center;
+      padding:     20px;
+      line-height: 100px;
+    }
+    .account_code {
+      color: gray;
+      color: #{@settings.leaderboard_table_text_colour};
+    }
+    .leaderboard-name {
+    }
+    .leaderboard-points {
+      padding-left: 10px;
+      font-weight:  bold;
+    }
+    .leaderboard-rank {
+      font-weight: bold;
+      line-height: 60px;
+    }
+
+    .leaderboard-footnote {
+      margin: 10px;
+    }
+
+  :ruby
+    # distance_of_time_in_words is a little too magical for our purposes
+    def time_difference_in_words(t1, t2)
+      diff = t2 - t1
+      "#{(diff / 3600).floor} hours and #{(diff % 60).floor} minutes."
+    end
+
+  .leaderboard-content
+    .leaderboard-logo
+      = @settings.leaderboard_logo_path ? image_tag(@settings.leaderboard_logo_path, style:"height:10vh;display:inline-block;") : ""
+    %h1.leaderboard-header
+      - unless @settings.leaderboard_header_text.blank?
+        = @settings.leaderboard_header_text
+      - else
+        Leaderboard For
+        = @event_name
+    %table.table.table-striped.leaderboard-table
+      %thead{style:"text-align:left;"}
+        %tr
+          %th{style:"width:15%;"} Rank
+          %th{style:"width:40%;"} Name
+          %th{style:"width:45%;"} Time Completed In
+      %tbody
+        - @top_ten.each_with_index do |a, i|
+          %tr
+            %td.stat.google-api-font
+              %span.leaderboard-rank= "#{i+1}."
+            %td.google-api-font
+              %b.leaderboard-name= a.name
+              - if @settings.leaderboard_show_attendee_code
+                %br
+                %span.account_code= "[#{a.account_code}] "
+            %td.google-api-font{style:"padding-left:10px;"}= time_difference_in_words(@event_start, a.most_recent_update)
+    .leaderboard-footnote.google-api-font
+      * Participants on this leaderboard completed all badges and are ranked according to the speed in which they did so.
+- else
+  Leaderboard has been disabled for this event.

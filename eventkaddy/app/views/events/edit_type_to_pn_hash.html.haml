@@ -1,0 +1,32 @@
+.bg-light.custom-border.px-3.py-3{style:'min-height:500px;'}
+
+  %h3 Attendee Types To Push Notification Filters Matches
+
+  = form_for @event, :html => { :method => :post }, :url => '/events/update_type_to_pn_hash' do |f|
+
+    -# parens in each declaration here transform first value from an array
+    - @pn_hash.each_with_index do |(type, pn_filter), index|
+      .row
+        .col-md-5.form-group
+          %label{for: "set_#{index}_key"}
+            %b Type to Match
+          = text_field_tag "set_#{index}_key", type, class: "form-control"
+        .col-md-5.form-group
+          %label(for="set_#{index}_value") 
+            %b Notification Filters (comma separated)
+          = text_field_tag "set_#{index}_value", pn_filter.join(', '), class: "form-control"
+
+    - if @pn_hash.length < 10
+      - (10 - @pn_hash.length).times do |i|
+        .row
+          .col-md-5.form-group
+            %label{for: "set_#{@pn_hash.length + i}_key"}
+              %b Type to Match
+            = text_field_tag "set_#{@pn_hash.length + i}_key", nil, class: "form-control"
+          .col-md-5.form-group
+            %label{for: "set_#{@pn_hash.length + i}_value"}
+              %b Notification Filters (comma separated)
+            = text_field_tag "set_#{@pn_hash.length + i}_value", nil, class: "form-control"
+
+
+    = f.submit 'Update Event Type to Push Notification Filters', class: 'btn btn-primary'

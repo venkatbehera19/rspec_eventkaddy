@@ -1,0 +1,11 @@
+#+TITLE: Adding Years to the Drupal Stores
+
+* Explanation
+The drupal stores are using custom themes that require an administrator to modify php code to display the products for the upcoming year. 
+
+* Steps
+1. Login to the drupal server - deploy@173.230.151.29, pw hint: BG!23
+2. Navigate to the folder sourceofknowledge.com from the home directory
+3. Navigate to /sites/all/themes/ and select the theme you need to update.
+4. Navigate to templates/page.tpl.php and look for an array of year around line 245. Simply add the most recent year to the array. Eg. $years = array(2020, 2019, 2018, 2017, 2016, 2015, 2014); ?>
+5. This update will appear immediately. 

@@ -1,0 +1,89 @@
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<div id="collapseOne" class="collapse show row" aria-labelledby="headingOne" data-parent="#accordionExample">
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-6">
+        <% if @event_map.present? %>
+          <%= image_tag(@event_map.event_file.return_authenticated_url()['url'], :style=>"height: auto; width: 100%") %>
+        <% end %>
+      </div>  
+      <div class="col-md-6">
+        <%= form_for @cart, :url => '/transaction/exhibitor/add_to_cart', remote: true, method: 'post' do |f| %>
+          <p>Choose Any One Booth</p>
+          <div class="field">
+            <%= hidden_field_tag :user_id, @cart.user_id %>
+            <% selected_booth_item = @cart.cart_items.find_by(item_type: 'LocationMapping')%>
+            <% if @sponsorship_with_booth_selection_category_product %>
+             <% location_mapping_with_product_associated = @event_map.location_mappings.joins(:location_mapping_products).select{|booth| booth.locked_by.nil? && booth.product_id.nil? && (booth.products.first.iid == 'premium_location' || booth.products.first.iid == 'corner_booth')} %>
+            <% else %>
+             <% location_mapping_with_product_associated = @event_map.location_mappings.joins(:location_mapping_products).select{|booth| booth.locked_by.nil? && booth.product_id.nil? && booth.products.first.iid != 'premium_location'} %>
+            <% end %>
+            <% 
+              already_bought = LocationMapping.joins('LEFT JOIN order_items ON location_mappings.id = order_items.item_id')
+              .joins('LEFT JOIN orders ON order_items.order_id = orders.id')
+              .where(order_items: {item_type: 'LocationMapping'}, orders: { status: 'paid'}).uniq 
+            %>
+            <% 
+              already_booked_lm = Exhibitor.joins(:location_mapping)
+              .where(event_id: @event_map.event_id)
+              .pluck(:'location_mappings.id').uniq
+            %>
+            <% location_mapping_both = LocationMapping.where(id: already_booked_lm) %>
+            <% available_location_mapping = (location_mapping_with_product_associated - already_bought) - location_mapping_both %>
+            <% sorted_location_mapping = sorted_location_mapping(available_location_mapping) %>
+            <%= select_tag :booth, options_from_collection_for_select(sorted_location_mapping, 'id', 'with_product', selected_booth_item&.item_id), style: "width: 50%;", include_blank: true, required: true %>
+          </div>  
+          <div class="product_details">
+            <p id="product_name"></p>
+            <p id="product_price"></p>
+            <p id="maximum_complimentary_staff"></p>
+            <p id="maximum_discount_staff"></p>
+          </div>
+          <div class="actions">
+            <%= f.submit 'Add To Cart', class:"btn btn-outline-primary btn-sm booth_add_to_cart"%>
+          </div>
+        <% end %>
+        <div class="form-submit-info">
+        </div>
+      </div>
+    </div>
+  </div>  
+</div>
+
+
+<script>
+  $(document).ready(function(){
+    $("#booth").select2( {
+      placeholder: "Select Booth",
+      width: 'resolve',
+      theme: "classic"
+      }).on('change', function(e){
+        var selectedValue = $(this).val();
+        console.log("Selected value: " + selectedValue)
+        $.ajax({
+          type: "get",
+          url: `/location_mappings/product/${selectedValue}`,
+          dataType: 'json',
+          success: function (response) {
+            var response_data = response['data'];
+            if (response['status']){
+              $('#product_name').text(`Its a ${response_data['name']}`)
+              $('#product_price').text(`Price of the booth is $${response_data['price']}`)
+              $('#maximum_complimentary_staff').text(`Maximum Complimentary Staff ${response_data['maximum_complimentary_staff']}`)
+              $('#maximum_discount_staff').text(` Maximum discount staff ${response_data['maximum_discount_staff']}`)
+            }
+          },
+          error: function (error) {
+            console.log(error);
+          }
+        });
+      });
+
+    var product_categories_booth_present = "<%= @sponsorship_with_booth_category_product %>";
+    console.log('product_categories_booth_present', product_categories_booth_present);
+    if (product_categories_booth_present){
+      $('.booth_add_to_cart').attr('disabled', true);
+    }
+  })
+</script>

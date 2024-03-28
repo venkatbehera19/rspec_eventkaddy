@@ -1,0 +1,7 @@
+.custom-control.custom-switch
+    = f.check_box :enable_profile_message_display, class: "custom-control-input"
+    = f.label :enable_profile_message_display, "Enable Display Message", class: "custom-control-label"
+%br
+.form-group
+    Message to be displayed
+    = f.text_field :message_to_display, class: "form-control"

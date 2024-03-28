@@ -1,0 +1,35 @@
+<%= form_for(@sessions_speaker) do |f| %>
+  <% if @sessions_speaker.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sessions_speaker.errors.count, "error") %> prohibited this sessions_speaker from being saved:</h2>
+
+      <ul>
+      <% @sessions_speaker.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :session_id %>
+    <%= f.text_field :session_id %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :speaker_id %>
+    <%= f.text_field :speaker_id %><br /><br />
+  </div>
+
+<%= f.label :is_moderator do %>
+  <%= f.check_box :is_moderator %>
+  Is Moderator
+<% end %><br>
+
+  <div class="field">
+    <%= f.label :speaker_type_id %>
+    <%= f.text_field :speaker_type_id %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

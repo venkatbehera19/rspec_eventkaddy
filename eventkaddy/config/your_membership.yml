@@ -1,0 +1,12 @@
+default: &default
+  username:  "e592c8fd-7456-47f0-b581-51bab80c611c"
+  password:  "c2fb2cc0-346a-474f-8484-f3c05c76683c"
+  member_id: "0"
+  client_id: "107847"
+  app_id:    "e592c8fd-7456-47f0-b581-51bab80c611c"
+
+development:
+  <<: *default
+
+production:
+  <<: *default

@@ -1,0 +1,25 @@
+<h1>Listing event_file_types</h1>
+
+<%= link_to 'New Event file type', new_event_file_type_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @event_file_types.each do |event_file_type| %>
+  <tr>
+    <td><%= event_file_type.name %></td>
+    <td><%= link_to 'Show', event_file_type ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_event_file_type_path(event_file_type) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', event_file_type, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

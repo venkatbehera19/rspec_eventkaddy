@@ -1,0 +1,66 @@
+<%= form_for(@room_layout, :html => { :multipart => true, :class=>"form-horizontal well" } ) do |f| %>
+  
+  <% if @room_layout.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@room_layout.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+      <ul>
+      <% @room_layout.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, class: "form-control" %>
+  </div>
+
+  <table>
+  <% if (@room_layout.event_file!=nil) then %>
+    <tr><td><%= image_tag(@room_layout.event_file.path, :height=>'100', style: "max-width: 100%") %></td></tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr><td>
+    <div class="field">
+        <%= label_tag :room_layout_file, "Upload a replacement room layout:" %>
+        <%= file_field_tag :room_layout_file %>
+      </div>
+    </td></tr>
+  
+  <% else %>
+      <tr><td>
+        <div class="field">
+          <%= label_tag :room_layout_file, "Upload a room layout" %><br />
+          <%= file_field_tag :room_layout_file %>
+        </div><br />
+      </td></tr>  
+  <% end %>
+  </table>  
+    
+  <div class="form-group">
+    <%= label_tag(:select_room_layout_configuration, "Room Configuration:") %>
+    <%= f.collection_select(:room_layout_configuration_id,RoomLayoutConfiguration.all, :id, :name, {}, class: "custom-select") %> 
+  </div>
+  
+  <div class="form-group">
+    <%= label_tag(:select_location_mapping, "Room/Location:") %>
+    <%= f.collection_select(:location_mapping_id,LocationMapping.where(event_id:session[:event_id],mapping_type:@location_mapping_type_id).order('name ASC'), :id, :name, {}, class: "custom-select") %> 
+  </div>
+
+  <%= f.label :default do %>
+    <%= f.check_box :default %>
+    Default Layout
+  <% end %><br>
+
+
+  <br/>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

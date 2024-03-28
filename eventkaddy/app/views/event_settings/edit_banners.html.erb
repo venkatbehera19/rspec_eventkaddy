@@ -1,0 +1,30 @@
+<%= link_to 'New Banner', '/event_files/new_banner',class:"btn btn-primary" %> <br/><br/>
+
+
+<table id="banners" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+  <thead>
+  <tr>
+    <th>Title</th>
+    <th>Image</th>
+    <th>Type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+  
+  <tbody>
+<% @banners.each do |banner| %>
+  <tr>
+    <td><%= banner.name %></td>
+    <td><%= image_tag(banner.path, :class=>'photo_preview') %></td>
+    <td><%= banner.event_file_type.name.split('_').map(&:capitalize).join(' ') %></td>
+    <td><%= link_to 'Show', "/event_files/show_banner/#{banner.id}" ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', "/event_files/edit_banner/#{banner.id}" ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', "/event_files/delete_banner/#{banner.id}", :confirm => 'Are you sure?', :method => :delete_banner ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+	</tbody>
+</table>
+
+<br />

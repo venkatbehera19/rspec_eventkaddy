@@ -1,0 +1,35 @@
+.wizard-view.type-view{data:{hash:'#type'}}
+
+    .top-panel
+        .save_button.btn.btn-success{data:{'model' => 'survey', 'hash' => '#survey_section'}, style: 'border-bottom-left-radius:5px;'}>
+            Save & Add Survey Sections
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}>
+                Save & . . .
+            %div.dropdown-menu
+                %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#index'}}
+                    = '. . . Go to Surveys Index'
+                %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#sessionassoc'}}
+                    = '. . . Go to Create Session Associations Page'
+                %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#exhibitorassoc'}}
+                    = '. . . Go to Create Exhibitor Associations Page'
+                - if @survey.survey_type_id == 1
+                    %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#certificateassoc'}}
+                        = '. . . Go to CE Certificate Associations Page'
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-primary.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                Don't Save & . . .
+                %span.caret
+            %div.dropdown-menu.wizard-special-actions
+                %a.dropdown-item{:href => "/surveys"}
+                    = '. . . Go to Surveys Index'
+
+    .wizard-form.survey_form
+
+        .field
+            .wizard-extra-details
+
+        .form-group
+            %label.wizard-label-inline{for: "survey_type_id"} Type
+            = select_tag "survey_type_id", options_from_collection_for_select(SurveyType.all, "id", "name", "#{@survey.survey_type_id}"), class: "custom-select"

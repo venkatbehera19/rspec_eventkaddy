@@ -1,0 +1,7 @@
+var formType = "<%= @form_type%>"
+downloadBtn  = $(`#download-btn-${formType}`);
+onError("<%=@error_message%>")
+
+function onError(data) {
+  $(`#errorMessage-#{formType}`).html(`<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>${data}</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`);
+}

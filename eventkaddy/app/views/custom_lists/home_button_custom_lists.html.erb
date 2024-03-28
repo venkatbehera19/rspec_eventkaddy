@@ -1,0 +1,29 @@
+<h1>Custom Lists for <%= @custom_lists.first.home_button.name %></h1>
+<%= link_to 'New Custom List', "/custom_list/new",class:"btn btn-primary" %> <br/><br/>
+
+<table id="custom_lists" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+  <tr>
+  	<th>Position</th>
+    <th>Image</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @custom_lists.each do |custom_list| %>
+  <tr>
+  	<td style="width:60px;"></td>
+  	<td style="width:60px;"><%= image_tag(custom_list.event_file.path) unless custom_list.event_file.nil? %></td>
+  	<td><%= custom_list.name %></td>
+    <td><%= custom_list.description %></td>
+    <td><%= link_to 'Show', "/custom_lists/#{custom_list.id}", class:"btn show" %></td>
+    <td><%= link_to 'Edit', "/custom_lists/#{custom_list.id}/edit" ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', "/custom_lists/#{custom_list.id}", :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+

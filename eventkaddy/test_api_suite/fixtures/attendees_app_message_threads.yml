@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  app_message_thread: one
+  attendee: realistic
+  read_status: false
+  permanent_hide: false
+
+two:
+  app_message_thread: two
+  attendee: two
+  read_status: false
+  permanent_hide: false

@@ -1,0 +1,67 @@
+<% @event_setting = EventSetting.where("event_id= ?",session[:event_id]).first %>
+
+
+  <% if (@event_setting!=nil && @event_setting.sessions_editable!=true) then %>
+    <p>NOTE: Sessions have been set to read only. If you need to make a change, please contact <a href="mailto:<%= @event_setting.support_email_address %>" class="portal_email"><%= @event_setting.support_email_address %></a> </p>
+  <% end %>
+
+
+
+  <!--%= form_for(@session, :url => { :action => "edit" } ) do |f| %-->
+  <%= form_for(@session,:html=>{:class=>"bg-light custom-border px-3 py-3 mt-3"}, :url => {:action => "update_session"} ) do |f| %>
+    <% if @session.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@session.errors.count, "error") %> prohibited this session from being saved:</h2>
+
+        <ul>
+        <% @session.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+  <% if (@event_setting!=nil && @event_setting.sessions_editable!=true) then %>
+
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control", readonly:true %>
+    </div>
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, class: "form-control", readonly:true %>
+    </div>
+
+  <!--     <div class="field">
+      <%= f.label :learning_objective %><br />
+      <%= f.text_area :learning_objective, style:"width:650px;", readonly:true %>
+    </div> -->
+    
+    <div class="actions">
+  <!--     <%= f.submit class:"btn btn-primary"   %> -->
+    </div>
+
+  <% else %>
+
+   <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, class: "form-control" %>
+    </div>
+
+  <!--     <div class="field">
+      <%= f.label :learning_objective %><br />
+      <%= f.text_area :learning_objective, style:"width:650px;" %>
+    </div> -->
+    
+    <div class="actions">
+       <%= f.submit class:"btn btn-primary"   %>
+    </div>
+
+
+  <% end %>
+
+<% end %>

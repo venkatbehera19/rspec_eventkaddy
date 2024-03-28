@@ -1,0 +1,15 @@
+<%= link_to 'Back', attendee_path(@sessions_attendee.attendee_id),class:"btn btn-link" %>
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Session:</b>
+  <%= @sessions_attendee.session_id %>
+</p>
+
+<p>
+  <b>Attendee:</b>
+  <%= @sessions_attendee.attendee_id %>
+</p>
+

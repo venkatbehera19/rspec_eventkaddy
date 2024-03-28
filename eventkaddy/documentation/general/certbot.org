@@ -1,0 +1,123 @@
+#+TITLE: Let's Encrypt (Certbot) Instructions
+
+* Explanation
+
+Let's Encrypt was chosen as an SSL encryption service for Eventkaddy's servers, mainly because it is free and open source. The SSL certificates are issued by a program called 'Certbot'. They expire every 90 days for increased security  and they don't issue wildcard certificates, meaning a certificate that covers anysubdomain.domain.  Instead all the subdomains need to be specified when you request the certificate. There is also the option to update the certificate. 
+
+At this time, we are using the 'standalone' certbot option, which means we need to manually update our certificates every 90 days.
+
+This documentation is based on documentation written by DG May 2018.
+
+* Installation
+
+To install certbot on Ubuntu 16.04:
+
+   sudo apt-get update
+   sudo apt-get install software-properties-common
+   sudo add-apt-repository ppa:certbot/certbot
+   sudo apt-get update
+   sudo apt-get install python-certbot-nginx 
+
+* Making a Certificate
+
+To use certbot to make a certificate:
+
+   stop the nginx server first, as certbot needs to temporarily using port 80 itself as part of the cert generation process
+
+   then run the command:
+
+      sudo certbot certonly --standalone --domain blackhatbriefingsonline.com --domain www.blackhatbriefingsonline.com
+
+   You can specify one or more domains, just add additional --domain arguments as needed.  It will generate a single certificate that contains all the subdomains requested.
+
+   That will generate a certificate & corresponding private key in the folder:
+
+   /etc/letsencrypt/live/yourdomainhere.com/fullchain.pem
+   /etc/letsencrypt/live/yourdomainhere.com/privkey.pem
+
+
+   These two files are all you need for SSL (https) to work for a site.  You reference them in the nginx configuration file for each site.  (see the example below)
+
+
+   -once certbot runs, don't forget to start nginx again
+      sudo service nginx start
+
+
+* Example Configuration File
+
+Here is an example of a configuration file that would be saved in /etc/nginx/sites_available/
+
+   Example website nginx configuration file (replacing original http site config):
+
+      server {
+         server_name www.blackhatbriefingsonline.com blackhatbriefingsonline.com;
+         
+         listen 80;
+            
+         #redirect http to https
+         location / {
+            rewrite ^ https://$server_name$request_uri permanent;
+         }
+
+      }
+
+      server {
+         
+         server_name www.blackhatbriefingsonline.com blackhatbriefingsonline.com;
+         
+         listen 443;
+         
+         ## begin SSL settings ##      
+         
+         ssl on;
+         
+         ssl_certificate      /etc/letsencrypt/live/blackhatbriefingsonline.com/fullchain.pem;
+
+         ssl_certificate_key  /etc/letsencrypt/live/blackhatbriefingsonline.com/privkey.pem;
+
+         ssl_protocols  SSLv2 TLSv1.2;
+
+         ssl_ciphers  HIGH:!aNULL:!MD5;
+
+         ssl_prefer_server_ciphers   on;
+         
+         # needed to forward user's IP address to web server
+
+         proxy_set_header  X-Real-IP  $remote_addr;
+         
+         # needed for HTTPS
+
+         proxy_set_header X_FORWARDED_PROTO https;
+         
+         proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+
+         proxy_set_header Host $http_host;
+
+         proxy_redirect off;
+
+         proxy_max_temp_file_size 0;
+         
+         ## end SSL settings ##
+         
+         # Set the max size for file uploads to 50Mb
+
+         client_max_body_size 50M;
+
+         #commented out for now as I'm not sure we need to specify the root when using a
+
+         #proxy to Apache2
+
+         #root /home/deploy/sourceofknowledge.com;
+            
+         location / { 
+
+           proxy_pass http://127.0.0.1:8080;
+         }
+                     
+      }
+
+* Warnings
+ but am unable to test the process currently as there are shows on. 
+When renewing, updating and creating certbot there are a series of options. 
+One asks if you want Certbot to handle http redirects - say no! Certbot will modify your configuration file! The next time I do an update I will record these specific questions with the correct answers.
+

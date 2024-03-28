@@ -1,0 +1,105 @@
+ADP - Ubuntu 10.04 LTS Setup -
+
+
+#install git
+	apt-get install git-core
+
+
+# Add deploy user
+
+	echo "deploy:deploy:1000:1000::/home/deploy:/bin/bash" | newusers
+	cp -a /etc/skel/.[a-z]* /home/deploy/
+	chown -R deploy /home/deploy
+
+	# Add to sudoers	
+		echo "deploy    ALL=(ALL) ALL" >> /etc/sudoers
+	
+	passwd deploy
+
+
+#install and configure rvm, as the deploy user, using sudo
+	sudo bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )
+
+
+#install rvm dependencies
+	apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 	libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
+
+#as root, install ruby 1.9.2 via rvm
+
+	rvm install 1.9.2
+	
+
+	rvm use 1.9.2 --default
+	
+	rvm 1.9.2 --passenger
+	rvm 1.9.2
+	gem install passenger
+	
+	apt-get install libcurl4-openssl-dev	
+	
+	
+#install nginx/passenger
+
+	manually download and install pcre from pcre.org (perl regex library)
+	manually download and unzip the latest stable nginx source, the path will be needed for the passenger/nginx install
+	run sudo ldconfig to ensure that nginx will be able to find the pcre library
+		
+	rvmsudo passenger-install-nginx-module
+
+		choose the custom install option, and specify at least the following custom configure options:  --with-http_stub_status_module --with-http_gzip_static_module  
+
+
+	#nginx config lines that passenger needs
+
+		  http {
+		      ...
+		      passenger_root /usr/local/rvm/gems/ruby-1.9.2-p290/gems/passenger-3.0.11;
+		      passenger_ruby /usr/local/rvm/wrappers/ruby-1.9.2-p290/ruby;
+		      ...
+		  }
+
+	#Suppose you have a Ruby on Rails application in /somewhere. Add a server block
+	#to your Nginx configuration file, set its root to /somewhere/public, and set
+	#'passenger_enabled on', like this:
+	
+	   server {
+	      listen 80;
+	      server_name www.yourhost.com;
+	      root /somewhere/public;   # <--- be sure to point to 'public'!
+	      passenger_enabled on;
+	   }
+
+#setup nginx ubuntu script
+	cd
+	git clone git://github.com/jnstq/rails-nginx-passenger-ubuntu.git
+	sudo mv rails-nginx-passenger-ubuntu/nginx/nginx /etc/init.d/nginx
+	sudo chown root:root /etc/init.d/nginx
+
+
+#install mysql
+
+	apt-get install mysql-client mysql-server
+	apt-get install libmysqlclient-dev
+
+#misc packages required for eventkaddy server apps
+
+	apt-get install imagemagick
+	sudo apt-get install libmagickwand-dev
+
+
+#ALLOW REMOTE ACCESS
+	http://www.cyberciti.biz/tips/how-do-i-enable-remote-access-to-mysql-database-server.html
+		 
+	 /etc/mysql/my.cnf
+	 	bind-address    = IP_ADDRESS_OF_MYSQL_SERVER
+	 	# skip-networking
+	 
+	 /etc/init.d/mysql restart
+
+	#linux firewall config
+		/sbin/iptables -A INPUT -i eth0 -p tcp --destination-port 3306 -j ACCEPT
+		 	 
+		mysql -u ekuser –h MYSQL_SERVER_IP –p #test it out from another box
+
+
+

@@ -1,0 +1,212 @@
+<!-- Begin Attendee Quick Add Modal -->
+
+<div id="quickAdd" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <% @attendee = Attendee.new %>
+    <%= form_for(@attendee) do |f| %>
+    <% settings = Setting.return_cms_settings session[:event_id] %>
+
+    <% text_field = ->(col, label, options={}) {
+        unless settings.method("hide_attendee_form_#{col}").call
+          "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}</div>".html_safe
+        end
+    } %>
+
+    <% check_box = ->(col, label) {
+        unless settings.method("hide_attendee_form_#{col}").call
+            f.label(col) { f.check_box(col) + " #{label}" } + "<br>".html_safe
+        end
+    } %>
+
+    <%# works only for types which follow the correct id, name %>
+    <%# table_name_id, table_name convention %>
+    <% select_type = ->(col, label, html_options={}) {
+        unless settings.method("hide_attendee_form_#{col}").call
+            "<div class='form-group'>#{f.label col, label}#{f.collection_select col, col.to_s.gsub(/id$/, '').classify.constantize.all, :id, :name, {}, html_options}</div>".html_safe
+        end
+    } %>
+
+    <div class="modal-content px-3 py-3 px-lg-5 py-lg-5">
+      <div class="modal-header">
+        <h3 id="myModalLabel">Creating Attendee</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      </div>
+      <div class="modal-header">
+        <div id='quick-add-successes'>Successfully Added Attendees:</div>
+      </div>
+
+      <div class="modal-body">
+
+          <div class="row">
+             <%= file_field_tag :photo_file, class: "profile-pic-file" %>
+             <div class="pic-upload-container mx-auto my-2">
+              <%= image_tag '/defaults/profile_default.png', class: "profile-pic" %>
+              <%= label_tag :photo_file do %>
+                <i class="fa fa-camera pic-action"></i>
+              <% end %>
+            </div>
+          </div>
+          <% unless Event.find(session[:event_id]).master_url.blank? %>
+              <div class="field" style="<%= 'display:none;' if settings.method("hide_attendee_form_online_url").call %>">
+                  <%= label_tag :online_url do %>
+                      <%= check_box_tag :online_url, 1, !(@attendee.photo_filename.blank?) %>
+                      Include Online Copy of Latest Attendee Photo
+                  <% end %>
+              </div>
+          <% end %>
+          <div class="form-group">
+            <%= f.label :account_code, "Registration ID" %>
+            <%= f.text_field :account_code, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :first_name, 'First Name' %>
+            <%= f.text_field :first_name, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :last_name, 'Last Name' %>
+            <%= f.text_field :last_name, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :email %>
+            <%= f.text_field :email, class:'clear-on-submit form-control' %>
+          </div>
+
+        <div class="form-group">
+            <%= f.label :username %>
+            <%= f.text_field :username, class:'clear-on-submit form-control' %>
+          </div>
+
+        <div class="form-group">
+            <%= f.label :password %>
+            <%= f.text_field :password, class:'clear-on-submit form-control' %>
+          </div>
+
+        <a href="#extra-details" data-toggle="collapse" class="btn-link collapse-toggle">
+          Add more details to the attendee <i class="fa fa-plus"></i><br><br>
+        </a>
+        <div class="collapse px-2" id="extra-details">
+          <%= text_field["honor_prefix",    "Honor Prefix", class: "form-control" ] %>
+          <%= text_field["honor_suffix",    "Honor Suffix", class: "form-control" ] %>
+          <%= text_field["mobile_phone",    "Mobile_phone", class: "form-control" ] %>
+          <%= text_field["custom_filter_1", "Attendee Type", class: "form-control" ] %>
+          <% unless settings.method("hide_attendee_form_biography").call %>
+            <div class="form-group">
+              <%= f.label :biography %>
+              <%= f.cktext_area :biography, { ckeditor: { toolbar: "Full" }} %>
+            </div>
+          <% end %>
+          <a href="#business_info" data-toggle="collapse" class="btn-link collapse-toggle">
+            Add Business Details <i class="fa fa-plus"></i><br> <br>
+          </a> 
+          <div class="collapse px-2" id="business_info">
+            <%= text_field["business_unit",   "Business Unit", class: "form-control" ] %>
+            <%= text_field["title",           "Title", class: "form-control" ] %>
+            <%= text_field["business_phone",  "Business Phone", class: "form-control" ] %>
+            <%= text_field["company",         "Company", class: "form-control" ] %>
+            <%= text_field["assignment",      "Assignment", class: "form-control" ] %>
+          </div>
+          <a href="#check-options" data-toggle="collapse" class="btn-link collapse-toggle">
+            Check Options <i class="fa fa-plus"></i><br> <br>
+          </a> 
+          <div class="collapse px-2" id="check-options">
+            <%= check_box[:messaging_opt_out,   "Messaging Opt Out"] %>
+            <%= check_box[:app_listing_opt_out, "App Listing Opt Out"] %>
+            <%= check_box[:game_opt_out,        "Game Opt Out"] %>
+            <%= check_box[:is_demo,             "Demo User"] %>
+            <%= check_box[:premium_member,      "Premium Member"] %>
+          </div>
+
+          <% event = Event.find session[:event_id] %>
+          <% filters = !event.pn_filters ? nil : JSON.parse(event.pn_filters) %>
+          <% selected = !@attendee.pn_filters ? [] : JSON.parse(@attendee.pn_filters) %>
+
+          <% if filters %>
+              <a href="#notification-filters" data-toggle="collapse" class="btn-link collapse-toggle">
+                Add Notification Filters <i class="fa fa-plus"></i><br> <br>
+              </a> 
+              <div class="collapse px-2" id="notification-filters">
+                <%= label_tag(:pn_filters, "Select filters for notifications an attendee will receive.") %>
+                <%= select_tag(:pn_filters, options_for_select(filters, selected), :multiple => true, :size=>10, class: "form-control custom-select") %>
+              </div>
+          <% end %>
+
+          <a href="#travel-assignment" data-toggle="collapse" class="btn-link collapse-toggle">
+            Travel and Assignment <i class="fa fa-plus"></i><br> <br>
+          </a> 
+          <div class="collapse px-2" id="travel-assignment">
+            <%= text_field["travel_info",     "Travel Info", class: "form-control" ] %>
+            <%= text_field["table_assignment", "Table Assignment", class: "form-control" ] %>
+            <%= text_field["custom_fields_1", "Custom Fields 1", class: "form-control" ] %>
+            <%= text_field["custom_fields_2", "Custom Fields 2", class: "form-control" ] %>
+            <%= text_field["custom_fields_3", "Custom Fields 3", class: "form-control" ] %>
+
+            <%= text_field["country",                       "Country", class: "form-control" ] %>
+            <%= text_field["state",                         "State", class: "form-control" ] %>
+            <%= text_field["city",                          "City", class: "form-control" ] %>
+            <%= text_field["notes_email",                   "Notes Email", class: "form-control" ] %>
+            <%= check_box["notes_email_pending",           "Notes Email Pending"] %>
+          </div>
+          <a href="#attendee-urls" data-toggle="collapse" class="btn-link collapse-toggle">
+            Link Social Media Platforms <i class="fa fa-plus"></i><br> <br>
+          </a> 
+          <div class="collapse px-2" id="attendee-urls">
+            <%= text_field['validar_url',                   'Validar URL', class: "form-control" ] %>
+            <%= text_field['publish',                       'Publish', class: "form-control" ] %>
+            <%= text_field['twitter_url',                   'Twitter URL', class: "form-control" ] %>
+            <%= text_field['facebook_url',                  'Facebook URL', class: "form-control" ] %>
+            <%= text_field['linked_in',                     'Linked In', class: "form-control" ] %>
+          </div>
+          <a href="#other-data" data-toggle="collapse" class="btn-link collapse-toggle">
+            Filters, Tokens and other Data  <i class="fa fa-plus"></i><br> <br>
+          </a> 
+          <div class="collapse px-2" id="other-data">
+            <%= text_field["temp_photo_filename",           "Temp Photo Filename", class: "form-control" ] %>
+            <%= text_field['photo_filename',                'Photo Filename', class: "form-control" ] %>
+            <%= text_field['iattend_sessions',              'I Attend Sessions', class: "form-control" ] %>
+            <%= select_type['attendee_type_id',              'Attendee Type', class: "custom-select" ] %>
+
+            <%= check_box['first_run_toggle',              'First Run Toggle' ] %>
+            <%= check_box['video_portal_first_run_toggle', 'Video Portal First Run Toggle' ] %>
+
+            <%= text_field['custom_filter_2',               'Custom Filter 2', class: "form-control" ] %>
+            <%= text_field['custom_filter_3',               'Custom Filter 3', class: "form-control" ] %>
+            <%= text_field['token',                         'Token', class: "form-control" ] %>
+            <%= text_field['tags_safeguard',                'Tags Safeguard', class: "form-control" ] %>
+
+
+
+            <%# I believe this was a cheat field for an integration Hannah did %>
+            <%= text_field['speaker_biography',             'Speaker Biography', class: "form-control" ] %>
+          </div>
+          <a href="#authy_id" data-toggle="collapse" class="btn-link collapse-toggle">
+            Add Authy ID <i class="fa fa-plus"></i><br><br>
+          </a> 
+          <div class="collapse px-2" id="authy_id">
+            <%= text_field["authy_id",        "Authy ID (Remove to skip 2FA)", class: "form-control" ] %>
+          </div>
+        </div>
+
+      </div>
+      <div class="mt-4 modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancel</button> <%= f.submit id:"quick-add-submit",class:"btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>
+
+<script>
+    $('.modal-header > .close').on('click', function() { location.reload(); })
+    $('.modal-footer > .cancel').on('click', function() { location.reload(); })
+    $('.collapse-toggle').each(function(){
+      let collapse_div_id = $(this).attr('href');
+      if ($(collapse_div_id).children().length === 0){
+        $(this).addClass('d-none');
+      }
+    });
+</script>
+
+<!-- End Attendee Quick Add Modal -->

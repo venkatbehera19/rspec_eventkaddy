@@ -1,0 +1,296 @@
+
+#user  nobody;
+worker_processes  8;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    ssl_certificate      /srv/ssl/eventkaddy.net.crt;
+    ssl_certificate_key  /srv/ssl/eventkaddy.net.key;
+
+
+    passenger_root /usr/local/rvm/gems/ruby-1.9.2-p290/gems/passenger-3.0.11;
+    passenger_ruby /usr/local/rvm/wrappers/ruby-1.9.2-p290/ruby;
+
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    gzip  on;
+    gzip_min_length  1000;
+    gzip_proxied     expired no-cache no-store private auth;
+    gzip_types text/plain text/css application/json application/x-javascript text/javascript text/xml application/xml;
+
+
+		server_tokens off;
+
+  # this is where you define your mongrel clusters. 
+  # you need one of these blocks for each cluster
+  # and each one needs its own name to refer to it later.
+
+
+  upstream ekprod_thin {
+   server  	 unix:/tmp/thin.ekprod.0.sock;
+   server   unix:/tmp/thin.ekprod.1.sock;
+   server   unix:/tmp/thin.ekprod.2.sock;  	
+   server   unix:/tmp/thin.ekprod.3.sock;  	
+   server   unix:/tmp/thin.ekprod.4.sock;  	
+   server   unix:/tmp/thin.ekprod.5.sock;  	
+  }
+
+	upstream ekdev_thin {
+   server  	 unix:/tmp/thin.ekdev.0.sock; 	
+	}
+
+	
+	## BEGIN PROD CONFIGURATIONS ##
+	
+  server {
+      listen 80;
+      server_name cms.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+      }
+
+  }
+
+
+  #SSL setup for cms.eventkaddy.net
+  server {
+    # port to listen on. Can also be set to an IP:PORT
+    listen 443;
+
+    ssl on;
+
+    ssl_protocols  SSLv2 SSLv3 TLSv1;
+    ssl_ciphers  HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers   on;
+    
+    # Set the max size for file uploads to 50Mb
+    client_max_body_size 50M;
+
+    # sets the domain[s] that this vhost server requests for
+    server_name cms.eventkaddy.net;
+
+    # doc root
+    root /home/deploy/ek-cms-prod/public;
+
+    # vhost specific access log
+    #access_log  /var/log/nginx.vhost.access.log  main;
+
+    # this rewrites all the requests to the maintenance.html
+    # page if it exists in the doc root. This is for capistrano's
+    # disable web task
+    if (-f $document_root/system/maintenance.html) {
+      rewrite  ^(.*)$  /system/maintenance.html last;
+      break;
+    }
+
+		location ~ ^/(assets)/  {
+		  root /home/deploy/ek-cms-prod/public;
+		  gzip_static on; # to serve pre-gzipped version
+		  expires max;
+		  add_header Cache-Control public;
+		}
+
+    location / {
+      # needed to forward user's IP address to rails
+      proxy_set_header  X-Real-IP  $remote_addr;
+
+      # needed for HTTPS
+      proxy_set_header X_FORWARDED_PROTO https;
+
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_max_temp_file_size 0;
+      
+      # If the file exists as a static file serve it directly without
+      # running all the other rewite tests on it
+      if (-f $request_filename) { 
+        break; 
+      }
+
+      # check for index.html for directory index
+      # if its there on the filesystem then rewite 
+      # the url to add /index.html to the end of it
+      # and then break to send it to the next config rules.
+      if (-f $request_filename/index.html) {
+        rewrite (.*) $1/index.html break;
+      }
+
+      # this is the meat of the rails page caching config
+      # it adds .html to the end of the url and then checks
+      # the filesystem for that file. If it exists, then we
+      # rewite the url to have explicit .html on the end 
+      # and then send it on its way to the next config rule.
+      # if there is no file on the fs then it sets all the 
+      # necessary headers and proxies to our upstream mongrels
+      if (-f $request_filename.html) {
+        rewrite (.*) $1.html break;
+      }
+
+      if (!-f $request_filename) {
+        proxy_pass http://ekprod_thin;
+        break;
+      }
+    }
+
+    error_page   500 502 503 504  /500.html;
+    location = /500.html {
+      root   /home/deploy/ek-cms-prod/public;
+    }
+  }
+
+
+	## BEGIN DEV CMS CONFIG ##
+	
+  server {
+      listen 80;
+      server_name dev.eventkaddy.net;
+
+      location / {
+          rewrite ^ https://$server_name$request_uri permanent;
+          #rewrite ^(.*) https://$host$1 permanent;
+          #rewrite ^(.*)$ https://dev.eventkaddy.net$1 permanent;
+      }
+
+  }
+
+
+  #SSL setup for dev.eventkaddy.net
+  server {
+    # port to listen on. Can also be set to an IP:PORT
+    listen 443;
+
+    ssl on;
+
+    ssl_protocols  SSLv2 SSLv3 TLSv1;
+    ssl_ciphers  HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers   on;
+    
+    # Set the max size for file uploads to 50Mb
+    client_max_body_size 50M;
+
+    # sets the domain[s] that this vhost server requests for
+    server_name dev.eventkaddy.net;
+
+    # doc root
+    root /home/deploy/ek-cms-dev/public;
+
+    # vhost specific access log
+    #access_log  /var/log/nginx.vhost.access.log  main;
+
+    # this rewrites all the requests to the maintenance.html
+    # page if it exists in the doc root. This is for capistrano's
+    # disable web task
+    if (-f $document_root/system/maintenance.html) {
+      rewrite  ^(.*)$  /system/maintenance.html last;
+      break;
+    }
+
+    location / {
+      # needed to forward user's IP address to rails
+      proxy_set_header  X-Real-IP  $remote_addr;
+
+      # needed for HTTPS
+      proxy_set_header X_FORWARDED_PROTO https;
+
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_max_temp_file_size 0;
+      
+      # If the file exists as a static file serve it directly without
+      # running all the other rewite tests on it
+      if (-f $request_filename) { 
+        break; 
+      }
+
+      # check for index.html for directory index
+      # if its there on the filesystem then rewite 
+      # the url to add /index.html to the end of it
+      # and then break to send it to the next config rules.
+      if (-f $request_filename/index.html) {
+        rewrite (.*) $1/index.html break;
+      }
+
+      # this is the meat of the rails page caching config
+      # it adds .html to the end of the url and then checks
+      # the filesystem for that file. If it exists, then we
+      # rewite the url to have explicit .html on the end 
+      # and then send it on its way to the next config rule.
+      # if there is no file on the fs then it sets all the 
+      # necessary headers and proxies to our upstream mongrels
+      if (-f $request_filename.html) {
+        rewrite (.*) $1.html break;
+      }
+
+      if (!-f $request_filename) {
+        proxy_pass http://ekdev_thin;
+        break;
+      }
+    }
+
+    error_page   500 502 503 504  /500.html;
+    location = /500.html {
+      root   /home/deploy/ek-cms-dev/public;
+    }
+  }
+
+	## END DEV CONFIG ##
+
+
+	
+
+
+	## end of current eventkaddy-related config ##
+
+
+	## DEFAULT LOCATION ##
+	
+  server {
+      listen       80;
+      server_name  localhost;
+
+      #charset koi8-r;
+
+      #access_log  logs/host.access.log  main;
+
+      location / {
+          root   html;
+          index  index.html index.htm;
+      }
+
+      #error_page  404              /404.html;
+
+      # redirect server error pages to the static page /50x.html
+      #
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+          root   html;
+      }
+  }
+ 
+        
+}
+
+
+      

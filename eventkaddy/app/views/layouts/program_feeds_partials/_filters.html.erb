@@ -1,0 +1,172 @@
+<% for_session_and_speaker_tab = ['by_speakers', 'index'].include?(params['action']) %>
+<div class="all-filters">
+<% if action_name != 'speaker_sessions_details' %>
+  <% if settings.sessions_by_tag && for_session_and_speaker_tab%>
+      <div class="filter_listing">
+        <div class="filter-header">
+          <div class="filter-option" data-toggle="collapse" href="#session_tags_filter_option" role="button" aria-expanded="false" aria-controls="session_tags_filter_option">
+            <label class="filter_label label_bold">Session Filters</label>
+            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div class="collapse" id="session_tags_filter_option">
+          <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+            <% session_parent_tags = program_feed_session_tags(params[:event_id]) %>
+            <% session_parent_tags.each_with_index do |parent, index| %>
+              <li class="parent-li">
+                <% if parent.leaf %>
+                  <label class='labels'><a><input type='checkbox' class='filters_tag align-middle' id="<%= "filter_tag_#{parent.id}" %>" data-class-name="<%= "#{parent.name}"%>"><span class="pl-1"><%= parent.name %></span></a></label>
+                <% else parent.leaf %>
+                  <a><%= parent.name %></a>
+                  <ul>
+                    <% family = get_family(parent) %>
+                    <% make_html(family, parent.name).each_with_index do |test_a, index|%>
+                      <% if index == 0%>
+                        <label class='labels'><a><input type='checkbox' class='filters_tag align-middle' id="<%= "filter_tag_#{parent.id}" %>" data-class-name="<%= "#{parent.name}"%>"><span class="pl-1">All</span></a></label>
+                      <%end%>
+                      <%= test_a.html_safe %>
+                    <%end%>
+                  </ul>
+                <% end %>  
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+  <% end %>
+  <% if settings.sessions_by_audience_tag && for_session_and_speaker_tab %>
+      <div class="filter_listing">
+        <div class="filter-header">
+          <div class="filter-option" data-toggle="collapse" href="#audiene_tags_filter_option" role="button" aria-expanded="false" aria-controls="audiene_tags_filter_option">
+            <label class="filter_label label_bold">Audience Filters</label>
+            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div class="collapse" id="audiene_tags_filter_option">
+          <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+            <% audience_parent_tags = program_feed_audience_tags(params[:event_id]) %>
+            <% audience_parent_tags.each_with_index do |parent, index| %>
+              <li class="parent-li">
+                <% if parent.leaf %>
+                  <label class='labels'><a><input type='checkbox' class='filters_tag align-middle' id="<%= "filter_tag_#{parent.id}" %>" data-class-name="<%= "#{parent.name}"%>"><span class="pl-1"><%= parent.name %></span></a></label>
+                <% else %>
+                  <a><%= parent.name %></a>
+                  <ul>
+                    <% family = get_family(parent) %>
+                    <% make_html(family, parent.name).each_with_index do |test_a, index|%>
+                      <% if index == 0%>
+                        <li><label class='labels'><a><input type='checkbox' class='filters_tag align-middle' id="<%= "filter_tag_#{parent.id}" %>" data-class-name="<%= "#{parent.name}"%>"><span class="pl-1">All</span></a></label></li>
+                      <%end%>
+                      <%= test_a.html_safe %>
+                    <%end%>
+                  </ul>  
+                <% end %>  
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+  <% end %>
+  <% if params[:action] == 'by_speakers' %>
+      <div class="filter_listing">
+        <div class="filter-header">
+          <div class="filter-option" data-toggle="collapse" href="#company_filter_option" role="button" aria-expanded="false" aria-controls="company_filter_option">
+            <label class="filter_label label_bold">Company</label>
+            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div class="collapse" id="company_filter_option">
+          <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+            <div class="bg-light p-2">
+              <input id="companyNameSearch" type="text" placeholder="Search Company" class="form-control rounded">
+            </div>
+            <% @companies.each_with_index do |company| %>
+              <li class="parent-li company_list">
+                <label class='labels'><a><input type='checkbox' class='filters_company align-middle' id="<%= "filter_company_#{company.gsub(/[^\w]/, '_')}" %>" data-class-name="<%= "#{company}"%>"><span class="pl-1"><%= company %></span></a></label> 
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+  <% end %> 
+  <% if params[:action] == 'index' %>
+    <div class="filter_listing"> 
+      <div class="filter-header">
+        <div class="filter-option" data-toggle="collapse" href="#keyword_filter_option" role="button" aria-expanded="false" aria-controls="keyword_filter_option">
+          <label class="filter_label label_bold">Keywords</label>
+          <i class="fa fa-arrow-down" aria-hidden="true"></i>
+          <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="collapse" id="keyword_filter_option">
+        <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+          <div class="bg-light p-2">
+            <input id="keywordNameSearch" type="text" placeholder="Search Keywords" class="form-control rounded">
+          </div>
+          <% keyword = get_sessions_keywords(params[:event_id]) %>
+          <% keyword.each_with_index do |keyword| %>
+            <li class="parent-li keyword_list">
+              <label class='labels'><a><input type='checkbox' class='filters_keyword align-middle' id="<%= "filter_keyword_#{keyword.gsub(/[^\w]/, '_')}" %>" data-class-name="<%= "#{keyword}"%>"><span class="pl-1"><%= keyword %></span></a></label> 
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+  <% if params[:action] == 'by_exhibitors' %>
+    <div class="filter_listing"> 
+      <div class="filter-header">
+        <div class="filter-option" data-toggle="collapse" href="#exhibitor_filter_option" role="button" aria-expanded="false" aria-controls="exhibitor_filter_option">
+          <label class="filter_label label_bold">Exhibitor Filters</label>
+          <i class="fa fa-arrow-down" aria-hidden="true"></i>
+          <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="collapse" id="exhibitor_filter_option">
+        <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+          <% exhibitor_parent_tags = program_feed_exhibitor_tag(params[:event_id]) %>
+          <% exhibitor_parent_tags.each_with_index do |parent, index| %>
+            <li class="parent-li">
+              <% if parent.leaf %>
+                <label class='labels'><a><input type='checkbox' class='filters_tag align-middle' id="<%= "filter_tag_#{parent.id}" %>" data-class-name="<%= "#{parent.name}"%>"><span class="pl-1"><%= parent.name %></span></a></label>
+              <% else parent.leaf %>
+                <a><%= parent.name %></a>
+                <ul>
+                  <% family = get_family(parent) %>
+                  <% make_html(family, parent.name).each_with_index do |test_a, index|%>
+                    <% if index == 0%>
+                      <label class='labels'><a><input type='checkbox' class='filters_tag align-middle' id="<%= "filter_tag_#{parent.id}" %>" data-class-name="<%= "#{parent.name}"%>"><span class="pl-1">All</span></a></label>
+                    <%end%>
+                    <%= test_a.html_safe %>
+                  <%end%>
+                </ul>
+              <% end %>  
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <div class="filter-header">
+        <div class="filter-option" data-toggle="collapse" href="#sponsor_level_filter_option" role="button" aria-expanded="false" aria-controls="sponsor_level_filter_option">
+          <label class="filter_label label_bold">Sponsor Type Filter</label>
+          <i class="fa fa-arrow-down" aria-hidden="true"></i>
+          <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="collapse" id="sponsor_level_filter_option">
+        <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+          <% sponsor_level_types.each do |type| %>
+            <li class="parent-li">
+              <label class='labels'><a><input type='checkbox' class='sponsor_level align-middle' id="<%= "sponsor_#{type.id}" %>" data-class-name="<%= "#{type.sponsor_type}"%>"><span class="pl-1"><%= type.sponsor_type %></span></a></label>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+  <div class="speaker-name-filter"></div>
+  <div class="exhibitor-name-filter"></div>
+<% end %>
+</div>

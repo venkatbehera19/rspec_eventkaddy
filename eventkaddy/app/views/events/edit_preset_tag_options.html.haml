@@ -1,0 +1,104 @@
+.well{style:'min-height:500px;'}
+
+  %h3 Tag Options
+
+  .div 
+    Note that options created here are not real tags, but are only saved
+    as data to populate a user's selection options for tagsets they wish
+    their session, exhibitor, or attendee to be associated with. This
+    allows for the function of removing tags with no associations (marked
+    "abandoned tags") from the database.
+  - tag_types = TagType.all
+  -# We set index here because the tags are in categories
+  - index = 0 
+
+  = form_for @event, :html => { :method => :post }, :url => '/events/update_preset_tag_options' do |f|
+
+    %br
+    %br
+    .field
+      .div{style:'width:40%;display:inline-block;'}
+        %b Tag Type
+        %br
+        %br
+        %br
+
+      .div{style:'width:50%;display:inline-block;'}
+        %b Tag Set 
+        %br
+        (Separated by ||, from broadest tag to most specific)
+        Example: Animal Medicine||Surgery||Felines
+        %br
+    - @tag_sets.each do |type_id, tagsets|
+      -# TODO I maybe want a better name for this; the tagsets here refers
+      -# to the array, not the type: array
+      - tagsets.each do |tagset|
+
+        .field{style:'width:40%;display:inline-block;'}
+          = select_tag "set_#{index}_key", options_from_collection_for_select(tag_types, :id, :name, type_id), class: 'tag_type_select custom-select'
+        .field{style:'width:50%;display:inline-block;'}
+          = text_field_tag "set_#{index}_value", tagset.join('||'), style:'width:100%', class: 'tags_text_field form-control'
+
+        - index += 1
+
+    = f.submit 'Update Tag Options For Event', class: 'btn btn-primary submit-btn'
+
+:javascript
+
+    $(function() {
+
+        function tagTypeFieldElement(n) {
+            var tag_types = JSON.parse('#{tag_types.to_json}'.replace(/&quot;/g,'"'));
+            var options = [];
+            for (var i=0; i < tag_types.length; i++) {
+                options.push("<option value="+tag_types[i].id+">"+tag_types[i].name+"</option>");
+            }
+            options = options.join('')
+            // hacking padding-right:5px here to solve haml adding whitespace but
+            // jquery not adding it. Unsure what to really do about it, this solution
+            // might have issues
+            return $(
+                '<div class="field" style="width:40%;display:inline-block;padding-right:5px;">' +
+                    '<select class= "tag_type_select custom-select" id="set_'+n+'_key" name="set_'+n+'_key">' +
+                        options +
+                    '</select>' +
+                '</div>'
+            );
+        }
+
+        function tagSetFieldElement(n) {
+            return $(
+                '<div class="field" style="width:50%;display:inline-block;">' +
+                  '<input class="tags_text_field form-control" id="set_'+n+'_value" name="set_'+n+'_value" style="width:100%" type="text">' +
+                '</div>'
+            ).on('focus', ensureThreeFields);
+        }
+
+        function fieldCount() {
+            return $('.tag_type_select').length;
+        }
+
+        function emptyFieldCount() {
+            return $('.tags_text_field').filter(
+                function() { return this.value === ""; }
+            ).length;
+        }
+
+        function addFieldToForm() {
+            var field_count = fieldCount();
+            $('.submit-btn').before( tagTypeFieldElement( field_count ) );
+            $('.submit-btn').before( tagSetFieldElement( field_count ) );
+        }
+
+        function ensureThreeFields() {
+            while (emptyFieldCount() < 3) addFieldToForm();
+        }
+
+        ensureThreeFields();
+
+        // we add the event handler to the body so that .tags_text_field which
+        // do not yet exist will bubble up the event to the body still
+        $('body').on('focus', '.tags_text_field', ensureThreeFields)
+
+    });
+

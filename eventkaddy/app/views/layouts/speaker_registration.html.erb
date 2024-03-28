@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <% srs = Setting.return_speaker_registration_settings(params[:event_id]) %>
+  <title><%= srs.html_title %></title>
+<head>
+  <title>EventKaddy CMS</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tag %>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <br>
+  <br>
+  <% event_setting = EventSetting.where(event_id:params[:event_id]).first_or_create %>
+  <div class="container-fluid content-container500">
+    <div class="row">
+      <div class="col-md-10 mx-auto">
+				<div class="row">
+					<nav class="navbar navbar-light bg-light full-width" style="width: 100%;">
+						<a class="navbar-brand text-wrap">
+							<% if event_setting && event_setting.event_file_portal_logo %>
+								<%= image_tag(event_setting.event_file_portal_logo.path, :class =>'photo_preview', :style => "height: 54px; margin-top:-20px") %>
+							<% else %>
+								<%= image_tag("ek_logo.png", :style => "height: 54px; margin-top:-20px") %>
+							<% end %>
+						</a>
+						<ul class="navbar-nav ml-auto">
+							<li class="nav-item">
+								<h5>
+									<a class="nav-link" href="/">
+										Login
+									</a>
+								</h5>
+								</li>
+						</ul>
+					</nav>
+				</div>
+        <% if notice %>
+						<div class="alert alert-info alert-dismissible fade show" role="alert">
+							<%= notice %>
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						</div>
+				<% end %>
+        <% if alert %>
+						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							<%= alert %>
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+				<% end %>
+				
+        <% if (!(event_setting.nil?) && !(event_setting.registration_banner_event_file_id.blank?)) %>
+						<div class="row">
+							<%= image_tag(EventFile.find(event_setting.registration_banner_event_file_id).path, style:"display:block; margin:auto; max-width: 100%; ") %><br><br>
+						</div>
+				<% end %>
+        <div class="content col-md-9 mx-auto">
+					<%= yield %>
+				</div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="footer" style="text-align:center">
+    Questions?  Email support@eventkaddy.com
+  </div>
+</body>
+<script>
+  var _gaq = _gaq || [];
+  var key = "<%=@ga_key%>"
+  _gaq.push(['_setAccount', key]);
+
+  _gaq.push(['_trackPageview', window.location]);
+
+  (function() {
+      var ga   = document.createElement('script');
+      ga.type  = 'text/javascript';
+      ga.async = true;
+      ga.src   = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s    = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<style>
+  	h1{
+		color: #<%= srs.h1_color || '317eac' %> !important;
+		text-shadow:<%= srs.text_shadow_h1 == "true" ? '1px 2px black' : 'none' %>;
+	}
+	h2{
+		color: #<%= srs.h2_color || '000000b0' %> !important;
+		text-shadow:<%= srs.text_shadow_h2 == "true" ? '1px 1px black' : 'none' %>;
+	}
+	h3{
+		color: #<%= srs.h3_color || '317eac' %> !important;
+	}
+	h4{
+		color: #<%= srs.h4_color || '317eac' %> !important;
+	}
+	label,small,p {
+		font-weight: <%= srs.bold_text == "true" ? 'bold' : 'normal' %>;;
+		text-shadow:<%= srs.text_shadow == "true" ? '1px 0 black !important' : 'none' %>;
+		/* background-color:<%= srs.dark_bg_theme == "true" ? '#00000033 !important' : 'none' %>; */
+		color:<%= srs.dark_bg_theme ? '#fff !important' : 'black' %>;
+	}
+
+body{
+	background-color: #<%= srs.body_background_color || 'ffffff' %> ; 
+	background-image: url(<%= srs.body_background_image.blank? ? '' : EventFile.find(srs.body_background_image.to_i).path %>);
+	background-position: <%=srs.body_background_position || 'center' %>;
+	background-size: <%=srs.body_background_size%>;
+	background-repeat: <%=srs.body_background_repeat%>;  
+	}
+</style>
+</html>

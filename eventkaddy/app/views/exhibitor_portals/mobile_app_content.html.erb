@@ -1,0 +1,243 @@
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/non_pipeline_assets/mobile_app_content.css">
+  <%= csrf_meta_tag %>
+</head>
+<body style="margin: 0;" id="exhibitor-content-body">
+  <div id="item-<%= @exhibitor.id %>" class="exhibitor-detail-item">
+    <div id="container_greg">
+      <div class="detail-page-navigation-bar-new">
+        <span class=" detail-page-navigation-bar-prev-new disabled ">                      
+          Prev                                                        
+        </span>
+        <span class="detail-page-navigation-bar-center-new">
+          <table class="detail_icons">
+              <tbody><tr>
+                <td valign="top">
+                <% if @exhibitor.event_file %>
+                  <% if @exhibitor.event_file.cloud_storage_type_id.blank? %>
+                    <img src="<%= @exhibitor.event_file.path %>" style="<%= @ekm_settings.exhibitor_detail_logo_style %>" class="logo-img">
+                  <% else %>
+                    <img src="<%= @exhibitor.event_file.return_authenticated_url()['url'] %>" style="<%= @ekm_settings.exhibitor_detail_logo_style %>" class="logo-img">
+                  <% end %>
+                <% end %>
+                </td>
+              </tr>
+
+              <tr>
+                <td valign="middle">
+                  <h1e class="details">
+                    <%= @exhibitor.company_name %>
+                  </h1e>
+                </td>
+              </tr>
+
+              <tr>
+
+                <td valign="top">
+                  <p class="details">
+                    <%= @ekm_settings.exhibitor_detail_booth_prefix %>  <%= @exhibitor.location_mapping&.name %>
+                  </p>
+                </td>
+              </tr>
+          </tbody></table>
+        </span>
+        <span class="detail-page-navigation-bar-next-new">                      
+          Next                        
+        </span>
+      </div>
+      <table class="detail_icons" style="<%= @ekm_settings.exhibitor_detail_detail_icons_style %>; margin-left:2%;">
+        <tr>
+          <% if @ekm_settings.json && @ekm_settings.json['exhibitorFavouritesEnabled'] %>
+            <td width="25%" align="center" class="ekbutton2">
+              <div class="exhibitor-favourite-link">
+                <div id="button-processing3"></div>
+              </div>
+            </td>
+          <% end %>
+          <% unless @exhibitor.location_mapping_id.blank? %>
+            <td width="25%" align="center" class="ekbutton4">
+              <div class="map-link"></div>
+            </td>
+          <% end %>
+          <% unless !@ekm_settings.json['notesEnabled'] %>
+            <td width="25%" align="center" class="ekbutton">
+              <div class="new-note-link"></div>
+            </td>
+          <% end %>
+          <% unless !@ekm_settings.json['exhibitorMessagingEnabled'] %>
+            <table class="detail_icons" style="<%= @ekm_settings.exhibitor_detail_detail_icons_row_two_style %>">
+              <tr>
+                <td width="25%" align="center" class="ekbutton2">
+                  <div class="exhibitor-send-msg">
+                  </div>
+                </td>
+              </tr>
+            </table>
+          <% end %>
+        </tr>
+      </table>
+
+      <div id="description">
+        <h3>
+          <%=@ekm_settings.exhibitor_detail_description_heading%>
+        </h3>
+      </div>
+
+      <div id="descriptions">
+        <p class="copy">
+          <% if @exhibitor.description %>
+            <%= @exhibitor.description.html_safe %>
+          <% else %>
+            No Description
+          <% end %>
+        </p>
+      </div>
+
+      <% if @ekm_settings.json['exhibitorDetailTopTags'] && @exhibitor.tags.length > 0 %>
+        <div id="description">
+          <h3>
+              <%= @ekm_settings.exhibitor_detail_top_level_tags_prefix %>
+          </h3>
+        </div>
+        <div id="descriptions">
+          <p class="copy">
+            <%= @exhibitor.tags.pluck(:name).join(',') %>
+          </p>
+        </div>
+      <% end %>
+      <% if @media_file %>
+        <div class="resp-container" style="margin-left:1%;">
+            <iframe class="resp-iframe" src="<%= @media_file.return_authenticated_url(@media_file.event_id, @media_file.path)['url'] %>" frameborder="0" allowfullscreen scrolling="no"></iframe>
+        </div>
+      <% end %>
+      <div id="description">
+        <h3>
+          <%= @ekm_settings.exhibitor_detail_contact_heading %>
+        </h3>
+      </div>
+      <div id="descriptions">
+        <p class='copy'>
+          <%= @exhibitor.address_line1 %> <%= @exhibitor.address_line2 %>
+          <br>
+          <%= @exhibitor.country %>
+        </p>
+        <br>
+        <% unless @exhibitor.contact_name.blank? %>
+          <p class='copy'>
+            Name: <%= @exhibitor.contact_name %>
+            <br>
+            <% unless @exhibitor.contact_title.blank? %>
+              Title: <%= @exhibitor.contact_title %>
+            <% end %>
+          </p>
+        <% end %>
+        <% unless @exhibitor.url_rss.blank? %>
+          <p class="copy">
+            <%= @exhibitor.url_rss %>
+          </p>
+        <% end %>
+        <% unless @exhibitor.phone.blank? %>
+          <p class="copy">
+            Phone:  <a href="tel:<%= @exhibitor.phone %>"><%= @exhibitor.phone %></a>
+          </p>
+        <% end %>
+        <% unless @exhibitor.fax.blank? %>
+          <p class="copy">
+            Fax:  <%= @exhibitor.fax %>
+          </p>
+        <% end %>
+        <% unless @exhibitor.email.blank? %>
+          <p class="copy">
+            Email:  <a href="mailto:<%= @exhibitor.email %>"><%= @exhibitor.email %></a>
+          </p>
+        <% end %>
+
+        <% unless @exhibitor.contact_name_two.blank? %>
+          <p class='copy'>
+            Name: <%= @exhibitor.contact_name_two %>
+            <br>
+            <% unless @exhibitor.contact_title_two.blank? %>
+              Title: <%= @exhibitor.contact_title_two %>
+            <% end %>
+          </p>
+        <% end %>
+        <% unless @exhibitor.contact_mobile_two.blank? %>
+          <p class="copy">
+            Phone:  <a href="tel:<%= @exhibitor.contact_mobile_two %>"><%= @exhibitor.contact_mobile_two %></a>
+          </p>
+        <% end %>
+        <% unless @exhibitor.contact_email_two.blank? %>
+          <p class="copy">
+            Email:  <a href="mailto:<%= @exhibitor.contact_email_two %>"><%= @exhibitor.contact_email_two %></a>
+          </p>
+        <% end %>
+        <% unless @exhibitor.url_web.blank? %>
+          <p class="copy">
+            Web: <a href="<%= @exhibitor.url_web %>" class="cb-weblink"><%= @exhibitor.url_web %></a>
+          </p>
+        <% end %>
+        <br>
+
+        <p class="copy">
+
+          <% if !@exhibitor.url_twitter.blank? %>
+
+                  <a class="cb-weblink_pdf" href="<%= @exhibitor.url_twitter %>" target="_blank">
+                      <img src="/non_pipeline_assets/mobile_app_imgs/twitter.png" style="<%= @ekm_settings.exhibitor_detail_social_icon_style %>">
+                  </a>
+          <% end %>
+
+          <% if !@exhibitor.url_facebook.blank? %>
+
+              <a class="cb-weblink_pdf" href="<%= @exhibitor.url_facebook %>" target="_blank">
+                  <img src="/non_pipeline_assets/mobile_app_imgs/facebook.png" style="<%= @ekm_settings.exhibitor_detail_social_icon_style %>">
+              </a>
+          <% end %>
+
+          <% if !@exhibitor.url_linkedin.blank? %>
+
+              <a class="cb-weblink_pdf" href="<%= @exhibitor.url_linkedin %>" target="_blank">
+                  <img src="/non_pipeline_assets/mobile_app_imgs/linkedin.png" style="<%= @ekm_settings.exhibitor_detail_social_icon_style %>">
+              </a>
+          <% end %>
+          <% if !@exhibitor.url_rss.blank? %>
+
+            <a class="cb-weblink_pdf" href="<%= @exhibitor.url_rss %>" target="_blank">
+              <img src="/non_pipeline_assets/mobile_app_imgs/other.png" style="<%= @ekm_settings.exhibitor_detail_social_icon_style %>">
+            </a>
+          <% end %>
+        </p>
+      </div>
+
+      <% if @exhibitor.exhibitor_files.length > 0 %>
+        <div id="description">
+          <h3>
+            <%= @ekm_settings.session_detail_files_heading %>
+          </h3>
+        </div>
+        <div id="descriptions">
+          <% @exhibitor.exhibitor_files.includes(:event_file).each do |ef| %>
+            <%= link_to ef.event_file.return_authenticated_url()['url'], class: "cb-weblink_pdf" do %>
+              <img src="/non_pipeline_assets/mobile_app_imgs/generic_file_icon.png" style="<%= @ekm_settings.session_detail_conference_note_icon_style %>"> <%= ef.title %>
+            <% end %>
+            <br>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% unless @exhibitor.custom_fields.blank? %>
+        <div id="description">
+          <h3>
+            Custom Fields
+          </h3>
+        </div>
+        <div id="descriptions">
+          <p class="copy">
+            <%= @exhibitor.custom_fields %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,52 @@
+#+TITLE: Toggle Settings
+
+* Preamble
+Toggle Settings are a one off implementation written for AVMA which allow a user, when viewing the sessions indexes, to see a filter button in place of the normal settings filter which will take them to a page where they can adjust how sessions are filtered. The only implementation for this was hard coded as a way of filtering out poster sessions.
+
+* Location
+
+#+NAME: setting location
+#+BEGIN_SRC Javascript
+javascripts/settings.js:
+689     EKM.settingToggleConfigModels = [
+690         {
+691             name:             "remove_posters_from_session_day_view",
+692             display_name:     "Remove Posters From Days View",
+693             type:             "filter",
+694             post_toggle_hook: "{ EKM.goToSessionsDaysView(); }",
+695             active:           EKM.remove_posters_from_session_day_view_filter_default
+696         }
+697     ];
+#+END_SRC
+
+* How to modify the default
+
+A toggle has been added to the admin cordova page for setting the default. It is called remove_posters_from_session_day_view_filter_default (as above).
+
+[[/settings/admin_cordova][Admin Cordova]]
+
+* Other notes
+
+EKM.settingTogglesEnabled = true;
+
+This is the boolean which sets whether or not the filters button will replace the settings button on the sessions index pages. It is also available on the Admin Cordova page.
+
+The follow code runs at login. For some reason the SETTING_TOGGLE_INIT key for local Storage was commented out, probably because it caused some bug's in DG's design. So because of this whenever as user signs in their settings will be overridden by the default above. That's probably okay.
+
+#+NAME: setting location
+#+BEGIN_SRC Javascript
+javascripts/app-core/App.js:
+58 //initialize the setting toggles
+59 //  if they don't exist yet, then create the initial set
+60 App.prototype.initSettingToggles = function() {
+61     // why was this commented out? In this case the defaults get reset no matter
+62     // what, instead of just if they'd never signed in yet on a given device
+63     // if (localStorage["SETTING_TOGGLE_INIT"] === undefined) {
+64         EKM.settingToggleList.reset(EKM.settingToggleConfigModels);
+65         EKM.settingToggleList.saveToLocalStorage();
+66         // localStorage["SETTING_TOGGLE_INIT"] = 'true';
+67     // }
+68 };
+#+END_SRC
+
+Also, it looks like settingToggles were intended to use the same attendeeToggle settings (like game_opt_out) style, with "change_pending" meant to upload the setting to the database, but this was never implemented. This means that settings don't sync across devices.

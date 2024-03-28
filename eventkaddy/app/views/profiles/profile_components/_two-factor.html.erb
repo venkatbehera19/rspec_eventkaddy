@@ -1,0 +1,37 @@
+<style>
+  .two-factor-container{
+    margin-left: 0px;
+    padding-left: 0px;
+  }
+</style>
+
+  <div class="row">
+    <div class="col-12 mb-3">
+      <div class="row">
+        <div class="col" id="twoFactorErrorsDiv">
+        </div>
+      </div>
+    </div>
+  </div>
+<div id="twoFactorContainer">
+  <%if current_user.otp_required_for_login%>
+    <div class="row">
+      <div class="col-12 col-sm-7 mb-3">
+
+        <div class="card border-0">
+          <div class="card-header mb-4" style="background-color: #fff;">
+            <b>Two factor authentication</b>
+          </div>
+          <div class="card-body">
+            <p>Two factor authentication is enabled.</p>
+            <p><%= link_to('Disable Two Factor Authentication', two_factor_user_path(id: current_user.id), class: 'btn btn-danger col-sm-8', remote: true,method: :delete, data: {confirm: 'Are you sure you want to disable two factor authentication?'}) %></p><br>
+            <p><%= link_to('Regenerate Backupable Codes', regenerate_backup_codes_user_path(id: current_user.id), class: 'btn btn-warning col-sm-8', remote: true,method: :post, data: {confirm: 'Are you sure you want to regenerate your backup codes?'}) %></p><br>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  <%else%>
+    <%= render partial: "two_factor_settings/new", locals: { user: current_user, submit_path: create_two_factor_user_path(id: current_user.id), submit_button_value: "Enable Two Factor", headingTwoFA: true, set_remote: true} %>
+  <%end%>
+</div>

@@ -1,0 +1,211 @@
+<!-- Begin Speaker Quick Add Modal -->
+
+<div id="quickAdd" class="modal hide fade" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg">
+    <% @speaker = Speaker.new %>
+    <%= form_for(@speaker) do |f| %>
+
+    <% settings = Setting.return_cms_settings session[:event_id] %>
+
+    <% text_field = ->(col, label, options={}) {
+        unless settings.method("hide_speaker_form_#{col}").call
+          "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}</div>".html_safe
+        end
+    } %>
+
+    <% text_area = ->(col, label, options={}) {
+        unless settings.method("hide_speaker_form_#{col}").call
+          "<div class='form-group'>#{f.label col, label}#{f.text_area col, options}</div>".html_safe
+        end
+    } %>
+
+    <% cktext_area = ->(col, label, options={}) {
+        unless settings.method("hide_speaker_form_#{col}").call
+          "<div class='form-group'>#{f.label col, label}#{f.cktext_area col, options}</div>".html_safe
+        end
+    } %>
+
+    <% check_box = ->(col, label) {
+        unless settings.method("hide_speaker_form_#{col}").call
+          f.label(col) { f.check_box(col) + " #{label}" } + "<br>".html_safe
+        end
+    } %>
+
+    <div class="modal-content px-3 py-3 px-lg-5 py-lg-5">
+      <div class="modal-header">
+        <h3 id="myModalLabel">Creating Speaker</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      </div>
+
+      <div class="modal-header">
+        <div id='quick-add-successes'>Successfully Added Speakers:</div>
+      </div>
+
+      <div class="modal-body">
+
+          <div class="row">
+            <%= file_field_tag :photo_file, class: "profile-pic-file" %>
+            <div class="pic-upload-container mx-auto my-2">
+              <%= image_tag '/defaults/profile_default.png', class: "profile-pic" %>
+              <%= label_tag :photo_file do %>
+                <i class="fa fa-camera pic-action"></i>
+              <% end %>
+            </div>
+          </div>
+          <% unless Event.find(session[:event_id]).master_url.blank? %>
+              <div class="form-group" style="<%= 'display:none;' if settings.method("hide_speaker_form_online_url").call %>">
+                  <%= label_tag :online_url do %>
+                    <%= check_box_tag :online_url, 1, @speaker.online_photo? %>
+                    Include Online Copy of Latest Speaker Photo
+                  <% end %>
+              </div>
+          <% end %>
+          <%= text_field["photo_filename", "Photo Filename (can be online url)", class: "form-control"] %>
+          <%= check_box["unpublished", "Unpublished (Hide in App)"] %>
+
+          <div class="form-group">
+            <%= f.label :speaker_code, "Speaker Code" %>
+            <%= f.text_field :speaker_code, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :first_name, 'First Name' %>
+            <%= f.text_field :first_name, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :last_name, 'Last Name' %>
+            <%= f.text_field :last_name, class:'clear-on-submit form-control' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :email %>
+            <%= f.text_field :email, class:'clear-on-submit form-control' %>
+          </div>
+          <% if request.path.match /session_speakers/ %>
+            <%= hidden_field_tag :session_id, @session.id %>
+            <div class="form-group">
+              <%= label_tag :speaker_type_id, "Speaker Type" %>
+              <%= select_tag :speaker_type_id, options_for_select(@speaker_types.map { |speaker_type| ["#{speaker_type.speaker_type}" ,speaker_type.id] }), class: "custom-select" %>
+            </div>
+          <% end %>
+          <%= link_to "#extra-fields", 'data-toggle': 'collapse', role: 'button', class: "text-primary collapse-toggle" do %>
+            Add more details to the speaker <i class="fa fa-plus"></i><br><br>
+          <% end %>
+          <div class="collapse px-2" id="extra-fields">
+            <%= text_field["honor_prefix",   "Honor Prefix", class: "form-control"] %>
+            <%= text_field["honor_suffix",   "Honor Suffix", class: "form-control"] %>
+            <%= text_field["title",          "Title", class: "form-control"] %>
+            <%= text_field["company",        "Organization", class: "form-control"] %>
+            <a href="#important-docs" class="btn-link" data-toggle="collapse">
+              Upload Files <i class="fa fa-plus"></i><br><br>
+            </a>
+            <div class="collapse px-2" id="important-docs">
+              
+              <% unless settings.method("hide_speaker_form_event_file_cv").call %>
+                <div class="form-group">
+                    <%= label_tag :cv_file, "Upload a CV" %>
+                    <br>
+                    <%= file_field_tag :cv_file %>
+                </div>
+              <% end %>
+              <% unless settings.method("hide_speaker_form_event_file_fd").call %>
+                <div class="form-group">
+                    <%= label_tag :fd_file, "FD successfully uploaded" %>
+                    <br>
+                    <%= file_field_tag :fd_file %>
+                </div>
+              <% end %>
+            </div>
+            <a href="#address-contact" class="btn-link" data-toggle="collapse">
+              Address and Contact Information <i class="fa fa-plus"></i><br><br>
+            </a>
+            <div class="collapse px-2" id="address-contact">
+              <%= text_field["mobile_phone",   "Mobile Phone", class: "form-control"] %>
+              <%= text_field["address1",       "Address Line 1", class: "form-control"] %>
+              <%= text_field["address2",       "Address Line 2", class: "form-control"] %>
+              <%= text_field["address3",       "Address Line 3", class: "form-control"] %>
+              <%= text_field["city",           "City", class: "form-control"] %>
+              <%= text_field["state",          "State", class: "form-control"] %>
+              <%= text_field["country",        "Country", class: "form-control"] %>
+              <%= text_field["zip",            "Zip", class: "form-control"] %>
+              <%= text_field["work_phone",     "Work Phone", class: "form-control"] %>
+              <%= text_field["home_phone",     "Home Phone", class: "form-control"] %>
+              <%= text_field["fax",            "Fax", class: "form-control"] %>
+            </div>
+            <a href="#notes-biography" class="btn-link" data-toggle="collapse">
+              Add Notes and Biography <i class="fa fa-plus"></i><br><br>
+            </a>
+            <div class="collapse px-2" id="notes-biography">
+              <% unless settings.method("hide_speaker_form_biography").call %>
+                <div class="form-group">
+                  <%= f.label :biography %>
+                  <%= f.cktext_area "biography", { ckeditor: {toolbar: "Full"} } %>
+                </div>
+              <% end %>
+              
+              <%= text_area["notes",              "Additional Notes", class: "form-control"] %>
+              <%= text_area["availability_notes", "Availability Notes", class: "form-control"] %>
+            </div>
+            <% unless settings.method("hide_speaker_form_financial_disclosure_section").call %>
+                <a href="#financial-disclosure" class="btn-link" data-toggle="collapse">
+                  Financial Disclosure Section <i class="fa fa-plus"></i> <br><br>
+                </a>
+            <% end %>
+            <div class="collapse px-2" id="financial-disclosure">
+              (add contact/address info if different from primary contact info)
+              <%= text_area["financial_disclosure", "Financial Disclosure", class: "form-control"] %>
+              <%= text_field["fd_tax_id",         "Tax ID", class: "form-control"] %>
+              <%= text_field["fd_pay_to",         "Pay To", class: "form-control"] %>
+              <%= text_field["fd_street_address", "Street Address", class: "form-control"] %>
+              <%= text_field["fd_city",           "City", class: "form-control"] %>
+              <%= text_field["fd_state",          "State", class: "form-control"] %>
+              <%= text_field["fd_zip",            "Zip", class: "form-control"] %>
+            </div>
+            <a href="#social-publication" class="btn-link" data-toggle="collapse">
+              Social Media <i class="fa fa-plus"></i> <br><br>
+            </a>
+            <div class="collapse px-2" id="social-publication">
+              <%# previously not included columns %>
+
+              <%= text_field["twitter_url",      "Twitter Url", class: "form-control"] %>
+              <%= text_field["facebook_url",     "Facebook Url", class: "form-control"] %>
+              <%= text_field["linked_in",        "Linked In", class: "form-control"] %>
+            </div>
+            <a href="#filters" class="btn-link" data-toggle="collapse">
+              Add Filters <i class="fa fa-plus"></i> <br><br>
+            </a>
+            <div class="collapse px-2" id="filters">
+              <%= text_field["custom_filter_1",  "Custom Filter 1", class: "form-control"] %>
+              <%= text_field["custom_filter_2",  "Custom Filter 2", class: "form-control"] %>
+              <%= text_field["custom_filter_3",  "Custom Filter 3", class: "form-control"] %>
+
+              <%# shouldn't be used, but included for completeness %>
+              <%# was part of a speaker mailer feature that I don't think %>
+              <%# ended up being used %>
+              <%= text_field["unsubscribed", "Unsubscribed", class: "form-control"] %>
+              <%= text_field["token",        "Token", class: "form-control"] %>
+            </div>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancel</button> <%= f.submit id:"quick-add-submit",class:"btn btn-primary" %>
+      </div>
+    </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+    $('.modal-header > .close').on('click', function() { location.reload(); })
+    $('.modal-footer > .cancel').on('click', function() { location.reload(); })
+    $('.collapse-toggle').each(function(){
+      let collapse_div_id = $(this).attr('href');
+      if ($(collapse_div_id).children().length === 0){
+        $(this).addClass('d-none');
+      }
+    });
+</script>
+
+<!-- End Speaker Quick Add Modal -->

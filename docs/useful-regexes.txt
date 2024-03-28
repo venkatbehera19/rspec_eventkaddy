@@ -1,0 +1,5 @@
+(<%= link_to.*new_.*) (%>)
+$1 ,class:"btn" $2 <br/><br/>
+
+
+(<%= link_to 'Show',.*) (%>)(<%= link_to.*edit_.* %>) <br/><br/>

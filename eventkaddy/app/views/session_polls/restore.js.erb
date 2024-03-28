@@ -1,0 +1,6 @@
+$( "#containerDiv-<%=@session_poll.id%>" ).find('#resetBtn-<%=@session_poll.id%>').replaceWith( '<%= link_to "Edit", "/moderator_portals/session_polls/#{@session_poll.id}/edit", class:"btn btn-warning operationsBtn mr-1 getRequestButton", id: "editBtn-#{@session_poll.id}" %>' );
+
+$(".getRequestButton").click(function(e) {
+  e.stopPropagation();
+});
+

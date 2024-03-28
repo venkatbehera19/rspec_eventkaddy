@@ -1,0 +1,27 @@
+#+TITLE: Session File Publishing
+
+* Clarifications
+Session Files have a slightly complex representation in the database. A Session File belongs to a Session, and every Session File can have multiple versions, and each of those versions belongs to an Event File, of which only one version per session file is actually used to populate the Session table's session_file_urls column, which is a json representation of this structure which at one time was thought to be convenient. In essence, the cordova app does not know about the session files table, it only knows about the session_file_urls column.
+
+The Session File's table has an unpublished column. A null or false value means that the session file is published. A True value (1) means that its session file versions will never be used to populate the session_file_urls column.
+
+The Session File Versions table has a final_version column. Only one session_file_version per session_file can be marked final_version, and it is used to override the default behaviour of choosing the latest created_at value to select which session_file_version is used, as well as preventing speakers from uploading additional versions (not 100% sure, but I think that's how it was used).
+
+* How to publish or unpublish files
+
+[[/session_files/publish_select_sessions][Publish Select Sessions]]
+
+On this page one can quickly select session files already in the database to hide or unhide them. The number on the left is the session code.
+
+[[/events/add_files_to_placeholders][Add Files to Placeholders]]
+
+When uploading files that are to fill in placeholders from a spreadsheet upload, you can click the checkbox to set files uploaded here to published. Session Files created by spreadsheet as placeholders are always marked unpublished, since they have no file to point to and would create broken links in the app.
+
+* Special Note
+This differs from Hannah's implementation of the sessions.publish_pdf boolean, an all or nothing version of this feature used on her video portal project. This guide refers to a feature built to publish and unpublished per file.
+
+[[/sessions/select_pdf_date][Hannah's Publish PDF Feature]]
+
+In order to avoid confusion, the buttons available on Sessions, Speakers, Exhibitors, Attendees and Session File Summary index pages can now be toggled. For the hermes CMS, Hannah's button should probably be disabled. Other buttons can be disabled that might confuse clients, which was a long standing request.
+
+[[/settings/cms][cms toggles]]

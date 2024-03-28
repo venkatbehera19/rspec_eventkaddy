@@ -1,0 +1,4 @@
+
+# have to feed in xlsx_package here provided by axlsx_rails gem, can't instantiate my own
+IattendScansByAttendeeReport.new @event_id, xlsx_package, @job
+

@@ -1,0 +1,61 @@
+#+TITLE: How to Make Documentation For Partners
+
+* Requirements
+install emacs
+write a document following the example of the fish doc here
+[[../../documentation/apis/external/avma_fish_api.org]]
+
+** This documentation is wanting of a little more guidance for settings up .emacs configuration
+Unforunately, some extra work is needed to install package-management and the correct transpiler for org to html. There is a little bit there by default, but I can't recall the exact steps, and Hannah and I found that it was a little tricky. I would need some time to recreate the steps on a new device, but for now I may have to export it for her.
+
+* Required Headers
+Create an file with a .org extension (it is just a text file)
+At the top of the file, paste this code, changing the title to something appropriate. The links to the stylesheets and javascript will make it pretty when we export it to html and move it to the write directory.
+#+NAME: headers
+#+BEGIN_SRC org
+#+TITLE: html title here
+#+Author: EventKaddy
+#+OPTIONS: ^:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="read_the_org/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="read_the_org/readtheorg.css"/>
+
+#+HTML_HEAD: <script src="read_the_org/jquery.min.js"></script>
+#+HTML_HEAD: <script src="read_the_org/bootstrap.min.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="read_the_org/jquery.stickytableheaders.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="read_the_org/readtheorg.js"></script>
+#+END_SRC
+
+Then write the org file like any other file documentation in org. Use special code blocks when providing curl examples, like so. Remove the backslashes at the start of the #+ lines, they are there so that the html parser for this documentation does not get confused.
+
+#+BEGIN_SRC txt
+\#+NAME: curl example
+\#+BEGIN_SRC sh
+curl -H "Content-Type: application/json" --data '{"proxy_key":"csd_kSlaIQj2N4l3FeQxDyDbI_g8vK0nI68iF_BTSaLWuYV9Visil7eY1myDPJ0_94YJ9Bdrx9NX_nWC-GpdCQ1tE9MGABpoEm2i","json_data":{"attendees":[{"custom_fields_2":"ourcode268416", "session_code":"2234_4"}]} }' https://avmaproxy.eventkaddy.net/push_iattend
+\#+END_SRC
+#+END_SRC
+
+* Open the file in emacs
+Whether you edit the org file in emacs or not is up to you, but you will need to be able to export the file using emacs after. You can use the gui or you can open emacs in the terminal.
+
+#+NAME: how to open emacs
+#+BEGIN_SRC sh
+# open in gui
+emacs some_file_path
+# open in terminal
+emacs -nw some_file_path
+#+END_SRC
+
+When you have the documentation org file opened in emacs, hit C-c C-e (ctrl + c, ctrl+ e) to open the export options menu. h for export to html, then o to create the file and open it in the browser.
+
+You will then see a html version of the org file, but it's not pretty yet because the links to the css and javascript not finding the files.
+
+Go to Dave G's dropbox on your computer
+
+[[~/Dropbox/Dave G/documentation-for-partners/avma_fish_documentation_v4]]
+
+This directory is the example of what I did for Fish. Inside is a read_the_org directory containing all the stylesheets and javascript files. Copy it to a new directory for the documentation you wish to share, ie documentation-for-partners/your_new_doc/read_the_org/. Then copy your org file to this directory. You can then zip the whole directory so we can share it easily with our partners, and then will have everything they need to see the prettier version of the org file.
+
+* How to Quit Emacs
+C-x C-c
+* How to find a file
+C-x C-f

@@ -1,0 +1,1 @@
+<%= render partial: "two_factor_settings/new", locals: { user: @user, submit_path: reset_two_factor_path(reset_two_factor_token: @user.reset_two_factor_token), submit_button_value: "Reset Two Factor", headingTwoFA: false, set_remote: false } %>

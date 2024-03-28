@@ -1,0 +1,52 @@
+<h4 class="d-inline">
+  Listing Attendee 
+  <%= link_to "/attendees/#{@attendee.id}/edit" do%>( <%=@attendee.full_name%> )<%end%>
+   Survey Images
+   <span class="badge badge-info" id="heading-count-span"><%=@images_count%></span>
+</h4>
+
+<div class="d-inline float-right" id="attendee-nav-div">
+  <a href="<%= @previous_attendee_account_code.nil? ? "#" : "/attendee_survey_images/show?attendee=#{@previous_attendee_account_code}"%>" class="btn btn-info">
+    <i class="fa fa-chevron-circle-left" aria-hidden="true"></i>
+  </a>
+  <a href="<%= @next_attendee_account_code.nil? ? "#" : "/attendee_survey_images/show?attendee=#{@next_attendee_account_code}"%>" class="btn btn-info">
+    <i class="fa fa-chevron-circle-right" aria-hidden="true"></i>
+  </a>
+</div>
+<select class="d-block custom-select col-3 mt-3" name="imageFilter" id="imageFilter">
+  <option value="all">All</option>
+  <option value="pending">Pending</option>
+  <option value="verified">Verified</option>
+  <option value="rejected">Rejected</option>
+</select>
+
+<div id="close-toggle-button" class="d-none float-right">
+  <i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
+</div>
+
+<div id="imagesListingContainer" class="row mt-4">
+  <%= render partial: 'attendee_survey_images', locals: {attendee_responses: @attendee_responses}%>
+</div>
+<%= javascript_include_tag params[:controller]%>
+<script>
+  $(document).ready(function(){
+    $(".left-image-cards").on("click", function () {
+      App.toggleView(this);
+    });
+    $('select').on('change', function() {
+      attendee_account_code = window.location.search.substring(1).split('=')[1]
+      $.ajax({
+        type: "get",
+        url: "/attendee_survey_images/show",
+        data: {sort_type: this.value,attendee: attendee_account_code},
+        success: function (response) {
+          $(".lazyload").lazyload();
+          $(".left-image-cards").on("click", function () {
+            App.toggleView(this);
+          });
+        },
+        error: function (error) {}
+      });
+    });
+  })
+</script>

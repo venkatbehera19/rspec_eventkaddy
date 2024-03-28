@@ -1,0 +1,223 @@
+<%= form_for(@speaker, :html => { :multipart => true, :class => "form-horizontal well" }, :url => {:action => "update_contactinfo"}   ) do |f| %>
+
+  <div class="actions">
+    <!--<%= f.submit class:"btn btn-primary" %>-->Please contact <a href="mailto:janis@wvc.org">Janis Knoetzel</a> if you wish to make any changes to your contact info.
+  </div>
+  <hr/>
+
+  <div class="row">
+
+    <div class="col-sm-5">
+
+      <% if @speaker.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@speaker.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+          <ul>
+          <% @speaker.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="field">
+        <%= f.hidden_field :event_id, :value => @speaker.event_id %>
+      </div>
+
+
+
+      <table>
+      <% if (@speaker.event_file_photo!=nil) then %>
+        <tr><td><%= image_tag(@speaker.event_file_photo.path, :height=>'100') %></td></tr>
+        <tr><td>&nbsp;</td></tr>
+
+        <tr><td>Download your current profile photo: <%= link_to @speaker.event_file_photo.name, @speaker.event_file_photo.path %></td></tr>
+        <tr><td>&nbsp;</td></tr>        
+        <tr><td>
+          <div class="field">
+            <%= label_tag "Upload a new photo:" %>
+            <%= file_field_tag :photo_file %>
+          </div><br />
+        </td></tr>  
+      <% else %>
+          <tr><td>
+            <div class="field">
+              <%= label_tag :photo_file, "Choose a Profile Photo" %><br />
+              <%= file_field_tag :photo_file %>
+            </div><br />
+          </td></tr>  
+      <% end %>
+      </table>
+
+      <table>
+      <% if (@speaker.event_file_cv!=nil) then %>
+        <tr><td>Download your current CV: <%= link_to @speaker.event_file_cv.name, @speaker.event_file_cv.path %></td></tr>
+        <tr><td>&nbsp;</td></tr>        
+        <tr><td>
+          <div class="field">
+            <%= label_tag "Upload a replacement CV:" %>
+            <%= file_field_tag :cv_file %>
+          </div><br />
+        </td></tr>  
+      <% else %>
+          <tr><td>
+            <div class="field">
+              <%= label_tag :cv_file, "Upload a CV (optional):" %><br />
+              <%= file_field_tag :cv_file %>
+            </div><br />
+          </td></tr>  
+      <% end %>
+      </table>
+
+      <table>
+      <% if (@speaker.event_file_fd!=nil) then %>
+        <tr><td>Download your current Financial Disclosure: <%= link_to @speaker.event_file_fd.name, @speaker.event_file_fd.path %></td></tr>
+        <tr><td>&nbsp;</td></tr>        
+        <tr><td>
+          <div class="field">
+            <%= label_tag "Upload a replacement Financial Disclosure:" %>
+            <%= file_field_tag :fd_file %>
+          </div><br />
+        </td></tr>  
+      <% else %>
+          <tr><td>
+            <div class="field">
+              <%= label_tag :fd_file, "Upload a Financial Disclosure (optional):" %><br />
+              <%= file_field_tag :fd_file %>
+            </div><br />
+          </td></tr>  
+      <% end %>
+      </table>
+
+      <div class="field">
+        <%= f.label :first_name %><br />
+        <%= f.text_field :first_name %>
+      </div>
+      <div class="field">
+        <%= f.label 'Middle Initial' %><br />
+        <%= f.text_field :middle_initial %>
+      </div>  
+      <div class="field">
+        <%= f.label :last_name %><br />
+        <%= f.text_field :last_name %>
+      </div>
+      <div class="field">
+        <%= f.label :email %><br />
+        <%= f.text_field :email %>
+      </div>
+      <div class="field">
+        <%= f.label :honor_prefix %><br />
+        <%= f.text_field :honor_prefix %>
+      </div>
+      <div class="field">
+        <%= f.label :honor_suffix %><br />
+        <%= f.text_field :honor_suffix %>
+      </div>
+      <div class="field">
+        <%= f.label 'Organization' %><br />
+        <%= f.text_field :company %>
+      </div>
+      <div class="field">
+        <%= f.label 'Address Line 1' %><br />
+        <%= f.text_field :address1 %>
+      </div>  
+      <div class="field">
+        <%= f.label 'Address Line 2' %><br />
+        <%= f.text_field :address2 %>
+      </div>
+      <div class="field">
+        <%= f.label 'Address Line 3' %><br />
+        <%= f.text_field :address3 %>
+      </div>
+      <div class="field">
+        <%= f.label :city %><br />
+        <%= f.text_field :city %>
+      </div>
+      <div class="field">
+        <%= f.label :state %><br />
+        <%= f.text_field :state %>
+      </div>  
+      <div class="field">
+        <%= f.label :country %><br />
+        <%= f.text_field :country %>
+      </div>
+
+      <div class="field">
+        <%= f.label :zip %><br />
+        <%= f.text_field :zip %>
+      </div>
+
+      <div class="field">
+        <%= f.label :work_phone %><br />
+        <%= f.text_field :work_phone %>
+      </div>
+      <div class="field">
+        <%= f.label :mobile_phone %><br />
+        <%= f.text_field :mobile_phone %>
+      </div>  
+      <div class="field">
+        <%= f.label :home_phone %><br />
+        <%= f.text_field :home_phone %>
+      </div>
+      <div class="field">
+        <%= f.label :fax %><br />
+        <%= f.text_field :fax %>
+      </div>
+    </div>
+    
+    <div class="col-sm-4">
+
+      <div class="field">
+        <%= f.label :biography %><br />
+        <%= f.text_area :biography, style:"min-width:350px;" %>
+      </div>
+
+      <div class="field">
+        <%= f.label 'Additional Notes' %><br />
+        <%= f.text_area :notes, style:"min-width:350px;" %>
+      </div>
+
+      <br/>
+      <br/>
+
+      <div class="field">
+        <%= f.label 'Financial Disclosure' %><br />
+        <%= f.text_area :financial_disclosure, style:"min-width:350px;height:200px" %>
+      </div>
+      <div class="field">
+        <%= f.label :fd_tax_id, "Tax ID (XXX-XX-5555)" %><br />
+        <%= f.text_field :fd_tax_id %>
+      </div>      
+      <div class="field">
+        <%= f.label "Pay To (Add contact/address info if different from primary contact info)" %><br />
+        <%= f.text_field :fd_pay_to %>
+      </div>      
+      <div class="field">
+        <%= f.label "Street Address" %><br />
+        <%= f.text_field :fd_street_address %>
+      </div>
+      <div class="field">
+        <%= f.label "City" %><br />
+        <%= f.text_field :fd_city %>
+      </div>
+      <div class="field">
+        <%= f.label "State" %><br />
+        <%= f.text_field :fd_state %>
+      </div>
+      <div class="field">
+        <%= f.label "Zip" %><br />
+        <%= f.text_field :fd_zip %>
+      </div>      
+
+
+
+
+    </div>
+
+  </row>
+
+  
+    
+
+<% end %>

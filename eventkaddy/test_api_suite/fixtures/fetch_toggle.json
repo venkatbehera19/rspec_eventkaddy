@@ -1,0 +1,10 @@
+{ 
+    "properties": {
+        "status" : {"type" : "string"}, 
+        "error_messages" : {"type" : "array"}, 
+        "toggle_value" : {"type" : "boolean"}
+    },
+
+    "required": ["status", "error_messages", "toggle_value"]
+                
+}

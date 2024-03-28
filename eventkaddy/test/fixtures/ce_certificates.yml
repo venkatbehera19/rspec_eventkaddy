@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  event: 
+  ce_certificate_type: 
+  json: MyText
+
+two:
+  event: 
+  ce_certificate_type: 
+  json: MyText

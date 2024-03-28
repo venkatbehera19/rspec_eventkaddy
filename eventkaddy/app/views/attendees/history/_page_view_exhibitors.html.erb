@@ -1,0 +1,47 @@
+<div class="dropdown">
+  <div
+    class="btn report-dropdown dropdown-toggle"
+    data-toggle="dropdown"
+  >
+    Page Views Exhibitors Downloads
+  </div>
+  <div class="dropdown-menu report-dropdown-list">
+    <%= link_to "Export Page Views Exhibitors To Spreadsheet", "/attendees/#{@attendee.id}/page_view_exhibitors_report", class: "dropdown-item" %>
+  </div>
+</div>
+<br />
+<h4 class="view-title">Page Views Exhibitors</h4>
+<br />
+<br />
+<table
+    id="cms-page-view-exhibitors-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped table-bordered"
+  >
+    <thead>
+      <th>exhibitor company&nbsp;&nbsp;&nbsp;&nbsp;</th>
+      <th>visit date</th>
+      <th>visit time</th>
+    </thead>
+  <% !@page_view_exhibitors.blank? && @page_view_exhibitors.each do |session| %>
+    <tr>
+      <td><%= session['exhibitor_company'] %></td>
+      <td><%= session['updated_at'].strftime('%Y-%m-%d') %></td>
+      <td><%= get_local_time(session['updated_at']) %></td>
+    </tr>
+    <% end %>
+  </table>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline'
+    })
+    $('#cms-page-view-exhibitors-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>"
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

@@ -1,0 +1,17 @@
+.well
+    - if @status
+        %span{style:'color:green;'} Event exists on reporting database and is ready.
+    - else
+        %span{style:'color:red;'} Event does not exist on reporting database. Create it?
+        %br
+        %br
+        = form_tag '/settings/update_video_portal_reporting' do
+            = submit_tag 'Add Event to Reporting Database', class:'btn btn-primary'
+
+    %br
+    %br
+    .reports
+        = link_to 'Video Portal Report', '/reports/video_portal_report.xlsx', class:'btn'
+        %br
+        %br
+        = link_to 'Video Portal Survey Report', '/reports/video_portal_survey_report.xlsx', class:'btn'

@@ -1,0 +1,72 @@
+:css
+  .email-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .response-table {
+    margin-right:20px !important;
+    max-width: 97%;
+  }
+
+  h5 {
+    font-weight: normal !important;
+  }
+
+.well
+  = link_to 'Back', "/video_views/video_views_attendees/#{@session.session_code}", class: 'btn btn-secondary'
+  %br
+  %br
+  %h3= "#{@attendee.first_name} #{@attendee.last_name}"
+  %h5
+    Company: 
+    %strong
+      #{@attendee.company}
+  %h5
+  %h5
+    Session Code: 
+    %strong
+      #{@session.session_code}
+  %h5
+    Session Title: 
+    %strong
+      #{@session.title}
+  %h5
+    Speaker: 
+    - if !@speakers.blank?
+      - @speakers.each do |speaker|
+        %strong
+          #{speaker.first_name} #{speaker.last_name} 
+
+  %h5
+    Total Watched: 
+    %strong
+      #{formatted_duration(@video_view.view_total)}
+  %h5
+    Video Length: 
+    %strong
+      #{formatted_duration(@video_view.duration)}
+  %h5
+    Paused At: 
+    %strong
+      #{formatted_duration(@video_view.paused_at)}
+  %br
+  
+  %table.table.table-striped.leaderboard-table.response-table{style:"max-width: 97% !important"}
+    %thead{style:"text-align:left;"}
+      %tr
+        %th{style:"width:50%;"} Date
+        %th{style:"width:50%;"} From
+        %th{style:"width:50%;"} To
+        %th{style:"width:50%;"} Duration
+    - eval(@video_view.view_ranges).each do |view_range|
+      %tbody
+        %tr
+          %td.google-api-font
+            = @video_view.created_at.strftime("%Y-%m-%d")
+          %td.google-api-font
+            = formatted_duration(view_range[0])
+          %td.google-api-font
+            = formatted_duration(view_range[1])
+          %td.google-api-font
+            = formatted_duration(view_range[1]-view_range[0])

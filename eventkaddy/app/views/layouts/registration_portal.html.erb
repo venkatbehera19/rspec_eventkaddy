@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<% settings = Setting.return_registration_portal_settings params[:event_id] %>
+<% event_setting = EventSetting.where(event_id:params[:event_id]).first_or_create %>
+<title><%= settings.html_title %></title>
+<head>
+
+  <title>EventKaddy CMS</title>
+  <!--%= stylesheet_link_tag "scaffold" %-->
+	<script src="https://cdn.ckeditor.com/4.16.1/standard/ckeditor.js"></script>
+  	<%= stylesheet_link_tag    "application", :media => "all" %>
+		<%= stylesheet_link_tag    "registrations", :media => "all" %>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "registrations" %>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= csrf_meta_tag %>
+
+</head>
+<body>
+	<div class="container-wide">
+		<div class="navbar navbar-expand-md navbar-dark registration-navbar" style="background-image: linear-gradient(to bottom, #<%= settings.gradient_top || '317eac' %>, #<%=settings.gradient_bottom || 'a4b5c0' %>);">
+			<div class="navbar-brand text-wrap">
+				<% if (event_setting && event_setting.event_file_portal_logo) then %>
+						<%= image_tag(event_setting.event_file_portal_logo.path, :size=>'100x40') %>
+				<% else %>
+					<img src="/assets/defaults/ek_logo.png" width="100px" height="40px">
+				<% end %>
+			</div>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-collapse-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+			<div class="collapse navbar-collapse" id="nav-collapse-content">
+				<ul class="navbar-nav nav-pills ml-auto">
+					<li class="nav-item mr-2"><%= link_to "Registration", "/#{params[:event_id]}/registrations", class: "nav-link" %></li>
+					<% if settings.method("agenda").call()%>
+						<li class="nav-item mr-2"><%= link_to "Agenda", "/#{params[:event_id]}/registrations/agenda", class: "nav-link" %></li>
+					<% end %>
+					<% if settings.method("speakers").call()%>
+						<li class="nav-item mr-2"><%= link_to "Speakers", "/#{params[:event_id]}/registrations/speakers", class: "nav-link" %></li>
+					<% end %>
+					<% if user_signed_in? then %>
+						<li class="nav-item mr-2"><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete, class: "nav-link" %></li>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+		<% if notice %>
+			<div class="alert alert-info shadow" role="alert" style="border-left:#178acc 5px solid; border-radius: 0px">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true" style="color:#178acc">&times;</span>
+				</button>
+				<div class="row">
+						<i class="fa fa-check-circle-o info-font"></i>
+						<p style="font-size:12px;color:#178acc !important;" class="mb-0 font-weight-light"><%= notice %></p>
+				</div>
+			</div>
+		<% end %>
+		<% if alert %>
+			<div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true" style="color:#721C24">&times;</span>
+				</button>
+				<div class="row">
+						<i class="fa fa-exclamation-circle danger-font"></i>
+						<p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+				</div>
+			</div>
+		<% end %>
+		 <div class="container-fluid content-container500">
+				<div class="row">
+					<div class="col-md-10 col-centered">
+							<% if (!(event_setting.nil?) && !(event_setting.registration_banner_event_file_id.blank?)) %>
+								<%= image_tag(EventFile.find(event_setting.registration_banner_event_file_id).path, class:"registration-banner") %><br><br>
+							<% end %>
+							<div class="content">
+								<%= yield %>
+							</div>
+					</div>
+				</div>
+		</div>
+		<br>
+		<div class="footer" style="text-align:center">
+			Questions?  Email support@eventkaddy.com
+		</div>
+	</div><!--container-wide-->
+</body>
+</html>
+<script>
+  
+    var _gaq = _gaq || [];
+		var key = "<%=@ga_key%>"
+    _gaq.push(['_setAccount', key]);
+    _gaq.push(['_trackPageview', window.location]);
+
+    (function() {
+        var ga   = document.createElement('script');
+        ga.type  = 'text/javascript';
+        ga.async = true;
+        ga.src   = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s    = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+<style>
+	h1{
+		color: #<%= settings.h1_color || '317eac' %> !important;
+		text-shadow:<%= settings.text_shadow_h1 ? '1px 2px black' : 'none' %>;
+
+	}
+	h2{
+		color: #<%= settings.h2_color || '317eac' %> !important;
+		text-shadow:<%= settings.text_shadow_h2 ? '1px 1px black' : 'none' %>;
+	}
+	h3{
+		color: #<%= settings.h3_color || '317eac' %> !important;
+	}
+	h4{
+		color: #<%= settings.h4_color || '317eac' %> !important;
+	}
+	body, p, ol, li, td {
+		font-weight: <%= settings.bold_text ? 'bold' : 'normal' %>;;
+		text-shadow:<%= settings.text_shadow ? '1px 0 black !important' : 'none' %>;
+		/* background-color:<%= settings.dark_bg_theme ? '#00000033 !important' : 'none' %>; */
+		color:<%= settings.dark_bg_theme ? '#fff !important' : 'black' %>;
+	}
+
+body{
+	background-color: #<%= settings.body_background_color || 'ffffff' %> ; 
+	background-image: url(<%= settings.body_background_image.blank? ? '' : EventFile.find(settings.body_background_image.to_i).path %>);
+	background-position: <%=settings.body_background_position || 'center' %>;
+	background-size: <%=settings.body_background_size%>;
+	background-repeat: <%=settings.body_background_repeat%>;  
+}
+
+#registration-page-header .social-links a{
+	color: <%= settings.dark_bg_theme ? '#fff !important' : 'black !important' %>;
+}
+
+.reg-btn{
+	color: <%= settings.reg_button_class.blank? ? '' :  ('#' + settings.reg_button_class + ' !important') %>;
+}
+
+/* Already Registered? link */
+.subscribe a {
+	color: <%= settings.already_reg_link_color.blank? ? (settings.dark_bg_theme ? '#fff !important' : '#2fa4e7 !important') : ('#' + settings.already_reg_link_color.to_s+' !important') %>;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: <%= settings.nav_links_color.blank? ? 'white !important' :  ('#' + settings.nav_links_color + ' !important') %>;
+}
+</style>

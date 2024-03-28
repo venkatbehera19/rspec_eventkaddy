@@ -1,0 +1,34 @@
+<h4>Listing tabs for:<b> <%= session[:event_name] %></b></h4>
+
+<!-- 
+<%= link_to 'New Tab', new_tab_path,class:"btn btn-primary" %> <br/><br/>
+ -->
+
+<%= link_to 'Back', "/event_settings/edit_event_settings", class:"btn" %><br/><br/>
+
+
+<table id="tabs" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+	<thead>
+  		<tr>
+    	 <th>Name</th>
+    	 <th></th>
+ <!--    	 <th></th>
+    	 <th></th> -->
+  		</tr>
+	</thead>
+	
+	<tbody>
+		<% @tabs.each do |tab| %>
+		<tr>
+		 <td><%= tab.name %></td>
+<!-- 		 <td><%= link_to 'Show', tab ,class:"btn" %></td>
+ -->		 
+ 		<td><%= link_to 'Edit', edit_tab_path(tab) ,class:"btn edit" %></td>
+<!-- 		 <td><%= link_to 'Delete', tab, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+ -->		
+		</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<br />

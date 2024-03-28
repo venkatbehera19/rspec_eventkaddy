@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <title>EventKaddy CMS</title>
+        <%= stylesheet_link_tag    "application" %>
+        <%= javascript_include_tag "application" %>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%= csrf_meta_tag %>
+    </head>
+
+    <body>
+
+
+        <div class="navbar navbar-expand-md bg-celurean-custom navbar-dark">
+            <% @event_setting = @event_setting || event_setting %>
+            <div class="navbar-brand">
+                <% if @event_setting && @event_setting.event_file_portal_logo %>
+                    <a href="/">
+                        <%= image_tag(@event_setting.event_file_portal_logo.path, :size=>'50x50', class: "navbar-brand", style: "font-size: 0.8rem;") %>
+                    </a>
+                <% else %>
+                    <a href="/">
+                        <img src="/assets/defaults/ek_logo.png" width="100px" height="40px">
+                    </a>
+                <% end %>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav-collapse-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="nav-collapse-content">
+                <ul class="navbar-nav nav-pills ml-auto">
+                    <li class="nav-item"><%= link_to "Home", "/home/index", class: "nav-link" %></li>
+                    <% if user_signed_in? then %>
+                        <!-- <li class="nav-item"><%= link_to "Change Password", "/exhibitor_portals/edit_account", class: "nav-link" %></li> -->
+                        <li class="nav-item"><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete, class: "nav-link" %></li>
+                    <% end %>
+                </ul>
+            </div>
+
+        </div>
+
+            <hr>
+
+            <div class="container-fluid content-container500">
+                <div class="row">
+
+                    <div class="span11 col-centered">
+                        <% if (!(@event_setting.nil?) && (@event_setting.event_file_portal_banner!=nil)) then %>
+                            <%= image_tag(@event_setting.event_file_portal_banner.path) %><br><br>
+                        <% end %>
+
+                        <div id="content">
+                            <% if notice %>
+                                <p class="alert alert-info"><%= notice %></p>
+                            <% end %>
+                            <% if alert %>
+                                <p class="alert alert-danger"><%= alert %></p>
+                            <% end %>
+
+                            <%= yield %>
+                        </div>
+
+                    </div>
+                </div><!--row-->
+            </div>
+
+            <hr>
+
+            <div class="footer">
+                <div class="footer-text">
+                    <% if (!(@event_setting.nil?) && (@event_setting.support_email_address!=nil)) then %>
+                        Questions? Email <strong><a href="mailto:<%=@event_setting.support_email_address %>?subject=2014 Speaker Portal Inquiry" class="portal_email"><%= @event_setting.support_email_address %></a></strong>
+                    <% else %>
+                        Questions?  Email support@eventkaddy.com
+                    <% end %>
+                </div>
+            </div>
+
+
+    </body>
+</html>

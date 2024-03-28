@@ -1,0 +1,18 @@
+var downloadBtn = "download-btn-<%= @survey.id%>"
+var reset_btn   = "reset-btn-<%=@survey.id%>"
+downloadBtn = $(`#${downloadBtn}`);
+reset_btn   = $(`#${reset_btn}`);
+
+reset_btn.replaceWith('<a class="btn btn-outline-danger reset-btn" id="reset-btn-<%=@survey.id%>" href="#">Reset</a>')
+
+downloadBtn.replaceWith('<a class="btn btn-outline-info download-btn" id="download-btn-<%=@survey.id%>" data-remote="true" href="/survey_images/download?survey=<%=@survey.id%>">Create<i aria-hidden="true" class="fa fa-file-archive-o ml-1"></i></a>')
+
+
+var downloadBtnm = "download-btn-<%= @survey.id%>-m"
+var reset_btnm   = "reset-btn-<%=@survey.id%>-m"
+downloadBtnm = $(`#${downloadBtnm}`);
+reset_btnm   = $(`#${reset_btnm}`);
+
+reset_btnm.replaceWith('<a class="btn btn-outline-danger reset-btn" id="reset-btn-<%=@survey.id%>-m" href="#">Reset</a>')
+
+downloadBtnm.replaceWith('<a class="btn btn-outline-info download-btn" id="download-btn-<%=@survey.id%>-m" data-remote="true" href="/survey_images/download?survey=<%=@survey.id%>">Create<i aria-hidden="true" class="fa fa-file-archive-o ml-1"></i></a>')

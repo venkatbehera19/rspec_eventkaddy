@@ -1,0 +1,14 @@
+
+
+<h4 class="view-title">Banner Details</h4>
+<%= link_to 'Back', "/event_settings/edit_banners",class:"btn" %>
+<%= link_to 'Edit', "/event_files/edit_banner/#{@banner.id}" ,class:"btn edit" %> <br><br>
+
+<table class="table">
+<tr><th>Name</th><td><%= @banner.name %></td></tr>
+<tr><th>Banner</th><td><%= image_tag(@banner.path, :height=>'300') %></td></tr>
+<tr><th>Type</th><td><%= @banner.event_file_type.name.split('_').map(&:capitalize).join(' ') %></td></tr>
+<tr><th>Filetype</th><td><%= @banner.mime_type %></td></tr>
+<tr><th>Filesize</th><td><%= number_to_human_size(@banner.size) %></td></tr>
+</table>
+

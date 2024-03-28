@@ -1,0 +1,371 @@
+#upload-notice
+
+.current-job-status
+  .status-header
+    Current Job Status
+  .cancel-job.btn.btn-warning.btn-sm
+    Cancel Job
+  .cancel-info
+    Does not cancel the background process. Use only if you
+    %br
+    believe the import has halted. If the import is still running,
+    %br
+    a cancelled job will be marked complete when finished.
+  .status
+  .row-progress
+    0 rows processed.
+
+  .progress.progress-striped
+    .bar
+  %br/
+  .errors
+
+  .warnings
+
+  .job-info
+%br/
+= link_to('Tags Center', '/tags_generation_center', class:'btn btn-dark', style:"float:right;")
+%h3 Configure Event Data
+- settings = Setting.return_cms_settings session[:event_id]
+%br/
+:ruby
+  # HTML generator for button content
+  def btn_content(text, icon_name)
+    ('<div class="row">' +
+      '<div class="col-md-2 ie-btn-icon">' +
+        '<i class="fa fa-' + icon_name + '"></i>' +
+      '</div>' +
+      '<div class="col-md-10 px-0 font-sm">' +
+        text +
+      '</div>' +
+    '</div>').html_safe
+  end
+
+%table.table.table-borderless.col-lg-11
+  - unless settings.method("hide_config_page_import_export_row_sessions").call
+    %tr
+      %td 
+        %h6 Session and Speaker Data
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_sessions"}
+          %i.fa.fa-upload{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'}
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = form_tag("/events/download_sessions_async", method: "post", remote: true ) do
+          = hidden_field_tag(:job_id)
+          = hidden_field_tag(:event_id, session[:event_id])
+          %button{type: "submit", class: 'config-upload-submit job-submit btn btn-outline-info', data: {sname:'config-page-export-sessions', event_id: "#{session[:event_id]}"}, 'data-toggle': 'tooltip', title: 'Download session and speaker data'}
+            %i.fa.fa-download
+            %span.d-md-inline.d-none Download
+        = link_to "/events/deleteall_sessiondata_preivew", class: "label btn btn-outline-warning", data: {confirm: "Are you sure?"}, 'data-toggle': 'tooltip', title: 'View session and speaker data Delete preview' do
+          %i.fa.fa-eye
+          %span.d-md-inline.d-none View & Delete
+    
+  - unless settings.method("hide_config_page_import_export_row_sessions_full").call
+    %tr 
+      %td 
+        %h6 Session & Speaker Data(Extra fields) 
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_sessions_full"}
+          %i.fa.fa-upload{title: "Upload Session & Speaker Data(Extra fields)", 'data-toggle': 'tooltip'}
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = form_tag("/events/download_sessions_full_async", method: "post", remote: true ) do
+          = hidden_field_tag(:job_id)
+          = hidden_field_tag(:event_id, session[:event_id])
+          %button{class: 'config-upload-submit job-submit btn btn-outline-info', data: {sname:'config-page-export-sessions', event_id: "#{session[:event_id]}"}, type: "submit", title: "Download Session & Speaker Data (Extra Fields)", 'data-toggle': 'tooltip'}
+            %i.fa.fa-download
+            %span.d-md-inline.d-none Download
+          -#   = link_to 'Delete All Speaker Data', '/events/deleteall_speakerdata', confirm: 'Are you sure?', class: 'label label-warning'
+  
+  - unless settings.method("hide_config_page_import_export_row_speakers").call
+    %tr 
+      %td 
+        %h6 Speaker Data
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_speakers"}
+          %i.fa.fa-upload(title="Upload speaker data" data-toggle="tooltip")
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = form_tag("/reports/download_speakers", method: "post", remote: true, style:'margin:0px;' ) do
+          = hidden_field_tag(:job_id)
+          = hidden_field_tag(:event_id, session[:event_id])
+          %button{type: 'submit', class: 'config-upload-submit job-submit btn btn-outline-info', data: {sname:"config-page-download-speakers", event_id: "#{session[:event_id]}"}, 'data-toggle': 'tooltip', title: 'Download speaker data'}
+            %i.fa.fa-download
+            %span.d-md-inline.d-none Download
+  
+  - unless settings.method("hide_config_page_import_export_row_exhibitors").call
+    %tr 
+      %td 
+        %h6 Exhibitor Data
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_exhibitors"}
+          %i.fa.fa-upload(title="Upload Exhibitor Data" data-toggle="tooltip") 
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = form_tag("/reports/download_exhibitors", method: "post", remote: true, style:'margin:0px;' ) do
+          = hidden_field_tag(:job_id)
+          = hidden_field_tag(:event_id, session[:event_id])
+          %button{type: "submit", class: 'config-upload-submit job-submit btn btn-outline-info', data: {sname:"config-page-download-exhibitors", event_id: "#{session[:event_id]}"}, 'data-toggle': 'tooltip', title: 'Download exhibitor data'}
+            %i.fa.fa-download
+            %span.d-md-inline.d-none Download
+        = link_to "/events/deleteall_exhibitordata", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger", 'data-toggle': 'tooltip', title: 'Delete All Exhibitor Data' do
+          %i.fa.fa-trash
+          %span.d-md-inline.d-none Delete
+
+  - unless settings.method("hide_config_page_import_export_row_maps").call
+    %tr 
+      %td 
+        %h6 Map and Coordinate Data
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_maps"}
+          %i.fa.fa-upload(title='Upload Map and Coordinate Data' data-toggle="tooltip")      
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = link_to "/events/download_maps.xlsx", class: "btn btn-outline-info", 'data-toggle': 'tooltip', title: 'Download Map and Coordinate Data' do
+          %i.fa.fa-download
+          %span.d-md-inline.d-none Download
+        = link_to "/events/deleteall_mapdata", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger", 'data-toggle': 'tooltip', title: 'Delete Map and Coordinate Data' do
+          %i.fa.fa-trash
+          %span.d-md-inline.d-none Delete
+  
+  - unless settings.method("hide_config_page_import_export_row_attendees").call
+    %tr 
+      %td 
+        %h6 Attendee Data
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_attendees"}
+          %i.fa.fa-upload(title="Upload Attendee Data" data-toggle="tooltip")
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = form_tag("/reports/download_attendees", method: "post", remote: true, style:'margin:0px;' ) do
+          = hidden_field_tag(:job_id)
+          = hidden_field_tag(:event_id, session[:event_id])
+          %button{type: 'submit', class: 'config-upload-submit job-submit btn btn-outline-info', data: {sname:"config-page-download-attendees", event_id: "#{session[:event_id]}"}, 'data-toggle': 'tooltip', title: 'Download Attendee Data'}
+            %i.fa.fa-download
+            %span.d-md-inline.d-none Download
+        = link_to "/events/deleteall_attendeedata", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger", 'data-toggle': 'tooltip', title: 'Delete all Attendee Data' do
+          %i.fa.fa-trash
+          %span.d-md-inline.d-none Delete
+
+  - unless settings.method("hide_config_page_import_export_row_notifications").call
+    %tr 
+      %td 
+        %h6 Notification Data
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_notifications"}
+          %i.fa.fa-upload(data-toggle="tooltip" title="Upload Notification Data")
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = link_to "/events/download_notifications.xlsx", class: "btn btn-outline-info", 'data-toggle': 'tooltip', title: 'Download Notification Data' do
+          %i.fa.fa-download
+          %span.d-md-inline.d-none Download
+        = link_to "/events/deleteall_notificationdata", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger", 'data-toggle': 'tooltip', title: 'Delete All Notifications' do
+          %i.fa.fa-trash
+          %span.d-md-inline.d-none Delete
+        
+  
+  - unless settings.method("hide_config_page_import_export_row_home_buttons").call
+    %tr 
+      %td 
+        %h6 Home Buttons & Custom List Data
+      %td.btn-group
+        %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/events/upload_home_buttons"}
+          %i.fa.fa-upload(data-toggle="tooltip" title="Upload Home Buttons & Custom List Data")  
+          %span.d-md-inline.d-none{title: 'Upload sessions and speaker data', 'data-toggle': 'tooltip'} Upload
+        = link_to "/events/download_home_buttons.xlsx", class: "btn btn-outline-info", 'data-toggle': 'tooltip', title: 'Download Home Buttons & Custom List Data' do
+          %i.fa.fa-download
+          %span.d-md-inline.d-none Download
+        = link_to "/events/deleteall_home_buttondata", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger", 'data-toggle': 'tooltip', title: 'Delete All Home Buttons & Custom List Data' do
+          %i.fa.fa-trash
+          %span.d-md-inline.d-none Delete
+
+  %tr 
+    %td 
+      %h6 Member Data
+    %td.btn-group
+      %button.btn.btn-outline-primary.upload-btn{"data-toggle": "modal", "data-target": "#form-modal", url: "/members/upload_members"}
+        %i.fa.fa-upload(title="Upload Member Data" data-toggle="tooltip")
+        %span.d-md-inline.d-none{title: 'Upload member data', 'data-toggle': 'tooltip'} Upload
+      = form_tag("/reports/download_members", method: "post", remote: true, style:'margin:0px;' ) do
+        = hidden_field_tag(:job_id)
+        = hidden_field_tag(:event_id, session[:event_id])
+        %button{type: 'submit', class: 'config-upload-submit job-submit btn btn-outline-info', data: {sname:"config-page-download-member", event_id: "#{session[:event_id]}"}, 'data-toggle': 'tooltip', title: 'Download Member Data'}
+          %i.fa.fa-download
+          %span.d-md-inline.d-none Download
+
+%hr{style: "color:black;background-color:black;height:4px;"}
+%br
+- form = FormWithSettings.new 'cms_settings', session[:event_id]
+- form.if_setting("show_config_page_edit_preset_tags_button") do
+  = link_to('Edit Preset Tags Options', '/events/edit_preset_tag_options', class:'btn btn-outline-success')
+
+#refresh-sessions
+
+  - @script_buttons.each do |button|
+    - if button.script_type.post_request == true
+      - if button.script_type.job == true
+        .refresh-container
+          .hidden-label.label= button.button_label
+          = form_tag "/events/#{button.script_type.url}", method: "post", remote: true do
+            = hidden_field_tag(:script_id, button.id)
+            = hidden_field_tag(:job_id)
+            = hidden_field_tag(:authenticity_token, @form_token)
+            = submit_tag button.button_label, class: "job-submit btn btn-primary", data: {sname:button.button_label.downcase.gsub(/\s/, '-'), event_id: "#{session[:event_id]}"}
+      - else
+        .refresh-container
+          = form_tag "/events/#{button.script_type.url}", method: "post" do
+            = hidden_field_tag(:script_id, button.id)
+            = hidden_field_tag(:authenticity_token, @form_token)
+            = submit_tag button.button_label, confirm: "Are you sure?", class: "btn btn-primary"
+    - else
+      = link_to button.button_label, button.script_type.url, class: "btn btn-secondary"
+
+-# - if SurveyResponse.select('id').where(event_id:@event.id).length > 0
+-#   = form_tag("/reports/generate_session_survey_reports", method: "post", remote: true, multipart: true) do
+-#     = label_tag :generate, "Generate Session Survey Reports", style:'display:none;'
+-#     = hidden_field_tag :job_id
+-#     = hidden_field_tag(:authenticity_token, @form_token)
+-#     = submit_tag "Generate Session Survey Reports", class: 'job-submit btn btn-primary', data: {sname:'generate_session_survey_reports'}
+-#   %br
+-# - survey_reports_path = Rails.root.join('public','event_data',@event.id.to_s,'session_survey_reports',@event.name + '_session_survey_reports.zip')
+
+-# purposely not using job for this since it is light weight; could make it a job by adding job-submit class to submit tag and adding remote: true to form tag
+-# this SurveyResponse query is a little inaccurate now (as well as above) since it doesn't account for survey type
+-# - if SurveyResponse.select('id').where(event_id:@event.id).length > 0
+-#   = form_tag("/reports/global_survey_report", method: "get", multipart: true) do
+-#     = label_tag :generate, "Generate Global Survey Report", style:'display:none;'
+-#     = hidden_field_tag(:authenticity_token, @form_token)
+-#     = submit_tag "Generate Global Survey Report", class: 'btn btn-primary', data: {sname:'generate_global_survey_report'}
+
+-# - if File.exists?(survey_reports_path)
+-#   = link_to 'Survey Reports Zip', "/event_data/#{@event.id}/session_survey_reports/#{@event.name}_session_survey_reports.zip", class:'btn'
+-#   %br
+-#   %br
+-#   Last Updated:
+-#   = File.mtime survey_reports_path
+
+.completed-jobs
+  %h3 Imports Performed Today
+  %table.table
+    %thead
+      %th Job Name
+      %th Status
+      %th Last Updated
+
+    - @jobs.each do |job|
+      %tr
+        %td= job.name.gsub(/config-page-/, '').split('-').inject('') {|m, w| m = m + w.capitalize + ' '}
+        %td <span style='color:#{job.status=='Completed' ? 'green' : job.status=='In Progress' ? '#8C8C00' : 'red'};font-weight:bold;'>#{job.status}
+        %td= current_user.twelve_hour_format ? job.updated_at.strftime("%I:%M %p") :  job.updated_at.strftime('%D %T')
+
+
+.modal.fade#form-modal{tabindex: "-1", role: "dialog", "aria-labelledby": "exampleModalLabel", "aria-hidden": "true"}
+  .modal-dialog{role: 'document'}
+    .modal-content.py-3.px-4
+      .modal-header
+        %h4.modal-title Upload spreadsheet file
+        %button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+          &times;
+      = form_tag("", method: "post", remote: true, multipart: true, id: "upload-form") do
+        = label_tag(:file, class: "file-upload-lab") do
+          %i.fa.fa-arrow-down
+          %p.file-name Click to select or drag and drop the file here
+        = file_field_tag(:file, class: "d-none file-tag")
+        = hidden_field_tag(:job_id)
+        = hidden_field_tag(:authenticity_token, @form_token)
+        = button_tag("Upload", class: 'job-submit btn btn-primary form-control close', data: {sname:'config-page-import-sessions'}, 'data-dismiss': 'modal', style: 'opacity: 1;')
+:css
+  .hidden-label {
+    display:none;
+  }
+  .showable-form {
+    cursor:pointer;
+    background-color:#16CCCC;
+    padding: 0.4rem;
+    border-radius: 0.2rem;
+    color: white;
+  }
+  .hider {
+    display:none;
+  }
+  .config-upload-submit job-submit {
+    float:right;
+  }
+  .highlight {
+    background-color: #e3e3e3;
+  }
+
+:javascript
+
+  $('#form-modal').on('show.bs.modal', function (event) {
+    if($('#file').val() != ''){
+      $('#file')[0].value = ''
+      showChoosenFile({}, $(this).find('i'));
+    }
+  })
+
+  $('.showable-form').click(function(e) {
+    e.target.nodeName==='SPAN' ? $(e.target).parent().siblings().toggle() // handle situation where (extra fields) text is its own span
+      : $(e.target).siblings().toggle();
+  });
+
+  $('.file-tag').change(function(){
+    let label = $(this).prev().find('i');
+    //console.log($(this).prev().find('i'));
+    showChoosenFile(this.files[0], label);
+  });
+
+  $('.upload-btn').click(function(){
+    $("#upload-form").attr('action', $(this).attr('url'));
+  });
+
+  $('.file-upload-lab').on('dragenter dragover', highlight);
+  $('.file-upload-lab').on('dragleave drop', unhighlight);
+  /*$('.file-upload-lab').on('drop', function(e){
+    e.preventDefault();
+    console.log(e.originalEvent.dataTransfer.files);
+  }) */
+
+  function highlight(e){
+    e.preventDefault();
+    $(this).addClass('highlight');
+  }
+
+  function unhighlight(e){
+    e.preventDefault();
+    $(this).removeClass('highlight');
+  }
+
+  function showChoosenFile(file, label){
+    if (jQuery.isEmptyObject(file)){
+      label.next().text('Click to select or drag and drop the file here');
+        label.addClass('fa-arrow-down fa-file');
+        label.removeClass('fa-picture-o');
+    }else{
+      let imageTypes = ["image/gif", "image/jpeg", "image/png", "image/jpg", 
+        "image/raw", "image/webp", "image/tiff"];
+      if($.inArray(file['type'], imageTypes) < 0){
+        label.removeClass('fa-arrow-down fa-pictore-o');
+        label.addClass('fa-file');
+      } else {
+        label.removeClass('fa-arrow-down fa-file');
+        label.addClass('fa-picture-o');
+      }
+      label.next().text(file['name']);
+    }
+  }
+
+%script{type:"text/javascript", src:"/non_pipeline_assets/job.js"}
+%link{href:"/non_pipeline_assets/job.css", media:"all", rel:"stylesheet", type:"text/css"}
+
+:javascript
+  let statuses = JSON.parse(`#{Job.running_statuses}`.replace(/&quot;/g,'"'))
+  CMS.Job.setupJob( #{@event.id}, statuses);
+  $('.file-upload-lab').on('drop', function(e){
+    e.preventDefault();
+    //console.log(e.originalEvent.dataTransfer.files[0]);
+    let file = e.originalEvent.dataTransfer.files[0];
+    showChoosenFile(file, $(this).find('i'));
+    CMS.Job.file = file;
+  })
+
+- running_jobs = Job.running_jobs @event.id
+- if running_jobs.length > 0
+  :javascript
+    var options = { job_id: #{running_jobs.last.id} };
+    job = job || Object.create(CMS.Job).resume(options); // TODO: intentionally global, but should be refactored.
+

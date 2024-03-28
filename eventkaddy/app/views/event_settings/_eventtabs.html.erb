@@ -1,0 +1,66 @@
+<script src='/assets/unordered-files/sortandrename.js' type="text/javascript"> </script>
+
+<h2>Speaker Portal Event Tabs</h2><br> 
+<!-- <div id="response"></div> -->
+
+<table id="tabstable" class="tabstable">
+  <thead>
+	<tr>
+		<th> <h3>Enabled</h3></th>
+		<th> <h3>Disabled</h3></th>
+	</tr>
+</thead>
+  <tr>
+    <td>
+      <ul id="enabled" class="connectedSortable">
+        <% if @event_tab.welcome_tab_enabled then %>
+          <% puts "---- did a thing ----" %>
+      <li id="welcome_tab" class="ui-state-default"><input value="<%=@event_tab.welcome_tab_name%>"></input><%= "Default: Welcome" %></li>
+        <% end %>
+        <% if @event_tab.contact_tab_enabled then %>
+      <li id="contact_tab" class="ui-state-default"><input value="<%=@event_tab.contact_tab_name%>"></input><%= "Default: Contact Details" %></li>
+        <% end %>
+      <% if @event_tab.travel_tab_enabled then %>
+      <li id="travel_tab" class="ui-state-default"><input value="<%=@event_tab.travel_tab_name%>"></input><%= "Default: Travel & Lodging" %></li>
+        <% end %>
+      <% if @event_tab.sessions_tab_enabled then %>
+      <li id="sessions_tab" class="ui-state-default"><input value="<%=@event_tab.sessions_tab_name%>"></input><%= "Default: Sessions" %></li>
+        <% end %>
+      <% if @event_tab.payment_tab_enabled then %>
+      <li id="payment_tab" class="ui-state-default"><input value="<%=@event_tab.payment_tab_name%>"></input><%= "Default: Payment Details" %></li>
+        <% end %>
+      <% if @event_tab.messages_tab_enabled then %>
+      <li id="messages_tab" class="ui-state-default"><input value="<%=@event_tab.messages_tab_name%>"></input><%= "Default: Messages" %></li>
+        <% end %>
+      <% if @event_tab.pdf_tab_enabled then %>
+      <li id="pdf_tab" class="ui-state-default"><input value="<%=@event_tab.pdf_tab_name%>"></input><%= "Default: PDF Downloads" %></li>
+        <% end %>
+      </ul>
+    </td>
+    <td>
+      <ul id="disabled" class="connectedSortable">
+        <% if @event_tab.welcome_tab_enabled==false then %>
+      <li id="welcome_tab" class="ui-state-default"> <input value="<%=@event_tab.welcome_tab_name%>"></input><%= "Default: Welcome" %></li>
+        <% end %>
+        <% if @event_tab.contact_tab_enabled==false then %>
+      <li id="contact_tab" class="ui-state-default"><input value="<%=@event_tab.contact_tab_name%>"></input><%= "Default: Contact Details" %></li>
+        <% end %>
+      <% if @event_tab.travel_tab_enabled==false then %>
+      <li id="travel_tab" class="ui-state-default"><input value="<%=@event_tab.travel_tab_name%>"></input><%= "Default: Travel & Lodging" %></li>
+        <% end %>
+      <% if @event_tab.sessions_tab_enabled==false then %>
+      <li id="sessions_tab" class="ui-state-default"><input value="<%=@event_tab.sessions_tab_name%>"></input><%= "Default: Sessions" %></li>
+        <% end %>
+      <% if @event_tab.payment_tab_enabled==false then %>
+      <li id="payment_tab" class="ui-state-default"><input value="<%=@event_tab.payment_tab_name%>"></input><%= "Default: Payment Details" %></li>
+        <% end %>
+      <% if @event_tab.messages_tab_enabled==false then %>
+      <li id="messages_tab" class="ui-state-default"><input value="<%=@event_tab.messages_tab_name%>"></input><%= "Default: Messages" %></li>
+        <% end %>
+      <% if @event_tab.pdf_tab_enabled==false then %>
+      <li id="pdf_tab" class="ui-state-default"><input value="<%=@event_tab.pdf_tab_name%>"></input><%= "Default: PDF Downloads" %></li>
+        <% end %>
+      </ul>
+    </td>
+  </tr>
+</table>

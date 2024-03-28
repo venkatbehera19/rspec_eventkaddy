@@ -1,0 +1,23 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   exhibitor_id: 1
+#   sponsor_level_type: 1
+#   banner_ad: false
+#   banner_ad_iphone: MyString
+#   banner_ad_android: MyString
+#   banner_ad_mobile: MyString
+#   banner_ad_home: MyString
+#   banner_ad_touch: MyString
+#   banner_ad_link: MyString
+
+# two:
+#   exhibitor_id: 1
+#   sponsor_level_type: 1
+#   banner_ad: false
+#   banner_ad_iphone: MyString
+#   banner_ad_android: MyString
+#   banner_ad_mobile: MyString
+#   banner_ad_home: MyString
+#   banner_ad_touch: MyString
+#   banner_ad_link: MyString

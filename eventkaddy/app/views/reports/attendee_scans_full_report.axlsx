@@ -1,0 +1,48 @@
+wb = xlsx_package.workbook
+
+wb.styles do |s|
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  # make export match output of stats method; may not be permenant
+  heads = [
+    "Type Name",
+    "Sender Account Code",
+    "Sender Name",
+    "Target Account Code",
+    "Target Name",
+    "Session Code",
+    "Session Title",
+    "Company Name",
+    "Location Name"
+  ]
+
+  style = heads.map {|h| black_cell }
+
+  wb.add_worksheet(name: "Attendee Data") do |sheet|
+    sheet.add_row heads, :style => style
+
+    scans = AttendeeScan.stats_for_event(@event_id)
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: scans.length)
+      @job.write_to_file
+    end
+
+    scans.each { |s|
+      row = [
+        s["type_name"].titleize,
+        s["sender_account_code"],
+        s["sender_name"],
+        s["target_account_code"],
+        s["target_name"],
+        s["session_code"],
+        s["session_title"],
+        s["company_name"],
+        s["location_name"]
+      ]
+      sheet.add_row row
+      @job.plus_one_row if @job
+      sheet.column_widths *row.map{ |i| 30 }
+    }
+  end
+
+end

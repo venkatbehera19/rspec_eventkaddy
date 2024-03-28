@@ -1,0 +1,67 @@
+wb = xlsx_package.workbook
+
+batch_size     = 500
+iteration      = 0
+rank           = 1
+rank_iteration = 0
+
+wb.styles do |s|
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  # make export match output of stats method; may not be permenant
+  # heads = AppBadge.first.stats.keys.map {|v| v.to_s.titleize }
+  heads = ["Rank", "Name", "Email", "Account Code", "Total Points", "Badges Completed", "Points Most Recently Updated At"]
+
+  style = heads.map {|h| black_cell }
+
+  wb.add_worksheet(name: "Full Leaderboard Report") do |sheet|
+
+    sheet.add_row heads, :style => style
+
+    # slice in the hopes of not creating huge allocations of memory that 
+    # can't be garbage collected
+    lb_slice = AttendeesAppBadge.leaderboard_slice @event_id, batch_size, iteration
+    lb_slice = lb_slice.as_json
+    if @job
+      @job.update!(
+        status: "Processing Rows",
+        total_rows: AttendeesAppBadge.select('DISTINCT attendee_id').where(event_id: @event_id).count
+      )
+      @job.write_to_file
+    end
+
+    # this syntax executes once before conditional is evaluated
+    begin
+      iteration += 1
+
+      lb_slice.each do |a|
+        if !a.blank?
+          rank_iteration += 1
+
+          # was used to allow ties, now we break ties by fastest to acquire same number of points
+          # a["rank"] = sheet.rows && a['points'] != sheet.rows[rank_iteration-2].cells[4].value ? rank = rank_iteration : rank
+
+          sheet.add_row([
+            rank_iteration,
+            a["name"],
+            a["email"],
+            a["account_code"],
+            a["points"],
+            a["badges_completed"],
+            DateTime.parse(a["most_recent_update"]).strftime("%F %T")
+          ])
+
+          @job.plus_one_row if @job
+        end
+      end
+
+      lb_slice = AttendeesAppBadge.leaderboard_slice(
+        @event_id,
+        batch_size,
+        iteration * batch_size
+      )
+
+    end until lb_slice.length == 0
+  end
+end
+

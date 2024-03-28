@@ -1,0 +1,32 @@
+<% if @speaker_payment_detail == nil %>
+  <p>Travel & Lodging details have not been entered by conference staff at this time.</p>
+<% else %>
+  <% @s = @speaker_payment_detail %>
+  <div class="table-responsive">
+  <table class="table">
+
+  <tr><th>VIP Code</th><td><%= @s.vip_code %></td></tr>
+  <tr><th>Eligible For Direct-Billed Travel</th><td><%= @s.direct_bill_travel %></td></tr>
+  <tr><th>Eligible For Direct-Billed Housing</th><td><%= @s.direct_bill_housing %></td></tr>
+  <tr><th>Eligible Housing Nights</th><td><%= @s.eligible_housing_nights.to_i %></td></tr>
+  <tr><th>Speaker Payment Type</th><td><%= @s.payment_type %></td></tr>
+
+ <% unless @speaker_travel_detail == nil %>
+  <tr><th>Approved Arrival Date</th><td><%= @speaker_travel_detail.approved_arrival_date %></td></tr>
+  <tr><th>Approved Departure Date</th><td><%= @speaker_travel_detail.approved_departure_date %></td></tr>
+  <tr><th>Actual Arrival Date</th><td><%= @speaker_travel_detail.actual_arrival_date %></td></tr>
+  <tr><th>Actual Departure Date</th><td><%= @speaker_travel_detail.actual_departure_date %></td></tr>
+  <tr><th>Hotel Name</th><td><%= @speaker_travel_detail.hotel_name %></td></tr>
+  <tr><th>Hotel Confirmation Number</th><td><%= @speaker_travel_detail.hotel_confirmation_number %></td></tr>
+  <tr><th>Hotel Cost</th><td><%= @speaker_travel_detail.hotel_cost %></td></tr>
+  <tr><th>Hotel Reimbursement</th><td><%= @speaker_travel_detail.hotel_reimbursement %></td></tr>
+  <tr><th>Airfare Cost</th><td><%= @speaker_travel_detail.airfare_cost %></td></tr>
+  <tr><th>Airfare Reimbursement</th><td><%= @speaker_travel_detail.airfare_reimbursement %></td></tr>
+  <tr><th>Milelage</th><td><%= @speaker_travel_detail.mileage %></td></tr>
+  <tr><th>Comments</th><td><%= @speaker_travel_detail.comments %></td></tr>
+ <% end %>
+  </table>
+  </div>
+<% end %>
+
+<br/>

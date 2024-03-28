@@ -1,0 +1,16 @@
+:[{"id":"f42b8d44-d543-e011-86d4-001ec953730b","code":"AP01","title":"Exploring Opportunities with the Cloud-Ready Information Platform and SQL Server Code Name “Denali” ","description":"Join this session to learn how partners can extend opportunities beyond the database. Doug Leland, Microsoft Database General Manager, will explore the new investments across the information platform including SQL Server Code Name “Denali,” appliances, and SQL Azure. Learn what is new in SQL Server, including industry scenarios and partner experiences, and receive up-to-date news on DPS, SIP and MPN partner opportunities. \r\n\r\n","approvalstatus":"2","publishingstatus":"6","room":"LACC 150B","start":"\/Date(1310502600000)\/","finish":"\/Date(1310506200000)\/","score":0.0,
+
+"categoryids":["65b890e4-16f4-df11-82f7-001ec953730b","10c4a347-5df6-df11-82f7-001ec953730b","11ed34f9-5c39-e011-86d4-001ec953730b","17ed34f9-5c39-e011-86d4-001ec953730b","1ded34f9-5c39-e011-86d4-001ec953730b","23ed34f9-5c39-e011-86d4-001ec953730b","2fed34f9-5c39-e011-86d4-001ec953730b","4ded34f9-5c39-e011-86d4-001ec953730b","331e11b3-ed39-e011-86d4-001ec953730b"],
+
+
+"speakerids":["8687854f-9a69-e011-8914-001ec953730b","e86fa6f3-9f81-e011-b237-001ec953730b"],
+
+"sessions":[{"id":"fa2b8d44-d543-e011-86d4-001ec953730b","roomid":"3cff434f-3b67-e011-8914-001ec953730b","timeslotid":"2490521c-7d59-e011-8914-001ec953730b","allowscheduling":true,"capacity":0}]
+
+,"related":[],
+
+
+"info":[{"name":"Do Not Publish PPT Deck on DWPC","value":"False"},{"name":"Priority Scheduling","value":"False"},{"name":"techcheck_requested","value":"False"},{"name":"Do Not Publish Recording on DWPC","value":"False"},{"name":"_Design Assistance","value":"False"},{"name":"Ready for CommNet","value":"False"},{"name":"Content Owner","value":""},{"name":"objective01","value":""},{"name":"Video URL","value":""},{"name":"Eval Confirmation Message","value":""}]
+
+
+,"documents":null},

@@ -1,0 +1,110 @@
+#+TITLE: How to Add a Cordova Setting
+
+* Preamble
+Cordova settings got a bit mixed up when it wasn't clear if the app would need to know about QA settings. Thus it has become a mix of things inside the cordova app, and things the cordova app links to on external websites. Currently we only have three booleans that the cordova app will read, and it is trivial to add them as below. You can also add string settings, though so far these only exist for the guest QA page.
+TODO: check if qa string settings are in the app
+
+* Add the Setting Name to @@cordova_props
+#+NAME: app/models/setting.rb
+#+BEGIN_SRC ruby
+80   @@cordova_props = [
+81     :exhibitors_enabled,
+82     :ce_credits_enabled,
+83     :iattend_enabled,
+84     :guest_qa_page_enabled, # button in cordova app; used to be for guest_views page
+#+END_SRC
+* If It's a Boolean, you can add it to this form
+#+NAME: /Users/edwardgallant/working_copies/lodestar/eventkaddy/app/views/settings/cordova.html.haml
+#+BEGIN_SRC haml
+ 3     = form_for @cordova_booleans, :html => { :multipart => true, :method => :post }, :url => '/settings/update_cordova_settings' do |f|
+ 4         .field
+ 5             = f.check_box :exhibitors_enabled
+ 6             Exhibitors Enabled
+ 7         .field
+ 8             = f.check_box :ce_credits_enabled
+ 9             CE Credits Enabled
+10         .field
+11             = f.check_box :iattend_enabled
+12             I Attend Enabled
+#+END_SRC
+* Cordova Strings are in the same form, but have "string_setting" appended to the name attr
+#+NAME: app/views/settings/cordova.html.haml
+#+BEGIN_SRC haml
+ 99         .field
+100             No Questions Yet Header Text
+101             = text_field_tag :guest_qa_page_no_questions_header, @cordova_strings.guest_qa_page_no_questions_header, name: "string_setting[guest_qa_page_no_questions_header]", placeholder: "Welcome"
+#+END_SRC
+* Use my color_picker lambda if it's for a color
+#+NAME: app/views/settings/cordova.html.haml
+#+BEGIN_SRC haml
+108         .field
+109             Guest Q&A Page Background Color
+110             %br
+111             = color_picker.call :guest_qa_page_background_colour
+#+END_SRC
+* Other Noteable Files
+** fetchSettingsOverrides
+Saves settings into localStorage CORDOVA_BOOLEANS
+#+NAME: javascripts/misc-utility-functions.js
+#+BEGIN_SRC javascript
+248 //fetch app setting overrides stored on the CMS
+249 EKM.fetchSettingOverrides = function(options) {
+250     options = typeof options !== 'undefined' ? options : {};
+251 
+252     if (EKM.checkConnection()) {
+253 
+254         var successFunc = function() {
+255 
+256             return function(srv_data) {
+257 
+258                 if (window.DEBUG) {
+259                     console.log("fetch setting overrides: ",srv_data);
+260                 }
+261 
+262                 if (srv_data.status===true) {
+263                     if (window.DEBUG) { console.log("fetch setting overrides -- data status: ", srv_data.status); }
+264 
+265                     if (window.DEBUG) { console.log("fetch setting overrides - settings: ", srv_data.settings); }
+266 
+267                     localStorage["CORDOVA_BOOLEANS"] = JSON.stringify(srv_data.settings);
+268                         
+269                     // Makes sense to do it this way, but assumes
+270                     // settings are only modified via this function,
+271                     // otherwise would result in sequencing errors
+272                     EKM.setSettings( srv_data.settings );
+273                 }
+274                 else { //fail
+275                     if (window.DEBUG) { console.log("fetch setting overrides -- error"); }
+276 
+277                 }
+#+END_SRC
+** API for setting overrides
+#+NAME: app/controllers/events_controller.rb
+#+BEGIN_SRC ruby
+60   def mobile_data_cordova_setting_overrides_v2
+61    	set_access_control_headers
+62     
+63    		event_id = params[:event_id]
+64 
+65    		@result = {}
+66    		@result["status"] = false
+67 
+68 		if (params['api_proxy_key'] == API_PROXY_KEY) then
+69 			@result["status"] = true	
+70 			@result["settings"] = Setting.return_cordova_booleans_or_false( event_id ) ? Setting.return_cordova_booleans_or_false( event_id ).json : {}
+71 		else
+72 			@result["error_messages"] << "Error: Incorrect proxy key."	
+73 		end
+74 
+75     render(
+76       :json => @result.to_json,
+77       :callback => params[:callback]
+78     )
+79   end
+#+END_SRC
+** URL used in cordova app
+#+NAME: javascripts/settings.js
+#+BEGIN_SRC javascript
+589     //fetch app overrides stored on CMS
+590     EKM.FETCH_APP_SETTING_OVERRIDES_URL = window.url_root + "/events/mobile_data_cordova_setting_overrides_v2";
+#+END_SRC

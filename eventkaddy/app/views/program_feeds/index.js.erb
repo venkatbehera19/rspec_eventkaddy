@@ -1,0 +1,8 @@
+<% if params[:date] == 'ALL' && params[:sessionPage].to_i > 1 %>
+	$(".sessions-list").append("<%= j (render partial: 'sessions_list') %>");
+<% else %>
+	$(".sessions_by_schedule").html("<%= j (render partial: 'sessions_by_schedule') %>");
+<% end %>
+showMore()
+sel_filter.view == 'card' ? toCardView() : toListView()
+$('.load-more').hide()

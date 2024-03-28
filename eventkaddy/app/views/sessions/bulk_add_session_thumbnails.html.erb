@@ -1,0 +1,30 @@
+<%= form_for(@event, :html => { :multipart => true, :class=>"form-horizontal well" }, :url => "/sessions/bulk_create_session_thumbnails", :method => :post ) do |f| %>
+
+    <% if @event.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@event.errors.count, "error") %> prohibited this session thumbnail from being saved:</h2>
+
+            <ul>
+                <% @event.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+        <%= f.hidden_field :event_id, :value => session[:event_id] %>
+    </div>
+
+    <p>Use this function to upload many session thumbnails at once. The filenames must be the same as the sessions' codes. IE: 0345.jpg will be uploaded as the thumbnail for the session with code 0345. Images must be jpg or png format.</p><br>
+
+    <div class="field">
+        <%= label_tag :event_files, "Choose a File" %>
+        <%= file_field_tag "event_files[]", :multiple => true, required: true %>
+    </div><br />
+
+    <div class="actions">
+        <%= f.submit "Upload Files", class:"btn btn-primary"   %>
+    </div>
+<% end %>
+

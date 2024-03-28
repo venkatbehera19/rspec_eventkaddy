@@ -1,0 +1,86 @@
+<%= javascript_include_tag 'unordered-files/jquery.form.js' %>
+<%= javascript_include_tag 'unordered-files/image_upload.js' %>
+
+<%= form_for(@message, :html=>{:class=>"bg-light custom-border px-3 py-3"}) do |f| %>
+  <% if @message.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@message.errors.count, "error") %> prohibited this notification from being saved:</h2>
+
+      <ul>
+      <% @message.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+<div class="row">
+
+ <div class="col-sm-8">
+         <div id="uploadedImages"></div><br>
+
+  <div id="spinner">
+    <%= image_tag "spinner.gif" %>
+  </div>
+  <div id="response"></div>
+
+        <div class="field">
+          <%= label_tag :event_file, "Upload a picture" %><br />
+          <%= file_field_tag :event_file %>
+        </div>
+        <input type="button" value="Upload" id="SubmitUpload" class="btn btn-secondary" /><br /><br>
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :content, "Content" %>
+    <%= f.cktext_area :content, :ckeditor => {:toolbar => "Full"} %>
+  </div>
+
+  <div class="field">
+    <div class="form-check-inline">
+      <%= label_tag(nil, class: "form-check-label") do%>
+        <%= f.radio_button(:message_type, "1", class: "form-check-input") %>
+        For Speakers
+      <% end %>
+    </div>
+    <div class="form-check-inline">
+      <%= label_tag(nil, class: "form-check-label") do %>
+        <%= f.radio_button(:message_type, "2", class: "form-check-input") %>
+        For Exhibitors
+      <% end %>
+    </div>
+<!--     <%= f.radio_button(:message_type, "3") %>
+    <%= label_tag(:message_type_3, "For Speakers & Exhibitors") %> -->
+  </div>
+
+  <!-- <div class="field narrow-datetime">
+    <%#= f.label "Send Date/Time" %><br />
+    <%#= f.datetime_select :active_time, :default => @localtime, :minute_step => 30 %>
+  </div> -->
+
+  <br />
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary", :onclick=>"$('#event_file').val('');"   %>
+  </div>
+  </div><!-- col-sm-8-->
+  <div class="col-sm-3 ml-auto">
+  <div id="gallery">
+    <% if @event_files!=nil %>
+      <% @event_files.each do |file| %>
+      <div class="float">
+          <%= image_tag(file.path, :class=>'galleryimage') %>
+
+          <p><%= link_to "Delete", {:controller => :event_files, :action => :destroy, :id => file.id}, { :method => :delete, :remote => true, :class =>'deleter btn delete'}   %></p>
+
+      </div>
+      <% end %>
+    <% end %>
+  </div><!--gallery-->
+
+
+
+</div> <!--col-sm-3-->
+</div><!-- row-->
+<% end %>

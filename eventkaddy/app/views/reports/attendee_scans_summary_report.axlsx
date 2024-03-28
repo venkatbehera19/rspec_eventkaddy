@@ -1,0 +1,62 @@
+wb = xlsx_package.workbook
+
+wb.styles do |s|
+  black_cell = s.add_style :bg_color  => "00",
+                           :fg_color  => "FF",
+                           :sz        => 14,
+                           :alignment => { :horizontal=> :center }
+
+  heads = [
+    "Account Code",
+    "Attendee Name",
+    "Attendee Group",
+    "Total Count",
+    "Meetings Count",
+    "Meetings Count for Each Group",
+    "Session Scans Count",
+    "Exhibitor Scans Count",
+    "Location Scans Count"
+  ]
+
+  style = heads.map {|h| black_cell }
+
+  wb.add_worksheet(name: "Attendee Scan Data") do |sheet|
+    sheet.add_row heads, :style => style
+    sheet.column_widths *heads.map{ |i| 30 }
+
+    scans = AttendeeScan.stats_summary_for_event(@event_id)
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: scans.length)
+      @job.write_to_file
+    end
+
+    scans.each { |s|
+
+      # n+1 query, but I've wasted many hours trying to get it
+      # in one query and it's probably just fine for a report 
+      # that gets generated a few times a month
+      group_counts = AttendeeScan.
+        where(initiating_attendee_id: s["initiating_attendee_id"]).
+        joins("LEFT OUTER JOIN attendees ON attendees.id=target_attendee_id").
+        pluck(:business_unit).
+        each_with_object(Hash.new(0)) { |type, counts| counts[type] += 1 }.
+        map {|k,v| "#{k}: #{v}"}.join(', ')
+
+      row = [
+        s["account_code"],
+        s["name"],
+        s["group"],
+        s["total"],
+        s["meetings_count"],
+        group_counts,
+        s["session_scans_count"],
+        s["exhibitor_scans_count"],
+        s["location_scans_count"]
+      ]
+      sheet.add_row row
+      @job.plus_one_row if @job
+    }
+  end
+
+end

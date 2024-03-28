@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>EventKaddy CMS</title>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+    <%= csrf_meta_tag %>
+    <%= yield :head %>
+</head>
+
+<body style="background-color:#e9fffc;">
+
+<table id="header-fixed"></table>
+
+<table id="side-header-fixed">
+    <tbody></tbody>
+</table>
+<% f1, f2 = true, true %>
+<div class="grid-menubar">
+    <%= link_to 'Show Standard View', "/sessions", class:"btn btn-outline-secondary grid-button" %>
+    <div id="change-date-buttons" class="d-inline">
+        <% @dates.each do |date| %>
+            <button id='change_date<%= date %>' class='btn btn-outline-info grid-button date_button'><%= date %> <span class="show-count d-none"></span> </button>
+            <%#= link_to date, "/grid_view?date=#{date}", class:"btn show grid-button" %>
+        <% end %>
+    </div>
+    <div class="dropdown d-none" id="change-date-dropdown">
+        <button type="button" class="btn btn-outline-info mt-1 dropdown-toggle" data-toggle="dropdown">
+            More <span class="show-count d-none"></span>
+        </button>
+        <div class="dropdown-menu" id="change-date-menu">
+        </div>
+    </div>
+
+    <div class="grid-filters mb-3">
+        Search by Title or Tag:<br> 
+        <div class="form-inline d-inline">
+            <input id="search-input" class="form-control" /> 
+            <button id="search" class="btn btn-primary">Search</button>
+        </div>
+        <!-- <div id="grid-filter-by" class='btn btn-light'>Filter By...</div> -->
+        <div class="dropdown d-inline">
+            <a data-toggle="dropdown" class="btn btn-light">
+                <i class="fa fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu">
+                <button id="grid-reset" class='dropdown-item'>Reset</button>
+                <button id="grid-options" class='dropdown-item'>Highlight Tags</button> 
+                <!-- <button id="grid-legend" class='dropdown-item'>Color Legend</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<br style="line-height:96px; background-color:#e9fffc;">
+
+<table class="grid-table" cellspacing="0">
+    <thead class="table-head">
+        <tr><th class="grid-topleft"><%= @date %></th></tr>
+    </thead>
+
+    <tbody id="grid-body"></tbody>
+</table>
+
+<%# some variables which were previously input inline using erb template in %>
+<%# grid-view, now just put here... not pretty, but trying to take the grid-view %>
+<%# outside of the html view to make it easier to work with %>
+<script>
+kaddy_logo_path = "<%= asset_path 'ek_logo.png' %>";
+event_id        = <%= session[:event_id] %>;
+info_image      = "<%= asset_path 'ismall.png' %>";
+chosen_date     = "<%= @date %>";
+c_date          = "<%= @c_date %>";
+</script>
+
+<script src='/non_pipeline_assets/grid-view.js' type="text/javascript"></script>
+</body>
+</html>

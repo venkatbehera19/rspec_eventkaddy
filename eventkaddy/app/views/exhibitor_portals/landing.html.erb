@@ -1,0 +1,3 @@
+<% if (!(@event_setting.nil?) && !(@event_setting.exhibitor_welcome.nil?)) then %>
+<%= sanitize @event_setting.exhibitor_welcome, tags: %w(p strong em u) %><br><br>
+ <% end %>

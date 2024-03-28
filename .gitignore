@@ -1,0 +1,34 @@
+*.gem
+*.rbc
+*.log
+*~
+.bundle
+.config
+.rvmrc
+
+coverage
+InstalledFiles
+lib/bundler/man
+pkg
+rdoc
+spec/reports
+test/tmp
+test/version_tmp
+tmp
+log
+tmpold
+
+# YARD artifacts
+.yardoc
+_yardoc
+doc/
+
+# OS X artifacts
+.DS_STORE
+
+
+event_data
+.rvmrc
+
+ekbackbone/res/screen
+

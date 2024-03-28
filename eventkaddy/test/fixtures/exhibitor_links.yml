@@ -1,0 +1,13 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   event_id: 1
+#   exhibitor_id: 1
+#   exhibitor_link_name: MyString
+#   exhibitor_link_url: MyString
+
+# two:
+#   event_id: 1
+#   exhibitor_id: 1
+#   exhibitor_link_name: MyString
+#   exhibitor_link_url: MyString

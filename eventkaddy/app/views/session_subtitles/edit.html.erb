@@ -1,0 +1,25 @@
+<a class="btn btn-outline-dark mr-2" href="<%= "/sessions/#{@session.id}/subtitles"%>">Back</a>
+
+<%= form_for(:session, :url => '/sessions/subtitles/update', method: :put, :html => { :multipart => true, :class => "form-horizontal well" }) do |f| %>
+
+ <%= hidden_field_tag :id, @session.id %>
+
+  <div class="form-group">
+    <%= label_tag 'label' %>
+    <%= text_field_tag :label , @sel_subtitle[0]['label'], class: "form-control", required: true%>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag 'srclang' %>
+    <%= select_tag :srclang , options_for_select(['en', 'fr', 'es'], @sel_subtitle[0]['srclang']), class: "form-control", required: true%>
+  </div>
+
+  <div class="form-group">
+  	<%= hidden_field_tag :src, @sel_subtitle[0]['src']  %>
+    <%= text_area_tag(:subtitle, @subtitle_content, :size => "100x60") %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit 'Save Subtitle' ,class:"btn btn-primary"   %>
+  </div>
+<% end %>

@@ -1,0 +1,22 @@
+<style>
+  .deviseLink{
+    padding-left: 0; 
+  }
+</style>
+<div class="row">
+  <div id="sign-in" class="col-md-6 mx-auto bg-light custom-border">
+    <h3><%= @login_h3_content %></h3>
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), method: :post) do |f| %>
+        <div class="form-group">
+          <%= f.hidden_field :remember_me, :value => @remember_me %>
+          <%= f.hidden_field :id, :value => @user.id %>
+          <%= f.label :otp_attempt, "OTP" %><br/>
+          <%= f.text_field :otp_attempt, :autofocus => true, :class => 'form-control', :placeholder => "OTP Code", :required => true%>
+        </div>
+        <div class="actions">
+          <%= f.submit 'Login', class: 'btn btn-primary form-control' %>
+        </div>
+      <%end%>
+      <%= link_to "Lost Device?", lost_device_reset_two_factor_path(id: @user.id), method: :post,class:"deviseLink" %> 
+  </div>
+</div>

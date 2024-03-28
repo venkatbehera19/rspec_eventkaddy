@@ -1,0 +1,64 @@
+$(".speakers-list").hide()
+$('.search_bar').hide()
+$('.selected-filters').hide()
+$(".speaker-info").html("<%= j (render partial: 'speaker_session_info') %>");
+$(".speaker-info").show()
+$(".filter_listing").hide()
+$(".speaker-name-filter").html("<%= j (render partial: 'layouts/program_feeds_partials/speakers_filter') %>");
+$(".speaker-name-filter").show()
+
+
+$('p:empty').each(function(){
+  this.remove()
+})
+
+
+$("#speakerSearch").on("keyup", function() {
+	var value = $(this).val().toLowerCase();
+	$(".speaker_list").filter(function() {
+		$(this).toggle($(this).find('a').text().toLowerCase().indexOf(value) > -1)
+	});
+});
+
+
+originalHeight = $('.bio-graph-heading .description .biography').height()
+defaultHeight = $('.bio-graph-heading .description').height()
+if (originalHeight > defaultHeight) {
+  $('.bio-show-more').show()
+}
+
+$('.bio-show-more').click(function(){
+  nowHeight = $('.bio-graph-heading .description').css('height')
+  nowHeight = parseInt(nowHeight)
+  defaultHeight = parseInt(defaultHeight)
+  if(nowHeight > defaultHeight){
+    $(this).text('Show More')
+    $('.bio-graph-heading').css('height', '316px')
+    $('.bio-graph-heading .description').css('height', '13.7rem')
+  }else{
+    $(this).text('Show Less')
+    $('.bio-graph-heading').css('height', 'auto')
+    $('.bio-graph-heading .description').css('height', 'auto')
+  }
+})
+
+
+
+$('.speaker-name').click(function(event){
+	event.preventDefault()
+	url = this.href
+  $.ajax({
+    type: "get",
+    url: url
+  });
+})
+
+$('.back-to-speakers').click(function(event){
+    event.preventDefault()
+    $('.speakers-list').show()
+    $('.speaker-info').html('<div class="load-more" style="display: none;text-align: center;margin-top: 50px"> <div class="loading08 display-4"> <span data-text="L">L</span> <span data-text="O">O</span> <span data-text="A">A</span> <span data-text="D">D</span> <span data-text="I">I</span> <span data-text="N">N</span> <span data-text="G">G</span> </div> </div>')
+    $('.speaker-name-filter').hide()
+    $(".filter_listing").show()
+    $('.search_bar').show()
+    $('.selected-filters').show()
+})

@@ -1,0 +1,13 @@
+GENERAL
+
+	The has_many association creates a one-to-many relationship with another model. In database terms, this association says that the other class will have a 	foreign key that refers to instances of this class.
+	
+	The has_one association creates a one-to-one match with another model. In database terms, this association says that the other class contains the foreign 	key. If this class contains the foreign key, then you should use belongs_to instead.
+	
+	The belongs_to association creates a one-to-one match with another model. In database terms, this association says that this class contains the foreign 	key. If the other class contains the foreign key, then you should use has_one instead.
+	
+	The has_and_belongs_to_many association creates a many-to-many relationship with another model. In database terms, this associates two classes via an 		intermediate join table that includes foreign keys referring to each of the classes.
+
+FOREIGN KEYS
+
+	http://stackoverflow.com/questions/668921/foreign-key-refering-to-primary-keys-across-multiple-tables

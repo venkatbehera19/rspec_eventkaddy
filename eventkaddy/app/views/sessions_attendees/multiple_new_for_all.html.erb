@@ -1,0 +1,44 @@
+<%= link_to 'Back', '/attendees', class:"btn btn-link" %>
+<br>
+<br>
+
+<%= form_for(@sessions_attendee, :html => {:class=>"form-horizontal well" }, :url => {:action => "update_multiple_new_for_all"} ) do |f| %>
+
+    <strong class="text-danger">Important: This action cannot be undone.</strong> 
+    <br>
+    <br>
+
+    <% if @sessions_attendee.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@sessions_attendee.errors.count, "error") %> prohibited this event from being saved:</h2>
+
+            <ul>
+                <% @sessions_attendee.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+
+    <div class="field">
+        <%= label_tag :add_sessions, "Select Sessions:" %>
+        <%= select_tag(
+            :session_ids,
+            options_for_select(
+                @sessions.map { |session| 
+                    [ "#{session.session_code} #{session.title}", session.id ] 
+                }
+            ),
+            :multiple => true,
+            :size     => 30,
+            class: "form-control custom-select"
+        ) %>
+        <br>
+        <br>
+    </div>  
+
+    <div class="actions">
+        <%= f.submit "Add Sessions to All Attendees",class:"btn btn-primary"   %>
+    </div>
+<% end %>

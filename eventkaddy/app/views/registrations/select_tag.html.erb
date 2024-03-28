@@ -1,0 +1,200 @@
+<body>
+  <nav class="navbar navbar-light bg-light reg-banner">
+    <%= @settings.reg_banner.to_s.html_safe %>
+  </nav>
+  <div class="container-fluid d-flex flex-column mx-auto reg-main">
+    <div class="d-flex reg-section-container align-items-center reg-header pb-0" style="<%= "background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_edit_page %>">
+      <div class="row mx-auto d-flex reg-row">
+        <div class="col-12 d-flex reg-col">
+          <!-- ======= Nav ======= /
+          -->
+          <nav class="navbar navbar-expand-sm navbar-light full-width">
+            <a class="navbar-brand text-wrap">
+              <% event_setting = EventSetting.select(:portal_logo_event_file_id).where(event_id:params[:event_id]).first_or_create %>
+              <% if event_setting && event_setting.event_file_portal_logo %>
+                <%= image_tag(event_setting.event_file_portal_logo.path, :class =>'photo_preview') %>
+              <% else %>
+                <img src="/assets/ek_logo.png" width="100px"/>
+              <% end %>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations">
+                      <i class="fa fa-home"></i>
+                    </a>
+                  </li>
+                <% if @settings.method("agenda").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/agenda">
+                      AGENDA
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("speakers").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/speakers">
+                      SPEAKERS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("exhibitors").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/exhibitors">
+                      EXHIBITORS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("sponsors").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/sponsors">
+                      SPONSORS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("hotel_information").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/hotel_information">
+                      HOTEL INFORMATION
+                    </a>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </nav>
+          <div class="row">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if notice %>
+    <div class="alert alert-success shadow" role="alert" style="border-left:#155724 5px solid; border-radius: 0px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true" style="color:#155724">&times;</span>
+      </button>
+      <div class="row">
+        <i class="fa fa-check-circle-o success-font"></i>
+        <p style="font-size:12px" class="mb-0 font-weight-light"><%= notice %></p>
+      </div>
+    </div>
+  <% end %>
+  <% if alert %>
+      <div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true" style="color:#721C24">&times;</span>
+          </button>
+          <div class="row">
+                  <i class="fa fa-exclamation-circle danger-font"></i>
+                  <p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+          </div>
+      </div>
+  <% end %>
+  <div class="reg-section-container m-3">
+    <div class="d-flex justify-content-center">
+      <div class="col-md-7">
+        <%= form_for(@attendee, :html => { :class => "form" }, :url => { :action => "update_attendee_form" }, :method => :post ) do |f| %>
+          <% if @attendee.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@session.errors.count, "error") %> prohibited this session from being saved:</h2>
+              <ul>
+                <% @session.errors.full_messages.each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+          <div class="form-group">
+            <h3><%= f.label "#{ @settings.select_tag_title ? @settings.select_tag_title&.length > 0 ? @settings.select_tag_title : "Select Attendee Tags" : "Select Attendee Tags" }" %></h3>
+            <%= f.select :tags_attendees, options_for_select(@keywords), {}, :multiple=> true, :validate=> true, :class=> 'form-control session-select', :required => true, :style => "height: 400px" %> 
+            <p style="font-weight: normal; font-size: 13px;"><em>hold shift to select multiple keywords </em></p>
+          </div>
+
+          <%= f.hidden_field :event_id, :value => @event.id %>
+          <%= hidden_field_tag "tag_type", @tag_type.id  %>
+          <%= hidden_field_tag "attendee_id", @attendee.id  %>
+          <%= hidden_field_tag "custom_form_id", @custom_form.id  %>
+
+          <br/>
+          <br/>
+          
+          <% @custom_form.json.each do |field| %>
+            <% if field["type"] == 'text' %>
+              <%= field["label"].html_safe %>
+              <%= text_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+              <br>
+            <% elsif field["type"] == 'checkbox-group' %>
+              <%= field["label"].html_safe %>
+              <br/>
+              <br>
+              <% field["values"].each do |option| %>
+                <%= check_box_tag "user[#{field["name"]}][]", option["label"], option["selected"] ? option["selected"] : false %>
+                <%= label_tag option["label"], strip_tags(option["label"].gsub!(/(&nbsp;|\s)+/, " ")) %>
+                <br>
+              <% end %>
+              <br>
+            <% elsif field["type"] == 'radio-group' %>
+              <%= field["label"].html_safe %>
+              <br>
+              <% field["values"].each do |option| %>
+                <%= radio_button_tag "user[#{field["name"]}]", option["label"], option["selected"] ? option["selected"] : false %>
+                <%= label_tag option["label"], option["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+                <br/>
+              <% end %>
+              <br>
+            <% elsif field["type"] == 'textarea' %>
+              <%= field["label"].html_safe %>
+              <br>
+              <%= text_area_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+              <br>
+            <% elsif field["type"] == 'date' %>
+              <br>
+              <%= field["label"].html_safe %>
+              <%= date_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+            <% elsif field["type"] == 'number' %>
+              <br>
+              <%= field["label"].html_safe %>
+              <%= number_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+            <% elsif field["type"] == 'header' %>
+              <br>
+                <% subtype = field["subtype"] %>
+                <% if subtype == "h1" %>
+                  <h1>
+                    <%= field["label"].html_safe %>
+                  </h1>
+                <% elsif subtype == "h2" %>
+                  <h2>
+                    <%= field["label"].html_safe %>
+                  </h2>
+                <% elsif subtype == "h3" %>
+                  <h3>
+                    <%= field["label"].html_safe %>
+                  </h3>
+                <% elsif subtype == "h4" %>
+                  <h4>
+                    <%= field["label"].html_safe %>
+                  </h4>
+                <% elsif subtype == "h5" %>
+                  <h5>
+                    <%= field["label"].html_safe %>
+                  </h5>
+                <% else %>
+                  <h6>
+                    <%= field["label"].html_safe %>
+                  </h6>
+                <% end %>
+            <% elsif field["type"] == 'paragraph' %>
+              <br>
+              <p><%= field["label"].html_safe %></p>
+            <% end %>
+          <% end %>
+          <br/>
+          <p><%= f.submit "Submit", class: "btn btn-primary" %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</body>

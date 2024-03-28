@@ -1,0 +1,41 @@
+.embedded-chat-container.box-shadow--4dp
+    
+    .chat-header.box-shadow--2dp
+    -# Only for moderator portal
+    - if !@exhibitor_id && @session.enable_notification_sound
+        %audio#notificationAudio
+            %source{:src => "/notification_sound/juntos.mp3", :type => "audio/mpeg"}
+            %source{:src => "/notification_sound/juntos.ogg", :type => "audio/ogg"}
+            %source{:src => "/notification_sound/juntos.m4r", :type => "audio/m4r"}
+
+    .chat-log{:id => "chat-log"}
+        - @chats && @chats.each do |c|
+            %span.chat-name
+                = c.username
+                = ": "
+            %span.chat-message
+                = c.message
+            %br
+    .chat-log-disabled{:id => "chat-log-disabled"}
+        %h5{:style => "font-weight: normal;"}
+            Chat is disabled. You can enable it by clicking the  
+            %strong
+                Enable Chat
+            button above.
+    %input#chat-input.form-control{placeholder:"Type your message here and press enter."}
+:javascript
+    $(function () {
+        let logs = $('.chat-log')
+        let exhibitorCheck = #{@exhibitor_id}
+        var chatlog;
+        if (exhibitorCheck == false){
+          chatLog = "chat" + #{@session_id}
+        } else {
+          chatLog = "chat" + #{@exhibitor_id}
+        }
+        let chats = localStorage.getItem(chatLog)
+        if (chats) {
+          logs[0].innerHTML = chats;
+        }
+        
+    })

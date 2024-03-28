@@ -1,0 +1,71 @@
+<style>
+  #documentation p {
+      margin-top:20px;
+  }
+  .section-number {
+      color: #005400;
+  }
+  #documentation h2 {
+      color: #525652;
+  }
+  #documentation a, #documents-index span {
+      color: #3B78D2;
+  }
+  #documents-index span:hover {
+      cursor: pointer;
+  }
+</style>
+<script type="text/javascript" src="/non_pipeline_assets/org.js"></script>
+<script>
+
+function getDoc( filepath ) {
+    $.get( "/dev/document?path=" + filepath, function( data ) {
+        var orgParser = new Org.Parser();
+        var orgDocument = orgParser.parse( data );
+        var orgHTMLDocument = orgDocument.convert(Org.ConverterHTML, {
+            headerOffset:              2,
+            exportFromLineNumber:      false,
+            suppressSubScriptHandling: false,
+            suppressAutoLink:          false
+        });
+
+        $('#documentation').html( orgHTMLDocument.toString() )
+
+        history.pushState({'documentation':'documentation'}, "", "?doc=" + filepath);
+    });
+}
+
+$(function() {
+    var doc = window.location.search.substr(1).split('doc=')[1];
+    if ( doc ) {
+        getDoc( doc )
+    }
+});
+
+</script>
+
+<% iterate_directory = ->( dir, depth ) { %>
+    <% unless dir.has_key? :name %>
+        <h<%=depth + 2%> style="margin-left: <%= 20 * (depth - 1) %>px;">
+            <%= dir.keys[0].upcase %>
+        </h<%=depth + 2%>>
+        <% dir.values[0].each_with_index do |d, i| %>
+            <% iterate_directory.call d, depth + 1 %>
+            <% if dir.values[0].length == i + 1 %>
+                <br>
+            <% end %>
+        <% end %>
+    <% else %>
+        <span onClick="getDoc('<%=dir[:path]%>');" style="margin-left: <%= 20 * (depth - 1) %>px;">
+            • <%= dir[:pretty_name] || dir[:name].titleize.gsub('.Org', '') %>
+        </span>
+        <br>
+    <% end %>
+<% } %>
+
+<div id="documents-index" class='well'>
+    <h2> Documentation Index </h2>
+    <% @documents.each {|d| iterate_directory.call d, 1 } %>
+</div>
+
+<div id="documentation" class="well"></div>

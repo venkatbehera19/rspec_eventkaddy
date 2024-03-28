@@ -1,0 +1,67 @@
+  <style>
+  .nav-link.active {
+    color: #495057 !important;
+    background-color: #fff !important;
+    border-color: #dee2e6 #dee2e6 #fff !important; 
+  }
+  .nav-link-anchors {
+    color: #307eb6 !important;
+    text-decoration: none;
+    background-color: transparent;
+  }
+  .btn:focus,.btn:active {
+   outline: none !important;
+   box-shadow: none;
+}
+ </style>
+ 
+<div class="col">
+  <div class="row">
+    <div class="col mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="e-profile">
+
+            <div class="row" id="profileStatic">
+              <%= render 'profiles/profile_components/profile_static'%>
+            </div>
+
+            <!-- nav links for profile sectio -->
+            <ul class="nav nav-tabs" id="profileMainTab" role="tablist" >
+              <li class="nav-item">
+                <a class="nav-link-anchors nav-link active" id="general-tab" data-toggle="tab" data-target="#general" role="tab" aria-controls="general" aria-selected="true">
+                  General
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link-anchors nav-link" id="password-tab" data-toggle="tab" data-target="#password" role="tab" aria-controls="password" aria-selected="true">
+                  Password
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link-anchors nav-link" id="two-factor-tab" data-toggle="tab" data-target="#two-factor" role="tab" aria-controls="two-factor" aria-selected="true">
+                  Two-Factor
+                </a>
+              </li>
+            </ul>
+
+            <!-- nav links content that will be rendered when a link is clicked-->
+            <div class="tab-content pt-3" id="myTabContent">
+              <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                <%= render 'profiles/profile_components/general'%>
+              </div>
+              <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+                <%= render 'profiles/profile_components/password'%>
+              </div>
+              <div class="tab-pane fade" id="two-factor" role="tabpanel" aria-labelledby="two-factor-tab">
+                <%= render 'profiles/profile_components/two-factor'%>
+              </div>
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

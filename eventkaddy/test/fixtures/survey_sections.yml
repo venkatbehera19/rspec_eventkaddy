@@ -1,0 +1,65 @@
+# Survey.find(224).survey_sections.map &:to_yaml
+one:
+  id: 630
+  event_id: 205
+  survey_id: 224
+  order: 1
+  heading: 'Session Survey Questions:'
+  subheading: Please rate each speaker based on the criteria below
+  created_at: 2019-02-20 16:59:51.000000000 Z
+  updated_at: 2019-02-20 16:59:51.000000000 Z
+two:
+  id: 631
+  event_id: 205
+  survey_id: 224
+  order: 2
+  heading: Saira Jan
+  subheading:
+  created_at: 2019-02-20 17:00:11.000000000 Z
+  updated_at: 2019-02-20 17:00:11.000000000 Z
+three:
+  id: 632
+  event_id: 205
+  survey_id: 224
+  order: 3
+  heading: Max Hamburger
+  subheading:
+  created_at: 2019-02-20 17:03:39.000000000 Z
+  updated_at: 2019-02-20 17:03:39.000000000 Z
+four:
+  id: 633
+  event_id: 205
+  survey_id: 224
+  order: 4
+  heading: Adrienne Hollander
+  subheading:
+  created_at: 2019-02-20 17:04:50.000000000 Z
+  updated_at: 2019-02-20 17:04:50.000000000 Z
+five:
+  id: 634
+  event_id: 205
+  survey_id: 224
+  order: 5
+  heading: Doug Tardio
+  subheading:
+  created_at: 2019-02-20 17:08:16.000000000 Z
+  updated_at: 2019-02-20 17:08:16.000000000 Z
+six:
+  id: 635
+  event_id: 205
+  survey_id: 224
+  order: 6
+  heading: 'Please rate the following session objectives to indicate if you are better
+    able to:'
+  subheading:
+  created_at: 2019-02-20 17:09:37.000000000 Z
+  updated_at: 2019-02-20 17:09:37.000000000 Z
+seven:
+  id: 636
+  event_id: 205
+  survey_id: 224
+  order: 7
+  heading: 'Please evaluate the following:'
+  subheading:
+  created_at: 2019-02-20 17:12:02.000000000 Z
+  updated_at: 2019-02-20 17:12:02.000000000 Z

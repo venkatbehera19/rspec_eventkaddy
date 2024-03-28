@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>EventKaddy CMS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%= stylesheet_link_tag "application" %>
+        <%= javascript_include_tag "application" %>
+        <%= javascript_include_tag '/raty/js/jquery.raty.min.js'%>
+        <%= csrf_meta_tag %>
+        <%= yield :head %>
+        <style>
+            .profile-link{
+                padding: 5px 10px !important;
+                font-size: 24px;
+            }
+            .profile-nav{
+                display: flex;
+                align-items: center;
+            }
+        </style>
+        <!--
+        <style>
+            .dev-menu-link { color:#787F7E; }
+            .dev-menu-link:hover { background-color:transparent;text-decoration:none;color:#A2AEAE; }
+            .dev-container { margin:10px;font-size:30px;font-weight:600;color:#787F7E; border:2px solid #787F7E;border-radius:10px;padding:5px 2px 5px 2px; box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12); }
+            .dev-container:hover { border-color:#A2AEAE; box-shadow: 0 0 0 0 rgba(0, 0, 0, .14), 0 0 0 0 rgba(0, 0, 0, .2), 0 0 0 0 rgba(0, 0, 0, .12); } 
+        </style> -->
+    </head>
+    <body>
+        <%# TODO: This and all the side menu code below should be replaced to make use of %> 
+        <%# Menus.cms_menu_items, so it can stay in sync with the mobile menu; will %>
+        <%# do this soon. %>
+        <% icon_map = {
+            'statistics'                          => 'fa fa-home',
+            'registrations_header'                => 'fa fa-registered',
+            'sessions'                            => 'fa fa-calendar',
+            'attendees'                           => 'fa fa-address-card',
+            'maps_rooms_header'                   => 'fa fa-map',
+            'app_virtual_config_header'           => 'fa fa-wrench',
+            'game_header'                         => 'fa fa-futbol-o',
+            'report_downloads'                    => 'fa fa-download',
+            'game_statistics'                     => 'fa fa-bar-chart',
+            'reports_header'                      => 'fa fa-file-text',
+            'exhibitors'                          => 'fa fa-globe',
+            'speaker_portal_header'               => 'fa fa-users',
+            'speakers'                            => 'fa fa-microphone',
+            'rooms'                               => 'fa fa-building-o',
+            "conference_notes"                    => 'fa fa-file-o',
+            'video_views'                         => 'fa fa-tv',
+            'booths'                              => 'fa fa-map-signs',
+            'room_layouts'                        => 'fa fa-language',
+            'settings_header'                     => 'fa fa-cog',
+            'mobile_and_app_settings'             => 'fa fa-tasks',
+            'app_game'                            => 'fa fa-trophy',
+            'surveys'                             => 'fa fa-check-square-o',
+            'polls'                               => 'fa fa-bar-chart-o',
+            'session_polls'                       => 'fa fa-bar-chart-o',
+            'app_forms'                           => 'fa fa-mobile fa-2x',
+            'scavenger_hunts'                     => 'fa fa-puzzle-piece',
+            'banners'                             => 'fa fa-file-photo-o',
+            'notifications'                       => 'fa fa-bell-o',
+            'ce_certificates'                     => 'fa fa-sun-o',
+            'attendee_badges'                     => 'fa fa-sun-o',
+            'custom_form'                         => 'fa fa-envelope-o',
+            'flare_photos_link'                   => 'fa fa-photo',
+            'portal_messages'                     => 'fa fa-comment',
+            'import_export'                       => 'fa fa-upload',
+            'home_screen_icons_app'               => 'fa fa-cubes',
+            'home_screen_icons_mobile'            => 'fa fa-mobile',
+            'event_maps'                          => 'fa fa-map-o',
+            'speaker_pdfs'                        => 'fa fa-file-pdf-o',
+            'exhibitor_pdfs'                      => 'fa fa-file-pdf-o',
+            'exhibitor_portal_global_configs'     => 'fa fa-cog',
+            'education_managers'                  => 'fa fa-user-o',
+            'feedback_summary'                    => 'fa fa-commenting-o',
+            'download_request'                    => 'fa fa-file-archive-o',
+            'general_portal_settings'             => 'fa fa-circle-thin small-icons',
+            'event_settings'                      => 'fa fa-circle-thin small-icons',
+            'speaker_portal_settings'             => 'fa fa-circle-thin small-icons',
+            'attendee_portal_settings'            => "fa fa-circle-thin small-icons",
+            'exhibitor_portal_settings'           => 'fa fa-circle-thin small-icons',
+            'mobile_app_booleans'                 => 'fa fa-circle-thin small-icons',
+            'qna_page_settings'                   => 'fa fa-circle-thin small-icons',
+            'guest_view_settings'                 => 'fa fa-circle-thin small-icons',
+            'video_portal_booleans'               => 'fa fa-circle-thin small-icons',
+            'video_portal_headings'               => 'fa fa-circle-thin small-icons',
+            'video_portal_contents'               => 'fa fa-circle-thin small-icons',
+            'video_portal_styles'                 => 'fa fa-circle-thin small-icons',
+            'video_portal_images'                 => 'fa fa-circle-thin small-icons',
+            'program_feed_booleans'               => 'fa fa-circle-thin small-icons',
+            'program_feed_headings'               => 'fa fa-circle-thin small-icons',
+            'program_feed_styles'                 => 'fa fa-circle-thin small-icons',
+            'simple_registration_settings'        => 'fa fa-circle-thin small-icons',
+            'registration_portal_settings'        => 'fa fa-circle-thin small-icons',
+            'exhibitor_registration_portal_settings' => 'fa fa-circle-thin small-icons',
+            'speaker_registration_settings'        => 'fa fa-circle-thin small-icons',
+            'speaker_pdfs'                        => 'fa fa-circle-thin small-icons',
+            'video_portal_header'                 => 'fa fa-desktop',
+            'program_feed_header'                 => 'fa fa-users',
+            'templates_header'                    => 'fa fa-envelope',
+            'custom_emails'                       => 'fa fa-circle-thin small-icons',
+            'speaker_email_password_template'     => 'fa fa-circle-thin small-icons',
+            'speaker_numeric_password_template'   => 'fa fa-circle-thin small-icons',
+            'speaker_email_confirmation_template' => 'fa fa-circle-thin small-icons',
+            'attendee_email_password_template'    => 'fa fa-circle-thin small-icons',
+            'registration_attendee_email_password_template' => 'fa fa-circle-thin small-icons',
+            'registration_attendee_email_confirmation_template' => 'fa fa-circle-thin small-icons',
+            'registration_attendee_receipt'       => 'fa fa-circle-thin small-icons',
+            'exhibitor_email_password_template'   => 'fa fa-circle-thin small-icons',
+            'exhibitor_receipt_template'          => 'fa fa-circle-thin small-icons',
+            'attendee_email_confirmation_template'=> 'fa fa-circle-thin small-icons',
+            'calendar_invitation_email_template'  => 'fa fa-circle-thin small-icons',
+            'ce_certificate_email_template'       => 'fa fa-circle-thin small-icons',
+            'event_tickets'                       => 'fa fa-circle-thin small-icons',
+            'products_header'                     => 'fa fa-shopping-basket',
+            'product_categories'                  => 'fa fa-circle-thin small-icons',
+            'products'                            => 'fa fa-circle-thin small-icons',
+            'mode_of_payment'                     => 'fa fa-money',
+            'purchases'                           => 'fa fa-money',
+            'members_headers'                     => 'fa fa-envelope-o',
+            'exhibitor_purchases'                 => 'fa fa-money',
+            'attendee_purchases'                  => 'fa fa-money',
+            'transactions'                        => 'fa fa-money',
+            "product_coupons"                     => 'fa fa-gift',
+            "webhook_transactions"                => 'fa fa-shopping-basket',
+            'attendee_badge_settings'             => 'fa fa-circle-thin small-icons',
+            'item_purchases'                      => 'fa fa-shopping-cart',
+            'transactions_header'                 => 'fa fa-exchange',
+        } %>
+        <% settings = Setting.return_cms_settings session[:event_id] %>
+        <% menu_header = ->(label, menu_header_name) {
+            "<div class='accordion-button collapsed sidebar-heading dropdown-toggle hover-pointer-effect bdr-btm d-flex' id='#{menu_header_name}-collapse-btn' data-toggle='collapse' data-target='##{menu_header_name}-collapse'><div class='icon-div'><i class='#{icon_map[menu_header_name]} mr-2'></i></div>#{label}</div>".html_safe unless settings.method("hide_menu_#{menu_header_name}").call
+        } %>
+        <% menu_link = ->(label, url, menu_item_name, show=false) {
+            show_or_hide = show ? 'show' : 'hide'
+            unless show
+                "#{link_to url, class: "list-group-item list-group-item-action d-flex" do
+                    "<div class='icon-div'><i class='#{icon_map[menu_item_name]}'></i></div> #{label}".html_safe
+                end}".html_safe unless settings.method("#{show_or_hide}_menu_#{menu_item_name}").call
+            else
+                "#{link_to url, class: "list-group-item list-group-item-action d-flex" do
+                    "<div class='icon-div'><i class='#{icon_map[menu_item_name]}'></i></div> #{label}".html_safe
+                end}".html_safe if settings.method("#{show_or_hide}_menu_#{menu_item_name}").call
+            end
+        } %>
+                <%# COMMMIT %>
+
+        <div class="d-flex" id="wrapper">
+            <!-- Sidebar is here -->
+            <div class="accordion bg-light border-right" id="sidebar-wrapper">
+                <div class="brand-logo text-center">
+                    <% es = event_setting %>
+                    <% if (es && es.event_file_portal_logo) then %>
+                        <a href="/">
+                            <%= image_tag(es.event_file_portal_logo.path, :size=>'100x40') %>
+                        </a>
+                    <% else %>
+                        <a href="/">
+                            <!-- <img src="/assets/ek_logo.png" width="100px" height="40px"> -->
+                            <%= image_tag 'ek_logo_large.png', width: "100px", height: "40px" %>
+                        </a>
+                    <% end %>
+                </div>
+                <%= menu_link["Dashboard", "/events/statistics", "statistics"] %>
+                <%= menu_link["Sessions", "/sessions", "sessions"] %>
+                <%= menu_link["Speakers", "/speakers", "speakers"] %>
+                <%= menu_link["Exhibitors", "/exhibitors", "exhibitors"] %>
+                <%= menu_link["Attendees", "/attendees", "attendees"] %>
+                <%= menu_link["Import/Export Data", "/events/configure/#{session[:event_id]}", "import_export"] %>
+                <%= menu_link["App Home Buttons", "/home_buttons", "home_screen_icons_app"] %>
+
+                <%= menu_header["Mapping", "maps_rooms_header"] %>
+                <div class="collapse list-group" id="maps_rooms_header-collapse">
+                    <%= menu_link["Session Rooms", "/location_mappings/rooms", "rooms"] %>
+                    <%= menu_link["Exhibitor Booths", "/location_mappings/booths", "booths"] %>
+                    <%= menu_link["Event Maps", "/event_maps", "event_maps"] %>
+                    <%= menu_link["Booths", "/location_mappings/booths", "booths"] %>
+                    <%= menu_link["Room Layouts", "/room_layouts", "room_layouts"] %>
+                </div>
+
+                <%= menu_header["App & Virtual Config", "app_virtual_config_header"] %>
+                <div class="collapse list-group" id="app_virtual_config_header-collapse">
+                    <%= menu_link["Event Settings", "/event_settings/edit_restricted_event_settings", "event_settings"] %>
+                    <%= menu_link["Banners", "/app_images/select_type", "banners"] %>
+                    <%= menu_link["Notifications", "/notifications", "notifications"] %>
+                    <%= menu_link["Surveys", "/surveys", "surveys"] %>
+                    <%= menu_link["Polls", "/polls", "polls"] %>
+                    <%= menu_link["Session Polls", "/session_polls", "session_polls"] %>
+                    <%= menu_link["Mobile App Forms", "/app_submission_forms", "app_forms"] %>
+                    <%= menu_link["CE Certificates", "/ce_certificates", "ce_certificates"] %>
+                    <%= menu_link["Photo Gallery CMS", "https://flare.eventkaddy.net", "flare_photos_link"] %>
+                    <%= menu_link["Session Files", "/session_files/summary?type=conference note", "conference_notes"] %>
+                    <%= menu_link["Mobile and App Settings", "/event_settings/edit_mobile_settings", "mobile_and_app_settings"] %>
+                    <%= menu_link["Old Home Mobile Buttons", "/home_button_groups", "home_screen_icons_mobile"] %>
+                    <%= menu_link["Mobile App Booleans", "/settings/cordova", "mobile_app_booleans"] %>
+                    <%= menu_link["App Message Threads", "/app_message_threads", "app_message_threads", true] %>
+                    <%= menu_link["Event Tickets", "/event_tickets", "event_tickets"] %>
+                    <%= menu_link["Attendee Badge", "/badge_templates", "attendee_badges"] %>
+                    <%= menu_link["Custom Form", "/custom_forms", "custom_form"] %>
+                </div>
+
+
+                <%= menu_header["Games", "game_header"] %>
+                <div class="collapse list-group" id="game_header-collapse">
+                    <%= menu_link["Scavenger Hunts", "/scavenger_hunts", "scavenger_hunts"] %>
+                    <%= menu_link["App Game", "/app_games", "app_game"] %>
+                    <%= menu_link["Game Stats/ Leaderboard", "/events/game_statistics", "game_statistics"] %>
+                </div>
+
+                <%= menu_header["Reports", "reports_header"] %>
+                <div class="collapse list-group" id="reports_header-collapse">
+                    <%= menu_link["Download", "/events/report_downloads", "report_downloads"] %>
+                    <%= menu_link["Video Views", "/video_views", "video_views"] %>
+                    <%= menu_link["Statistics", "/events/statistics", "statistics"] %>
+                    <%= menu_link["Feedback Summary", "/feedbacks/results.xlsx", "feedback_summary"] %>
+                    <%= menu_link["Download Request", "/download_requests/request_file", "download_request"] %>
+                    
+                </div>
+
+                <%= menu_header["Portal Settings", "settings_header"] %>
+                <div class="collapse list-group" id="settings_header-collapse">
+                    <%= menu_link["Speaker Portal", "/settings/speaker_portal", "speaker_portal_settings"] %>
+                    <%= menu_link["Attendee Portal", "/settings/attendee_portal", "attendee_portal_settings"] %>
+                    <%= menu_link["Speaker PDFs", "/speaker_portals/index_pdf", "speaker_pdfs"] %>
+                    <%= menu_link["Exhibitor PDFs", "/exhibitor_portals/index_pdf", "exhibitor_pdfs"] %>
+                    <%= menu_link["Exhibitor Portal", "/settings/exhibitor_portal", "exhibitor_portal_settings"] %>
+                    <%= menu_link["Q&A Page", "/settings/qna", "qna_page_settings"] %>
+                    <%= menu_link["General Portal", "/event_settings/edit_general_portal_settings", "general_portal_settings"] %>
+                    <%= menu_link["Leadership/Guest View", "/settings/guest_view", "guest_view_settings"] %>                   
+                    <%= menu_link["Education Managers", "/trackowners", "education_managers"] %>
+                    <%= menu_link["Attendee Badge Portal", "/settings/attendee_badge", "attendee_badge_settings"] %>
+                </div>
+
+                <%= menu_header["Registration", "registrations_header"] %>
+                <div class="collapse list-group" id="registrations_header-collapse">
+                    <%= menu_link["Simple Sign Up", "/settings/simple_registration_settings", "simple_registration_settings"] %>
+                    <%= menu_link["Registration", "/settings/registration_portal_settings", "registration_portal_settings"] %>
+                    <%= menu_link["Exhibitor Registration", "/settings/exhibitor_registration_portal_settings", "exhibitor_registration_portal_settings"] %>
+                    <%= menu_link["Speaker Registration", "/settings/speaker_registration_settings", "speaker_registration_settings"] %>
+                </div>
+
+                <%= menu_header["Video Portal", "video_portal_header"] %>
+                <div class="collapse list-group" id="video_portal_header-collapse">
+                    <%= menu_link["Video Portal Booleans", "/settings/video_portal", "video_portal_booleans"] %>
+                    <%= menu_link["Video Portal Headings", "/settings/video_portal_headings", "video_portal_headings"] %>
+                    <%= menu_link["Video Portal Contents", "/settings/video_portal_contents", "video_portal_contents"] %>
+                    <%= menu_link["Video Portal Styles", "/settings/video_portal_styles", "video_portal_styles"] %>
+                    <%= menu_link["Video Portal Images", "/settings/video_portal_images", "video_portal_images"] %>
+                    <%= menu_link["Exhibitor Enhanced Portal Settings", "/exhibitor_portal_global_configs", "exhibitor_portal_global_configs"] %>
+                </div>
+
+
+                <%= menu_header["Program Feed", "program_feed_header"] %>
+                <div class="collapse list-group" id="program_feed_header-collapse">
+                    <%= menu_link["Program Feed Booleans", "/settings/program_feed_booleans", "program_feed_booleans"] %>
+                    <%= menu_link["Program Feed Headings", "/settings/program_feed_headings", "program_feed_headings"] %>
+                    <%= menu_link["Program Feed Styles", "/settings/program_feed_styles", "program_feed_styles"] %>
+                </div>
+
+                <%= menu_header["Email & Templates", "templates_header"] %>
+                <div class="collapse list-group" id="templates_header-collapse">
+                    <%= menu_link["Write Emails", "/custom_emails", "custom_emails"] %>
+                    <%= menu_link["Speaker Password Email", "/settings/speaker_email_password_template", "speaker_email_password_template"] %>
+                    <%= menu_link["Speaker Numeric Password Email", "/settings/speaker_numeric_password_template", "speaker_numeric_password_template"] %>
+                    <%= menu_link["Speaker Confirmation Email", "/settings/speaker_email_confirmation_template", "speaker_email_confirmation_template"] %>
+                    <%= menu_link["Attendee Password Email", "/settings/attendee_email_password_template", "attendee_email_password_template"] %>
+                    
+                    <%= menu_link["Registration Attendee Password Email", "/settings/registration_attendee_email_password_template", "registration_attendee_email_password_template"] %>
+                    
+                    <%= menu_link["Registration Attendee Email Confirmation", "/settings/registration_attendee_email_confirmation_template", "registration_attendee_email_confirmation_template"] %>
+                    <%= menu_link["Attendee Receipt Email", "/settings/registration_attendee_receipt_template", "registration_attendee_receipt"] %>
+                    <%= menu_link["Exhibitor Password Email", "/settings/exhibitor_email_password_template", "exhibitor_email_password_template"] %>
+                    <%= menu_link["Attendee Confirmation Email", "/settings/attendee_email_confirmation_template", "attendee_email_confirmation_template"] %>
+                    <%= menu_link["Calendar Invitation Email", "/settings/calendar_invitation_email_template", "calendar_invitation_email_template"] %>
+                    <%= menu_link["CE Certificate Email", "/settings/ce_certificate_email_template", "ce_certificate_email_template"] %>
+                    <%= menu_link["Portal Messages", "/event_settings/show_messages", "portal_messages"] %>
+                    <%= menu_link["Exhibitor Receipt Template", "/settings/exhibitor_receipt_template", "exhibitor_receipt_template"] %>
+                </div>
+
+                <%= menu_header["Product", "products_header"] %>
+                <div class="collapse list-group" id="products_header-collapse">
+                    <%= menu_link["Product Category", "/product_categories", "product_categories"] %>
+                    <%= menu_link["Products", "/products", "products"] %>
+                    <%= menu_link["Product Coupons", "/coupons", "product_coupons"] %>
+                    <%= menu_link["Mode Of Payment", "/mode_of_payments", "mode_of_payment"] %>
+                </div>
+                
+                <%= menu_header["Transactions", "transactions_header"] %>
+                <div class="collapse list-group" id="transactions_header-collapse">
+                    <%= menu_link["Webhook Transactions", "/webhooks", "webhook_transactions"] %>
+                    <%= menu_link["Transactions/Refund", "/purchases/transactions", "transactions"] %>
+                    <%= menu_link["Purchase Details", "/purchases/item_purchases", "item_purchases"] %>
+                    <%= menu_link["Purchase", "/purchases", "purchases"] %>
+                    <%= menu_link["Attendee Purchases", "/purchases/attendee_purchases", "attendee_purchases"] %>
+                    <%= menu_link["Exhibitor Purchases", "/purchases/exhibitor_purchases", "exhibitor_purchases"] %>
+                </div>
+
+                <% if ( current_user.role?(:client) && current_user.organizations.present? ) || current_user.role?(:super_admin) %>
+                    <div class="accordion-button collapsed sidebar-heading dropdown-toggle hover-pointer-effect bdr-btm d-flex" data-toggle='collapse' data-target='#member-menu'>
+                        <div class="icon-div"><i class="fa fa-envelope-o"></i></div> Members
+                    </div>
+                  <div class="collapse list-group" id="member-menu">
+                    <a class="list-group-item list-group-item-action" href="/members_listing"><i class='fa fa-circle-thin small-icons icon-div'></i>Member List</a>
+
+                    <a class="list-group-item list-group-item-action" href="/members_listing/organization_email_queue"><i class='fa fa-circle-thin small-icons icon-div'></i>Email Queue</a>
+
+                    <a class="list-group-item list-group-item-action" href="/settings/member_subscribe_email_template"><i class='fa fa-circle-thin small-icons icon-div'></i>Send Welcome Mail</a>
+
+                    <a class="list-group-item list-group-item-action" href="/settings/member_unsubscribe_email_template"><i class='fa fa-circle-thin small-icons icon-div'></i>Send Goodbye Mail</a>
+
+                    <a class="list-group-item list-group-item-action" href="/organization_settings/upload_subscribe_unsubscribe_settings"><i class='fa fa-circle-thin small-icons icon-div'></i>Subscibe Page Settings</a>
+                  </div>
+                <% end %>
+
+                <% if current_user.role? :super_admin %>
+                  <div class="accordion-button collapsed sidebar-heading dropdown-toggle hover-pointer-effect bdr-btm d-flex" data-toggle='collapse' data-target='#dev-menu'>
+                    <div class="icon-div"><i class="fa fa-flask"></i></div> Dev Menu
+                  </div>
+                  <div class="collapse list-group" id="dev-menu">
+                    <a class="list-group-item list-group-item-action" href="/dev"><i class='fa fa-circle-thin small-icons icon-div'></i>Dev</a>
+                    <a class="list-group-item list-group-item-action" href="/settings/cms"><i class='fa fa-circle-thin small-icons icon-div'></i>CMS</a>
+                    <a class="list-group-item list-group-item-action" href="/settings/admin_cordova"><i class='fa fa-circle-thin small-icons icon-div'></i>Admin Cordova</a>
+                    <a class="list-group-item list-group-item-action" href="/dev/events_summary"><i class='fa fa-circle-thin small-icons icon-div'></i>Event Summary</a>
+                    <a class="list-group-item list-group-item-action" href="/dev/documentation"><i class='fa fa-circle-thin small-icons icon-div'></i>Docs</a>
+                  </div>
+                <% end %>
+                <%= yield :event_sub_menu %>
+            </div>
+
+            <div id="page-content-wrapper">
+                <% if user_signed_in? && !current_user.id.eql?(true_user.id) %>
+                    <div class="impersonate-banner">
+                        You are signed-in as <%= current_user.email %>&nbsp;
+                        <%= link_to "Back to admin", stop_impersonating_users_path, method: :post %>
+                    </div>
+                <% end %>
+                <nav class="navbar navbar-expand-xl navbar-dark bg-celurean-custom">
+                    <svg id="menu-toggle" class="opened" width="30" height="30" viewBox="0 0 100 100" onclick="this.classList.toggle('opened');">
+                        <path class="line line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058" />
+                        <path class="line line2" d="M 20,50 H 80" />
+                        <path class="line line3" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942" />
+                    </svg>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#subevent-top-nav" onclick="this.classList.toggle('opened');this.setAttribute('aria-expanded', this.classList.contains('opened'))"> 
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="subevent-top-nav">
+
+                        <%# This can be extracted into its own subview (menu for events) %>
+                        <ul class="navbar-nav ml-auto">
+                            <% if session[:event_id] && session[:event_name] %>
+                                <% if current_user.role? :super_admin %>
+                                    <li class="nav-item"><%= link_to "#{ session[:event_name] } (#{session[:event_id]})", "/events/configure/#{session[:event_id]}", class: "nav-link" %></li>
+                                    <hr role="separator" aria-orientation="vertical" class="mx-2 my-auto" style="height: 16px;">
+                                    <li class="nav-item dropdown">
+                                        <div class="form-inline my-lg-2">
+                                            <div class="input-group">
+                                                <input id='admin_change_event_id_input' class="form-control" placeholder='Event id' />
+                                                <div class="input-group-append custom-append">
+                                                    <button id='admin_change_event_id' class='btn btn-outline-light' type="submit">Change Event</button>
+                                                    <a href="#" data-toggle="dropdown" class="btn btn-outline-light"><i class="fa fa-caret-down"></i></a>
+                                                    <div class="dropdown-menu">
+                                                        <% yr = '' %>
+                                                            <form class="accordion" id="dropDownAccordion">
+                                                                <div>
+                                                                    <% Menus.events_object(current_user).each do |year, months| %>
+                                                                        <a class="nav-link dropdown-item" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse<%=year%>" aria-expanded="true" aria-controls="collapse<%=year%>">
+                                                                            <%=year%>
+                                                                        </a>
+                                                                        <div id="collapse<%=year%>" class="collapse px-3" aria-labelledby="headingOne" data-parent="#dropDownAccordion">
+                                                                            <% months.each do |month,events| %>
+                                                                                <a href="#" style="padding-left:35px;" class="dropdown-header"><b><%= month %></b></a>
+                                                                                <% events.each do |item|%>
+                                                                                    <%= link_to item[:content], item[:link], style:"padding-left:45px;", class: "dropdown-item" %>
+                                                                                <% end %>
+                                                                            <% end %>
+                                                                        </div>
+                                                                    <% end %>
+                                                                </div>
+                                                            </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <hr role="separator" aria-orientation="vertical" class="mx-2 my-auto" style="height: 16px;">
+                                <% else %>
+                                    <li class="nav-item"><%= link_to session[:event_name], "/events/configure/#{session[:event_id]}", class: "nav-link" %></li>
+                                    <li class="nav-item dropdown dropleft">
+                                        <a href="#" data-toggle="dropdown" class="nav-link">Change Event <i class="fa fa-caret-down"></i></a>
+                                        <div class="dropdown-menu">
+                                            <% Menus.events_menu_items( current_user ).each do |item| %>
+                                                <% if item[:year] %>
+                                                    <a href="#" class="dropdown-header"><b><%= item[:content] %></b></a>
+                                                <% elsif item[:month] %>
+                                                    <a href="#" style="padding-left:35px;" class="dropdown-header"><b><%= item[:content] %></b></a>
+                                                <% elsif item[:event] %>
+                                                    <%= link_to item[:content], item[:link], style:"padding-left:45px;", class: "dropdown-item" %>
+                                                <% end %>
+                                            <% end %>
+                                        </div>
+                                    </li>
+                                <% end %>
+                            <% end %>
+                        </ul>
+                        <ul class="navbar-nav">
+                            <% if user_signed_in? then %>
+                                <% if (current_user.role?("SuperAdmin") || current_user.role?("Client")) %>
+                                    <li class="nav-item profile-nav">
+                                        <%= link_to profile_user_path(id: current_user.id), class: "profile-link" do %>
+                                            <i class="fa fa-user-circle "></i>
+                                        <% end %>
+                                    </li>	
+                                <%end%>
+                                <li class="nav-item"><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete, class: "nav-link" %></li>
+                            <% else %>
+                                <li class="nav-item"><%= link_to "Speaker Portal", "/users/sign_in", class: "nav-link" %></li>
+                                <li class="nav-item"><%= link_to "Manager Login", "/users/sign_in", class: "nav-link" %></li>
+                            <% end %>
+                        </ul>
+                    </div>
+                </nav>
+
+                <% if notice %>
+                    <div class="alert alert-success shadow" role="alert" style="border-left:#155724 5px solid; border-radius: 0px">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true" style="color:#155724">&times;</span>
+                        </button>
+                        <div class="row">
+                                <i class="fa fa-check-circle-o success-font"></i>
+                                <p style="font-size:12px" class="mb-0 font-weight-light"><%= notice %></p>
+                        </div>
+                    </div>
+                <% end %>
+                <% if alert %>
+                    <div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true" style="color:#721C24">&times;</span>
+                        </button>
+                        <div class="row">
+                                <i class="fa fa-exclamation-circle danger-font"></i>
+                                <p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+                        </div>
+                    </div>
+                <% end %>
+                <div class="container mt-4 content-containerp5">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <% if request.original_url.match(/notifications/) && !request.original_url.match(/hidden_notification/) %>
+                                <% if request.original_url.match /mobile=false/ %>
+                                    <%= link_to "Use Mobile Mode", request.original_url.gsub(/mobile=false/, 'mobile=true') %>
+                                    <br><br>
+                                <% else %>
+                                    <%= link_to "Use Mobile Mode", request.original_url + '?mobile=true' %>
+                                    <br><br>
+                                <% end %>
+                            <% end %>
+                            <div id="content">
+
+                                <%= content_for?(:content) ? yield(:content) : yield %>
+                            </div>
+                        </div>
+                    </div><!--row-->
+                </div>
+
+                <br>
+
+                <div class="footer">
+                    <div class="footer-text">
+                        Questions?  Email support@eventkaddy.com
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function adminChangeEvent(e) {
+                var event_id = $('#admin_change_event_id_input').val();
+                if (event_id) location = "/events/change_event/" + event_id;
+            }
+            $('#admin_change_event_id_input').keypress(function(e) { if (e.which == 13) adminChangeEvent() });
+            $('#admin_change_event_id').click( adminChangeEvent );
+        </script>
+
+    </body>
+</html>

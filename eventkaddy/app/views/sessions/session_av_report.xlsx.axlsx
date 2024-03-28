@@ -1,0 +1,54 @@
+# wb = xlsx_package.workbook
+# wb.styles do |s|
+
+# 	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+# 	heads      = ['Session Code','Speakers','Speaker Emails','Item','Item Notes','Updated At']
+
+# #(Provide Session code, speaker name, email, av list item id, additional notes. Please move to Sessions area.
+
+# 	style = []
+
+# 	heads.each do |h|
+# 		style << black_cell
+# 	end
+
+# 	wb.add_worksheet(name: "AV Request Results") do |sheet|
+# 	  sheet.add_row heads, :style => style
+
+# 		@sessions.each do |session|
+
+# 			speakers       = ''
+# 			speaker_emails = ''
+
+#   		session.speakers.each_with_index do |speaker, i|
+#   			unless (i+1)===session.speakers.length
+# 					speakers       += "#{speaker.full_name} |"
+# 					speaker_emails += "#{speaker.email} | "
+#   			else
+# 					speakers       += "#{speaker.full_name}"
+# 					speaker_emails += "#{speaker.email}"
+#   			end
+#   		end
+
+# 			item         = ''
+# 			item_notes   = ''
+# 			date_updated = ''
+
+#   		session.session_av_requirements.each_with_index do |requirement, i|
+#   			unless (i+1)===session.session_av_requirements.length
+# 					item         += "#{requirement.av_list_item.name} |"
+# 					item_notes   += "#{requirement.additional_notes} |"
+# 					date_updated += "#{requirement.updated_at} |"
+#   			else
+# 					item         += "#{requirement.av_list_item.name}"
+# 					item_notes   += "#{requirement.additional_notes}"
+# 					date_updated += "#{requirement.updated_at}"
+#   			end
+#   		end
+
+#   		sheet.add_row [session.session_code,speakers,speaker_emails,item,item_notes,date_updated]
+#   		sheet.column_widths 20,30,30,30,30,15
+# 		end
+# 	end
+# end

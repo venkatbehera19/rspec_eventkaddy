@@ -1,0 +1,75 @@
+<h4>Exhibitor Content</h4>
+<%if !current_user.role? :exhibitor%>
+   <%= link_to 'Back to Exhibitor', "/exhibitors/#{@exhibitor.id}" ,class:"btn" %></br></br> 
+<%end%>
+
+<% form = FormWithSettings.new 'exhibitor_portal_settings', session[:event_id] %>
+
+<% if form.visible? "message_image_upload" %>
+    <%= javascript_include_tag 'unordered-files/jquery.form.js' %>
+    <%= javascript_include_tag 'unordered-files/image_upload.js' %> 
+<% end %>
+
+<%= form_for(@exhibitor, :html => { :multipart => true, class: "bg-light px-4 custom-border" }, :url => {:action => "update_custom_content"}) do |f| %>
+    <% if @exhibitor.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@exhibitor.errors.count, "error") %> prohibited this notification from being saved:</h2>
+
+            <ul>
+                <% @exhibitor.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <% if form.visible? "message_image_upload" %>
+        <div class="row">
+            
+            <div class="col-sm-8">
+                <div id="uploadedImages"></div><br>
+
+                <div id="spinner">
+                    <%= image_tag "spinner.gif" %>
+                </div>
+                <div id="response"></div>
+
+                <div class="field">
+                    <%= label_tag :event_file, "Upload a picture" %>
+                    <%= file_field_tag :event_file %>
+                </div>
+                <input type="button" value="Upload" id="SubmitUpload" />
+                <br>
+                <br>
+            <% end %>
+
+
+
+            <div class="field">
+                <%= f.label :custom_content, "Content" %>
+                <%= f.cktext_area :custom_content, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"} %>
+            </div>
+
+            <br />
+            <div class="actions">
+                <%= f.submit class:"btn btn-primary", :onclick=>"$('#event_file').val('');"   %>
+            </div>
+            </div><!-- col-sm-4-->
+
+            <div class="col-md-3 offset-md-1 mt-3">
+                <div id="gallery">
+                    <% if @exhibitor_files!=nil %>
+                        <% @exhibitor_files.each do |file| %>
+                            <div class="float">
+                                <%= image_tag(file.event_file&.path) %>
+
+                                <p><%= link_to "Delete", {:controller => :event_files, :action => :destroy, :id => file.event_file.id}, { :method => :delete, :remote => true, :class =>'deleter btn delete'}   %></p>
+
+                            </div>
+                        <% end %>
+                    <% end %>
+                </div>
+
+            </div> <!--col-sm-3-->
+        </div><!-- row-->
+    <% end %>

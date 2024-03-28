@@ -1,0 +1,31 @@
+<%= form_for(@sessions_attendee, :html => {:class=>"bg-light custom-border px-3 py-3" }, :url => {:action => "update_multiple_new"} ) do |f| %>
+  <% if @sessions_attendee.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sessions_attendee.errors.count, "error") %> prohibited this event from being saved:</h2>
+
+      <ul>
+      <% @sessions_attendee.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+  <% if @sessions!=nil %>  
+    <div class="form-group">
+      <%= label_tag(:add_sessions, "Select Sessions:") %>
+        <%= select_tag(:session_ids, options_for_select(@sessions.map { |session| ["#{session.session_code} #{session.title}" ,session.id] },@sessions),:multiple => true, :size=>30, :class => "custom-select") %>
+    </div>  
+
+  <% else %>
+    <div class="form-group">
+      <%= label_tag(:add_sessions, "Select Sessions:") %>
+        <%= select_tag(:session_ids, options_for_select(@sessions.map { |session| ["#{session.session_code session.title}" ,session.id] }),:multiple => true, :size=>30, :class => "custom-select") %>
+    </div>  
+  <% end %>
+
+   <div class="actions">
+    <%= f.submit "Add Sessions to Attendee",class:"btn btn-primary"   %>
+  </div>
+<% end %>

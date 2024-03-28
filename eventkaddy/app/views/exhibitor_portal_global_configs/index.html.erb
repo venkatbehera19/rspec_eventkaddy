@@ -1,0 +1,62 @@
+<div>
+    <h4>Listing Exhibitor Portal Global Configurations</h4>
+    <div class="small">To set any config as default, please go to Settings > Exhibitor Portal Settings > Enhanced Portal Settings.</div><br/>
+    <%= link_to 'New Config', new_exhibitor_portal_global_config_path,  {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#modal-window', class: 'btn btn-primary pull-right'}  %><br><br>
+</div>
+<br>
+
+
+<table id="exhibitor-portal-global-configs-table" cellpadding="0" cellspacing="0" border="0" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Default</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+      <% @exhibitor_portal_global_configs.each do |config| %>
+        <tr class=<%= "highlight-demo" if @default == config.setting_id %>>
+          <td><%= config.name %></td>
+          <td><%= @default == config.setting_id %></td>
+          <td class="table-actions">
+            <div class="btn-group d-flex">
+              <%= link_to 'Open', "#{@event.virtual_portal_url}/exhibitors/exhibitor_portal_global_configs/#{@exhibitor_staff.slug}?c=#{config.id}" ,class:"btn btn-outline-info", target:"_blank" %>
+              <%= link_to 'Edit', edit_exhibitor_portal_global_config_path(config.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#modal-window', class: 'btn btn-outline-success'} %>
+              <%= link_to 'Delete', exhibitor_portal_global_config_path(config.id), :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+            </div>
+            <div class="dropdown">
+              <a class="ellipse-style" data-toggle="dropdown">
+                <i class="fa fa-ellipsis-v"></i>
+              </a>
+              <div class="dropdown-menu">
+              <%= link_to 'Open', "#{@event.virtual_portal_url}/exhibitors/exhibitor_portal_global_configs/#{@exhibitor_staff.slug}?c=#{config.id}" ,class:"btn dropdown-item text-info", target:"_blank" %>
+              <%= link_to 'Edit', edit_exhibitor_portal_global_config_path(config.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#modal-window', class: 'btn dropdown-item text-success'} %>
+              <%= link_to 'Delete', exhibitor_portal_global_config_path(config.id), :confirm => 'Are you sure?', :method => :delete ,class:"btn dropdown-item text-danger" %>
+              </div>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+</table>
+<div id="modal-window" class="modal" tabindex="-1" aria-hidden="true" aria-labelledby="modal-windowLabel">
+</div>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline table-responsive'
+    })
+    $('#exhibitor-portal-global-configs-table').dataTable({
+      "sDom": "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>"
+      fnInitComplete: () => {
+        $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+        $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+        $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+          .prepend("<span class='d-none d-md-inline'>Show:</span>");
+      }
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

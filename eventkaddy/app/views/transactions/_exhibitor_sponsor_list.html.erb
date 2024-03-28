@@ -1,0 +1,30 @@
+<div class="card">
+  <div class="card-header" id="headingTwo">
+    <h4 class="mb-0">
+      Select <%= @sponsors.first.products.first.product_category.name%>
+    </h4>
+    <span><%= multiple ? "*Multiple can be added" : "*Only One can be added"%></span>
+  </div>
+  <!-- <p class="pl-4">* Only One can be added</p> -->
+  <div class="card-body row">
+    <% product_category.each do |sponsor| %>
+      <div class="card-wrapper col-lg-4 col-md-6 col-xs-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%= sponsor.sponsor_type %> at $<%= sponsor.products.first.price.to_f %></h5>
+            <p class="card-text sponsor-description"><%= sponsor.products.first.description %></p>
+            <div class="show-more-less">
+              <p class="show_more">Show More</p>
+              <p class="show_less d-none">Show Less</p>
+            </div>
+            <% if @cart.cart_items.pluck(:item_id).include? sponsor.id %>
+              <a href="#" class="btn btn-danger remove-sponsor" id="sponsor-<%= sponsor.id%>" data-product="<%= sponsor.id %>" data-remove='true'>Remove From Cart</a>
+            <% else %>
+              <a href="#" class="btn btn-primary add-sponsor" id="sponsor-<%= sponsor.id%>" data-product="<%= sponsor.id %>">Add To Cart</a>
+            <% end %>  
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

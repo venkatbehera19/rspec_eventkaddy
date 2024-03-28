@@ -1,0 +1,23 @@
+<h1>Listing speaker_types</h1>
+<%= link_to 'New Speaker type', new_speaker_type_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Speaker type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @speaker_types.each do |speaker_type| %>
+  <tr>
+    <td><%= speaker_type.speaker_type %></td>
+    <td><%= link_to 'Show', speaker_type ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_speaker_type_path(speaker_type) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', speaker_type, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+

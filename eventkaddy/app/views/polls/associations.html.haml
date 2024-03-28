@@ -1,0 +1,26 @@
+= form_for(@poll, :html => {:class=>"bg-light custom-border px-3 py-3" }, :url => {:action => "update_associations"}, :method => :post ) do |f|
+
+  %h3="Poll with Title: " + @poll.title.to_s
+
+  - if @poll.errors.any?
+    #error_explanation
+      %h2
+        = pluralize(@poll.errors.count, "error")
+        prohibited this event from being saved:
+      %ul
+        - @poll.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    Hold the ctrl key on Windows, or Apple button on Mac to select multiple sessions. Deselect sessions to have the associations removed. Hold shift instead to all options between one session and another.
+
+  = f.hidden_field :id, :value => params[:id]
+
+  .form-group.mb-2
+    = label_tag(:add_sessions, "Select Sessions:")
+    = select_tag(:session_ids, options_for_select(@sessions.map { |session| ["#{session.session_code} #{session.title}", session.id] }, @selected), :multiple => true, :size=>30, class: "custom-select")
+
+  .actions
+    = f.submit "Add Sessions Associations for Poll", class:"btn btn-primary"
+    = link_to 'Back', @poll, class: 'btn btn-secondary'
+

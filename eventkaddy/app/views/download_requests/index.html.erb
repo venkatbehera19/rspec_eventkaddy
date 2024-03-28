@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content">
+      <h4>Download Requests</h4>
+      <br>
+
+      <table class="table table-striped" id="products_table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Email</th>
+            <th>Request Type</th>
+            <th>Status</th>
+            <th>Job Id</th>
+            <th>Message</th>
+            <th>Requested Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @requests.each do |request_file| %>
+            <tr>
+              <td><%= request_file.event_id %></td>
+              <td><%= request_file.user.email %></td>
+              <td><%= request_file.request_type %></td>
+              <td><%= request_file.status %></td>
+              <td><%= request_file.job_id %></td>
+              <% if request_file.error_message.present? %>
+                <td><%= truncate(request_file.error_message, length: 50, omission: nil) %></td>
+              <% else %>
+                <td></td>
+              <% end %>
+              <td><%= request_file.created_at %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

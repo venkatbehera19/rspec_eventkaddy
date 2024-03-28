@@ -1,0 +1,50 @@
+wb = xlsx_package.workbook
+pdb = @primary_db
+
+reporting_path = Rails.root.join('config','reporting_database.yml')
+raise "reporting database configuration not found." unless File.exist? reporting_path
+reporting_db = Mysql2::Client.new( YAML::load(File.open(reporting_path))[Rails.env] )
+
+wb.styles do |s|
+
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = [ 'First Name', 'Last Name','Company', 'Title', 'Email', 'Created At', 'Updated At']
+
+  wb.add_worksheet(name: "Reporting Login Data") do |sheet|
+    sheet.add_row heads, :style => heads.map { |h| black_cell }
+    attendees = 
+    reporting_db.query("
+      SELECT DISTINCT attendee_id, 
+      attendees.first_name, 
+      attendees.last_name, 
+      attendees.email,
+      attendees.title,
+      attendees.company,
+      logins.created_at,
+      logins.updated_at 
+      FROM reporting.logins 
+      INNER JOIN #{pdb}.attendees ON attendees.id=logins.attendee_id AND attendees.event_id = logins.event_id
+      WHERE attendees.event_id = #{@event_id}
+      ORDER BY logins.updated_at DESC
+    ")
+
+      if @job
+        @job.update!( status: "Processing Rows", total_rows: attendees.count)
+        @job.write_to_file
+      end
+
+      attendees.each do |a|
+        sheet.add_row [
+          a["first_name"], 
+          a["last_name"], 
+          a["company"], 
+          a["email"], 
+          a["created_at"].localtime.strftime('%Y-%m-%d %H:%M:%S'),
+          a["updated_at"].localtime.strftime('%Y-%m-%d %H:%M:%S')
+        ]
+        @job.plus_one_row if @job
+        sheet.column_widths 20,20,40,30,20,20
+      end
+  end
+end

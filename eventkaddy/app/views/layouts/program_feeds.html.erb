@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <% settings = @settings  %>
+  <title><%= settings.program_title || "EventKaddy" %></title>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+    <%= stylesheet_link_tag    "program_feed"%>
+    <%= javascript_include_tag "program_feed"%>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.smartmenus/1.0.2/jquery.smartmenus.min.js" ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.smartmenus/1.0.2/css/sm-core-css.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.smartmenus/1.0.2/css/sm-blue/sm-blue.min.css" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <%= csrf_meta_tag %>
+</head>
+
+
+
+<body>
+<% event_setting = EventSetting.where(event_id: params[:event_id]).first_or_create %>
+<% @event_setting = @event_setting || event_setting %>
+<%= hidden_field_tag 'event-id', params[:event_id] %>
+<% if settings.program_feed %>
+    <header>
+      <div class="navbar navbar-dark shadow-sm program_feed_navbar">
+        <div class="container justify-content-center">
+          <div class="current-attendee">
+            <% if @current_attendee %>
+              <div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <p data-letters="<%= @current_attendee.first_name[0] + @current_attendee.last_name[0] %>">
+                  <i class="fa fa-user" aria-hidden="true"></i>
+                  <span class="attendee-full-name"><%= @current_attendee.full_name %></span>
+                  <span class="attendee-initial-name"><%= @current_attendee.first_name[0] + @current_attendee.last_name[0] %></span>
+                  <!-- <i class="fa fa-angle-down ml-1" aria-hidden="true"></i> -->
+                  <i class="fa fa-sign-out ml-3" aria-hidden="true"></i>
+                </p>
+              </div>
+              <div class="dropdown-menu dropdown-menu-right dropdown-menu-program">
+                <%= link_to 'Log Out', program_feed_logout_path(params[:event_id]) , method: :delete, class: 'dropdown-item text-body dropdown-program margin-btm'%>
+                <%= link_to 'Favourite', "/#{params["event_id"]}/program?sel=favourite" , class: 'dropdown-item text-body dropdown-program'%>
+              </div>
+            <% else %>
+              <%= link_to "Login", "/#{params[:event_id]}/program/login_page"%>
+            <% end %>
+          </div>
+          <% event_file = @event_setting.program_feed_banner_event_file_id %>
+          <% if @event_setting && event_file.present? %>
+              <a href='<%= "/#{params[:event_id]}/program"%>' class="navbar-brand align-items-center program_feed_navbar_brand">
+                  <% if settings.load_banner_image %>
+                    <% logo_url = EventFile.find_by(id: event_file) %>
+                    <%= image_tag(logo_url.path, width: "auto", height: "90px") %>
+                  <% end %>
+              </a>
+              <a href='<%= "/#{params[:event_id]}/program"%>' class='program-heading'><strong class=""><%= settings.program_heading %></strong></a>
+          <% else %>
+              <a href='<%= "/#{params[:event_id]}/program"%>' class="navbar-brand align-items-center program_feed_navbar_brand">
+                  <!-- <img src="/assets/ek_logo.png" width="100px" height="40px"> -->
+                  <% if settings.load_banner_image %>
+                    <%= image_tag 'ek_logo_large.png', width: "100px", height: "40px" %>
+                  <% end %>  
+              </a>
+              <a href='<%= "/#{params[:event_id]}/program"%>' class='program-heading'><strong class=""><%= settings.program_heading %></strong></a>
+          <% end %>
+        </div>
+      </div>
+    </header>
+  <div class="d-flex" id="wrapper">
+    <div style="position: relative;">
+      <button type="button" class="btn btn-outline-dark opened mt-2" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></button>
+      <%= render partial: 'layouts/program_feeds_partials/program_feed_sidebar', locals: {settings: settings}%>
+    </div>
+    
+    <div id="page-content-wrapper">
+
+        <div class="container content-container500 mt-4 content-containerp5">
+          <div class="row">
+
+            <div class="col-md-12 col-centered">
+              <div id="content">
+                <div class="row justify-content-end upper-filters search-bar-margin">
+                  <% if settings.enable_search_bar%>
+                    <div class="search_bar">
+                      <div class="d-flex">
+                        <input type="search" class="form-control rounded" id="search_bar" placeholder="Search" aria-label="Search" />
+                          <span class="input-group-text border-0" id="search_bar_span">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  <% end %>  
+                </div>
+                <div class="selected-filters row pl-2">
+                </div>
+                <div class="sessions_details mt-5">
+                  <%= yield %>
+                </div>                
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="footer">
+          <div class="footer-text">
+            <% if (!(@event_setting.nil?) && (@event_setting.support_email_address!=nil)) then %>
+              Questions? Email <strong><a href="mailto:<%=@event_setting.support_email_address %>?subject=2014 Speaker Portal Inquiry" class="portal_email"><%= @event_setting.support_email_address %></a></strong>
+            <% else %>
+              Questions?  Email support@eventkaddy.com
+            <% end %>
+          </div>
+        </div>
+    </div>
+  </div>
+<% else %>
+  <div class="d-flex justify-content-center">
+    <h2>Program Feed Is Closed</h2>
+  </div>
+<% end %>
+</body>
+</html>
+
+
+<style>
+/*  [data-letters]:before {
+    content:attr(data-letters);
+    display:inline-block;
+    font-size:1em;
+    width:2.5em;
+    height:2.5em;
+    line-height:2.5em;
+    text-align:center;
+/*    border-radius:50%;*/
+/*    background:#ffffff;*/
+/*    vertical-align:middle;
+    color:#ffffff;*/
+/*    }*/*
+
+  .dropdown-program {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .margin-btm {
+    border-bottom: 1px solid #a6a3a3;
+  }
+
+  .dropdown-menu-program {
+    right: 0px;
+    top: 30px;
+    min-width: 6rem;
+  }
+
+  .search-bar-margin{
+    margin-top: -17px;
+  }
+
+  @media only screen and (min-width: 768px) {
+    .attendee-initial-name {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+    .attendee-full-name {
+      display: none;
+    }
+
+    .dropdown-menu-program {
+      right: -23px;
+      top: 39px;
+      min-width: 5rem;
+    }
+  }
+</style>

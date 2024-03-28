@@ -1,0 +1,58 @@
+<h4>Sponsors for Session: <%= @session.session_code %></h4>
+
+<%= link_to 'Back to Session', event_session_path(@session) ,class:"btn btn-link" %>
+<br/><br/>
+
+<table class="table table-striped table-bordered">
+	<thead>
+		<tr>
+			<th>Company Name</th>
+			<th></th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<% @session_sponsors.each do |s| %>
+		 	<tr>
+		    	 <td><%= s.company_name %></td>
+		    	 <td><center><%= link_to 'Delete', "/sessions/#{@session.id}/remove_session_sponsor/#{s.exhibitor_id}", :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %></center></td>
+		    	<!--  <td><%= link_to 'Show', event_session_path(session) ,class:"btn show" %></td>
+		    	 <td><%= link_to 'Edit', edit_event_session_path(session) ,class:"btn edit" %></td>
+		    	  -->
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<br/><br/>
+<%= form_for(@sessions_sponsor, :html => { :multipart => false, :class => "bg-light custom-border px-3 py-3" }, :url => {:action => "add_session_sponsor"}   ) do |f| %>
+
+
+      <% if @sessions_sponsor.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@sessions_sponsor.errors.count, "error") %> prohibited this record from being saved:</h2>
+
+          <ul>
+          <% @sessions_sponsor.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="field">
+        <%= f.hidden_field :session_id, :value => @session.id %>
+      </div>
+
+	  <!--speakers list -->
+	  <div class="form-group">
+	      <%= f.label(:add_sponsor, "Select Sponsor:") %>
+	      <%= f.select(:sponsor_id, options_for_select(@sponsors.map { |sponsor| ["#{sponsor.company_name}" ,sponsor.id] }), {:multiple => false, :size=>50}, class: "custom-select") %>
+	  </div>
+
+      <div class="actions">
+    <%= f.submit "Add Sponsor to Session",class:"btn btn-primary" %>
+  </div>
+  <hr/>
+
+<% end %>

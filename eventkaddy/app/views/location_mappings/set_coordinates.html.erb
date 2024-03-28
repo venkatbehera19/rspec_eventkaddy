@@ -1,0 +1,309 @@
+<%= javascript_include_tag "application" %>
+<%= stylesheet_link_tag "application" %>
+<div id="top-menu" class="collapse show">
+    <div id="previous" class="button">Previous</div>
+    <div id="currentmarker" class="button"></div>
+    <div id="next" class="button">Next</div>
+    <div id="editmode" class="button">Edit Mode On</div>
+    <div id="search-text-container">
+        <input type="text" id="search-text" class="button" placeholder="Location Name"
+            list="events" />
+        <button type="button" class="button" id="jump">Jump</button>
+    </div>
+</div>
+<div id="image-wrapper" data-captions='{"coords": <%=@coordinates%>}'>
+    <% unless @map.map_event_file_id.nil? %>
+        <%= image_tag(@map.event_file.path) %>
+    <% end %>
+</div>
+<button class="btn btn-outline-primary hide-show-top-menu" data-toggle="collapse" data-target="#top-menu">
+    <i class="fa fa-caret-down"></i>
+</button>
+<datalist id="events">
+
+</datalist>
+
+<script type="text/javascript">
+var jsonStr = '<%= sanitize(@location_mappings, tags: %w(br strong i b u)) %>'.replaceAll(/\n/g, '\\n')
+var json     = JSON.parse(jsonStr);
+console.log(json);
+var index    = 0
+var editFlag = true;
+var resizeflag = false;
+var sizes = {};
+$('#currentmarker').html( json[index].name.replace('&amp;','&') );
+// initialize the datalist for auto complete
+for(let i = 0; i < json.length; i++){
+    $("#events").append("<option value='" + json[i].name.replace('&amp;','&') + "'>");
+}
+
+function coordsResizable(){
+    $('span.marker').resizable({
+            stop: function(e, ui){
+                resizeflag = true
+                let id = ui.element.attr('id').replace('lm_', '');
+                json = json.map((elm) => {
+                    if (elm.id === parseInt(id)){
+                        return {...elm, ...ui.size
+                        };
+                    } else {
+                        return elm;
+                    }
+                });
+                console.log(json);
+                $.post("/location_mappings/update_size", {id: id, ...ui.size,
+                    x: parseFloat(ui.position.left) + parseFloat(ui.size.width) / 2,
+                    y: parseFloat(ui.position.top) + parseFloat(ui.size.height) / 2},
+                    function (data, textStatus, jqXHR) {
+                        console.log(data);
+                    }
+                );
+            },
+            minHeight: 24,
+            minWidth: 24,
+        });
+}
+
+function coordsDraggable(){
+    $('span.marker').draggable({
+        stop: function(e, ui){
+            resizeflag = true;
+            let id = ui.helper.attr('id').replace('lm_', '');
+            console.log(id, ui.offset);
+            $.post("/location_mappings/update_coordinate/<%= @map.event_id %>",
+                 
+                    {
+                        Coordinate: JSON.stringify([{ 
+                            id: id,
+                            x: ui.offset.left + ui.helper.width() / 2,
+                            y: ui.offset.top  + ui.helper.height() / 2
+                    }])
+                },
+                function (data, textStatus, jqXHR) {
+                    console.log(data);
+                }
+            );
+        }
+    });
+}
+var Markers = {
+
+    fn: {
+        addMarkers: function() {
+            var target   = $('#image-wrapper');
+            var data     = target.attr('data-captions');
+            var coords   = $.parseJSON(data).coords;
+
+            for (var i = 0; i < coords.length; i++) {
+
+                $('<span class="marker" id="lm_' + coords[i].id + '"></span>')
+                    .css({top: coords[i].top, left: coords[i].left,
+                    width: coords[i].width ? coords[i].width + 'px' : '24px',
+                    height: coords[i].height ? coords[i].height + 'px' : '24px'})
+                    .html('<span class="caption">' + coords[i].text + '</span>')
+                    .appendTo(target);
+                $('<span class="marking">+</span>').appendTo($('#lm_' + coords[i].id))
+            }
+            coordsResizable();
+            coordsDraggable();
+            
+        },
+
+        showCaptions: function() {
+            $('span.marker').off('click');
+            $('span.marker').on('click', function() {
+                if (!editFlag){
+                    var $marker = $(this), $caption = $('span.caption', $marker);
+                    $caption.slideToggle(300);
+                }
+            });
+        }
+    },
+
+    init: function() {
+        this.fn.addMarkers();
+        this.fn.showCaptions();
+    }
+};
+
+$(function() { Markers.init(); });
+
+$('#editmode').click( function(e) {
+    editFlag = editFlag ? false : true;
+    if (editFlag) { 
+        $('#editmode').empty().html("Edit Mode On");
+        $('span.marker').resizable('enable');
+    } else {
+        $('#editmode').empty().html("View Mode On");
+        $('span.marker').resizable('disable');
+    }
+});
+
+$('#next').click(function(e) {
+    index++;
+    if (index === json.length) index = 0;
+    $('#currentmarker').html(json[index].name.replace('&amp;','&'));
+});
+
+$('#previous').click(function(e) {
+    index--;
+    if (index === -1) index = json.length - 1;
+    $('#currentmarker').html(json[index].name.replace('&amp;','&'));
+});
+
+//update marker coordinates
+$('#image-wrapper').click(function(e) {
+	if (editFlag && !resizeflag) {
+        var lm = json[index]
+        $("#lm_" + lm.id).remove();
+        $('<span class="marker" id="lm_' + lm.id + '"></span>')
+            .css({top: e.pageY - (lm.height ? lm.height/2 : 12), left: e.pageX - (lm.width ? lm.width/2 : 12),
+            width: lm.width ? lm.width + 'px' : '24px', height: lm.height ? lm.height + 'px' : '24px'})
+            .html('<span class="caption">' + lm.name.replace('&amp;','&') + '</span>')
+            .appendTo($('#image-wrapper'));
+            $('<span class="marking">+</span>').appendTo($('#lm_' + lm.id))
+        coordsResizable();
+        coordsDraggable();
+        Markers.fn.showCaptions();
+
+        index++;
+        if (index === json.length) index = 0;
+        $('#currentmarker')
+            .html( json[index].name.replace('&amp;','&') );
+        return $.ajax({ url: "/location_mappings/update_coordinate/<%= @map.event_id %>",
+                        type: "POST",
+                        data: { 
+                            Coordinate: JSON.stringify([{ 
+                                id: lm.id,
+                                 x: e.pageX,
+                                 y: e.pageY 
+                            }])
+                        }
+        });
+    }
+    resizeflag = false;
+});
+
+$("#jump").on('click', function(){
+    let search_text = $("#search-text").val();
+    let ind = json.findIndex((ob) => search_text === ob.name.replace('&amp;','&'))
+    index = ind >= 0 ? ind : index;
+    $('#currentmarker').html(json[index].name.replace('&amp;','&'));
+});
+
+</script>
+
+<style>
+#next {
+  position        : fixed;
+  top             : 0;
+  left            : 295;
+  /* background-color: #E6F6FF; */
+  border-radius   : 5px;
+  border          : 4px solid;
+}
+#previous {
+  position        : fixed;
+  top             : 0;
+  left            : 220;
+  /* background-color: #E6F6FF; */
+  border-radius   : 5px;
+  border          : 4px solid;
+}
+#editmode {
+  position        : fixed;
+  top             : 0;
+  left            : 100;
+  /* background-color: #E6F6FF; */
+  border-radius   : 5px;
+  border          : 4px solid;
+}
+#currentmarker {
+  position        : fixed;
+  top             : 0;
+  left            : 370;
+  /* background-color: #E6F6FF; */
+  border-radius   : 10px;
+  border          : 4px solid;
+}
+.button {
+  padding    : 4px;
+  background : #fff;
+  color      : black;
+  text-align : center;
+  position   : absolute;
+  line-height: 20px;
+  cursor     : pointer;
+}
+
+#image-wrapper {
+}
+
+.marking{
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    left: 0;
+    top: calc(50% - 1rem);
+}
+
+#image-wrapper img {
+/*    display: block;
+    margin: 25px auto;*/
+}
+
+span.marker {
+  width      : 24px;
+  height     : 24px;
+  background : #f7902fbd;
+  color      : #fff;
+  text-align : center;
+  position   : absolute;
+  line-height: 20px;
+  cursor     : pointer;
+}
+
+span.caption {
+  width     : 180px;
+  background: #f7902fbd;
+  color     : #fff;
+  padding   : 4px;
+  position  : absolute;
+  top       : 20px;
+  left      : 0;
+  display   : none;
+  z-index:  50;
+}
+
+#search-text-container{
+    top: 0;
+    position: fixed;
+    right: 25vw;
+    z-index: 100;
+}
+
+.hide-show-top-menu{
+    position: fixed;
+    top: 0;
+    right: 1.4rem;
+    z-index: 100;
+}
+#search-text-container input{
+    left: 3rem;
+    border: 3px solid black;
+    text-align: left;
+    z-index: 101;
+}
+#search-text-container button{
+    background-color: #E6F6FF;
+    border-radius   : 5px;
+    border          : 3px solid;
+    z-index: 101;
+}
+
+.ui-icon-gripsmall-diagonal-se{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+</style>

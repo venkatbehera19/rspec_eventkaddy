@@ -1,0 +1,11 @@
+#+TITLE: Exhibitor Attendees
+
+* Config page import/export exhibitors script
+This script makes a call to Exhibitor#update_booth_owners with account_codes provided in the xlsx upload.
+** Exhibitor#update_booth_owners
+If the attendee for the event_id and account code is found, this script will update the attendee_type_id to Exhibitor, create a booth_owner association record if found, and remove booth_owner association records that are linked to other exhibitors (enforcing a soft rule that an attendee should only be allowed to be associated with one exhibitor, even though the database structure does not enforce this; the cordova app currently depends on this soft rule to properly function).
+
+If an attendee with the matching code is not found, an error message is added to warn the user, but the script is not halted.
+
+** Attendee#cleanup_abandoned_booth_owners
+If an Exhibitor Type attendee no longer has a booth_owner association, that attendee's type must be set back to Standard Attendee. This is called after the xlsx rows have been processed as a part of cleanup

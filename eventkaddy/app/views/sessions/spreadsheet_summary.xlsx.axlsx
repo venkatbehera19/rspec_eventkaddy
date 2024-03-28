@@ -1,0 +1,108 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	heads = ['Session Code', 'Title','Speakers','Speaker Organizations','Speaker Emails', 'Description', 'Date','Start Time','End Time','Room','Item','Item Notes','Program Area',
+	  'Program Category','Program Type','Audience','Sponsor','Price','Capacity','RACE','WVC TV','Attendee Favourites']
+
+#- New Excel Report: Session report to include "Session code, Session title, date, start, end, room, number of times favorited by attendees" - this is to determine room capacity - Report should be in Session area
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+	
+	wb.add_worksheet(name: "Feedback Results") do |sheet|
+	  sheet.add_row heads, :style => style
+	  
+		@sessions.each do |session|
+
+			if session.program_type!=nil then
+				program_type = session.program_type.name
+			else
+				program_type = 'NOT SET'
+			end
+
+			if session.location_mapping!=nil then
+				location_mapping = session.location_mapping.name
+			else
+				location_mapping = 'NOT SET'
+			end
+
+			speakers = ''
+			speaker_organizations = ''
+			speaker_emails = ''
+			session.speakers.each do |speaker|	
+				speakers += "#{speaker.honor_prefix} #{speaker.first_name} #{speaker.last_name} #{speaker.honor_suffix} | "
+				speaker_organizations += "#{speaker.company} | "
+				speaker_emails += "#{speaker.email} | "
+	  		end
+
+	  		program_area=''
+	  		program_category=''
+	  		audience_tags=''
+
+	  		session.tags.each do |tag|
+
+	  			if tag.tag_type.name=="session" then
+	  			
+	  				if tag.level==1 then 
+	  					program_category=tag.name 
+
+	  					program_area = Tag.find(tag.parent_id).name
+	  				end
+
+	  			elsif tag.tag_type.name=="session-audience" then
+	  				
+	  				if tag.level==0 then 
+	  					audience_tags += "#{tag.name} | " 
+
+	  				end
+
+	  			end
+
+	  		end
+
+	  		sponsors = ''
+	  		session.sponsors.each do |sponsor|
+	  			sponsors += "#{sponsor.company_name} | "
+	  		end
+
+			item = ''
+			item_notes = ''
+
+        	if (session.session_av_requirements.length > 0 &&
+        		session.session_av_requirements.first.av_list_item.name!=nil) then
+
+        		session.session_av_requirements.each do |requirement|
+		        	item += "#{requirement.av_list_item.name} | "
+		        	item_notes += "#{requirement.additional_notes} | "
+		        end
+	        else
+	        	item = 'N/A'
+	        	item_notes = 'N/A'
+	        end
+
+	  		if (session.start_at!=nil) then
+		  		session_start_at = Time.at(session.start_at.to_f + 28800)
+
+	  		else 
+	  			session_start_at = '' 
+	  		end
+
+	  		if (session.end_at!=nil) then
+		  		session_end_at = Time.at(session.end_at.to_f + 28800)
+
+	  		else 
+	  			session_end_at = '' 
+	  		end
+
+	  			favourites = SessionsAttendee.where(session_code:session.session_code).length
+
+
+	  		sheet.add_row [session.session_code,session.title,speakers,speaker_organizations,speaker_emails,session.description,session.date,session_start_at,session_end_at,location_mapping,item,item_notes,program_area,program_category,program_type,audience_tags,sponsors,session.price,session.capacity,session.race_approved,session.wvctv,favourites]
+		end
+	end
+end

@@ -1,0 +1,17 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   event_id: 1
+#   name: MyString
+#   filename: MyString
+#   width: 1
+#   height: 1
+#   map_type_id: 1
+
+# two:
+#   event_id: 1
+#   name: MyString
+#   filename: MyString
+#   width: 1
+#   height: 1
+#   map_type_id: 1

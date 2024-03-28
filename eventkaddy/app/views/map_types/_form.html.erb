@@ -1,0 +1,21 @@
+<%= form_for(@map_type, html: {class: "well"}) do |f| %>
+  <% if @map_type.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@map_type.errors.count, "error") %> prohibited this map_type from being saved:</h2>
+
+      <ul>
+      <% @map_type.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :map_type %>
+    <%= f.text_field :map_type, class: "form-control" %>
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

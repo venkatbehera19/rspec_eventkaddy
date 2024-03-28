@@ -1,0 +1,31 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+Scrooge:
+  event: one
+  company_name: MyString
+  slogan: MyString
+  description: MyString
+  address_line1: MyString
+  address_line2: MyString
+  city: MyString
+  state: MyString
+  zip: MyString
+  url_web: MyString
+  url_facebook: MyString
+  url_twitter: MyString
+  url_rss: MyString
+
+Smaug:
+  event: two
+  company_name: MyString
+  slogan: MyString
+  description: MyString
+  address_line1: MyString
+  address_line2: MyString
+  city: MyString
+  state: MyString
+  zip: MyString
+  url_web: MyString
+  url_facebook: MyString
+  url_twitter: MyString
+  url_rss: MyString

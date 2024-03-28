@@ -1,0 +1,50 @@
+<h4>Education Manager Sessions</h4>
+
+<table class="table">
+	<% if (@trackowner.event_file_photo!=nil) then %>
+	<tr><th>Photo</th><td><%= image_tag(@trackowner.event_file_photo.path, :height=>'100') %></td></tr>
+	<% end %>
+	<tr><th>Name</th><td><%= "#{@trackowner.full_name}" %></td></tr>
+	<tr><th>Email</th><td><%= @trackowner.email %></td></tr>
+
+
+
+
+</table>
+<br><br>
+
+<!--<%= link_to 'Add Education Manager Session', "/sessions_trackowner/#{@trackowner.id}/new" ,class:"btn btn-primary" %>-->  <%= link_to 'Add Multiple Education Manager Sessions', "/sessions_trackowner/#{@trackowner.id}/multiple_new" ,class:"btn btn-primary" %><br><br>
+
+<table class="table bg-light custom-border">
+	<thead>
+		<tr>
+			<th>Session Code</th>
+			<th>Title</th>
+			<th>Room Name</th>
+			<th>Date/Time</th>
+			<th></th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<% @trackowner.sessions.each do |session| %>
+		 	<tr>
+		    	 <td><%= link_to session.session_code,"/sessions/#{session.id}",class:"btn btn-link" %></td>
+		    	 <td><%= session.title %></td>
+		    	 <% if (session.location_mapping!=nil) then %>
+		    	 	<td><%= session.location_mapping.name %></td>
+		    	 <% else %>
+		    	 	<td>N/A</td>
+		    	 <% end %>
+		    	 <% if (session.date!=nil && session.start_at!=nil) then %>
+		    	 	<td><%= "#{session.date.strftime("%m-%d-%Y")} | #{session.start_at.strftime("%H:%M")}" %></td>
+		    	 <% else %>
+		    	 	<td>Not Assigned</td>
+		    	 <% end %>
+		    	 <td><%= link_to 'Delete', sessions_trackowner_path(SessionsTrackowner.where(session_id:session.id,trackowner_id:@trackowner.id).first), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger" %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>
+
+<br/><br/>

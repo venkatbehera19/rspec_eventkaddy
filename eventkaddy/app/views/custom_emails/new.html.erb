@@ -1,0 +1,266 @@
+<%= javascript_include_tag 'unordered-files/jquery.form.js' %>
+<%= javascript_include_tag 'unordered-files/image_upload.js' %>
+
+<style>
+  .multiselect-container{
+    width: 90vw;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+
+  @media(min-width: 768px){
+    .multiselect-container{
+      width: 34vw;
+    }
+  }
+
+</style>
+
+<div class="bg-light custom-border px-3 py-3" style="min-height:500px;">
+
+  <h4> Write an Email </h4>
+
+  <%= form_tag  settings_upload_email_template_image_path, method: :post, multipart: true, style: "display:inline" do %>
+    <div>
+        <div>
+            <div id="uploadedImages"></div><br>
+            <div class="field">
+                <%= label_tag :event_file, "Upload an Image for email template. Image will appear on Available Images box below" %> <br>
+                <%= file_field_tag :event_file %>
+            </div>
+            <input type="button" value="Upload" id="SubmitUpload" /><br /><br />
+        </div>
+    </div>
+  <% end %>
+  <hr/>
+
+  <h5>Available Images (draggable)</h5>
+    <button data-toggle="collapse" data-target="#images_for_email" type='button' class="btn btn-secondary">Toggle</button>
+    <div id='images_for_email' class="custom-border px-3 py-3 collapse" style="min-height:100px;background-color:white;">
+        <div id="gallery" style="height:unset">
+          <% if @event_files!=nil %>
+          <% @event_files.each do |file| %>
+          <div class="float">
+              <%= image_tag(file.path, id: file.id) %>
+
+              <p><%= link_to "Delete", {:controller => :event_files, :action => :destroy, :id => file.id}, { :method => :delete, :remote => true, :class =>'deleter btn delete'}   %></p>
+
+          </div>
+          <% end %>
+          <% end %>
+        </div>
+    </div>
+    <br/>
+    <br/>
+  <%= form_for @template, :url => custom_emails_path, method: :post, :html => { :multipart => true, :class => "form-horizontal", id: 'new_email' } do |f| %>
+    <div class="form-group">
+      <h5>Select User Type</h5>
+      <%= select_tag "user_objects", raw("<option value='None'>None</option><option value='AttendeeAll'>Attendees(All)</option><option value='Exhibitor'>Exhibitors</option><option value='Speaker'>Speakers</option><option value='AttendeeWithSurveys'>Attendees who completed survey</option><option value='AttendeeWithoutSurveys'>Attendees who have not completed survey</option><option value='AttendeeWhoCheckedInWithoutSurveys'>Attendees who logged in but have not completed survey </option>"), onchange: "optionsToggle()", class: "custom-select", style: "position:relative"%>
+    </div>
+    <div class="form-group" id="exhibitor_staffs_toggle">
+      <%= check_box_tag :include_exhibitor_staffs, 1 , nil %>&nbsp;Include Exhibitor Staffs
+    </div>
+    <br/>
+
+    <%= f.hidden_field :event_id, :value => @event.id %>
+    <%= f.hidden_field :template_type_id, :value => @template_type.id %>
+
+    <div class="form-group">
+      <h5>Select Recipients</h5>
+      <%= select_tag 'email[recipients]', nil, multiple: true, class: "custom-select" %>
+    </div>
+    <br/>
+
+    <div class="form-group">
+      <h5>Subject</h5>
+      <%= f.text_field :email_subject,  class: 'form-control', required: true %>
+    </div>
+    <br/>
+
+    <div id="certificate-link">
+      <% if @certificate.blank? %>
+        <p> Please select a generated certificate from Video Portal Boolean Settings to get a certificate link.</p>
+      <% else %>
+        <span>To include certificate link, please drag this link to the content area:</span>
+        <%= link_to "Certificate",
+          "#{@event.cms_url}/ce_credits/get_certificate?id=#{@verifier.generate(@certificate.id)}&e=#{@event.id}&type=#{@certificate.name.downcase.gsub(' ','_')}&expiry=#{@verifier.generate(@Link_expiry_time.to_i)}&attendee={{attendee.slug}}",  target: "_blank"%>
+      <% end %>
+    </div>
+
+    <div id="survey-link">
+      <span>To include survey link, please drag this link to the content area:</span>
+      <%= link_to "Survey",
+        "#{@event.virtual_portal_url}/take_survey?attendee={{attendee.slug}}&e=#{@event.id}",  target: "_blank"%>
+    </div>
+
+    <div class="form-group">
+      <h5>Content</h5>
+      <%= f.cktext_area :content, cols: 3, class: 'form-control', :ckeditor => {:toolbar => "Full"}, required: true %>
+    </div>
+
+    <br/>
+    <hr/>
+    <div class="form-group">
+      <%= check_box_tag :deliver_later, 1 , nil, onchange: "showDeliverOptions()" %>&nbsp;<strong>Deliver Later</strong>
+      &nbsp;<i class="fa fa-clock"></i>
+      <br>
+      <br>
+      Please leave it unchecked if you want the email to be delivered now.
+    </div>
+    <br/>
+
+    <div class="form-group" id="deliver_later_data">
+      <h5>Wait Until</h5>
+      <div class="datepicker-control" style="position:relative">
+        <%= text_field_tag :active_time, Time.now, id:"datetimepicker", class: "form-control" %>
+      </div>
+       <br/>
+    </div>
+    <hr/>
+
+    <div class="form-group" id="calendar_invite">
+      <%= check_box_tag :attach_calendar_invite, 1 , nil %>&nbsp;<strong>Attach Calendar Invitation</strong>
+      &nbsp;<i class="fa fa-calendar"></i>
+      <br>
+      <br>
+      To edit calendar invitation, please go to Event Settings > Calendar Reminder Info
+    </div>
+    <hr/>
+    <%= submit_tag 'Send', class: 'btn btn-primary' %>
+  <% end %>
+  <br>
+<%= link_to 'Back', custom_emails_path, class: "btn btn-link" %><br>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $('#exhibitor_staffs_toggle').hide();
+    $('#certificate-link').hide();
+    $('#survey-link').hide();
+    $('#email_recipients').multiselect({
+      includeSelectAllOption: true,
+      enableFiltering: true,
+      enableCaseInsensitiveFiltering: true,
+      disableIfEmpty: true,
+      templates: {
+         filter: '<div class="multiselect-filter"><div class="input-group input-group-sm p-1"><div class="input-group-prepend"><i class="input-group-text fa fa-search"></i></div><input class="form-control multiselect-search" type="text" /><div class="input-group-append"><button class="multiselect-clear-filter input-group-text" type="button" onclick="clearText()"><i class="fa fa-times"></i></button></div></div></div>'
+      }
+    });
+
+    if ($('#deliver_later').is(':checked')) $('#deliver_later_data').show()
+    else $('#deliver_later_data').hide()
+
+    $("#user_objects").bind("change",function() { 
+      if($(this).val() != undefined){
+          reBuildMultiselect($(this).val());
+      }
+    })
+    $('#datetimepicker').datetimepicker();
+  });
+  function showDeliverOptions () {
+    if ($('#deliver_later').is(':checked')) $('#deliver_later_data').show()
+    else $('#deliver_later_data').hide()
+  }
+
+  function optionsToggle(){
+    let user_type = $('#user_objects').val();
+    if(user_type === "Exhibitor"){
+      $('#exhibitor_staffs_toggle').show();
+      $('#survey-link').hide();
+      $('#certificate-link').hide();
+    }
+    else if(user_type === "AttendeeWithSurveys"){
+      $('#certificate-link').show();
+      $('#include_exhibitor_staffs').prop('checked', false);
+      $('#survey-link').hide();
+      $('#exhibitor_staffs_toggle').hide();
+    }
+    else if(user_type === 'AttendeeWithoutSurveys'){
+      $('#survey-link').show();
+      $('#include_exhibitor_staffs').prop('checked', false);
+      $('#exhibitor_staffs_toggle').hide();
+      $('#certificate-link').hide();
+    }
+    else if(user_type === 'AttendeeWhoCheckedInWithoutSurveys'){
+      $('#survey-link').show();
+      $('#include_exhibitor_staffs').prop('checked', false);
+      $('#exhibitor_staffs_toggle').hide();
+      $('#certificate-link').hide();
+    }
+    else{
+      $('#certificate-link').hide();
+      $('#include_exhibitor_staffs').prop('checked', false);
+      $('#exhibitor_staffs_toggle').hide();
+      $('#survey-link').hide();
+    }
+  }
+
+  function reBuildMultiselect( user_type ) {
+    if(user_type === "AttendeeAll"){
+      options = "<%=recipients_options("Attendees", @chosen_recipient)%>"
+    }
+    else if(user_type === "Exhibitor"){
+      options = "<%=recipients_options("Exhibitors", @chosen_recipient)%>"
+    }
+    else if(user_type === "Speaker"){
+      options = "<%=recipients_options("Speakers", @chosen_recipient)%>"
+    }
+    else if(user_type === "AttendeeWithSurveys"){
+      options = "<%=recipients_options("Attendees_with_surveys", @chosen_recipient)%>"
+    }
+    else if(user_type === "AttendeeWithoutSurveys"){
+      options = "<%=recipients_options("Attendees_without_surveys", @chosen_recipient)%>"
+    }
+    else if(user_type === "AttendeeWhoCheckedInWithoutSurveys"){
+      options = "<%=recipients_options("AttendeeWhoCheckedInWithoutSurveys", @chosen_recipient)%>"
+    }
+    else if(user_type === "None"){
+      var el =  $('#email_recipients')
+      el.empty();
+      el.multiselect('rebuild');
+
+      return;
+    }
+    var el =  $('#email_recipients')
+    el.empty();
+    el.append(options);
+    el.multiselect('rebuild');
+  }
+
+  $('form#new_email').submit(function() {
+
+    if($("#user_objects").val() == "None"){
+      alert("Please select a user type.")
+      return false
+    }
+    else if($('#email_recipients').val() == null){
+      alert("Please select at least one recipient.")
+      return false
+    }
+    else if($('#deliver_later').prop('checked') == true && $('#datetimepicker').val() == ""){
+      alert("Please pick a date and time to deliver the email later.")
+      return false
+    }
+
+    return true
+  })
+
+// Temporary fix or some jquery warnings due to bootstrap-multiselect
+  jQuery.event.special.touchstart = {
+  setup: function( _, ns, handle ){
+      if ( ns.includes("noPreventDefault") ) {
+        this.addEventListener("touchstart", handle, { passive: false });
+      } else {
+        this.addEventListener("touchstart", handle, { passive: true });
+      }
+    }
+  };
+
+function clearText(){
+  $('.multiselect-search').val('');
+}
+
+</script>

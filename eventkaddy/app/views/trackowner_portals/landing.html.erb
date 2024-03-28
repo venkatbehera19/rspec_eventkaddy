@@ -1,0 +1,8 @@
+<% if @user.roles.where(name:"Speaker").length > 0 %>
+    <p>It looks like in addition to being a manager, you are also speaking at this event. To view your speaker details and responsibilities, please visit the speaker portal.</p>
+    <%= link_to "Visit Your Speaker Portal", "/speaker_portals/checklist/", :class=>"btn show" %>
+<% end %>
+
+<p> Welcome to the Track Owner Management System (TOMS).  Use this site to manage session data including presentation title and description.  Presenters and meeting rooms can also be assigned.  </p>
+
+<p> Direct any questions to <a href='mailto:todd.cole@fiserv.com'>todd.cole@fiserv.com</a> </p>

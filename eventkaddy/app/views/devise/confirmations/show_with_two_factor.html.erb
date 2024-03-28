@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h4>Generate Password And Enable Two Factor Authentication</h4>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card-deck">
+        <div class="card">
+          <div class="card-header">
+            1. Scan QR Code
+          </div>
+          <div class="card-body">
+            <p>Please scan the below QR code using an OTP compatible app (such as Google Authenticator or Authy).</p>
+            <hr />
+            <p class="text-center">
+              <%= qr_code_as_svg(@user.two_factor_qr_code_uri)%>
+            </p>
+            <hr />
+            <p class="text-center">
+              If you cannot scan, please enter the following code manually: <code><%= @user.otp_secret%></code>
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            2. Set Password and Confirm OTP Code
+          </div>
+          <div class="card-body">
+            <%= form_for(resource, :as => resource_name, :url => confirm_with_two_factor_path, :html => { :method => :post }) do |f| %>
+              <%= render "devise/shared/error_messages", resource: resource %>
+              <%= hidden_field_tag :confirmation_token, @user.confirmation_token %>
+              <div class="form-group">
+                <label for="inputEmail">Email</label>
+                <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" value = <%= @user.email%> readonly>
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+              </div>
+
+              <div class="form-group">
+                <%= f.label :password, "Password" %><br />
+                <%= f.password_field :password, :autofocus => true, :class => 'form-control', :placeholder => "Password", :required => true%>
+              </div>
+
+              <div class="form-group">
+                <%= f.label :password_confirmation, "Confirm Password" %><br />
+                <%= f.password_field :password_confirmation, :autofocus => true ,:class => 'form-control', :placeholder => "Confirm Password", :required => true %>
+              </div>
+
+              <div class="form-group">
+                <%= label_tag :code, "Code"%>
+                <%= text_field_tag :code, nil ,placeholder: "OTP Code", class: "form-control", required: true%>
+              </div>
+              <div><%= f.submit "Submit",class:"btn btn-primary" %></div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // $('#two_fa_code').removeClass('string required');
+
+</script>

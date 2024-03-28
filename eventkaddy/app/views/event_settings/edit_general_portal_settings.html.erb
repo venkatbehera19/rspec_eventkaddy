@@ -1,0 +1,86 @@
+<h4> General Settings </h4>
+<br/>
+<%= form_for(@event_setting, :html => { :multipart => true, :class => "bg-light custom-border py-3 px-3" }, :url => {:action => "update_general_portal_settings"}, :method => "put"   ) do |f| %>
+
+    <% if @event_setting.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@event_setting.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+            <ul>
+                <% @event_setting.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <h5>Time Format</h5>
+    <div class="custom-control custom-switch">
+        <input name="twelve_hour_format" type="hidden" value="0">
+        <%= check_box_tag :twelve_hour_format, 1, current_user.twelve_hour_format, class:"custom-control-input" %>
+        <%= label_tag :twelve_hour_format, "12 Hour format", class: "custom-control-label" %>
+    </div>
+    <hr/>
+
+    <h5>Logo</h5>
+    <table>
+        <% if (@event_setting.portal_logo_event_file_id!=nil) then %>
+
+            <tr><td><%= image_tag(EventFile.where("id= ?",@event_setting.portal_logo_event_file_id).first.path, :class=>'photo_preview') %></td></tr>
+            <tr><td>&nbsp;</td></tr>
+
+            <tr><td style="word-break: break-word; white-space: normal;">Download your current logo photo: <%= link_to EventFile.where("id= ?",@event_setting.portal_logo_event_file_id).first.name, EventFile.where("id= ?",@event_setting.portal_logo_event_file_id).first.path %></td></tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td>
+                    <div class="field">
+                        <%= label_tag "Upload a new Portal Logo:" %>
+                        <%= file_field_tag :portal_logo_file %>
+                    </div><br />
+                </td></tr>
+            <% else %>
+                <tr><td>
+                        <div class="field">
+                            <%= label_tag :portal_logo_file, "Choose a Portal Logo" %><br />
+                            <%= file_field_tag :portal_logo_file %>
+                        </div><br />
+                    </td></tr>
+            <% end %>
+    </table>
+    <hr/>
+
+    <h5>Banner</h5>
+    <table>
+        <% if (@event_setting.portal_banner_event_file_id!=nil) then %>
+            <tr><td><%= image_tag(EventFile.where("id= ?",@event_setting.portal_banner_event_file_id).first.path, :class=>'photo_preview') %></td></tr>
+            <tr><td>&nbsp;</td></tr>
+
+            <tr><td style="word-break: break-word; white-space: normal;">Download your current banner photo: <%= link_to EventFile.where("id= ?",@event_setting.portal_banner_event_file_id).first.name, EventFile.where("id= ?",@event_setting.portal_banner_event_file_id).first.path %></td></tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td>
+                <div class="field">
+                    <%= label_tag "Upload a new Portal Banner:" %>
+                    <%= file_field_tag :portal_banner_file %>
+                </div>
+            </td></tr>
+        <% else %>
+            <tr><td>
+                <div class="field">
+                    <%= label_tag :portal_banner_file, "Choose a Portal Banner" %><br />
+                    <%= file_field_tag :portal_banner_file %>
+                </div>
+            </td></tr>
+        <% end %>
+    </table>
+    <hr/>
+
+    <h5>Support Email Address</h5>
+    <div class="form-group">
+        <%= f.text_field :support_email_address, class: 'form-control' %>
+    </div>
+
+    <div class="actions">
+        <%= f.submit "Update" ,class:"btn btn-primary" %>
+    </div>
+
+<% end %>
+

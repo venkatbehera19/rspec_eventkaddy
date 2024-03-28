@@ -1,0 +1,52 @@
+<%= link_to 'New Poll', new_poll_path, class:'btn btn-primary pull-right' %>
+<h1>Polls</h1>
+<table id="polls-table" cellpadding="0" cellspacing="0" border="0" class="table table-striped">
+  <thead>
+    <th>Title</th>
+    <th>Created At</th>
+    <th>Actions</th>
+  </thead>
+  <% !@polls.blank? && @polls.each do |poll| %>
+    <tr>
+      <td><%=poll.title%></td>
+      <td><%=poll.created_at%></td>
+      <td class="table-actions">
+        <div class="dropdown">
+          <a data-toggle="dropdown" class="ellipse-style">
+            <i class="fa fa-ellipsis-v"></i>
+          </a>
+          <div class="dropdown-menu">
+            <%= link_to 'Show', poll ,class:"btn btn-outline-info" %>
+            <%= link_to 'Edit', edit_poll_path(poll) ,class:"btn btn-outline-success" %>
+            <%= link_to 'Delete', poll, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+          </div>
+        </div>
+        <div class="btn-group d-flex">
+          <%= link_to 'Show', poll ,class:"btn btn-outline-info" %>
+          <%= link_to 'Edit', edit_poll_path(poll) ,class:"btn btn-outline-success" %>
+          <%= link_to 'Delete', poll, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+        </div>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline table-responsive'
+    })
+    $('#polls-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+      fnInitComplete: () => { 
+        $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+        $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+        $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+            .prepend("<span class='d-none d-md-inline'>Show:</span>");
+        
+      }
+    })
+    $('dataTables_filter').css('display', 'none')
+    //return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

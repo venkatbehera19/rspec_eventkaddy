@@ -1,0 +1,31 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+
+	heads = ['Survey Title', 'Question', 'Attendee First Name', 'Attendee Last Name', 'Attendee ID', 'Response']
+
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Video Portal Report") do |sheet|
+	  sheet.add_row heads, :style => style
+
+	  Survey.where(event_id:@event_id).each do |survey|
+	  	SurveyResponse.where(survey_id:survey.id).each do |survey_response|
+	  		attendee = survey_response.attendee
+	  		Response.where(survey_response_id:survey_response.id).each do |response|
+
+					sheet.add_row [survey.title, response.question.question, attendee.first_name, attendee.last_name, attendee.id, response.response], :height => 15
+					sheet.column_widths 40,40,20,20,20,60
+				end
+			end
+		end
+	end
+end

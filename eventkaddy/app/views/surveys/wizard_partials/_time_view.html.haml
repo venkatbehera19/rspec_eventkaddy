@@ -1,0 +1,49 @@
+.wizard-view.time-view{data:{hash:'#time'}}
+
+    .top-panel
+        - if !current_user.role? :exhibitor
+            .save_button.btn.btn-success{data:{'model' => 'survey', 'hash' => '#type'}, style: 'border-bottom-left-radius:5px;'}> Save and Proceed
+        - else
+            .save_button.btn.btn-success{data:{'model' => 'survey', 'hash' => '#survey_section'}, style: 'border-bottom-left-radius:5px;'}> Save & Add Survey Sections
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}>
+                Save & . . .
+            %div.dropdown-menu
+                %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#index'}}
+                    = '. . . Go to Surveys Index'
+                - unless current_user.role? :exhibitor
+                    %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#sessionassoc'}}
+                        = '. . . Go to Create Session Associations Page'
+                    %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#exhibitorassoc'}}
+                        = '. . . Go to Create Exhibitor Associations Page'
+                    - if @survey.survey_type_id == 1
+                        %a.save_button.dropdown-item{data:{'model' => 'survey', 'hash' => '#certificateassoc'}}
+                            = '. . . Go to CE Certificate Associations Page'
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-primary.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                Don't Save & . . .
+            %div.dropdown-menu.wizard-special-actions
+                %a.dropdown-item{:href => "/surveys"}
+                    = '. . . Go to Surveys Index'
+
+    .wizard-form.survey_form
+
+        .field
+            .wizard-extra-details
+
+        .form-group.time-field
+            %label.wizard-label Available Starting
+            %br/
+            = select_datetime @survey.begins || DateTime.current, {prefix: 'Begins'}, class: "custom-select"
+
+        .form-group.time-field
+            %label.wizard-label Closes On
+            %br/
+            = select_datetime @survey.ends || DateTime.current, {prefix: 'Ends'}, class: "custom-select"
+        - if current_user.role? :exhibitor
+            .form-group
+                %label.wizard-label-inline{for: "survey_type_id"} Type
+                %br/
+                = select_tag "survey_type_id", options_from_collection_for_select(SurveyType.where(name:"Exhibitor Survey"), "id", "name", "#{@survey.survey_type_id}"), class: "custom-select"

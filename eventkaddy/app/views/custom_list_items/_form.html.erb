@@ -1,0 +1,163 @@
+<%= javascript_include_tag 'unordered-files/jquery.form.js' %>
+<%= javascript_include_tag 'unordered-files/image_upload.js' %>
+
+<% if current_user.role?(:diyclient) %>
+  <div class="diy-form-part">
+    <div class="diy-form-title pull-left"><i class="fa fa-mobile-phone"></i> Home Button Icons</div><br>
+    <br>
+<% else %>
+  <h4>Listing Home Button Icons for:<b> <%= session[:event_name] %></b></h4>
+<% end %>
+
+<%= form_for(@custom_list_item, :html => { :multipart => true, :class=>unless current_user.role?(:diyclient) then "bg-light custom-border px-3 py-3"; end, :style=>"width:900px;" } ) do |f| %>
+  <% if @custom_list_item.errors.any? %>
+    <div id="error_explanation" class="error">
+      <h4><%= pluralize(@custom_list_item.errors.count, "error") %> prohibited this home_button_entry from being saved:</h4>
+
+      <ul>
+      <% @custom_list_item.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+
+  <% end %>
+
+<div class="row">
+  
+ <div class="col-sm-8 pull-left">
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, :id => "custom_list_item_name", class: "form-control", required: true %>
+  </div>
+  <div id="uploadedImages"></div><br>
+
+<!--   <div id="spinner">
+    <%= image_tag "spinner.gif" %>
+  </div>
+  <div id="response"></div> -->
+
+  <div class="field">
+    <%= label_tag :event_file, "Upload a picture" %> <br>
+    <%= file_field_tag :event_file %>
+  </div>
+  <input type="button" value="Upload" id="SubmitUpload" class="btn btn-secondary" /><br />
+
+
+  <div class="field">
+    <%= f.hidden_field :custom_list_id, :value => @custom_list_id %>
+    <%= hidden_field_tag :json %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :content %>
+    <%= f.cktext_area :content, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"} %>
+  </div>
+
+<%= label_tag "Position" %>
+
+<div class='row'>
+  <ul id="position" class="connectedSortable ml-md-3">
+    <li id="new" class="highlighted ui-state-default py-2 d-flex">
+      <span class="up-down-btns">
+        <button type="button" class="pos-btn" role="up">
+          <i class="fa fa-angle-up"></i>
+        </button> <br>
+        <button type="button" class="pos-btn" role="down">
+          <i class="fa fa-angle-down"></i>
+        </button>
+      </span>
+      <div class="item-text"> New Home Button </div>
+    </li>
+    <% @custom_list_items.each do |item| %>
+      <li id="<%= item.id %>" class="ui-state-default py-2 d-flex <%= ((@custom_list_item.id.eql? item.id) ? "highlighted" : "") %>">
+        <span class="up-down-btns">
+          <button type="button" class="pos-btn" role="up">
+            <i class="fa fa-angle-up"></i>
+          </button> <br>
+          <button type="button" class="pos-btn" role="down">
+            <i class="fa fa-angle-down"></i>
+          </button>
+        </span>
+        <div class="item-text"><%= item.title %></div>
+      </li>
+    <% end %>
+  </ul>
+</div>
+  <br />
+   <div class="actions">
+    <%= f.submit class:"btn btn-primary", :onclick=>"$('#event_file').val('');" %>
+  </div>
+<% end %>
+</div>
+<div class="col-sm-3 ml-auto">
+    <div id="gallery">
+      <% if @event_files!=nil %>
+        <% @event_files.each do |file| %>
+        <div class="float">
+            <%= image_tag(file.path) %>
+
+            <p><%= link_to "Delete", {:controller => :event_files, :action => :destroy, :id => file.id}, { :method => :delete, :remote => true, :class =>'deleter btn delete'}   %></p>
+
+        </div>
+        <% end %>
+      <% end %>
+    </div>
+
+  </div> <!--col-sm-3-->
+
+<script>
+  if (/edit/i.test(window.location)) {
+    $("#new").remove();
+  }
+  $(function () {
+    $("#position, #new_entry").sortable({
+      connectWith: ".connectedSortable",
+      update: function () {
+        updateJson();        
+      }
+    })
+  });
+
+function updateJson(){
+  let newstatus = [];
+  $('.connectedSortable').children().each(function(){
+    let column, id, name, order;
+    column     = $(this).parent().attr("id");
+    id         = $(this).attr("id");
+    name       = $(this).html();
+    order      = $(this).index();
+    return newstatus.push({
+      id       : id,
+      column   : column,
+      name     : name,
+      order    : order
+    });
+  });
+  $('#json').empty().attr("value", JSON.stringify(newstatus));
+}
+  $("#custom_list_item_name").blur(function () {
+    $("#new .item-text").empty().text(this.value);
+    updateJson();
+  });
+
+  /* Repositioning through button controls */
+  $('.pos-btn').on('click', function(event){
+    event.stopPropagation();
+    let btn = $(this);
+    let currentItem = btn.parents('li');
+    if (btn.attr('role') === 'up'){
+      let prevItem = currentItem.prev();
+      if (prevItem.length !== 0){
+        currentItem.after(prevItem);
+      } 
+    } else if(btn.attr('role') === 'down'){
+      let nextItem = currentItem.next();
+      if (nextItem.length !== 0){
+        currentItem.before(nextItem);
+      }
+    }
+    updateJson();
+  });
+</script>

@@ -1,0 +1,71 @@
+<div id="user_defined_header">
+  <% if (@current_tab!=nil && @current_tab.header_text!=nil && @current_tab.header_text.length > 0) %>
+    <%=@current_tab.header_text.html_safe %>
+  <% end %>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Purchase Details</h4>
+      <br>
+        <table class="table table-striped" id="event_ticket_table">
+          <thead>
+            <tr>
+              <th>Items</th>
+              <th>Transaction ID</th>
+              <th>Transaction Status</th>
+              <th>Payment Mode</th>
+              <th>Amount</th>
+              <th>Date/Time</th>
+              <th>Invoice</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @orders.each do |order| %>
+              <tr>
+                <% transaction = order.transaction_detail %>
+                <% mode_of_payment = transaction.mode_of_payment %>
+                <td>
+                  <ul>
+                    <% order.order_items.each do |order_item| %>
+                      <li>
+                        <% if order_item.item_type == 'Product' %>
+                          <%= order_item.item.name %>(Qty: <%= order_item.quantity %>)
+                          <br />
+                          <% if order_item.size? %>
+                            (Size: <%= order_item.size %>)
+                          <% end %>
+                        <% end %>
+                      </li>
+                    <% end %>
+                    <% coupon_item = order.order_items.where.not(coupon_id: nil) %>
+                    <% if coupon_item.present? %>
+                      <li><%= "#{coupon_item.first.coupon.coupon_code} (coupon applied)" %></li>
+                    <% end %>
+                  </ul>
+                </td>
+                <% if mode_of_payment.name == 'PayPal'%>
+                  <td><%= transaction.external_transaction_id %></td>
+                <% elsif mode_of_payment.name == 'Stripe'%>
+                  <td><%= transaction.external_payment_id %></td>
+                <% elsif mode_of_payment.iid == 'affinipay' %>
+                  <td><%= transaction.external_payment_id %></td>
+                <% end%>  
+                <td><%= transaction.external_status %></td>
+                <td><%= mode_of_payment.name %></td>
+                <td>$ <%= sprintf "%.2f", transaction.amount  %></td>
+                <td><%= transaction.updated_at %></td>
+                <td><%= link_to 'Download', "/attendee_portals/download_invoice/#{order.transaction_id}", class: 'btn btn-outline-success', target: '_blank'%></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+<div id="user_defined_footer">
+  <% if @current_tab!=nil && @current_tab.footer_text!=nil && @current_tab.footer_text.length > 0 %>
+    <%= @current_tab.footer_text.html_safe %>
+  <% end %>
+</div>
+

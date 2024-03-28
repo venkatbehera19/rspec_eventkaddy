@@ -1,0 +1,29 @@
+<%= form_for(@event, :html => { :multipart => true, :class=>"form-horizontal well" }, :url => "/attendees/bulk_create_attendee_photos", :method => :post ) do |f| %>
+
+  <% if @event.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event.errors.count, "error") %> prohibited this attendee photo from being saved:</h2>
+
+      <ul>
+      <% @event.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+
+  <p>Use this function to upload many attendee photos at once. The filenames must be the same as the temp photo filenames added on via the excel sheet import. IE: john_smith.jpg will be uploaded as the photo for the attendee with temp photo file john_smith.jpg. Images must be jpg or png format.</p><br>
+
+    <div class="field">
+    <%= label_tag :event_files, "Choose a File" %>
+    <%= file_field_tag "event_files[]", :multiple => true %>
+  </div><br />
+
+  <div class="actions">
+    <%= f.submit "Upload Files", class:"btn btn-primary"   %>
+  </div>
+<% end %>

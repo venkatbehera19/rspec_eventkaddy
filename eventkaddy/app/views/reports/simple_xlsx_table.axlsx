@@ -1,0 +1,9 @@
+
+# view for generating a generic simple table report from a 2d array; or array of 2d arrays
+if @multipage
+  @data.each_with_index do |sheet, i|
+    SimpleXlsxTable.add_sheet xlsx_package.workbook, @title, sheet, ( @column_widths || false ), ( @column_types || false )
+  end
+else
+  SimpleXlsxTable.add_sheet xlsx_package.workbook, @title, @data, ( @column_widths || false ), ( @column_types || false )
+end

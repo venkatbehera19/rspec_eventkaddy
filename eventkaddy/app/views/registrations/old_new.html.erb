@@ -1,0 +1,160 @@
+<style>
+  body{
+    overflow-y:scroll;
+  }
+</style>
+<%= stylesheet_link_tag "registrations"%>
+
+<div class="row">
+  <div class="col-md-6 mx-auto new-user-form <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+  <h2>What should be your Login Password?</h2>
+  <br/>
+  <%= form_for @user, :url => {:controller => 'registrations', :action => 'create'} do |f| %>
+    <div class="col">
+      <div class="form-group">
+        <%= f.label :email, :class => "row-form-label" %>
+        <%= f.text_field :email, :class => "form-control", :readonly=>"readonly", :type=>"text" %>
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <%= f.label :password, :class => "row-form-label" %>
+        <div class="input-group">
+          <%= f.password_field :password, :class=>"form-control", :placeholder=>"Password", :type=>"password", :pattern =>"(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,}", :title=>"Must contain at least one number and one uppercase and lowercase letter, and at least 6 or more characters", :required=>"true" %>
+          <div class="input-group-append">
+            <button type="button" class="btn <%= @settings.dark_bg_theme ? 'btn-outline-light' : 'btn-dark' %>" id="show_hide_password" onclick="showPassword()"><i class="fa fa-eye-slash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <%= f.label :password_confirmation, :class => "row-form-label" %>
+        <div class="input-group">
+          <%= f.password_field :password_confirmation, :class=>"form-control", :placeholder=>"Password", :type=>"password", :required=>"true" %>
+          <div class="input-group-append">
+            <button type="button" class="btn <%= @settings.dark_bg_theme ? 'btn-outline-light' : 'btn-dark' %>" id="show_hide_password_confirmation" onclick="showPasswordConfirmation()"><i class="fa fa-eye-slash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group form-check ml-3">
+      <label class="form-check-label">
+        <input type="checkbox" class="form-check-input" value="" required style="height: inherit;"/>
+        Agree to terms and conditions
+      </label>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <%= f.submit "Submit", :class=>"btn btn-primary form-control"%>
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <div id="password-error-message" class="flex-column">
+          <div><h6><strong>Password must contain the following:</strong></h6></div>
+          <div id="letter" class="invalid" style="padding-left: 2rem;">A <b>lowercase</b> letter</div>
+          <div id="capital" class="invalid" style="padding-left: 2rem;">A <b>capital (uppercase)</b> letter</div>
+          <div id="number" class="invalid" style="padding-left: 2rem;">A <b>number</b></div>
+          <div id="length" class="invalid" style="padding-left: 2rem;">Minimum <b>6 characters</b></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  </div>
+</div>
+<script>
+
+  var input_password = document.getElementById("user_password");
+  var input_password_confirmation = document.getElementById("user_password_confirmation");
+
+  var letter = document.getElementById("letter");
+  var capital = document.getElementById("capital");
+  var number = document.getElementById("number");
+  var length = document.getElementById("length");
+
+  input_password.onfocus = function() {
+    document.getElementById("password-error-message").style.display = "block";
+  }
+
+  input_password.onblur = function() {
+    document.getElementById("password-error-message").style.display = "none";
+  }
+
+  // Validate password match with password confirmation
+  input_password_confirmation.onkeyup = validatePassword;
+
+  input_password.onkeyup = function() {
+    // Validate lowercase letters
+    var lowerCaseLetters = /[a-z]/g;
+    if(input_password.value.match(lowerCaseLetters)) {  
+      letter.classList.remove("invalid");
+      letter.classList.add("valid");
+    } else {
+      letter.classList.remove("valid");
+      letter.classList.add("invalid");
+    }
+
+    // Validate capital letters
+    var upperCaseLetters = /[A-Z]/g;
+    if(input_password.value.match(upperCaseLetters)) {  
+      capital.classList.remove("invalid");
+      capital.classList.add("valid");
+    } else {
+      capital.classList.remove("valid");
+      capital.classList.add("invalid");
+    }
+
+    // Validate numbers
+    var numbers = /[0-9]/g;
+    if(input_password.value.match(numbers)) {  
+      number.classList.remove("invalid");
+      number.classList.add("valid");
+    } else {
+      number.classList.remove("valid");
+      number.classList.add("invalid");
+    }
+    
+    // Validate length
+    if(input_password.value.length >= 6) {
+      length.classList.remove("invalid");
+      length.classList.add("valid");
+    } else {
+      length.classList.remove("valid");
+      length.classList.add("invalid");
+    }
+  }
+
+  function showPassword() {
+    if (input_password.type === "password") {
+      input_password.type = "text";
+      $('#show_hide_password i').removeClass( "fa-eye-slash" );
+      $('#show_hide_password i').addClass( "fa-eye" );
+    } else {
+      input_password.type = "password";
+      $('#show_hide_password i').addClass( "fa-eye-slash" );
+      $('#show_hide_password i').removeClass( "fa-eye" );
+    }
+  }
+
+  function showPasswordConfirmation() {
+    if (input_password_confirmation.type === "password") {
+      input_password_confirmation.type = "text";
+      $('#show_hide_password_confirmation i').removeClass( "fa-eye-slash" );
+      $('#show_hide_password_confirmation i').addClass( "fa-eye" );
+    } else {
+      input_password_confirmation.type = "password";
+      $('#show_hide_password_confirmation i').addClass( "fa-eye-slash" );
+      $('#show_hide_password_confirmation i').removeClass( "fa-eye" );
+    }
+  }
+
+  function validatePassword(){
+  if(input_password.value != input_password_confirmation.value) {
+    input_password_confirmation.setCustomValidity("Passwords Don't Match");
+  } else {
+    input_password_confirmation.setCustomValidity('');
+  }
+}
+</script>

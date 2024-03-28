@@ -1,0 +1,25 @@
+<h1>Listing users_events</h1>
+<%= link_to 'New Users Event', new_users_event_path,class:"btn btn-primary" %> <br/><br/>
+<table>
+  <tr>
+    <th>User</th>
+    <th>Event</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @users_events.each do |users_event| %>
+  <tr>
+    <td><%= users_event.user_id %></td>
+    <td><%= users_event.event_id %></td>
+    <td><%= link_to 'Show', users_event ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_users_event_path(users_event) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', users_event, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

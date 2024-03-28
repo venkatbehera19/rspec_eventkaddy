@@ -1,0 +1,31 @@
+#+TITLE: Working with the Cvent API
+
+* Adding a New Integration for Cvent
+
+This is used for fep, fiserv and bcbs attendees
+
+1. Navigate to olympus-cms.eventkaddy.com/dev and select "Manage Scripts". Then select "Add Button From Template". Add a script and view it in the scripts view. 
+2. Locally, choose the latest import script from the same client, and duplicate it and rename it. 
+3. Add the filename to the script button you just created, then export the database and import it locally. 
+4. Review your newly created import script. Near the bottom will be a url to 'https://bcbsproxyb.eventkaddy.net/{unique-event-endpoint}?proxy-key={proxy-key}'. Edit the unique event url part to match the new event name. 
+5. Login to Mercury (50.116.38.36) and navigate to home/deploy/ek-bcbsproxyb/. Select the file that corresponds to the current year e.g. app-bcbs2019.rb 
+6. Duplicate an endpoint from the same client, updating the endpoint url and ecode - found in the line that looks like: registrants = Cvent::Registration.find_for_event(...). If there is not an existing client, you will need to ask for the credentials, they are referenced in the line that looks like: Cvent::Client.instance.load_config(...). Then restart the server sudo /etc/init.d/thin-ekbcbsproxyb restart
+8. Start testing your script. Publish your script in the scripts view and run it. I review the data for capitalization problems and missing fields. If data is missing and not available in the json, see the next section. 
+
+* Viewing Raw CVENT Data to find a Missing Field
+
+We do this occassionally to look for missing fields or look at the structure of the data. Cvent returns SOAP data rather than json, making it more difficult to read. 
+
+1. Delete the log files: cd ekbcbsproxy-b sudo rm -r log. I usually do this so that I can be sure the input I am seeing is from the integration I am testing, rather than another integration.
+2. Turn on logging in vendor/cvent-ruby/lib/cvent/client.rb, lines 20/21 and comment out line 52. This is usually set to false as there is a lot of logging data. 
+3. Restart server sudo /etc/init.d/thin-ekbcbsproxyb restart. This is necessary for logging to be turned on.
+4. Hit the endpoint from localhost, or directly in the browser.
+5. Check all the log files, the output will only be in one - e.g. tail -n 1000 thin.ekbcbsproxyb.3.log
+6. Search output for the field you are looking for. 
+7. In some cases we need to update the survey_detail file, as these questions frequently change. Identify the question id e.g. F0C11F01-9945-4D12-AC1E-34A8C90B48C1 and then update the file vendor/cvent-ruby/lib/cvent/survey_detail.rb which is called from vendor/cvent-ruby/lib/cvent/registration.rb
+8. Turn off logging and restart the server
+
+
+
+
+

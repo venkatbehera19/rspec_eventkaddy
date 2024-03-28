@@ -1,0 +1,19 @@
+<div class="filter-header">
+  <div class="filter-option" data-toggle="collapse" href="#exhibitor_name_filter_option" role="button" aria-expanded="false" aria-controls="exhibitor_name_filter_option">
+    <label class="filter_label label_bold">Exhibitors</label>
+    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+    <i class="fa fa-arrow-up d-none" aria-hidden="true"></i>
+  </div>
+</div>
+<div class="collapse" id="exhibitor_name_filter_option">
+  <ul id="main-menu" class="sm sm-vertical sm-blue main-menu">
+    <div class="bg-light p-2">
+      <input id="exhibitorSearch" type="text" placeholder="Search Exhibitor" class="form-control rounded">
+    </div>
+    <% @exhibitors.each_with_index do |exhibitor| %>
+      <li class="parent-li exhibitor_list">
+        <label class='labels'><a href="<%= "/#{params[:event_id]}/program/exhibitor/#{exhibitor.id}"%>" class="exhibitor-name"><%= exhibitor.company_name %></a></label> 
+      </li>
+    <% end %>
+  </ul>
+</div>

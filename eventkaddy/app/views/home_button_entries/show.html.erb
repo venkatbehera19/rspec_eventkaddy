@@ -1,0 +1,41 @@
+<%= link_to 'Back', "/home_button_groups/#{@home_button_entry.group_id}",class:"btn btn-secondary" %>
+<%= link_to 'Edit', edit_home_button_entry_path(@home_button_entry) ,class:"btn btn-outline-success" %> 
+
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Group:</b>
+  <%= @home_button_entry.group_id %>
+</p>
+
+<p>
+  <b>Render url:</b>
+  <%= @home_button_entry.render_url %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @home_button_entry.name %>
+</p>
+
+<p>
+  <b>Icon entry:</b>
+  <%= @home_button_entry.icon_entry %>
+</p>
+
+<p>
+  <b>Content:</b>
+  <%= cktext_area_tag '', @home_button_entry.content %>
+</p>
+
+<p>
+  <b>Position:</b>
+  <%= @home_button_entry.position %>
+</p>
+<p>
+  <b>Extra Type:</b>
+  <%= @home_button_entry.home_button_entry_type_id %>
+</p>
+

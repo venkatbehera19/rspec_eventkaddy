@@ -1,0 +1,115 @@
+<style>
+  .ek-heading {
+    width:            100%;
+    background-color: #0D90B2;
+    border-radius:5px;
+  }
+  .ek-heading h3 {
+    color:  #E2F9FF;
+    padding: 10px 10px 10px 20px;
+  }
+  .tag-center-container .btn{
+    max-width: 100%;
+    word-break: break-word;
+    white-space: normal;
+    margin: 3px 0 3px 0;
+  }
+</style>
+<div class="tag-center-container">
+  <div class='ek-heading'>
+    <h3>Session Tags</h3>
+  </div>
+  <!-- Generate Date Tags -->
+
+  <div class='bg-light custom-border px-2 py-3'>
+
+    <%= form_for(@event, :url => {:action => "generate_date_tags_without_a_top_tag"}) do |f| %>
+      <%= f.submit "Generate Date Tags Without A Top Tag", class:"btn btn-outline-primary" %>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "generate_date_tags"}) do |f| %>
+      <div class="form-inline">
+        <%= f.submit "Generate Date Tags", class:"btn btn-outline-primary mr-1" %> using <%= text_field_tag :date_header, 'Date', class: "form-control mx-1" %> as the top level tag.
+      </div>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "remove_date_tags_without_a_top_tag"}) do |f| %>
+      <%= f.submit "Remove Date Tags", class:"btn btn-outline-warning" %>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "remove_date_tags"}) do |f| %>
+      <div class="form-inline">
+        <%= f.submit "Remove Date Tags", class:"btn btn-outline-warning mr-1" %> with top level tag <%= text_field_tag :date_header_to_remove, '', class: "form-control mx-1" %>
+      </div>
+    <% end %>
+    <%= link_to 'Delete All Session & Session Audience Tags', "/events/deleteall_sessiontags", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger" %>
+  </div>
+
+  <!-- generate session location tags -->
+  <div class='ek-heading'>
+    <h3>Location Tags</h3>
+  </div>
+
+  <div class='bg-light custom-border px-2 py-3'>
+
+    <%= form_for(@event, :url => {:action => "generate_session_location_tags_without_a_top_tag"}) do |f| %>
+      <%= f.submit "Generate Session Location Tags Without A Top Tag", class:"btn btn-outline-primary" %>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "generate_session_location_tags"}) do |f| %>
+      <div class="form-inline">
+        <%= f.submit "Generate Session Location Tags", class:"btn btn-outline-primary mr-1" %> using <%= text_field_tag :session_location_header, 'Maps', class: "form-control mx-1" %> as the top level tag.
+      </div>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "remove_session_location_tags_without_a_top_tag"}) do |f| %>
+      <%= f.submit "Remove Session Location Tags", class:"btn btn-outline-warning" %>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "remove_session_location_tags"}) do |f| %>
+      <div class="form-inline">
+        <%= f.submit "Remove Session Location Tags", class:"btn btn-outline-warning mr-1" %> with top level tag <%= text_field_tag :session_location_header_to_remove, '', class: "form-control mx-1" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class='ek-heading'>
+    <h3>Exhibitor Tags</h3>
+  </div>
+
+  <!-- generate exhibitor location tags -->
+
+  <div class='bg-light custom-border px-2 py-3'>
+
+    <%= form_for(@event, :url => {:action => "generate_exhibitor_location_tags_without_a_top_tag"}) do |f| %>
+      <%= f.submit "Generate Exhibitor Location Tags Without A Top Tag", class:"btn btn-outline-primary" %>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "generate_exhibitor_location_tags"}) do |f| %>
+      <div class="form-inline">
+        <%= f.submit "Generate Exhibitor Location Tags", class:"btn btn-outline-primary mr-1" %> using <%= text_field_tag :exhibitor_location_header, 'Maps', class: "form-control mx-1" %> as the top level tag.
+      </div>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "remove_exhibitor_location_tags_without_a_top_tag"}) do |f| %>
+      <%= f.submit "Remove Exhibitor Location Tags", class:"btn btn-outline-warning" %>
+    <% end %>
+
+    <%= form_for(@event, :url => {:action => "remove_exhibitor_location_tags"}) do |f| %>
+      <div class="form-inline">
+      <%= f.submit "Remove Exhibitor Location Tags", class:"btn btn-outline-warning mr-1" %> with top level tag <%= text_field_tag :exhibitor_location_header_to_remove, '', class: "form-control mx-1" %>
+      </div>
+    <% end %>
+    <%= link_to "/events/deleteall_exhibitortags", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger" do %>
+      Delete all exhibitor tags
+    <% end %>
+  </div>
+  <div class='ek-heading'>
+    <h3>Attendee Tags</h3>
+  </div>
+  <div class='bg-light custom-border px-2 py-3'>
+    <%= link_to "/events/deleteall_attendeetags", data: {confirm: 'Are you sure?'}, class: "btn btn-outline-danger" do %>
+      Delete All Attendee Tags
+    <% end %>
+  </div>
+</div>

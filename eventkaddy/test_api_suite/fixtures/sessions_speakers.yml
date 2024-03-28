@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  session: realistic
+  speaker: Micky
+  unpublished: false
+  is_moderator: false
+  speaker_type: one
+
+two:
+  session: barebones
+  speaker: Minnie
+  unpublished: false
+  is_moderator: false
+  speaker_type: two

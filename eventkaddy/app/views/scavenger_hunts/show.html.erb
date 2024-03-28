@@ -1,0 +1,150 @@
+<% types = ScavengerHuntItemType.all %>
+<div class="bg-light custom-border px-3 py-3">
+
+    <%= link_to "Scavenger Hunts Index", "/scavenger_hunts", class: "btn btn-outline-secondary" %>
+    <h2><%= @m[:title] %></h2>
+    <br>
+
+    <b>Description:</b> <%= @m[:description] %><br>
+    <b>Maximum Attempts:</b> <%= @m[:maximum_attempts] %>
+    <%= link_to "Edit", @m[:edit_url], class: "btn btn-outline-success mt-2 pull-right" %>
+
+
+    <br>
+    <br>
+    <br>
+
+    <hr>
+
+    <h3>Add Scavenger Hunt Item</h3>
+
+    <%= form_for(@scavenger_hunt_item, html: { multipart: true}) do |f| %>
+
+        <div class="field">
+            Associated Image (not mandatory)
+            <br>
+            <%= file_field_tag "event_file" %>
+        </div>
+
+        <br>
+
+        <%= f.hidden_field :scavenger_hunt_id, :value => @m[:id] %>
+
+        <div class="form-group">
+            <%= f.label :name %>
+            <%= f.text_field :name, class: "form-control" %>
+        </div>
+
+        <div class="form-group">
+            <%= f.label :description %>
+            <%= f.text_area :description,  class: "form-control" %>
+        </div>
+
+        <div class="form-group">
+            <%= f.label :scavenger_hunt_item_type_id, "Type" %>
+            <%= f.select :scavenger_hunt_item_type_id, options_from_collection_for_select( types, :id, :name, nil ), {include_blank: "Select type of hunt item"}, class: "custom-select" %>
+        </div>
+
+        <div class="form-group d-none" id="max-retry-div">
+            <%= f.label :maximum_attempts, "Maximum Retries (Make the text field empty if you want infinite retries.)"%>
+            <%= f.text_field :maximum_attempts,value: @m[:maximum_attempts], class: "form-control"  %>
+        </div>
+
+        <div class="form-group">
+            <%= f.label :answer, "Answer (Anything that can be typed on a phone. We suggest a 4 digit code)" %>
+            <%= f.text_field :answer, class: "form-control" %>
+        </div>
+
+        <%= f.submit 'Add Scavenger Hunt Item', class:'btn btn-primary' %>
+    <% end %>
+</div>
+
+<div class="ek-heading">
+    <h3>Scavenger Hunt Items</h3>
+</div>
+
+<div class="bg-light custom-border px-3 py-3">
+
+    <% if @m[:items].length == 0 %>
+        No items have been added to this scavenger hunt yet.
+    <% end %>
+
+    <% @m[:items].each do |item| %>
+        <div class="row" style="margin:15px;">
+            <div class="pull-left" style="width:90%;">
+
+                <h4>
+                    <%= item.name %>
+                </h4>
+
+                <%= form_for(item, html: { multipart: true}, url: "/scavenger_hunt_items/#{item.id}") do |f| %>
+
+                    <% unless item.event_file_id.blank? %>
+                        <div class="banner-image-container" style="margin-bottom:10px;">
+                            <%= link_to image_tag(item.path), item.path %>
+                            <br>
+                        </div>
+                    <% end %>
+
+                    <div class="field">
+                        Associated Image (not mandatory)
+                        <br>
+                        <%= file_field_tag "event_file" %>
+                    </div>
+
+                    <br>
+
+                    <div class="form-group">
+                        Name
+                        <%= f.text_field :name, class: "form-control" %>
+                    </div>
+
+                    <div class="form-group">
+                        Description
+                        <%= f.text_area :description,  class: "form-control" %>
+                    </div>
+
+                    <div class="form-group">
+                        Type
+                        <%= f.select :scavenger_hunt_item_type_id, options_from_collection_for_select( types, :id, :name, 1 ), {}, class: "custom-select" %>
+                    </div>
+
+                    <% if item.qr_code_type? %>
+                        <%= link_to item.qr_image do %>
+                            <%= image_tag item.qr_image, style: 'height:150px; width:150px;' %>
+                        <br>
+                        Click to show full size.
+                        <% end %>
+                    <% end %>
+
+                    <div class="form-group">
+                        Maximum Attempts (Make the text field empty if you want infinite retries.)
+                        <%= f.text_field :maximum_attempts,  class: "form-control" %>
+                    </div>
+
+                    <div class="form-group">
+                        Answer
+                        <%= f.text_field :answer, class: "form-control" %>
+                    </div>
+                    <div class="actions">
+                        <%= f.submit 'Update Item', class:'btn btn-primary mr-2' %>
+                        <%= link_to 'Delete', "/scavenger_hunt_items/#{item.id}", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-outline-danger" %>
+                    </div>
+                <% end %>
+            </div>
+            
+        </div>
+        <hr/>
+    <% end %>
+</div>
+
+<script defer>
+    $('#scavenger_hunt_item_scavenger_hunt_item_type_id').change(function(){
+        if($(this).val() == 1){
+            $('#max-retry-div').removeClass('d-none')
+        }else{
+            $('#max-retry-div').addClass('d-none')
+        }
+    })
+    // $('#scavenger_hunt_item_scavenger_hunt_item_type_id').find(":selected").text();
+</script>

@@ -1,0 +1,53 @@
+<%= link_to 'Back', sponsor_specifications_path,class:"btn" %> 
+<%= link_to 'Edit', edit_sponsor_specification_path(@sponsor_specification) ,class:"btn edit" %> 
+
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Exhibitor:</b>
+  <%= @sponsor_specification.exhibitor_id %>
+</p>
+
+<p>
+  <b>Sponsor level type:</b>
+  <%= @sponsor_specification.sponsor_level_type %>
+</p>
+
+<p>
+  <b>Banner ad:</b>
+  <%= @sponsor_specification.banner_ad %>
+</p>
+
+<p>
+  <b>Banner ad iphone:</b>
+  <%= @sponsor_specification.banner_ad_iphone %>
+</p>
+
+<p>
+  <b>Banner ad android:</b>
+  <%= @sponsor_specification.banner_ad_android %>
+</p>
+
+<p>
+  <b>Banner ad mobile:</b>
+  <%= @sponsor_specification.banner_ad_mobile %>
+</p>
+
+<p>
+  <b>Banner ad home:</b>
+  <%= @sponsor_specification.banner_ad_home %>
+</p>
+
+<p>
+  <b>Banner ad touch:</b>
+  <%= @sponsor_specification.banner_ad_touch %>
+</p>
+
+<p>
+  <b>Banner ad link:</b>
+  <%= @sponsor_specification.banner_ad_link %>
+</p>
+
+

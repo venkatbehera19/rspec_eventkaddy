@@ -1,0 +1,18 @@
+#+TITLE: MySql Strict Mode
+
+* Explanation
+Mysql 5.7 has several default sql_mode settings including ONLY_FULL_GROUP_BY. We have code in the mobile site and cms that violates this setting. The approach to date has been to remove the setting rather than fix the code. 
+
+*Steps to Resolve the error
+1. Determine which server hosts the database. Sometimes it is the same as the server that host the code, but usually not.
+2. Open the mysql console mysql -u ekuser -p, and type SELECT @@sql_mode. If you see "ONLY_FULL_GROUP_BY" in the list, then this is what is causing the issue. 
+3. Add a file to /etc/mysql/conf.d/ that has these lines: 
+[mysqld]
+
+sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+
+4. Restart mysql: sudo service mysql restart
+
+
+
+

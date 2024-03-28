@@ -1,0 +1,119 @@
+<script>
+  $(function() {
+    ModalForm.init($('#new_exhibitor'), $('#exhibitor_exhibitor_code'), $('#exhibitor_company_name'));
+  });
+</script>
+
+<% settings = Setting.return_cms_settings session[:event_id] %>
+
+<h4>Listing exhibitors for:<b> <%= session[:event_name] %></b></h4>
+
+<div class="row mb-2">
+  <div class="col-6 mb-2">
+    <div class="btn-group">
+      <a href="#quickAdd" class='btn btn-primary' data-toggle='modal'>
+        <span class="d-none d-md-inline">New Exhibitor</span> <i class="fa fa-plus"></i>
+      </a>
+    </div>
+  </div>
+  <div class="col-6 mb-2">
+    <div class="btn-group side-drops pull-right">
+      <div class="btn-group" id="menu1">
+
+        <a class="dropdown-toggle btn report-dropdown" data-toggle="dropdown" href="#menu1">
+          <span class="d-none d-md-inline">Downloads</span>
+          <i class="fa fa-download d-md-none d-inline"></i>
+        </a>
+        <div class="dropdown-menu">
+          <%= link_to "Export Exhibitors To Spreadsheet", "/exhibitors/exhibitors_report.xlsx", class: "dropdown-item"%>
+        </div>
+      </div>
+      <div class="btn-group">
+        <a class="report-dropdown btn" data-toggle="dropdown">
+          <span class="d-none d-md-inline dropdown-toggle">Menu</span>
+          <i class="fa fa-ellipsis-v  d-inline d-md-none"></i>
+        </a>
+        <div class="dropdown-menu">
+          <% unless settings.method("hide_exhibitor_index_booth_owners_multiple_new").call %>
+            <%= link_to "/booth_owners/multiple_new", class:"dropdown-item" do %>
+              Add Attendees as Booth Owners <i class="fa fa-users"></i>
+            <% end %>
+          <% end %>
+          <% unless settings.method(:hide_exhibitor_index_bulk_set_exhibitors_photos_to_online).call %>
+            <%= link_to "/exhibitors/bulk_set_exhibitors_photos_to_online", class: "dropdown-item", method: "post" do %>
+              Bulk Set Exhibitors Photos To Online <i class="fa fa-link"></i>
+            <% end %>
+          <% end %>
+          <%= link_to sponsor_level_types_path, class: "dropdown-item" do %>
+            Sponsor Level Types <i class="fa fa-dollar"></i>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!--<%= link_to 'New Exhibitor', new_exhibitor_path,class:"btn btn-primary" %> <br/><br/>
+<a href="#quickAdd" class='btn btn-primary' data-toggle='modal'>Quick Add Exhibitor</a><br><br>
+<% unless settings.method("hide_exhibitor_index_add_exhibitor_files_to_placeholders").call %>
+    <%= link_to 'Add Files to Placeholders', "/events/add_exhibitor_files_to_placeholders", class:"btn btn-primary" %><br><br>
+<% end %>
+<% unless settings.method("hide_exhibitor_index_booth_owners_multiple_new").call %>
+    <%= link_to 'Add Attendees as Booth Owners', "/booth_owners/multiple_new", class:"btn btn-primary" %><br><br>
+<% end %> -->
+
+<table id="exhibitors" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" data-event="<%= session[:event_id]%>">
+	<thead>
+  		<tr>
+        <th class="d-none d-md-table-cell sortable-off">Logo</th>
+        <th class="order-by">Email</th>
+    	  <th>Company Name</th>
+    	  <th>Booth</th>
+    	  <th class="sortable-off"></th>
+  	</tr>
+	</thead>
+
+	<tbody>
+		<% @exhibitors.each do |exhibitor| %>
+    <% if exhibitor.is_demo %>
+		  <tr class='highlight-demo', 'data-toggle': 'tooltip', 'data-placement':'top', title: "demo exhibitor">
+    <% else %>
+      <tr>
+    <% end %>
+      <td class="d-none d-md-table-cell">
+        <% if exhibitor.event_file %>
+          <img src="<%= exhibitor.event_file.path %>" alt="logo" class="table-dp">
+        <% else %>
+          <img src="/defaults/profile_default.png" alt="default" class="table-dp">
+        <% end %>
+      </td>
+      <td style="word-break: break-word; white-space: normal; max-width: 17rem; min-width: 3.6rem;">
+        <%= exhibitor.email %>
+      </td>
+      <td><%= exhibitor.company_name %></td>
+      <td><%= exhibitor.location_name %></td>
+      <td class="table-actions">
+        <div class="btn-group d-flex">
+          <%= link_to 'Options', exhibitor ,class:"btn btn-outline-info" %>
+          <%= link_to 'Edit', edit_exhibitor_path(exhibitor) ,class:"btn btn-outline-success" %>
+          <%= link_to 'Delete', exhibitor, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+        </div>
+        <div class="dropdown">
+          <a data-toggle="dropdown" style="font-size: 1.5rem; cursor: pointer;">
+            <i class="fa fa-ellipsis-v"></i>
+          </a>
+          <div class="dropdown-menu">
+            <%= link_to 'Options', exhibitor ,class:"btn text-info dropdown-item" %>
+            <%= link_to 'Edit', edit_exhibitor_path(exhibitor) ,class:"btn text-success dropdown-item" %>
+            <%= link_to 'Delete', exhibitor, :confirm => 'Are you sure?', :method => :delete ,class:"btn text-danger dropdown-item" %>
+          </div>
+        </div>
+      </td>
+    </tr>
+		<% end %>
+	</tbody>
+</table>
+
+<%= render 'new_exhibitor_modal' %>

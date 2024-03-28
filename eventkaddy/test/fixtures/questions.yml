@@ -1,0 +1,216 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# Survey.find(224).questions.map &:to_yaml
+one:
+  id: 2349
+  event_id: 205
+  survey_section_id: 631
+  survey_id: 224
+  question_type_id: 1
+  order: 1
+  question: Ability to effectively convey the subject matter
+  created_at: 2019-02-20 17:00:20.000000000 Z
+  updated_at: 2019-02-20 17:00:20.000000000 Z
+two:
+  id: 2350
+  event_id: 205
+  survey_section_id: 631
+  survey_id: 224
+  question_type_id: 1
+  order: 2
+  question: Expertise on the subject matter
+  created_at: 2019-02-20 17:00:53.000000000 Z
+  updated_at: 2019-02-20 17:00:53.000000000 Z
+three:
+  id: 2351
+  event_id: 205
+  survey_section_id: 632
+  survey_id: 224
+  question_type_id: 1
+  order: 1
+  question: Ability to effectively convey the subject matter
+  created_at: 2019-02-20 17:03:45.000000000 Z
+  updated_at: 2019-02-20 17:03:45.000000000 Z
+four:
+  id: 2352
+  event_id: 205
+  survey_section_id: 632
+  survey_id: 224
+  question_type_id: 1
+  order: 2
+  question: Expertise on the subject matter
+  created_at: 2019-02-20 17:04:16.000000000 Z
+  updated_at: 2019-02-20 17:04:16.000000000 Z
+five:
+  id: 2353
+  event_id: 205
+  survey_section_id: 633
+  survey_id: 224
+  question_type_id: 1
+  order: 1
+  question: Ability to effectively convey the subject matter
+  created_at: 2019-02-20 17:04:57.000000000 Z
+  updated_at: 2019-02-20 17:04:57.000000000 Z
+six:
+  id: 2354
+  event_id: 205
+  survey_section_id: 633
+  survey_id: 224
+  question_type_id: 1
+  order: 2
+  question: Expertise on the subject matter
+  created_at: 2019-02-20 17:05:24.000000000 Z
+  updated_at: 2019-02-20 17:05:24.000000000 Z
+seven:
+  id: 2355
+  event_id: 205
+  survey_section_id: 634
+  survey_id: 224
+  question_type_id: 1
+  order: 1
+  question: Ability to effectively convey the subject matter
+  created_at: 2019-02-20 17:08:22.000000000 Z
+  updated_at: 2019-02-20 17:08:22.000000000 Z
+eight:
+  id: 2356
+  event_id: 205
+  survey_section_id: 634
+  survey_id: 224
+  question_type_id: 1
+  order: 2
+  question: Expertise on the subject matter
+  created_at: 2019-02-20 17:08:53.000000000 Z
+  updated_at: 2019-02-20 17:08:53.000000000 Z
+nine:
+  id: 2357
+  event_id: 205
+  survey_section_id: 635
+  survey_id: 224
+  question_type_id: 1
+  order: 1
+  question: Session Learning Objective 1
+  created_at: 2019-02-20 17:09:45.000000000 Z
+  updated_at: 2019-02-20 17:09:45.000000000 Z
+ten:
+  id: 2358
+  event_id: 205
+  survey_section_id: 635
+  survey_id: 224
+  question_type_id: 1
+  order: 2
+  question: Session Learning Objective 2
+  created_at: 2019-02-20 17:10:17.000000000 Z
+  updated_at: 2019-02-20 17:10:17.000000000 Z
+eleven:
+  id: 2359
+  event_id: 205
+  survey_section_id: 635
+  survey_id: 224
+  question_type_id: 1
+  order: 3
+  question: Session Learning Objective 3
+  created_at: 2019-02-20 17:10:56.000000000 Z
+  updated_at: 2019-02-20 17:10:56.000000000 Z
+twelve:
+  id: 2360
+  event_id: 205
+  survey_section_id: 635
+  survey_id: 224
+  question_type_id: 1
+  order: 4
+  question: Session Learning Objective 4
+  created_at: 2019-02-20 17:11:27.000000000 Z
+  updated_at: 2019-02-20 17:11:27.000000000 Z
+thirteen:
+  id: 2361
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 1
+  order: 1
+  question: Quality of educational content
+  created_at: 2019-02-20 17:12:57.000000000 Z
+  updated_at: 2019-02-20 17:12:57.000000000 Z
+fourteen:
+  id: 2362
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 1
+  order: 2
+  question: Usefulness of educational material
+  created_at: 2019-02-20 17:13:29.000000000 Z
+  updated_at: 2019-02-20 17:13:29.000000000 Z
+fifteen:
+  id: 2363
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 1
+  order: 3
+  question: Effectiveness of teaching and learning methods (use of practical cases,
+    Q/A, feedback provided)
+  created_at: 2019-02-20 17:14:03.000000000 Z
+  updated_at: 2019-02-20 17:14:03.000000000 Z
+sixteen:
+  id: 2364
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 1
+  order: 4
+  question: Facilities, technical arrangements efficiently supported this activity
+  created_at: 2019-02-20 17:14:41.000000000 Z
+  updated_at: 2019-02-20 17:14:41.000000000 Z
+seventeen:
+  id: 2365
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 1
+  order: 5
+  question: Did you perceive any bias or commercialism towards any product or drug
+    in this session?
+  created_at: 2019-02-20 17:15:14.000000000 Z
+  updated_at: 2019-02-20 17:15:14.000000000 Z
+eighteen:
+  id: 2366
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 2
+  order: 6
+  question: If Yes, please explain
+  created_at: 2019-02-20 17:15:32.000000000 Z
+  updated_at: 2019-02-20 17:15:32.000000000 Z
+nineteen:
+  id: 2367
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 1
+  order: 7
+  question: Did this session meet your educational needs?
+  created_at: 2019-02-20 17:15:41.000000000 Z
+  updated_at: 2019-02-20 17:15:41.000000000 Z
+twenty:
+  id: 2368
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 2
+  order: 8
+  question: If Yes, please explain
+  created_at: 2019-02-20 17:16:08.000000000 Z
+  updated_at: 2019-02-20 17:16:08.000000000 Z
+twentyone:
+  id: 2369
+  event_id: 205
+  survey_section_id: 636
+  survey_id: 224
+  question_type_id: 2
+  order: 9
+  question: Please list up to 2 things you will do differently, after attending this
+    session.
+  created_at: 2019-02-20 17:16:19.000000000 Z
+  updated_at: 2019-03-22 16:29:42.000000000 Z

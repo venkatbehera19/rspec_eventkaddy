@@ -1,0 +1,2 @@
+class RecommendationSourceType < ApplicationRecord
+end

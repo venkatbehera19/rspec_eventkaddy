@@ -1,0 +1,29 @@
+<%= link_to 'New Speaker', new_speaker_path,class:"btn btn-primary" %>
+<div class="dropdown btn-group pull-right">
+	<button class="btn btn-primary" data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></button>
+	<div class="dropdown-menu">
+		<%= link_to "Export Speakers To Spreadsheet", "/speakers/speaker_report.xlsx", :class=>"dropdown-item text-primary" %>
+		<%= link_to "Download All Speakers' Files as Zip", "/trackowner_portals/speaker_files_zip", :class=>"dropdown-item text-primary" %>
+	</div>
+</div>
+
+<% settings = Setting.return_cms_settings session[:event_id] %>
+<br> <br>
+<table id="speakers" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" data-source="<%= trackowner_portals_speakers_url(format: "json") %>">
+	<thead>
+	  <tr>
+	    <th class="d-none d-md-table-cell">Photo</th>
+      <th class="d-none d-md-table-cell">Honor Prefix</th>
+	    <th>First name</th>
+	    <th>Last name</th>
+      <th class="d-none d-md-table-cell">Honor Suffix</th>
+	    <th class="d-none d-md-table-cell">Email</th>
+      <th>Company</th>
+	    <th></th>
+	  </tr>
+	</thead>
+
+	<tbody>
+	</tbody>
+</table>
+

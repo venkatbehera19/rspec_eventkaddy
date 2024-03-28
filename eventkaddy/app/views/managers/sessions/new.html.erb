@@ -1,0 +1,64 @@
+<script>
+    // Cookie detection
+    window.onload = function(){
+        document.cookie = "testing=cookies_enabled; path=/";
+        if (document.cookie.indexOf("testing=cookies_enabled") < 0)
+        {
+            // however you want to handle if cookies are disabled
+            $("#sign-in").prepend("<div class='noscript-error'>Your cookies are disabled. Some features of this website will not function without cookies. To find out how to enable cookies, google the name of your browser + 'how to enable cookies'</div>");
+            //alert();
+        }
+    };
+</script>
+<noscript>
+    <div class="noscript-error">Javascript is disabled on your brower. Some features of this website require javascript.<br><br>
+
+    How to enable Javascript for:<br>
+    <a href="https://support.mozilla.org/en-US/kb/javascript-settings-for-interactive-web-pages">Firefox</a><br>
+    <a href="https://support.google.com/adsense/answer/12654?hl=en">Chrome</a><br>
+    <a href="https://support.microsoft.com/gp/howtoscript">Internet Explorer</a>
+    </div>
+</noscript>
+<div class="row">
+    <% if flash[:login_notice] %>
+        <div class="alert alert-success shadow col-md-6 mx-auto" role="alert" style="border-left:#155724 5px solid; border-radius: 0px">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true" style="color:#155724">&times;</span>
+            </button>
+            <div style="font-size: 20px;font-weight: 500;">
+                <i class="fa fa-info-circle"></i>
+                <%= flash[:login_notice] %>
+            </div>
+        </div>
+    <% end %>
+</div>
+<div class="row">
+<div id="sign-in" class="col-md-6 mx-auto bg-light custom-border">
+
+    <h3>Sign In</h3>
+
+	<%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
+	  <div class="form-group">
+        <%= f.label :client_iid, 'Email' %>
+	    <%= f.email_field :client_iid, :autofocus => true, class: "form-control" %>
+      </div>
+
+	  <div class="form-group">
+        <%= f.label :client_digest, 'Password' %>
+	    <%= f.password_field :client_digest, class: "form-control" %>
+      </div>
+
+
+	  <% if devise_mapping.rememberable? -%>
+	    <div class="form-inline"> 
+            <%= f.label :remember_me, class: "mr-3" %>
+            <%= f.check_box :remember_me, class: "form-control", style: "width: auto !important;"%>
+        </div>
+	  <% end -%>
+
+	  <div><%= f.submit "Sign in", :class=>"btn btn-primary form-control" %></div>
+	<% end %>
+
+	<%= render "devise/shared/links" %>
+</div>
+</div>

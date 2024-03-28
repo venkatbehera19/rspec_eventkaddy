@@ -1,0 +1,36 @@
+<div class="container">
+  <div class="row">
+    <% events.each do |event| %>
+      <div class="col-sm-6 col-md-6 col-lg-4">
+        <div class="card event-cards">
+          <img src="/defaults/event_logo/default_event_logo.jpeg" alt="test-logo" class="card-img-top">
+          <div class="card-body">
+            <h5 class="card-title">
+              <%= event.name %>
+            </h5>
+            <p class="card-text"><strong>Exhibitors:</strong>&nbsp;<%= event.exhibitors %></p>
+            <p class="card-text"><strong>Enhanced listings:</strong>&nbsp;<%= event.enhanced_listings %></p>
+            <p class="card-text"><strong>Sponsorship:</strong>&nbsp;<%= event.sponsorship %></p>
+            <div class="d-flex time-info">
+              <div class="text-center length-half bdr-right">
+                <strong>Event start at:</strong>
+                <p class="time"><%= event.event_start_at %></p>
+              </div>
+              <div class="text-center length-half">
+                <strong>Event end at:</strong>
+                <p class="time"><%= event.event_end_at %></p>
+              </div>
+            </div>
+
+            <div class="d-flex card-actions">
+              <%= link_to '', event ,class:"btn btn-outline-info fa fa-eye" %>
+              <%= link_to '', edit_event_path(event) ,class:"btn btn-outline-success fa fa-pencil" %>
+              <%= link_to '', event, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger fa fa-trash" %></td>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+!!!
+%html
+    %head
+        %meta{:charset => "utf-8"}
+        %title Game Results
+        = stylesheet_link_tag "application"
+        = javascript_include_tag "application"
+        %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+    %body
+
+        .container
+            .row
+
+                .banner-container{style:'text-align:center; margin:50px;'}
+                    = image_tag @banner_image
+
+                    %h2{style:'margin-top:50px;'}
+                        Game Results
+
+
+                    = link_to "Download Game Results", "/download_game_results.xlsx?event_id=#{@event_id}", class:'report_button'
+
+                %table#game_report_table.table.table-striped.table-bordered{:border => "0", :cellpadding => "0", :cellspacing => "0"}
+                    %thead
+                        %tr
+                            %th Code
+                            %th First Name
+                            %th Last Name
+                            %th Email
+                            %th Points
+                            %th Badges Completed
+
+                    %tbody
+
+                        - @attendees.each do |a|
+
+                            %tr
+                                %td= a['account_code']
+                                %td= a['first_name']
+                                %td= a['last_name']
+                                %td= a['email']
+                                %td= a['points']
+                                %td= a['badges_completed']
+
+:css
+
+    body {
+        background-color:#FBFBFB;
+    }
+
+    .report_button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        margin: 10px;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    #game_report_table_previous {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        margin: 10px;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    #game_report_table_next {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+    .report_button:hover {
+        background-color:#1B401C;
+        cursor:pointer;
+    }
+    #game_report_table_previous:hover {
+        background-color:#1B401C;
+        cursor:pointer;
+    }
+    #game_report_table_next:hover {
+        background-color:#1B401C;
+        cursor:pointer;
+    }
+
+:javascript
+    jQuery(function() {
+        $.extend($.fn.dataTableExt.oStdClasses, {
+        "sWrapper": "dataTables_wrapper form-inline"
+        });
+        $('#game_report_table').dataTable({
+            "aaSorting": [[ 4, "desc" ]]
+        });
+      return $('table.dataTable th').css('padding-right', '20px');
+    });

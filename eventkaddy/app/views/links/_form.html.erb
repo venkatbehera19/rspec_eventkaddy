@@ -1,0 +1,36 @@
+<%= form_for(@link, :html => { :class => "form-horizontal well" }) do |f| %>
+  <% if @link.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@link.errors.count, "error") %> prohibited this link from being saved:</h2>
+
+      <ul>
+      <% @link.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :session_id, :value => @session_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :name %>
+    <%= f.text_field :name %><br /><br />
+  </div>
+
+    <!--get location_mappings for this event -->
+  <div class="field">
+  <%= label_tag(:link_type_id, "Link Type:") %>
+  <%= f.collection_select(:link_type_id,LinkType.all, :id, :link_type) %> <br /><br />
+  </div>
+
+  <div class="field">
+    <%= f.label :filename %>
+    <%= f.text_field :filename %><br /><br />
+  </div>
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

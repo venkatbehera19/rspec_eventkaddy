@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <% settings = @settings  %>
+  <title><%= settings.program_title || "EventKaddy" %></title>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+    <%= stylesheet_link_tag    "program_feed"%>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <%= csrf_meta_tag %>
+</head>
+<body>
+<% event_setting = EventSetting.where(event_id: params[:event_id]).first_or_create %>
+<% @event_setting = @event_setting || event_setting %>
+<%= hidden_field_tag 'event-id', params[:event_id] %>
+<% if settings.program_feed %>
+  <header>
+    <div class="navbar navbar-dark shadow-sm program_feed_navbar">
+      <div class="container justify-content-center">
+        <% event_file = @event_setting.program_feed_banner_event_file_id %>
+        <% if @event_setting && event_file.present? %>
+            <a href='<%= "/#{params[:event_id]}/program"%>' class="navbar-brand align-items-center program_feed_navbar_brand">
+                <% if settings.load_banner_image %>
+                  <% logo_url = EventFile.find_by(id: event_file) %>
+                  <%= image_tag(logo_url.path, width: "auto", height: "90px") %>
+                <% end %>
+            </a>
+            <a href='<%= "/#{params[:event_id]}/program"%>' class='program-heading'><strong class=""><%= settings.program_heading %></strong></a>
+        <% else %>
+            <a href='<%= "/#{params[:event_id]}/program"%>' class="navbar-brand align-items-center program_feed_navbar_brand">
+                <!-- <img src="/assets/ek_logo.png" width="100px" height="40px"> -->
+                <% if settings.load_banner_image %>
+                  <%= image_tag 'ek_logo_large.png', width: "100px", height: "40px" %>
+                <% end %>  
+            </a>
+            <a href='<%= "/#{params[:event_id]}/program"%>' class='program-heading'><strong class=""><%= settings.program_heading %></strong></a>
+        <% end %>
+      </div>
+    </div>
+  </header>
+  <div class="d-flex" id="wrapper">
+    <div id="page-content-wrapper">
+
+        <div class="container content-container500 mt-4 content-containerp5">
+          <div class="row">
+            <div class="col-md-12 col-centered">
+              <div id="content">
+                <%= yield %>             
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="footer">
+          <div class="footer-text">
+            <% if (!(@event_setting.nil?) && (@event_setting.support_email_address!=nil)) then %>
+              Questions? Email <strong><a href="mailto:<%=@event_setting.support_email_address %>?subject=2014 Speaker Portal Inquiry" class="portal_email"><%= @event_setting.support_email_address %></a></strong>
+            <% else %>
+              Questions?  Email support@eventkaddy.com
+            <% end %>
+          </div>
+        </div>
+    </div>
+  </div>
+<% else %>
+  <div class="d-flex justify-content-center">
+    <h2>Program Feed Is Closed</h2>
+  </div>
+<% end %>
+</body>
+</html>

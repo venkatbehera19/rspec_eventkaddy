@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  <div class="col-xs-12">
+    <div class="">
+      <div class="col-xs-6">
+        <h4>Attendee Details</h4>
+      </div>
+      <div class="col-xs-6">
+        <%= link_to 'Edit Profile', "/attendees/edit_attendee_profile/#{@attendee.id}" ,class:"btn attendee-profile-photo-button" %>
+      </div>
+    </div>
+    <div class="form-group">
+      <table class="table attendee-profile-form-label attendee-profile-table">
+
+        <% settings = Setting.return_cms_settings @event_id %>
+
+          <% table_row = ->(col, label, options={}) {
+              unless settings.method("hide_attendee_profile_form_#{col}").call
+                "<tr class='attendee-profile-form-label attendee-profile-table'><th>#{label}</th><td>#{@attendee[:"#{col}"]}</td></tr>".html_safe
+              end
+          } %>
+          <%= table_row["first_name",      "First Name"] %>
+          <%= table_row["last_name",       "Last Name"] %>
+          <%= table_row["honor_prefix",    "Honor Prefix"] %>
+          <%= table_row["honor_suffix",    "Honor Suffix"] %>
+          <%= table_row["business_unit",   "Business Unit"] %>
+          <%= table_row["title",           "Title"] %>
+          <%= table_row["business_phone",  "Business Phone"] %>
+          <%= table_row["mobile_phone",    "Mobile Phone"] %>
+          <%= table_row["email",           "Email"] %>
+          <%= table_row["company",         "Company"] %>
+          <%= table_row["twitter_url",     "Twitter URL"] %>
+          <%= table_row["facebook_url",    "Facebook URL"] %>
+          <%= table_row["linked_in",       "Linked In"] %>
+
+          <%= table_row["biography",       "Biography"] %>
+          <%= table_row["country",         "Country"] %>
+          <%= table_row["state",           "State"] %>
+          <%= table_row["city",            "City"] %>
+          <%= table_row["custom_filter_3", "Custom Filter 3"] %>
+          <%= table_row["custom_fields_1", "Custom Fields 1"] %>
+          <%= table_row["custom_fields_2", "Custom Fields 2"] %>
+          <%= table_row["custom_fields_3", "Custom Fields 3"] %>
+
+      </table>
+    </div>
+  </div>
+</div>

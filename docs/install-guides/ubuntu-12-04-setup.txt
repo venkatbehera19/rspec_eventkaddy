@@ -1,0 +1,200 @@
+#basic package setup
+
+	apt-get update
+	apt-get upgrade
+	apt-get install emacs (or editor of your choice)
+	
+#install git
+	apt-get install git-core
+
+
+# Add deploy user
+
+	#manual creation, can use "adduser" if preferred
+	#echo "deploy:deploy:1000:1000::/home/deploy:/bin/bash" | newusers
+	#cp -a /etc/skel/.[a-z]* /home/deploy/
+	#chown -R deploy /home/deploy
+	
+	adduser deploy
+
+	# Add to sudoers	
+		echo "deploy    ALL=(ALL) ALL" >> /etc/sudoers
+	
+	passwd deploy
+
+
+#install and configure rvm, as the deploy user, using sudo
+	sudo bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )
+
+
+  	#need to add all users that will be using rvm to 'rvm' group,
+    #and logout - login again, anyone using rvm will be operating with `umask g+w`.
+    
+    	sudo usermod -a -G rvm deploy
+
+     
+#install rvm dependencies
+	apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 	libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion libcurl4-openssl-dev
+
+#as deploy user, install ruby 1.9.3 via rvm
+
+	rvm install 1.9.3
+		
+			
+#install nginx/passenger
+
+	FULL MANUAL INSTALL
+		manually download the pcre from pcre.org (perl regex library)
+		manually download and unzip the latest stable nginx source, the path will be needed for the passenger/nginx install
+			cd to nginx source directory and run the following commands:
+			./configure --with-http_ssl_module --with-pcre=PATH_TO_PCRE_SOURCE --with-http_stub_status_module --with-http_gzip_static_module
+
+		Proxy Apache requests if necessary:
+
+			set alternate port (8000) in /etc/apache2/ports.conf
+			adjust all virtual hosting configuations:
+				
+				(example)
+
+				<VirtualHost 127.0.0.1:8000> 
+			     ServerAdmin webmaster@orangeblueprint.com     
+			     ServerName ga.orangeblueprint.com
+			     ServerAlias www.orangeblueprint.com
+			     DocumentRoot /home/deploy/ga_rails/public
+			        <Directory /home/deploy/ga_rails/public>
+			        	Allow from all
+			        	Options -MultiViews
+			        	RailsEnv development
+			 		</Directory>
+
+			     ErrorLog /srv/www/orangeblueprint.com/logs/error.log 
+			     CustomLog /srv/www/orangeblueprint.com/logs/access.log combined
+				</VirtualHost>
+
+		Set proxy forwarding in nginx.conf:
+			
+			(example)
+
+			server {
+				server_name alpha.orangeblueprint.com;
+				location / {
+					proxy_pass http://127.0.0.1:8000;
+					proxy_set_header Host $host;
+				}
+			}
+		
+
+
+
+
+
+	OR (prep for running ruby apps via nginx+passenger)
+
+		#setup initial gemset for first ruby-based app	
+			
+			rvm gemset create projectname
+			rvm use 1.9.3@projectname --default
+			
+			#rvm 1.9.3 --passenger
+			gem install passenger
+
+		manually download the pcre from pcre.org (perl regex library)
+		manually download and unzip the latest stable nginx source, the path will be needed for the passenger/nginx install		
+		run sudo ldconfig to ensure that nginx will be able to find the pcre library
+		
+		rvmsudo passenger-install-nginx-module
+
+			choose the custom install option, and specify at least the following custom configure options:  --with-http_stub_status_module --with-http_gzip_static_module  
+
+
+
+		#nginx config lines that passenger needs
+
+	 	http {
+    	  	...
+      		passenger_root /usr/local/rvm/gems/ruby-1.9.3-p194@projectname/gems/passenger-3.0.12;
+      		passenger_ruby /usr/local/rvm/wrappers/ruby-1.9.3-p194@projectname/ruby;
+      		...
+  		}
+
+
+#Basic nginx site setup example
+
+	#Suppose you have a Ruby on Rails application in /somewhere. Add a server block
+	#to your Nginx configuration file, set its root to /somewhere/public, and set
+	#'passenger_enabled on', like this:
+		
+	   server {
+	      listen 80;
+	      server_name www.yourhost.com;
+	      root /somewhere/public;   # <--- be sure to point to 'public'!
+	      passenger_enabled on;
+	   }
+
+
+#setup nginx ubuntu script
+	cd
+	git clone git://github.com/jnstq/rails-nginx-passenger-ubuntu.git
+	sudo mv rails-nginx-passenger-ubuntu/nginx/nginx /etc/init.d/nginx
+	sudo chown root:root /etc/init.d/nginx
+
+	set DAEMON variable to correct path
+	
+
+## OPTIONAL:  setup nginx reverse-proxy to support multiple ruby versions
+
+	rvm install 1.9.3
+	rvm use 1.9.3
+	rvm gemset create projectname
+	rvm use 1.9.3@projectname
+
+	gem install passenger
+	cd /home/deploy/projecthome (about ./public directory for rails app)
+	passenger start --socket /tmp/projectname.com.socket -d	
+
+	-- nginx config sample
+		
+		upstream projectname_upstream {
+		    server unix:/tmp/projectname.com.socket;
+		}
+		
+		server {
+		    listen 80;
+		    server_name www.fries.com;
+		    root /home/deploy/projectname.com/public;
+		    location / {
+		        proxy_pass http://projectname_upstream;
+		        proxy_set_header Host $host;
+		    }
+		}	
+
+	--
+
+	use "passenger start --socket /tmp/projectname.com.socket -d -e production" in web root to start standalone passenger
+	"passenger stop --pid-file ./tmp/pids/passenger.pid" to stop standalone passenger
+	
+
+#install mysql
+
+	apt-get install mysql-client mysql-server
+	apt-get install libmysqlclient-dev
+
+#misc packages required for eventkaddy server apps
+
+	apt-get install imagemagick
+	sudo apt-get install libmagickwand-dev
+
+
+#ALLOW REMOTE ACCESS
+	http://www.cyberciti.biz/tips/how-do-i-enable-remote-access-to-mysql-database-server.html
+		 
+	 /etc/mysql/my.cnf
+	 	bind-address    = IP_ADDRESS_OF_MYSQL_SERVER
+	 	# skip-networking
+	 
+	 sudo service mysql restart
+
+	#linux firewall config
+		sudo /sbin/iptables -A INPUT -i eth0 -p tcp --destination-port 3306 -j ACCEPT
+		 	 
+		mysql -u ekuser –h MYSQL_SERVER_IP –p #test it out from another box

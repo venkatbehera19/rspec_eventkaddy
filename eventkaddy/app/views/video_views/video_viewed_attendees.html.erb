@@ -1,0 +1,70 @@
+<div class="cms-video-views">
+  <span class="toolbar">
+    <h4 class="toolbar-title"><%= "Attendees List for Video Views on Session: #{@session_code}" %></h4>
+    <h4 class="toolbar-title"><%=" #{@session_title} " %></h4>
+  </span>
+  <div class="dropdown download-menu">
+    <div
+      class="btn report-dropdown"
+      data-toggle="dropdown"
+      class="dropdown-toggle"
+    >
+      Attendees List Downloads <b class="caret"></b>
+    </div>
+    <ul class="dropdown-menu report-dropdown-list">
+      <li>
+        <%= link_to "Export Attendees List for Video Views To Spreadsheet", "/video_views/video_views_attendees/#{@session_code}/report"%>
+      </li>
+    </ul>
+  </div>
+  <br />
+  <br />
+  <%= link_to 'Back',"/video_views", class: "btn btn-secondary" %>
+  <br />
+  <br />
+  <br />
+  <br />
+  <table
+    id="cms-video-views-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped table-bordered"
+  >
+    <thead>
+      <th>first name</th>
+      <th>last name</th>
+      <th>company</th>
+      <th>email</th>
+      <th>phone</th>
+      <th>total watched (hh:mm:ss)</th>
+      <th></th>
+    </thead>
+  <% !@video_views.blank? && @video_views.each do |video_view| %>
+    <tr>
+      <td><%=video_view.first_name%></td>
+      <td><%=video_view.last_name%></td>
+      <td><%=video_view.company%></td>
+      <td><a href="mailto: <%=video_view.email%>"><%=video_view.email%> </a></td>
+      <td><%=video_view.mobile_phone.to_s + ' ' + video_view.business_phone.to_s%></td>
+      <td style="text-align:center"><%= link_to formatted_duration(video_view.view_total), "/video_views/history/#{video_view.id}?attendee_id=#{video_view.attendee_id}&session_code=#{@session_code}"%></td>
+      <td style="text-align:center">
+        <%= link_to '<button type="button" class="btn btn-primary">Show</button
+        >'.html_safe, "/video_views/show_video_views/#{video_view.attendee_id}?sid=#{@session.id}&scode=#{@session_code}" %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+</div>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline table-responsive' 
+    })
+    $('#cms-video-views-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>"
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

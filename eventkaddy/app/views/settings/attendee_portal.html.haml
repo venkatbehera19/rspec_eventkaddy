@@ -1,0 +1,50 @@
+:javascript
+  $(function() {
+    var checkTrue = function() { $(this).children('input')[1].checked = true; };
+    var checkFalse = function() {
+      $(this).children('input')[0].value = 0;
+      $(this).children('input')[1].checked = false;
+    };
+    $( "#accordion" ).accordion({
+      heightStyle: "content",
+      collapsible: true
+    });
+    $('.jpicker').jPicker({window:{position:{x:'100',y:'300'}}});
+  });
+
+:css
+  #accordion {
+    margin-top:10px;
+    margin-bottom:10px;
+  }
+  .acc-div {
+    padding:10px;
+  }
+
+  .jPicker.Container {
+    margin: 0;
+    top: 50% !important;
+    left: 50% !important;
+  }
+%h4 Attendee Portal Settings
+%br/
+.bg-light.custom-border.py-3.px-3{style:'min-height:500px;'}
+  #accordion
+    %h4 Portal Tabs
+    .acc-div
+      =render "settings/attendee_portal/edit_event_tabs"
+    %h4 Miscellaneous
+    .acc-div 
+      = form_for @attendee_portal_settings, :html => { :method => :post }, :url => '/settings/update_attendee_portal_settings' do |f|
+        .field
+          = f.check_box :hide_change_password
+          Hide Change Password Button
+        = f.submit 'Update Miscellaneous Settings', class:'btn btn-primary'
+
+    -# %h4 Form Fields
+    -# .acc-div
+    -#   = form_for @attendee_portal_settings, :html => { :method => :post }, :url => '/settings/update_attendee_portal_settings' do |f|
+    -#     .field
+    -#       = f.check_box :first_name
+    -#       First Name
+    -#     = f.submit 'Update Form Fields Settings', class:'btn btn-primary'

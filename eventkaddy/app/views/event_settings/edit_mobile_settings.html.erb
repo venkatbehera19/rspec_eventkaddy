@@ -1,0 +1,151 @@
+<script type="text/javascript">
+  $(document).ready(
+    function()
+    {
+      $('.Multiple').jPicker({window:{position:{x:'30',y:'center'},expandable: false,liveUpdate: true}});
+    });
+</script>
+
+<%= form_for(@event_setting, :html => { :multipart => true, :class => "bg-light custom-border px-3 py-3" }, :url => {:action => "update_mobile_settings", :method => "put"}   ) do |f| %>
+
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+  <hr/>
+
+  <% if @event.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+      <ul>
+      <% @event.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <table>
+  <% if (@event.logo_event_file_id!=nil) then %>
+    <tr><td><%= image_tag(EventFile.where("id= ?",@event.logo_event_file_id).first.path, :class=>'photo_preview') %></td></tr>
+    <tr><td>&nbsp;</td></tr>
+
+    <tr><td>Download your current logo photo: <br><%= link_to EventFile.where("id= ?",@event.logo_event_file_id).first.name, EventFile.where("id= ?",@event.logo_event_file_id).first.path %></td></tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr><td>
+      <div class="field">
+        <%= label_tag "Upload a new Event Logo:" %> <br>
+        <%= file_field_tag :event_logo_file %>
+      </div><br />
+    </td></tr>
+  <% else %>
+      <tr><td>
+        <div class="field">
+          <%= label_tag :event_logo_file, "Choose a Event Logo" %><br /> <br>
+          <%= file_field_tag :event_logo_file %>
+        </div><br />
+      </td></tr>
+  <% end %>
+  </table>
+
+    <div class="form-group">
+      <%= label_tag :title %>
+      <%= text_field_tag :title, "#{@mobile_web_settings.where(mobile_web_setting_types: { name: 'title' }).first.content}", class: "form-control" %>
+    </div><br>
+<div class="form-group">
+      <%= label_tag :background_image %>
+      <%= text_field_tag :background_image, "#{@mobile_web_settings.where(mobile_web_setting_types: { name: 'background_image' }).first.content}", class: "form-control" %>
+	 
+    </div><br>
+<% end %>
+
+<br>
+
+<h4>Mobile Web Settings</h4>
+
+<table class="table table-striped" id="mobile-web-settings">
+  <thead>
+    <tr>
+      <th>Type ID</th>
+      <th  class="d-none d-md-table-cell">Type Name</th>
+      <th>Content</th>
+      <th class="d-none d-md-none d-lg-table-cell">Device Type Name</th>
+      <th>Enabled?</th>
+      <th class="d-none d-md-none d-lg-table-cell">Position</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @mobile_web_settings.each do |mobile_web_setting| %>
+      <tr url="/edit_mobile_web_settings/<%= mobile_web_setting.id %>">
+        <% device = DeviceType.get_device(mobile_web_setting.device_type_id) %>
+        <td><%= mobile_web_setting.type_id %></td>
+        <td class="d-none d-md-table-cell"><%= mobile_web_setting.mobile_web_setting_type.name %></td>
+        <td style="word-wrap: break-word; white-space: normal; max-width: 13vw;"><%= mobile_web_setting.content %></td>
+        <td device_type_id="<%=  device ? device.id : "" %>" class="d-none d-md-none d-lg-table-cell">
+          <%= device ? device.name : ""  %>
+        </td>
+        <td> <%= mobile_web_setting.enabled %> </td>
+        <td class="d-none d-md-none d-lg-table-cell"> <%= mobile_web_setting.position %> </td>
+        <td> 
+          <button type="button" data-toggle="modal" class="btn btn-success edit-btn" data-target="#edit_web_settings">
+            <i class="fa fa-pencil"></i>
+          </button> 
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div class="modal" id="edit_web_settings">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Mobile Web Settings</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+       <div class="next-prev-buttons">
+          <button type="button" id="prev-btn" class="np-btns btn btn-outline-primary pull-left">
+            <i class="fa fa-chevron-circle-left"></i> Prev
+          </button>
+          <button type="button" id="next-btn" class="np-btns btn btn-outline-primary pull-right">
+            Next <i class="fa fa-chevron-circle-right"></i>
+          </button>
+        </div>
+      <div class="modal-body">
+        <h6 id="form-type-name"></h6>
+        <form action="" method="post" id="edit_mob_web_settings_form">
+          <!-- <div class="form-group">
+            <label for="type_name">Type Name</label>
+            <input type="text" id="type_name" class="form-control" required>
+          </div> -->
+          <div class="form-group">
+            <label for="setting_content">Content</label>
+            <input type="text" id="setting_content" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="device_type_id">Device Type ID</label>
+            <%= select_tag :device_type_id,
+              options_for_select([""]) + options_from_collection_for_select(DeviceType.all, "id", "name"), class: "custom-select" %>
+          </div>
+          <div class="form-group">
+            <label for="position">Position</label>
+            <input type="text" id="position" class="form-control" required>
+          </div>
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="enabled">
+            <label class="custom-control-label" for="enabled">Enabled</label>
+          </div>
+          <br>
+          <div class="form-group">
+            <button type="button" data-dismiss="modal" class="btn btn-danger mr-1 pull-right">
+              Cancel
+            </button>
+            <input id="web_setting_submit" type="submit" class="btn btn-success pull-right" value="Update">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

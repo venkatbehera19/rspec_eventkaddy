@@ -1,0 +1,12 @@
+<div>
+  <div id="user_defined_header">
+    <% if (@current_tab!=nil && @current_tab.header_text!=nil && @current_tab.header_text.length > 0) %>
+      <%=@current_tab.header_text.html_safe %>
+    <% end %>
+  </div>
+  <div id="user_defined_footer">
+    <% if @current_tab!=nil && @current_tab.footer_text!=nil && @current_tab.footer_text.length > 0 %>
+      <%= @current_tab.footer_text.html_safe %>
+    <% end %>
+  </div>
+</div>

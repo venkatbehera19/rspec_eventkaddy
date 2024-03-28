@@ -1,0 +1,37 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	heads = ['Session Code', 'Session Title', 'Date', 'Start Time', 'End Time', 'First Visit', 'Number of Visits']
+	style =  []
+
+  long_text_style  = s.add_style :alignment => { :horizontal=> :left, :word_wrap => true }
+  short_text_style = s.add_style :alignment => { :horizontal=> :center, :word_wrap => true }
+  light_grey_cell_left_align = s.add_style :bg_color => "A6A0A2", :fg_color => "FF", :sz => 16
+
+	heads.each do |h|
+		style << black_cell
+	end
+	wb.add_worksheet(name: "Video Views Report") do |sheet|
+    sheet.merge_cells "A1:E1"
+    sheet.add_row [ "Page Views Sessions: #{@attendee.first_name} - #{@attendee.last_name} " ], :style => light_grey_cell_left_align
+    sheet.add_row
+	  sheet.add_row heads, :style => style
+
+	  !@page_view_sessions.blank? && @page_view_sessions.each do |session|
+      sheet.add_row [
+        session['session_code'], 
+        session['session_title'], 
+        session['date'],
+        get_local_time(session['start_at']),
+        get_local_time(session['end_at']),
+        "#{session['updated_at'].strftime('%Y-%m-%d')} at #{get_local_time(session['updated_at'])}",
+        session['number_of_visits']
+      ], :height => 15, :style => [long_text_style, long_text_style, short_text_style,short_text_style, short_text_style, short_text_style, short_text_style]
+    	sheet.column_widths 30, 40, 30, 30, 30, 30, 30
+    end
+	end
+end

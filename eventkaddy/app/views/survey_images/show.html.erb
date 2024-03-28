@@ -1,0 +1,116 @@
+<h4 class="d-inline">
+  Listing Survey Images
+  <span class="badge badge-info" id="heading-count-span"><%=@images_count%></span>
+</h4>
+
+<div class="d-flex" id="imageFilter">
+  <div class="col-6 mb-2 d-flex">
+    <div class="row">
+      <div class="col-md-4 p-0">
+        <select class="d-block custom-select mt-3" name="imageFilter" id="imageFilterSelect">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="verified">Verified</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="col-md-4 p-0">
+        <div class="d-flex mt-3 ml-2">
+          <%= text_field_tag(:attendee_search, nil, class: "form-control filters col-10 px-0", placeholder: "SEARCH") %>
+          <div class="col-2 px-0">
+            <button class="btn btn-outline-primary" type="button" onclick="searchAttendee(<%= @survey.id %>)"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 pl-3">
+        <div class="custom-control custom-switch col-md-2 pt-4 ml-3" id="attendee_toggle">
+          <input type="checkbox" class="custom-control-input filters" id="completed_status" checked onchange="getUnattended(<%= @survey.id %>)">
+          <label class="custom-control-label" for="completed_status">Completed</label>
+        </div>
+      </div>
+    </div>
+  </div> 
+  <div class="col-6 mb-2 d-flex justify-content-end">
+    <div class="row">
+      <div class="col-md-2 p-1 mt-3">
+        <div class="pull-right mt-1" >
+          <input type="checkbox" class="delete_checkbox" id="delete_checkbox" onchange="selectUnselectResponses()">
+          <label for="delete_checkbox"> All</label>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <button type="button" class="btn btn-outline-danger mt-3 pd-2 mr-2 delete-image pull-right" onclick="deleteImage()">Delete</button>
+      </div>
+      <div class="col-md-5">
+        <div class="btn-group side-drops pull-right mt-3" id="report_download">
+          <div class="btn-group" id="menu1">
+            <a class="dropdown-toggle btn report-dropdown pb-2" data-toggle="dropdown" href="#menu1">
+              <span class="d-none d-md-inline">Downloads</span>
+              <i class="fa fa-download d-inline d-md-none"></i>
+            </a>
+            <div class="dropdown-menu report-dropdown-list">
+              <%= link_to "Export Survey Not Completed Attendees To Spreadsheet", "/survey_images/unattended_attendee_report?survey_id=#{@survey.id}", class: "dropdown-item" %>
+              <%= link_to "Export Survey Completed Attendees To Spreadsheet", "/survey_images/attended_attendee_report?survey_id=#{@survey.id}", class: "dropdown-item" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="close-toggle-button" class="d-none float-right">
+  <i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
+</div>
+
+<div id="imagesListingContainer" class="row mt-4">
+  <%= render partial: "survey_images"%>
+</div>
+<div  id="attendee_list" style="min-height: 500px;margin-top: 20px;overflow-x: auto; display: none;">
+  <div id="list"></div>
+  <div class="pagination-buttons-survey col-4 text-center mx-auto">
+    <button class="btn btn-outline-primary a_filters" type="button" id="a_prev_btn_report" onclick="paginateDown()">
+      <i class="fa fa-angle-left"></i> Prev
+    </button>
+    <button class="btn btn-outline-primary a_filters" type="button" id="a_next_btn_report" onclick="paginateUp()">
+      <i class="fa fa-angle-right"></i> Next
+    </button>
+  </div>
+</div>
+<%= javascript_include_tag "attendee_survey_images" %>
+<script>
+  // $(document).on('click.toggle', '#close-toggle-button, .left-image-cards', function(){
+  //   App.toggleView();
+  // });
+  $(".left-image-cards").on("click", function () {
+    App.toggleView(this);
+  });
+
+  $(document).ready(function(e) {
+    $('#imageFilterSelect').on('change', function() {
+      id = <%= @survey.id %>
+      $.ajax({
+        type: "get",
+        url: `/survey_images/${id}`,
+        data: {sort_type: this.value},
+        success: function (response) {
+          $(".lazyload").lazyload();
+          $(".left-image-cards").on("click", function () {
+            App.toggleView(this);
+          });
+        },
+        error: function (error) {}
+      });
+    });
+
+  })
+
+
+</script>
+
+
+<style type="text/css">
+  .left-image-wrappers {
+    height: 470px;
+  }
+</style>

@@ -1,0 +1,61 @@
+<p>
+    Change reports are created whenever you use the import / export page to upload a spreadsheet. They represent actual changes in the database, not differences between your spreadsheet and the database. To reduce noise in the output file, some changes such as trailing spaces or minor differences between datatypes are ignored.
+</p>
+<br>
+
+<table id="change_reports" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Upload Type</th>
+            <th>Date</th>
+            <th>Accountable</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% @change_reports.each do |report| %>
+            <tr>
+                <td><%= report.upload_action %></td>
+                <td class="date-time"><%= report.created_at %></td>
+                <td><%= report.user&.email %></td>
+                <td style='text-align:center;'><%= link_to( 'Download', report.event_file&.return_authenticated_url['url'], class:"btn show" ) %></td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
+
+    <script>
+
+        <%# For sDom format string: %>
+        <%# The following options are allowed: %>
+        <%#     'l' - Length changing %>
+        <%#     'f' - Filtering input %>
+        <%#     't' - The table! %>
+        <%#     'i' - Information %>
+        <%#     'p' - Pagination %>
+        <%#     'r' - pRocessing %>
+
+        <%# The following syntax is expected: %>
+        <%#     '<' and '>' - div elements %>
+        <%#     '<"class" and '>' - div with a class %>
+        <%#     '<"#id" and '>' - div with an ID %>
+
+        $(function() {
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                "sWrapper": "dataTables_wrapper form-inline"
+            });
+            $('#change_reports').dataTable({
+                "sDom": "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+                'order': [[1, 'desc']],
+                'drawCallback': function(){
+                    let dateColumn = $('.date-time');
+                    dateColumn.each(function(){
+                        let dateString = moment($(this).text().replace(' UTC', '')).toLocaleString();
+                        $(this).text(dateString.split(' ').slice(0, 5).join(' '))
+                    });
+                }
+            });
+            return $('table.dataTable th').css('padding-right', '20px');
+        });
+    </script>

@@ -1,0 +1,14 @@
+<% content_for :content do %>
+  <h1>Portal Settings</h1>
+  <ul id="event-tabs" class="nav nav-tabs">
+  
+    <li id="edit_event_settings-tab"><%= link_to "General", "/event_settings/edit_event_settings" %></li>
+    <li id="edit_event_tabs-tab"><%= link_to "Speaker Portal Tabs", "/event_settings/edit_event_tabs" %></li>
+    <%# This has to be changed to exhibitor portal settings %>
+    <li id="edit_exhibitor_event_tabs-tab"><%= link_to "Exhibitor Portal Tabs", "/event_settings/edit_exhibitor_event_tabs" %></li>
+    <li id="edit_requirements-tab"><%= link_to "User Required Data", "/event_settings/edit_requirements" %></li>
+    <!--<li id="edit_exhibitor_welcome-tab"><%= link_to "Exhibitor Welcome Page Content", "/event_settings/edit_exhibitor_welcome" %></li>-->
+  </ul>
+  <%= content_for?(:event_settings_content) ? yield(:event_settings_content) : yield %>
+<% end %>
+<%= render template: "layouts/subevent_2013" %>

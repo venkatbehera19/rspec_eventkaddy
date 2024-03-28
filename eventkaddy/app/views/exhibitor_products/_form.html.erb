@@ -1,0 +1,65 @@
+<%= form_for(@exhibitor_product, :html => { :multipart => true } ) do |f| %>
+  
+  <% if @exhibitor_product.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@exhibitor_product.errors.count, "error") %> prohibited this exhibitor product from being saved:</h2>
+
+      <ul>
+      <% @exhibitor_product.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%# f.hidden_field :event_id, :value => session[:event_id] %>
+    <%# f.hidden_field :exhibitor_id, :value => @exhibitor_id %>
+  </div>
+
+
+<!-- borrowed from speakers -->
+
+<table>
+  <% if (@exhibitor_product.event_file_product_image!=nil) then %>
+    <tr><td><%= image_tag(@exhibitor_product.event_file_product_image.path, :height=>'100') %></td></tr>
+    <tr><td>
+      <div class="field">
+        <%= label_tag :photo_file, "Current Product Image Selection" %><br>
+        <%= file_field_tag :photo_file %>
+      </div><br>
+    </td></tr>
+  <% else %>
+      <tr><td>
+        <div class="field">
+          <%= label_tag :photo_file, "Choose a Product Image" %><br>
+          <%= file_field_tag :photo_file %>
+        </div><br>
+      </td></tr>
+  <% end %>
+  </table>
+
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description%>
+    <%= f.cktext_area :description, :ckeditor => {:toolbar => "Full"}, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :product_url, "Product URL" %>
+    <%= f.text_field :product_url, class: 'form-control' %>
+  </div> 
+
+  <div class="form-group">
+    <%= f.label :youtube_url, "YouTube URL" %>
+    <%= f.text_field :youtube_url, class: 'form-control' %>
+  </div>
+  
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary" %>
+  </div>
+<% end %>

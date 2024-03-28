@@ -1,0 +1,17 @@
+#+TITLE: Push Notification Filters
+
+* Overview
+Push notification filters utilize an Urban Airship feature wherein a user will only receive notifications for which they are part of a filter group. A notification without any filters will be sent to all users.
+
+In our database the columns of primary concern to pn filters are events.pn_filters, events.type_to_pn_hash and attendees.pn_filters.
+
+* How To Setup
+You will first need to visit the [[https://olympus-cms.eventkaddy.net/events/edit_event_settings][Event Settings form]]. If you have not already, the Urban Airship keys will need to be added, as well as the event's timezone offset (even if it is +00:00). The Push Notifications Filters input expects a list of comma delimited filters that will determine the valid filters for an event, and will populate the events.pn_filters column. This column is used both to populate the multiple select box in the notifications new and edit forms, as well as to validate filters added via the notifications spreadsheet (in order that a notifications or attendees spreadsheet being uploaded will warn the user when they have made a typo rather than allowing a useless filter to be created).
+
+Next, if desired, automated filters can be added on the [[https://olympus-cms.eventkaddy.net/events/edit_type_to_pn_hash][Attendee Types To Push Notification Filters Matches]] form. These definitions will populate the events.type_to_pn_hash column, and serve to link an attendees.custom_filter_1 with a pn filter. This means that when an attendee is updated via the import form on the configure page, or by their edit form, their filters will be updated based on their custom_filter_1 type. This is not a mandatory setup, but does enable a client to make decisions on their own about which attendee types should receive what notification messages.
+
+Finally, notifications themselves will be associated with a pn_filter either by editting them on the cms or by importing them through a spreadsheet. This updates the notifications.pn_filters column, which will be used by the call to Urban Airship to set the filters up.
+
+* Caveats
+- Currently pn_filters are set at login in the Cordova app, thus attendees.pn_filters should be set prior to the event.
+- If you try to add an invalid filter in a spreadsheet import, a warning will appear and invalid filters will be removed (but valid ones will still be added).

@@ -1,0 +1,189 @@
+<h4> Event Settings </h4>
+<br/>
+<ul class="nav nav-tabs" id="restricted-settings-nav" role="tablist">
+    <li class="nav-item">
+        <a href="#general_settings" id="general_settings_tab" class="nav-link active" data-toggle="tab" role="tab" aria-controls="general_settings_tab" aria-selected="true">
+            General Settings
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="#event_css" id="event_css_tab" class="nav-link" data-toggle="tab" role="tab" aria-controls="event_css_tab" aria-selected="true">
+            Event CSS
+        </a>
+    </li>
+</ul>
+<div class="tab-content" id="nav-content">
+    <div class="tab-pane fade show active" id="general_settings" role="tabpanel">
+        <%= form_for(@event_setting, :html => { :multipart => true, :class => "bg-light px-3 py-3 custom-border" }, :url => {:action => "update_restricted_event_settings"}, :method => "put"   ) do |f| %>
+
+            <% if @event_setting.errors.any? %>
+                <div id="error_explanation">
+                    <h2><%= pluralize(@event_setting.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+                    <ul>
+                        <% @event_setting.errors.full_messages.each do |msg| %>
+                            <li><%= msg %></li>
+                        <% end %>
+                    </ul>
+                </div>
+            <% end %>
+
+            <h5>Event Name</h5>
+            <div class="form-group">
+                <%= f.text_field :name, class: "form-control" %>
+            </div>
+            <hr/>
+
+            <h5>Event Logo</h5>
+            <table>
+                <% if (@event_setting.logo_event_file_id!=nil) then %>
+                    <% e = EventFile.find(@event_setting.logo_event_file_id) %>
+                    <% if e.cloud_storage_type_id.blank? %>
+                        <tr><td><%= image_tag(@event_file.path, :class=>'photo_preview') %></td></tr>
+                        <tr><td>&nbsp;</td></tr>
+
+                        <tr><td>Download your current logo photo: <%= link_to @event_file.name, @event_file.path %></td></tr>
+                    <% else %>
+                        <% e_url = e.return_authenticated_url() %>
+                        <tr><td><%= image_tag(e_url['url'], :class=>'photo_preview') %></td></tr>
+                        <tr><td>&nbsp;</td></tr>
+
+                        <tr><td>Download your current logo photo: <%= link_to @event_file.name, e_url['url'] %></td></tr>
+                    <% end %>
+                    <tr><td>&nbsp;</td></tr>
+                    <tr><td>
+                            <div class="field">
+                                <%= label_tag "Upload a new Event Logo:" %>
+                                <%= file_field_tag :event_logo_file %>
+                            </div><br />
+                        </td></tr>
+                    <% else %>
+                        <tr><td>
+                                <div class="field">
+                                    <%= label_tag :event_logo_file, "Choose an Event Logo" %><br />
+                                    <%= file_field_tag :event_logo_file %>
+                                </div><br />
+                            </td></tr>
+                    <% end %>
+            </table>
+            <hr/>
+
+            <h5>Time Zone</h5>
+            <div class="form-group">
+                <%= f.select :timezone, ActiveSupport::TimeZone.all.sort_by(&:name).map{|e| ["#{e.name}(GMT#{e.now.formatted_offset})", e.name]}, { selected: @event_setting.timezone || "Eastern Time (US & Canada)" }, { :class => "form-control", required: "required" } %>
+                <br />
+            </div>
+            <hr/>
+
+            
+            <h5>Event Duration</h5>
+            <div class="form-group">
+                <label>Start Date and Time</label>
+                <div class="datepicker-control" style="position:relative">
+                    <%= f.text_field :event_start_at, id:"datetimepicker1", :value => @event_setting.event_start_at.blank? ? '' : @event_setting.event_start_at.localtime(@event_setting.utc_offset).strftime("%m/%d/%Y %H:%M %p"), :required=>true, class: "form-control" %>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>End Date and Time</label>
+                <div class="datepicker-control" style="position:relative">
+                    <%= f.text_field :event_end_at, id:"datetimepicker2", :value => @event_setting.event_end_at.blank? ? '' : @event_setting.event_end_at.localtime(@event_setting.utc_offset).strftime("%m/%d/%Y %H:%M %p"), :required=>true, class: "form-control" %>
+                </div>
+            </div>
+            <hr/>
+
+            <h5>Calendar Reminder Info</h5>
+            <%= f.fields_for :calendar_json do |ff| %>
+                <div class="form-group">
+                    <%= ff.label 'Calendar Invite (ics/vcs) filename' %>
+                    <%= ff.text_field :filename, :value=> (!@event_setting.calendar_json.blank?) ? JSON.parse(@event_setting.calendar_json)['filename'] : "", class: "form-control" %>
+                </div>
+                <div class="form-group">
+                    <%= ff.label 'Organizer (Email)' %>
+                    <%= ff.text_field :organizer, :value=> (!@event_setting.calendar_json.blank?) ? JSON.parse(@event_setting.calendar_json)['organizer'] : "", class: "form-control" %>
+                </div>       
+                
+                <div class="form-group">
+                    <%= ff.label :event_description %>
+                    <%= ff.cktext_area :event_description, :value=>(!@event_setting.calendar_json.blank?) ? JSON.parse(@event_setting.calendar_json)['event_description'] : "" %>
+                </div>
+            <% end %>
+            <br>
+            <div class="actions">
+                <%= f.submit "Update" ,class:"btn btn-primary" %>
+            </div>
+        <% end %>
+    </div>
+
+    <div class="tab-pane fade" id="event_css" role="tabpanel">
+        <div class="d-flex">
+            <div style="width: 50%">
+                <%= form_tag("/events/upload_mobile_css", :method => "post", :remote => false, :multipart => true, :class=>"bg-light custom-border py-3 px-3") do %>
+                    <h5 id="css_tab_heading">Mobile CSS file</h5>
+                    <% if @mobile_css_file  %>
+                        Uploaded file:
+                        <%= link_to @mobile_css_file.name, @mobile_css_file.return_public_url()['url'], target: '_blank', id: 'mobile_css' %>
+                        <br/>
+                    <%  end %>
+                    <%= file_field_tag :file %>
+                    <%= submit_tag "Upload", class:"btn btn-primary" %>
+                <% end %>
+
+                <div id="css-editor-container" class="well px-0 py-0">
+                    <div id="saving_progress" style="display: none;">
+                        <div class="spinner-border d-block mx-auto" style="margin-top: calc(50% - 3rem);"></div>
+                    </div>
+                    <textarea name="style_css" id="style_css">
+                        <% if @mobile_css_file %>
+                            <%= @mobile_css_file.file_content %>
+                        <% end %>
+                    </textarea>
+                    <div class="actions mt-2 col-12 text-right">
+                        <button class="btn btn-outline-info ml-auto" id="show_editor_help" data-toggle="tooltip" data-placement="bottom" title="Editor Info">
+                            <i class="fa fa-info-circle"></i>
+                        </button>
+                        <button class="btn btn-outline-success" id="save_css" data-toggle="tooltip" data-placement="bottom" title="Save Css">
+                            <i class="fa fa-floppy-o"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" id="preview_btn" data-toggle="tooltip" data-placement="bottom" title="Preview">
+                            <i class="fa fa-play"></i>
+                        </button>
+                        <%= render 'css_editor_info' %>
+                    </div>
+                </div>
+            </div>
+            <div style="min-width: 370px; width: 50%">
+                <div class="smartphone mx-auto">
+                    <div class="content">
+                        <iframe id="mobile_preview_iframe" src="/mobile_home_page_content" style="width:100%;border:none;height:100%" >
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Code mirror cdns -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/codemirror.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/addon/search/search.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/addon/search/jump-to-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/addon/search/searchcursor.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/addon/dialog/dialog.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.1/addon/dialog/dialog.min.js"></script>
+
+
+<script>
+    $(function() {
+        $('#datetimepicker1').datetimepicker();
+        $('#datetimepicker2').datetimepicker();
+    });
+    
+</script>
+<style>
+ .fa-clock, .fa-calendar{
+     color: #317eac;
+     }
+</style>

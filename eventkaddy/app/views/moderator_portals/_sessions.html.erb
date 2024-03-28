@@ -1,0 +1,19 @@
+<% sessions.each do |session| %>
+	<center>
+		<%= link_to "/moderator_portals/qa_feed/#{session.id}", :class=>"btn btn-outline-info landing-button" do %> 
+			<%= "#{session.title}" %>
+			<p><%= "#{session.speakers.present? ? "By #{session.speakers.map(&:full_name).join(',')}" : ""}"%></p>
+			<div class="float-right">
+				<% if session.qa_enabled %>
+					<i class="fa fa-info-circle" aria-hidden="true"></i>
+				<% end %>
+				<% if session.chat_enabled %>
+					<i class="fa fa-comments-o" aria-hidden="true"></i>
+				<% end %>
+				<% if session.poll_sessions.present? %>
+					<i class="fa fa-bar-chart" aria-hidden="true"></i>
+				<% end %>
+			</div>
+		<% end %>
+		</center><br>
+<% end %>

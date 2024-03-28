@@ -1,0 +1,11 @@
+#+TITLE: Adding Integration Script Buttons and other Buttons
+
+* Explanation
+Historically, this was managed in the events_controller and events_helper files. When we created different ox branches, we ran into merge issues, leading us to move the integrations to the database. Past integrations are currently unpublished.
+
+* How To
+Go to olympus-cms.eventkaddy.net/dev and select "Manage Scripts". At this location you can see any script buttons created for this event, edit their information and publish/unpublish them. 
+
+Clicking "Add Button from Template" will bring you to a list of templates. The script templates makes creating script buttons easier. You can simply select the button in the second column "Add to (Event Name)" and the new button will appear in your script buttons list. From here you will likely need to edit the button to add the script file name e.g. "import-attendees-fep_plan_operations2019.rb". You can also rename the script button label if you wish. All script buttons will be unpublished when they are added. 
+
+From the templates page you can also add a new template or update/edit the existing templates. 

@@ -1,0 +1,5 @@
+<%=@message.title%>
+==================================
+<%=sanitize @message.content, tags: %w() %>
+
+You are recieving this message because you are participating in <%= @message.event.name%>. To unsubscribe from these emails, please follow this link: <%=root_url%>messages/unsubscribe/<%=@token%>

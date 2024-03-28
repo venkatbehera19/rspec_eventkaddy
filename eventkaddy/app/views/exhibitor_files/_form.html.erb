@@ -1,0 +1,44 @@
+<%= form_for(@exhibitor_file, :html => { :multipart => true, :class=>"form-horizontal well" } ) do |f| %>
+  
+  <% if @exhibitor_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@exhibitor_file.errors.count, "error") %> prohibited this exhibitor file from being saved:</h2>
+
+      <ul>
+      <% @exhibitor_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+    <%= f.hidden_field :exhibitor_id, :value => @exhibitor_id %>
+    <%= f.hidden_field :original_document_id, :value => @original_document_id %>
+    <%= f.hidden_field :title, :value => @title %>
+    <% if @title.present? %>
+      <%= hidden_field_tag :is_exhibitor_portal, :value => true %>
+    <% end %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, :value => @title, class: "form-control", disabled: @title.present? ? true: false %>
+  </div>
+
+    <div class="field">
+    <%= label_tag :event_files, "Choose a File" %>
+    (if choosing multiple, leave title blank and check files have unique names)<br>
+    <%= file_field_tag "event_files[]", :multiple => true %>
+  </div><br />
+
+  <!--<div class="field">
+    <%= f.label :description %>
+    <%= f.text_field :description %><br /><br />
+  </div>-->
+  
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

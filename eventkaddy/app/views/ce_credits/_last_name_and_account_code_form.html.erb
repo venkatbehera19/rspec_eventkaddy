@@ -1,0 +1,32 @@
+<%= form_for(@event, :html => { :class => "form-horizontal well" }, :url => {:action => "generate_ce_sessions_pdf_report_cms"}) do |f| %>
+  <div>
+    Last Name
+    <%= text_field_tag :last_name %>
+  </div><br>
+
+  <div>
+    Registration ID
+    <%= text_field_tag :registration_id %>
+  </div><br>
+  <a id='forgot-reg-id' class='normal-link-style'>Forgot Your Registration ID?</a>
+  <br><br><br><br>
+
+  <%= text_field_tag :event_id, @event.id, style:'display:none;' %>
+
+  <div>
+    Enter your Email to Receive your Certificate
+    <%= text_field_tag :email %>
+  </div><br><br>
+
+  <% if @event.name==='AVMA 2015' %>
+    <div>
+      Certificate Type<br><br>
+      <%= select_tag :cert_type, options_for_select([ "Attendance Certificate", "Detailed CE Certificate" ], "Attendance Certificate") %>
+      <%#= check_box_tag :detailed %> <!-- Detailed Certificate -->
+    </div><br><br>
+  <% end %>
+
+  <div><%= f.submit  "Email Certificate", class:"btn btn-primary" %></div>
+  <!-- <br><br>
+  <div style="padding:5px;" class="alert-note">Please note that your email may arrive in the spam box. If you download your email from an online service like gmail, you may have to check https://mail.google.com directly, as sometimes spam mail is not downloaded.</div> -->
+<% end %>

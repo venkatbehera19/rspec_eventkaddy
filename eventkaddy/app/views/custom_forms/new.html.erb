@@ -1,0 +1,54 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.8.3/form-builder.min.js" integrity="sha512-H2n4sb6jgsXLkQpJNWrU8+Z9GNkeFaWnPCW3IACoqBzf4hbjMyEfSRCbSNA671SgiBrjTqJq2Atbmf3/dM6B9w==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</script>
+  <style>
+    li.form-field{
+    width: 100% !important;
+  }
+  </style>
+  <div class="form-group">
+    <h5>Title</h5>
+    <input type="text" name="form_title" id="form_title" class = 'form-control' required>
+  </div>
+  <div class="form-group">
+    <h5>Select Custom Form Type</h5>
+    <%= select_tag "custom_form_type_id", raw(custom_form_options), class: "custom-select", style: "position:relative"%>
+  </div>
+  <h5>Generate Form</h5>
+  <div class="build-wrap">
+  </div>
+
+<script>
+  $(document).ready(function(){
+    var options = {
+      disableFields: ['autocomplete', 'button', 'hidden', 'file', 'select'],
+      onSave: function(evt, formData){
+        var title = $("#form_title").val();
+        var customFormType = $("#custom_form_type_id").val();
+        
+        if (!title || customFormType === "0") {
+          alert("Title and Select Custom Form Type cannot be empty.");
+          return false; // Prevent saving if validation fails
+        }
+        $.ajax({
+          type: 'POST',
+          url: '/custom_forms',
+          data: {
+            formData: formData, 
+            name: title, 
+            customFormType: customFormType
+          },
+          success: function(response){
+            if(response.success){
+              alert('session form create succesfully')
+              window.location = "/custom_forms";
+            }
+          },
+          error: function(xhr, textStatus, errorThrown){
+            alert('something went wrong', errorThrown)
+          }
+        })
+      }
+    }
+    $('.build-wrap').formBuilder(options)
+  })
+</script>

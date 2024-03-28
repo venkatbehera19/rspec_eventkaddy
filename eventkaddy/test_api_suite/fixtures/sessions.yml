@@ -1,0 +1,101 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+realistic: &realistic
+  event: one
+  unpublished: false
+  session_code: Mycode201
+  session_cancelled: false
+  title: A realistic session
+  description: MyText
+  location_mapping: one
+  tag_twitter: MyString
+  date: 2017-05-10
+  start_at: 2017-05-10 11:36:09
+  end_at: 2017-05-10 11:36:09
+  timezone_offset: MyString
+  published: false
+  record_type: 1
+  embedded_video_url: MyString
+  video_iphone: MyString
+  video_ipad: MyString
+  video_android: MyString
+  video_thumbnail: MyString
+  thumbnail_event_file_id: 1 #no corresponding table
+  video_duration: 2017-05-10 11:36:09
+  price: MyString
+  capacity: MyString
+  credit_hours: "12.0"
+  race_approved: MyString
+  program_type: one
+  ticketed: MyString
+  wvctv: MyString
+  track_subtrack: MyText
+  session_file_urls: MyText
+  survey_url: MyText
+  learning_objective: MyText
+  poll_url: MyString
+  custom_fields: MyText
+  tags_safeguard: MyText
+  custom_filter_1: NULL
+  keyword: MyString
+  custom_filter_2: MyString
+  custom_filter_3: MyString
+  feedback_enabled: false
+  qa_enabled: false
+  promotion: MyString
+  poster_number: 1
+
+barebones:
+  event: one
+  unpublished: false
+  session_code: Mycode203
+  session_cancelled: false
+  title: a barebones session
+  description: MyText
+  location_mapping: two
+  tag_twitter: MyString
+  date: 2017-05-10
+  start_at: 2017-05-10 11:36:09
+  end_at: 2017-05-10 11:36:09
+  timezone_offset: MyString
+  published: false
+  record_type: 1
+  embedded_video_url: MyString
+  video_iphone: MyString
+  video_ipad: MyString
+  video_android: MyString
+  video_thumbnail: MyString
+  # thumbnail_event_file: two   #doesn't seem to be in use
+  video_duration: 2017-05-10 11:36:09
+  price: MyString
+  capacity: MyString
+  credit_hours: MyString
+  race_approved: MyString
+  program_type: two
+  ticketed: MyString
+  wvctv: MyString
+  track_subtrack: MyText
+  session_file_urls: MyText
+  survey_url: MyText
+  learning_objective: MyText
+  poll_url: MyString
+  custom_fields: MyText
+  tags_safeguard: MyText
+  custom_filter_1: NULL
+  keyword: MyString
+  custom_filter_2: MyString
+  custom_filter_3: MyString
+  feedback_enabled: false
+  qa_enabled: false
+  promotion: MyString
+  poster_number: 1
+
+leaf:
+  <<: *realistic
+  title: Leaf
+  session_code: Mycode202
+
+nonleaf:
+  <<: *realistic 
+  title: Nonleaf
+  session_code: Mycode204

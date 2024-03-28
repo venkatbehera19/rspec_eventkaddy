@@ -1,0 +1,76 @@
+.wizard-view.answer-view{data:{hash:'#answer', order:'', question_id:'', answer_id:''}}
+
+    .top-panel.btn-toolbar
+        .btn-group
+            .save_button.btn.btn-success{data:{'model' => 'answer', 'hash' => '#answer'},style:'border-right:1px solid black;'}>
+                Save & Add Next Answer
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}>
+                Save & . . .
+            .dropdown-menu.wizard-special-actions
+                %a.save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#hint'}}
+                    = '. . . Add Hints'
+                %a.save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#question'}}
+                    = '. . . Add Another Question'
+                - unless current_user.role? :exhibitor
+                    %a.save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#survey_section'}}
+                        = '. . . Add Another Survey Section'
+                .dropdown-divider{:role => "separator"}
+                %a.save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#index'}}
+                    = '. . . Go to Surveys Index'
+                - unless current_user.role? :exhibitor
+                    %a.save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#sessionassoc'}}
+                        = '. . . Go to Create Session Associations Page'
+                    %a.save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#exhibitorassoc'}}
+                        = '. . . Go to Create Exhibitor Associations Page'
+                    - if @survey.survey_type_id == 1
+                        %a.save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#certificateassoc'}}
+                            = '. . . Go to CE Certificate Associations Page'
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;'}
+            %button.btn.btn-primary.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                Don't Save & . . .
+            .dropdown-menu.wizard-special-actions
+            
+                %a.dont_save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#hint'}}
+                    = '. . . Add Hints'
+                %a.dont_save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#question'}}
+                    = '. . . Add Another Question'
+                - unless current_user.role? :exhibitor
+                    %a.dont_save_button.dropdown-item{data:{'model' => 'answer', 'hash' => '#survey_section'}}
+                        = '. . . Add Another Survey Section'
+
+
+                .dropdown-divider{:role => "separator"}
+                %a.dropdown-item{:href => "/surveys"}
+                    = '. . . Return to Index Without Saving'
+
+
+        .ml-auto.wizard-bar-btn-group
+            .wizard-removal.btn.btn-danger{data:{'model' => 'answer'}}
+                X Remove This Answer
+
+    .wizard-form.survey_form
+
+        .field
+            .wizard-extra-details
+
+        .form-group
+            %label#answer-label.wizard-label{for: "answer_answer"} Answer
+            %input#answer_answer.wizard-input.form-control
+
+        - unless current_user.role? :exhibitor
+            .form-group
+                %label.wizard-label.form-check-label
+                    = check_box_tag "answer_correct", 0, class: "form-check-input"
+                    Correct Answer
+        
+        .form-group
+            %label.wizard-label{for: "answer_handler"} Add a Handler
+            %input#answer_handler.wizard-input.form-control(type="text")
+
+        -# .field
+        -#     .wizard-label-inline Order
+        -#     %br
+        -#     -# this also lets you declare a max, which could be helpful
+        -#     = number_field_tag "answer_order", 0, style: 'vertical-align:bottom;width:30%;'

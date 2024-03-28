@@ -1,0 +1,27 @@
+<h1>Listing links</h1>
+<%= link_to 'New Link', new_link_path,class:"btn btn-primary" %> <br/><br/>
+<table class="table">
+  <tr>
+    <th>Name</th>
+    <th>Link type</th>
+    <th>Filename</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @links.each do |link| %>
+  <tr>
+    <td><%= link.name %></td>
+    <td><%= link.link_type_id %></td>
+    <td><%= link.filename %></td>
+    <td><%= link_to 'Show', link ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_link_path(link) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', link, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

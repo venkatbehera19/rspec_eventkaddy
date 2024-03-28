@@ -1,0 +1,30 @@
+<h4 class="view-title">Event Details</h4>
+<%= link_to 'Edit', edit_event_path(@event) ,class:"btn edit" %><br><br>
+
+<table class="table">
+<% if (@event.event_file!=nil) then %>
+<tr><th>Logo</th><td><%= image_tag(@event.event_file.path, :height=>'100') %></td></tr>
+<% end %>
+<tr><th>Name</th><td><%= @event.name %></td></tr>
+<tr><th>Description</th><td><%= @event.description %></td></tr>
+<tr><th>Event Start At</th><td><%= @event.event_start_at %></td></tr>
+<tr><th>Event End At</th><td><%= @event.event_end_at %></td></tr>
+<tr><th>Longitude</th><td><%= @event.longitude %></td></tr>
+<tr><th>Latitude</th><td><%= @event.latitude %></td></tr>
+<tr><th>Website</th><td><%= @event.url_web %></td></tr>
+<tr><th>Facebook</th><td><%= @event.url_facebook %></td></tr>
+<tr><th>Twitter</th><td><%= @event.url_twitter %></td></tr>
+<tr><th>RSS</th><td><%= @event.url_rss %></td></tr>
+<tr><th>Exhibitors</th><td><%= @event.exhibitors %></td></tr>
+<tr><th>Enhanced Listings</th><td><%= @event.enhanced_listings %></td></tr>
+<tr><th>Sponsorship</th><td><%= @event.sponsorship %></td></tr>
+<tr><th>iPhone App</th><td><%= @event.iphone %></td></tr>
+<tr><th>Android App</th><td><%= @event.android %></td></tr>
+<tr><th>Mobile Site</th><td><%= @event.mobile_site %></td></tr>
+<tr><th>Touchscreen</th><td><%= @event.touchscreen %></td></tr>
+<tr><th>Soma Record</th><td><%= @event.soma_record %></td></tr>
+</table>
+
+
+
+

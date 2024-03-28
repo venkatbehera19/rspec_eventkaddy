@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  app_name: MyString
+  subtitle: MyString
+  description: MyText
+  keywords: MyText
+  event: one
+  app_form_type: one
+
+two:
+  app_name: MyString
+  subtitle: MyString
+  description: MyText
+  keywords: MyText
+  event: two
+  app_form_type: two

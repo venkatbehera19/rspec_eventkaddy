@@ -1,0 +1,20 @@
+console.log("ajax response for upload attendees");
+
+
+$('#upload-attendee-form').bind("ajax:success", function(){
+  if ( $(this).data('remotipartSubmitted') ) {
+  
+  	console.log("data successfully uploaded");
+  	$('#upload-notice').append("<p class='notice'>Attendee Data Successfully Uploaded</p>");
+	$('#upload-debug').append("<p class='notice'><%= escape_javascript(@import_attendee_result.html_safe) %></p>");
+  
+  	
+  }
+  
+  
+});
+
+
+
+
+

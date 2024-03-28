@@ -1,0 +1,255 @@
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<% if current_user.role?(:diyclient) %>
+  <div class="diy-form-part">
+  <div class="diy-form-title pull-left">
+    <i class="fa fa-mobile-phone"></i> Home Icons
+ </div><br><br>
+<% else %>
+<% end %>
+
+<%= form_for(@home_button, :html=>{ :multipart => true, :class=>unless current_user.role?(:diyclient) then "form-horizontal well"; end}) do |f| %>
+  <% if @home_button.errors.any? %>
+
+    <div id="error_explanation" class='error'>
+      <h4><%= pluralize(@home_button.errors.count, "error") %> prohibited this home_button from being saved:</h4>
+
+      <ul>
+      <% @home_button.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+
+  <% end %>
+
+  <div class="field">
+    <%= hidden_field_tag :json %>
+  </div>
+
+  <div id="jsname" class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+
+  <div class="custom-control custom-switch">
+      <%= f.check_box(:hide_on_mobile_site, class: "custom-control-input") %>
+      <%= f.label :hide_on_mobile_site, " Hide On Mobile Site", class: "custom-control-label" %>
+  </div>
+  
+  <div class="custom-control custom-switch">
+      <%= f.check_box(:show_on_home_feed, class: "custom-control-input") %>
+      <%= f.label :show_on_home_feed, " Show On Home Feed", class: "custom-control-label" %>
+  </div>
+  <br>
+
+  <% if @home_button_types %>
+    <div class="form-group">
+      <%= label_tag(:select_home_button_type, "Home Button Type:") %>
+      <%= f.collection_select(:home_button_type_id,@home_button_types, :id, :name, {}, class: "custom-select") %>
+    </div>
+  <% end %>
+
+  <% if @attendee_types %>
+    <div class="form-group">
+      <%= label_tag(:select_attendee_type, "Attendee Type:") %>
+      <%= f.collection_select(:attendee_type_id, @attendee_types, :id, :name, {}, class: "custom-select") %> 
+    </div>
+  <% end %>
+
+
+  <div id="jsexternallink" class="form-group" style="display:<%= if @external_link.nil? then 'none;' else 'block'; end%>">
+    <%= f.label :external_link, "External Link URL" %>
+    <%= f.text_field :external_link, class: "form-control" %>
+  </div>
+
+
+  <script> //One off script to show External Link Field
+    if ($("#home_button_home_button_type_id option:selected").text()==="External Link" || $("#home_button_home_button_type_id option:selected").text()==="External" || $("#home_button_home_button_type_id option:selected").text()==="External Popup") { $("#jsexternallink").show(); }
+
+    $("#home_button_home_button_type_id").change(function() {
+      if ($("#home_button_home_button_type_id option:selected").text()==="External Link" || $("#home_button_home_button_type_id option:selected").text()==="External" || $("#home_button_home_button_type_id option:selected").text()==="External Popup") {
+        $("#jsexternallink").show();
+      } else {
+        $("#jsexternallink").hide();
+      }
+    });
+  </script>
+
+  <div id="select_survey_id" class="form-group" style="display:<%= @survey ? 'block;' : 'none;' %>">
+    <%= f.label :survey_id, "Survey" %>
+    <%= f.collection_select(:survey_id, @surveys, :id, :title, {}, class: "custom-select global_survey") %>  <br /><br />
+  </div>
+  <div id="select_survey_daily_id" class="form-group" style="display:<%= @daily_survey ? 'block;' : 'none;' %>">
+    <%= f.label :daily_survey_id, "Survey" %>
+    <%= f.collection_select(:daily_survey_id, @daily_surveys, :id, :title, {:selected => f.object.survey_id}, class: "custom-select daily_survey") %>  <br /><br />
+  </div>
+
+
+  <script> //One off script to show Survey Field
+    // homeBtnTypeText = $("#home_button_home_button_type_id option:selected").text()
+    // if (homeBtnTypeText==="Survey") { $("#select_survey_id").show(); }
+    // if (homeBtnTypeText==="Daily Health Check") { $("#select_survey_daily_id").show(); }
+
+
+    $("#home_button_home_button_type_id").change(function() {
+      if ($(this).find(":selected").text()==="Survey") {
+        $("#select_survey_id").show();
+      } else {
+        $("#select_survey_id").hide();
+      }
+
+      if ($(this).find(":selected").text() === 'Daily Health Check'){
+        $("#select_survey_daily_id").show()
+      } else {
+        $("#select_survey_daily_id").hide()
+      }
+    });
+  </script>
+
+  <% unless current_user.role? :diyclient %>
+    <div class="form-group">
+      <%= f.label :icon_button_name, "Icon Button Name (Leave Blank to Autoname)" %>
+      <%= f.text_field :icon_button_name, class: "form-control" %>
+    </div>
+  <% end %>
+
+  <%= image_tag @home_button.event_file.path unless @home_button.event_file.nil? %><br><br>
+
+  <%= file_field_tag :image_file, style:"display:none;" %>
+
+  <div class="form-inline">
+    <input id="photoCover" class="form-control" type="text">
+    <a class="btn btn-outline-secondary" onclick="$('input[id=image_file]').click();">Browse</a> <%# f.submit 'Change Icon Image', class:"btn btn-primary" %>
+  </div>
+
+  <div class="form-inline for-pdf mt-2" style=style= <%= f.object.pdf_event_file ? "display: block" : "display: none" %> >
+    <input id="pdfName" class="form-control" type="text">
+    <%= file_field_tag :pdf_file, class: 'form-control-file',accept: 'application/pdf', style: 'display: none'%>
+    <a class="btn btn-outline-secondary" onclick="$('input[id=pdf_file]').click();">Browse PDF</a>
+  </div>
+
+  <% if f.object.pdf_event_file %>
+    <%= link_to f.object.pdf_event_file.name , f.object.pdf_event_file.return_authenticated_url['url'], 'target': '_blank' %>
+  <% end %>  
+
+  <script type="text/javascript">
+  $('input[id=image_file]').change(function() {
+    $('#photoCover').val($(this).val());
+  });
+
+  $('input[id=pdf_file]').change(function() {
+    $('#pdfName').val($(this).val().split('\\').splice(-1)[0]);
+  });
+
+    $("#home_button_home_button_type_id").change(function() {
+      if ($(this).find(":selected").text()==="PDF") {
+        $(".for-pdf").show();
+      } else {
+        $(".for-pdf").hide();
+      }
+    });
+
+  </script>
+
+<br><br>
+<%= label_tag "Position" %> <br>
+<div class='row'>
+  <ul id="position" class="connectedSortable ml-md-3">
+    <% @home_buttons.each do |group| %>
+      <li id="<%= group.id %>" class="ui-state-default py-2 d-flex <%= ((@home_button.id.eql? group.id) ? "highlighted" : "") %>">
+        <span class="up-down-btns">
+          <button type="button" class="pos-btn" role="up">
+            <i class="fa fa-angle-up"></i>
+          </button> <br>
+          <button type="button" class="pos-btn" role="down">
+            <i class="fa fa-angle-down"></i>
+          </button>
+        </span>
+        <div class="item-text"><%= group.name %></div>
+      </li>
+    <% end %>
+    <li id="new" class="highlighted ui-state-default py-2 d-flex">
+      <span class="up-down-btns">
+        <button type="button" class="pos-btn" role="up">
+          <i class="fa fa-angle-up"></i>
+        </button> <br>
+        <button type="button" class="pos-btn" role="down">
+          <i class="fa fa-angle-down"></i>
+        </button>
+      </span>
+      <div class="item-text"> New Home Button </div>
+    </li>
+  </ul>
+</div>
+
+  <br />
+  <div class="actions">
+    <%= f.submit "Update Home Icon", class:"btn btn-primary"  %>
+  </div>
+<% end %>
+
+<% current_user.role?(:diyclient) ? '</div>' : '' %>
+
+<script>
+window.onload = function () {
+  //Don't show new entry sortable unless on new page
+  if (/edit/i.test(window.location)) {
+    $("#new").remove();
+  }
+
+  /* Repositioning through button controls */
+  $('.pos-btn').on('click', function(event){
+    event.stopPropagation();
+    let btn = $(this);
+    let currentItem = btn.parents('li');
+    if (btn.attr('role') === 'up'){
+      let prevItem = currentItem.prev();
+      if (prevItem.length !== 0){
+        currentItem.after(prevItem);
+      } 
+    } else if(btn.attr('role') === 'down'){
+      let nextItem = currentItem.next();
+      if (nextItem.length !== 0){
+        currentItem.before(nextItem);
+      }
+    }
+    updateJson();
+  });
+
+  // new drag and drop UI functionality
+  $('.connectedSortable').sortable({
+    update: function(){
+      updateJson();
+    }
+  });
+
+  if ($("#home_button_name").val()!=="") { $("#new").empty().append($("#home_button_name").val()); }
+
+  // this is for if user submits form without sorting the icons
+  $("#home_button_name").blur(function () {
+    $("#new .item-text").text(this.value);
+    updateJson();
+  });
+
+};
+
+function updateJson(){
+  let newstatus = [];
+  $('.connectedSortable').children().each(function(){
+    let column, id, name, order;
+    column     = $(this).parent().attr("id");
+    id         = $(this).attr("id");
+    name       = $(this).html();
+    order      = $(this).index();
+    return newstatus.push({
+      id       : id,
+      column   : column,
+      name     : name,
+      order    : order
+    });
+  });
+  $('#json').empty().attr("value", JSON.stringify(newstatus));
+}
+updateJson();
+
+</script>

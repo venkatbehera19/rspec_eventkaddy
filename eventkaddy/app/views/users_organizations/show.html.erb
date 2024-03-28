@@ -1,0 +1,15 @@
+<%= link_to 'Back', users_organizations_path,class:"btn" %>
+<%= link_to 'Edit', edit_users_organization_path(@users_organization) ,class:"btn edit" %>
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>User:</b>
+  <%= @users_organization.user_id %>
+</p>
+
+<p>
+  <b>Org:</b>
+  <%= @users_organization.org_id %>
+</p>

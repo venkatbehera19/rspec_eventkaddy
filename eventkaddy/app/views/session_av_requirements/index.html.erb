@@ -1,0 +1,54 @@
+<h4>AV Requests for Session: <%= @session.session_code %></h4>
+
+<% if ((current_user.role? :client) || (current_user.role? :super_admin)) || (session[:layout] === 'trackownerportal') then %>
+  <%= link_to 'Back to Session', "/sessions/#{@session.id}" ,class:"btn" %>
+  <%= link_to 'Add AV Request', "/session_av_requirements/#{@session.id}/new",class:"btn btn-primary" %>
+<% elsif (session[:layout] === 'speakerportal_2013') then %>
+  <%= link_to 'Back', "/speaker_portals/sessions/#{@session.id}" ,class:"btn" %>
+	<% if (!(@event_setting.nil?) && @event_setting.av_requests) then %>
+	  <%= link_to 'Add AV Request', "/session_av_requirements/#{@session.id}/new",class:"btn btn-primary" %>
+	<% end %>
+<% end %>
+
+<br><br>
+<% if (!(@event_setting.nil?) && !(@event_setting.av_requirements_content.nil?)) then %>
+	<%= @event_setting.av_requirements_content.html_safe %>
+<% end %>
+
+<!--   <%= link_to 'Add Laptop', "/session_av_requirements/#{@session.id}/new_laptop",class:"btn btn-primary" %>-->
+
+
+<table id="session-av-requirements" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+	<thead>
+		<tr>
+		 <th>AV Request</th>
+		 <th>Additional Notes</th>
+		 <th>Requested By</th>
+		 <th></th>
+		 <th></th>
+  		</tr>
+	</thead>
+
+	<tbody>
+		<% @session_av_requirements.each do |session_av_requirement| %>
+
+	 	<tr>
+		 <td><%= session_av_requirement.av_list_item.name %></td>
+		 <td><%= session_av_requirement.additional_notes %></td>
+		 <% if (session_av_requirement.speaker) then %>
+		 	<td><%= session_av_requirement.speaker.email %>
+		 <% else %>
+		 	<td>Admin</td>
+		 <% end %>
+		 <% if (session_av_requirement.av_list_item.name!='Laptop Selection') then %>
+		 	<td><%= link_to 'Edit', edit_session_av_requirement_path(session_av_requirement) ,class:"btn edit" %></td>
+		 <% else %>
+		 	<td></td>
+		 <% end %>
+		 <td><%= link_to 'Delete', session_av_requirement, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+
+		</tr>
+		<% end %>
+	</tbody>
+</table>
+

@@ -1,0 +1,14 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: cordova_booleans
+
+two:
+  name: MyString
+
+three:
+  name: cordova_ekm_settings
+
+four:
+  name: cordova_window_settings
+

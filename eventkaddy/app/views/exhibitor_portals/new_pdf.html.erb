@@ -1,0 +1,41 @@
+<%= link_to  "Back", "/exhibitor_portals/index_pdf", class: "btn btn-link" %>
+<%= form_for(@pdf, :html => { :multipart => true, :class=>"well" }, :url => {:action => "create_pdf"}) do |f| %>
+  <% if @pdf.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@pdf.errors.count, "error") %> prohibited this event_file from being saved:</h2>
+
+      <ul>
+      <% @pdf.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :name %><br />
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+
+  <table>
+    <tr><td>
+      <div class="field">
+        <%= label_tag :pdf_file, "Choose a PDF" %><br />
+        <%= file_field_tag :pdf_file %>
+      </div><br />
+    </td></tr>  
+  </table>
+
+  <% if (current_user.role? :exhibitor) %>
+  <% else %>
+    <%= label_tag :signature do %>
+      <%= check_box_tag :signature %>
+      Requires Signature
+    <% end %><br>  
+  <% end %>
+
+
+  <div class="actions">
+    <%= f.submit "Add", class:"btn btn-primary"    %>
+  </div>
+<% end %>

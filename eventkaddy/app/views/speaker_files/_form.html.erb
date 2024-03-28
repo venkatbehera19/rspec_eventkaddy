@@ -1,0 +1,39 @@
+<%= form_for(@speaker_file, :html => { :multipart => true, :class=>"bg-light custom-border px-4 py-4" } ) do |f| %>
+
+  <% if @speaker_file.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@speaker_file.errors.count, "error") %> prohibited this speaker file from being saved:</h2>
+
+      <ul>
+      <% @speaker_file.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+    <%= f.hidden_field :speaker_id, :value => @speaker_id %>
+    <%= f.hidden_field :original_document_id, :value => @original_document_id %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :event_file, "Choose a File to Upload" %><br />
+    <%= file_field_tag :event_file %>
+  </div><br />
+
+  <div class="form-group">
+    <%= f.label :title,"Description of file to upload (optional)" %>
+    <%= f.text_field :title, class: "form-control"  %>
+  </div>
+
+  <!--<div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_field :description %>
+  </div>  -->
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

@@ -1,0 +1,11 @@
+#+TITLE: Setting Drupal to Maintenance Mode
+
+* Explanation
+
+Sometimes it is neccessary to take the drupal site offline. We did this recently in response to a hacker attack on the Defcon site. We use Drush to handle this. Drush is a shell-based application used to control, manipulate, and administer Drupal sites. 
+
+* Steps
+1. Login to the drupal server - deploy@173.230.151.29, pw hint: BG!23
+2. Navigate to the folder sourceofknowledge.com from the home directory
+3. Run this command 'drush vset maintenance_mode 1'. 
+4. To turn it off, simply run 'drush vset maintenance_mode 0'

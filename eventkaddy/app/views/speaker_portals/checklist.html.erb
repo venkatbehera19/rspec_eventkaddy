@@ -1,0 +1,29 @@
+<% if @user.roles.where(name:"TrackOwner").length > 0 %>
+	<p>It looks like in addition to being a speaker, you are also managing at this event. Please visit the Management Portal to access your management abilities.</p>
+	 <%= link_to "Visit Your Management Portal", "/trackowner_portals/landing", :class=>"btn btn-outline-info" %>
+<% end %>
+
+<!--
+
+<% if (!(@event_setting.nil?) && !(@event_setting.welcome_screen_content.nil?)) then %>
+<p><%=@event_setting.welcome_screen_content%></p>
+ <% end %>
+
+-->
+
+<!--
+
+<% if (!(@event_setting.nil?) && !(@event_setting.welcome_screen_content.nil?)) then %>
+<p><%=@event_setting.welcome_screen_content%></p>
+ <% end %>
+
+-->
+
+<!--
+<% if (!(@event_setting.nil?) && !(@event_setting.av_requirements_content.nil?)) then %>
+<p><%=@event_setting.av_requirements_content%></p>
+ <% end %>
+
+ -->
+
+

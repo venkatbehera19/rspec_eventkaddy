@@ -1,0 +1,18 @@
+<%= link_to 'Back', users_events_path,class:"btn" %> 
+<%= link_to 'Edit', edit_users_event_path(@users_event) ,class:"btn edit" %> 
+
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>User:</b>
+  <%= @users_event.user_id %>
+</p>
+
+<p>
+  <b>Event:</b>
+  <%= @users_event.event_id %>
+</p>
+
+

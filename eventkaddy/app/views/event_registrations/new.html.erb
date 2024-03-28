@@ -1,0 +1,68 @@
+<% if @simple_registration_settings.registration_open %>
+  <div class="simple_registration_heading" style="margin:auto">
+    <%= @simple_registration_settings.simple_registration_heading.html_safe %>
+  </div> 
+  <div class="simple_registration_subheading">
+    <%= @simple_registration_settings.simple_registration_subheading.html_safe %>
+  </div>
+  <%= @simple_registration_settings.simple_registration_duration.html_safe %>
+  <%= @simple_registration_settings.simple_registration_content.html_safe %>
+  <% if @attendees_count < (@simple_registration_settings.attendees_count.to_i || 500)%>
+    <%= form_for(@attendee, :html => { :class => "form" }, :url => {:action => "create"}, :method => :post ) do |f| %>
+      <% if @attendee.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@attendee.errors.count, "error") %> prohibited this attendee from being saved:</h2>
+          <ul>
+          <% @attendee.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :first_name, "#{@simple_registration_settings.first_name_label || 'First Name'}", class:"required-field"%>
+            <%= f.text_field :first_name, required:true, class: "form-control" %>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :last_name, "#{@simple_registration_settings.last_name_label || 'Last Name'}", class:"required-field" %>
+            <%= f.text_field :last_name, required:true, class: "form-control"%>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :email_address, "#{@simple_registration_settings.email_label || 'Email Address'}", class:"required-field" %>
+            <%= f.text_field :email, type: 'email', required:true, class: "form-control" %>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :company, "#{@simple_registration_settings.company_label || 'Company'}", class:"required-field" %>
+            <%= f.text_field :company, required:true, class: "form-control"%>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :title, "#{@simple_registration_settings.title_label || 'Title'}" %>
+            <%= f.text_field :title, class: "form-control" %>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group mt-2">
+          <br/>
+              <%= f.submit "Register",class:"btn btn-primary form-control" %>
+          </div>
+        </div>
+      </div>
+      <small class="required-field"></small>
+      <small>Required Information</small>
+
+    <% end %>
+  <% else %>
+    <%= (@simple_registration_settings.seats_full_message.blank?)? "<h6 style='color:#aaaaaa; font-style:italic'>The attendance limit has been reached. Please contact us at support@eventkaddy.com to be put on a waiting list.</h6>".html_safe :
+    @simple_registration_settings.seats_full_message.html_safe %>
+  <% end %>
+<% end %>

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+iphone:
+  parent_id: 1 #parent table doesn't exist
+  leaf: 1
+  name: iphone
+
+android:
+  parent_id: 2 #parent table doesn't exist
+  leaf: 1
+  name: android

@@ -1,0 +1,2 @@
+class SessionFileUrlsEntity < UrlsEntity; end
+

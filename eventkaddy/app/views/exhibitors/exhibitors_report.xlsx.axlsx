@@ -1,0 +1,36 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+
+	heads = ['Company Name','Contact Name','User Email','Exhibitor Email','Description','Logo','Address Line 1','Address Line 2','City','ZIP','State','Country','Phone','Fax','URL Web','URL Twitter','URL Facebook','URL LinkedIn','URL RSS','Message','Is Sponsor','Toll Free']
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Feedback Results") do |sheet|
+	  sheet.add_row heads, :style => style
+
+		@exhibitors.each do |exhibitor|
+
+			user_email     = ''
+			exhibitor_logo = ''
+
+			if exhibitor.user
+				user_email = exhibitor.user.email
+			end
+
+			if (exhibitor.event_file!=nil) then
+				exhibitor_logo += "#{exhibitor.event.master_url}exhibitor.event_file.path"
+			end
+
+	  		sheet.add_row [exhibitor.company_name,exhibitor.contact_name,user_email,exhibitor.email,exhibitor.description,exhibitor_logo,exhibitor.address_line1,exhibitor.address_line2,exhibitor.city,exhibitor.zip,exhibitor.state,exhibitor.country,exhibitor.phone,exhibitor.fax,exhibitor.url_web,exhibitor.url_twitter,exhibitor.url_facebook,exhibitor.url_linkedin,exhibitor.url_rss,exhibitor.message,exhibitor.is_sponsor,exhibitor.toll_free]
+	  		sheet.column_widths 20,20,20,20,50,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20
+		end
+	end
+end

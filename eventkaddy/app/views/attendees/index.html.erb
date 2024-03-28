@@ -1,0 +1,139 @@
+<script>
+  $(function() {
+    ModalForm.init($('#new_attendee'), $('#attendee_account_code'), $('#attendee_last_name'));
+  });
+</script>
+
+<% settings = Setting.return_cms_settings session[:event_id] %>
+
+<h4>Listing attendees for:<b> <%= session[:event_name] %></b></h4>
+
+
+<div class="row mb-2">
+  <div class="col-6 mb-2">
+    <div class="btn-group">
+      <a href="#quickAdd" class='btn btn-primary' data-toggle='modal'>
+        <span class="d-none d-md-inline">New Attendee</span> <i class="fa fa-plus"></i>
+      </a>  
+    </div>
+  </div>
+  <div class="col-6 mb-2">
+    <div class="btn-group side-drops pull-right">
+      <div class="btn-group" id="menu1">
+
+        <a class="dropdown-toggle btn report-dropdown" data-toggle="dropdown" href="#menu1">
+          <span class="d-none d-md-inline">Downloads</span>
+          <i class="fa fa-download d-inline d-md-none"></i>
+        </a>
+        <div class="dropdown-menu report-dropdown-list">
+          <%= link_to "Export Attendees To Spreadsheet", "/attendees/attendee_report.xlsx", class: "dropdown-item" %>
+          <%= link_to "Export QR Scanner Data To Spreadsheet", "/exhibitor_products/exhibitor_products_report.xlsx", class: "dropdown-item" %>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <a class="btn report-dropdown" data-toggle="dropdown">
+          <span class="d-none d-md-inline dropdown-toggle">Menu</span>
+          <i class="fa fa-ellipsis-v d-inline d-md-none"></i>
+        </a>
+        <div class="dropdown-menu">
+          <% unless settings.method("hide_attendee_index_multiple_new_for_all").call %>
+            <%= link_to "/sessions_attendees/multiple_new_for_all", class: "dropdown-item" do %>
+              Add Multiple Sessions To All Attendees <i class="fa fa-users"></i>
+            <% end %>
+          <% end %>
+          <% unless settings.method("hide_attendee_index_bulk_set_attendees_photos_to_online").call %>
+            <%= link_to '/attendees/bulk_set_attendees_photos_to_online', class:"dropdown-item", method: 'post', confirm: "Are you sure?" do %>
+              Bulk Set Attendee Photos To Online URL <i class="fa fa-picture-o"></i>
+            <% end %>
+          <% end %>
+          <% unless settings.method("hide_attendee_index_app_message").call %>
+            <%= link_to "/attendees/app_message", class:"dropdown-item" do %>
+              New App Message To Attendees <i class="fa fa-envelope"></i>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <a class="btn report-dropdown" data-toggle="dropdown">
+          <span class="d-none d-md-inline dropdown-toggle">Views</span>
+          <i class="fa fa-eye d-inline d-md-none"></i>
+        </a>
+        <div class="dropdown-menu">
+          <%= link_to 'Daily Health Checkup Report View', '/attendees/daily_checkup_attendees', class: "dropdown-item" %>
+          <%#= link_to 'Attendee Purchase', '/attendees/purchased', class: "dropdown-item" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= link_to "Export Attendee Data To Validar", "/attendees/validar_push", :class=>"pull-right export" if @event.name=="ADP Connection 2016" %>
+
+
+<!-- <%= link_to 'New Attendee', new_attendee_path,class:"btn btn-primary" %> <br/><br/>
+<a href="#quickAdd" class='btn btn-primary' data-toggle='modal'>Quick Add Attendee</a><br><br>
+
+<% unless settings.method("hide_attendee_index_multiple_new_for_all").call %>
+    <%= link_to 'Add Multiple Sessions To All Attendees',
+        "/sessions_attendees/multiple_new_for_all",
+        class: "btn btn-primary" 
+    %>
+<br><br>
+<% end %>
+
+<% unless settings.method("hide_attendee_index_bulk_add_attendee_photos").call %>
+    <%= link_to 'Bulk Update Attendee Photos', "/attendees/bulk_add_attendee_photos", class:"btn btn-primary" %><br><br>
+<% end %>
+
+<% unless settings.method("hide_attendee_index_bulk_set_attendees_photos_to_online").call %>
+    <%= link_to 'Bulk Set Attendee Photos To Online URL', 
+        '/attendees/bulk_set_attendees_photos_to_online', 
+        class:"btn btn-primary",
+        method: 'post',
+        confirm: "Are you sure?"
+    %>
+    <br><br>
+<% end %>
+
+<% unless settings.method("hide_attendee_index_app_message").call %>
+    <%= link_to 'New App Message To Attendees', "/attendees/app_message", class:"btn btn-lg btn-primary" %> <br/><br/>
+<% end %> -->
+
+<table id="attendees" cellpadding="0" cellspacing="0" border="0" class="table table-striped" data-source="<%= attendees_url(format: "json") %>" data-event="<%= @event_id%>">
+	<thead>
+  		<tr>
+        <% unless settings.method("hide_attendee_table_attendee_photo").call %>
+          <th class="hide-on-mob sortable-off">Photo</th>
+        <% end %>
+        <% unless settings.method("hide_attendee_table_attendee_first_name").call %>
+          <th>First name</th>
+        <% end %>
+        <% unless settings.method("hide_attendee_table_attendee_last_name").call %>
+          <th class="order-by">Last name</th>
+        <% end %>
+        <% unless settings.method("hide_attendee_table_attendee_business_unit").call %>
+          <th class="hide-on-mob">Business unit</th>
+        <% end %>
+        <% unless settings.method("hide_attendee_table_attendee_title").call %>
+          <th class="hide-on-mob">Title</th>
+        <% end %>
+        <% unless settings.method("hide_attendee_table_attendee_company").call %>
+          <th>Company</th>
+        <% end %>
+        <% unless settings.method("hide_attendee_table_attendee_email").call %>
+          <th class="hide-on-mob">Email</th>
+        <% end %>
+        <% unless settings.method("hide_attendee_table_attendee_registration_id").call %>
+          <th class="hide-on-mob">Registration ID</th>
+        <% end %>
+		    <th class="sortable-off"></th>
+  		</tr>
+	</thead>
+
+	<tbody>
+	</tbody>
+</table>
+
+<%= render 'new_attendee_modal' %>

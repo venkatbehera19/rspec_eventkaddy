@@ -1,0 +1,66 @@
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><%= "Create Member for #{@organization.name}"%></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <%= form_for(:user, url: '/members_listing/create_member_by_client', :html => {:class => "form-horizontal client-member-form", remote: true }) do |f| %>
+        <div class="modal-body">
+
+          <div class="for-info"></div>
+
+<!--           <div class="form-group">
+            <%#= f.text_field :title , class: "form-control", required: true, placeholder: 'Title', autocomplete: 'off' %>
+          </div> -->
+
+          <div class="form-group">
+            <%= f.text_field :first_name , class: "form-control", required: true, placeholder: 'First Name', autocomplete: 'off' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.text_field :last_name , class: "form-control", required: true, placeholder: 'Last Name', autocomplete: 'off' %>
+          </div>
+
+          <div class="form-group">
+            <%= f.email_field :email , class: "form-control", required: true, placeholder: 'Email', autocomplete: 'off' %>
+          </div>
+
+          <% if @organization_setting && @organization_setting.fields && OrganizationSetting.can_be_fields?(@organization_setting.fields) %>
+            <% @organization_setting.fields.each do |field, type| %>
+              <div class="form-group">
+                <% if type == 'text' %>
+                  <%= text_field_tag "user[#{field}]", nil, class: "form-control", required: true, placeholder: field.titleize.gsub('_', ' ') %>
+                <% elsif type == 'number' %>
+                  <%= number_field_tag "user[#{field}]", nil, class: "form-control", required: true, placeholder: field.titleize.gsub('_', ' ') %>
+                <% elsif type == 'checkbox' %>
+                  <%= check_box_tag "user[#{field}]", true, false %> 
+                  <%= label_tag "user[#{field}]", field.titleize.gsub('_', ' ') %> 
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit 'Create', class:"btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script >
+  ajaxUpdate = (event, data, xhr) => {
+    if(xhr === 'success'){
+      $('.for-info').html(`<div class='alert alert-info' role='alert'>${data.message}</div>`)
+    }else{
+      $('.for-info').html(`<div class='alert alert-danger' role='alert'>Something Went Wrong</div>`)
+    }
+  }
+
+  $('.client-member-form').bind("ajax:success", ajaxUpdate).bind("ajax:error", ajaxUpdate)
+</script>

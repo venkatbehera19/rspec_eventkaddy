@@ -1,0 +1,3 @@
+class GlobalSessionTag < ApplicationRecord
+  
+end

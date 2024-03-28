@@ -1,0 +1,43 @@
+<h4>Speaker PDFs</h4>
+
+<%= link_to 'New PDF', '/speaker_portals/new_pdf',class:"btn btn-primary" %> <br/><br/>
+
+<table id="pdf-index" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+	<thead>
+		<tr>
+    	 <th>Name</th>
+    	 <th>Date Created</th>
+    	 <th>Date Updated</th>
+    	 <th></th>
+  	</tr>
+	</thead>
+
+	<tbody>
+		<% @pdf_files.each do |pdf_file| %>
+ 			<% download_path = pdf_file.path %>
+
+		 	<tr>
+					<td><%= pdf_file.name %></td>
+					<td><%= pdf_file.created_at %></td>
+					<td><%= pdf_file.updated_at %></td>
+					<td class="table-actions">
+						<div class="dropdown">
+							<a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+								<i class="fa fa-ellipsis-v"></i>
+							</a>
+							<div class="dropdown-menu">
+							<%= link_to 'View/Download', download_path, class:"btn dropdown-item text-info" %>
+							<%= link_to 'Edit', "/speaker_portals/edit_pdf/#{pdf_file.id}", class:"btn dropdown-item text-success" %>
+							<%= link_to 'Delete', "/speaker_portals/delete_pdf/#{pdf_file.id}", :confirm => 'Are you sure?', :method => :delete, class:"btn dropdown-item text-danger" %>
+							</div>
+						</div>
+						<div class="btn-group d-flex">
+							<%= link_to 'View/Download', download_path, class:"btn btn-outline-info" %>
+							<%= link_to 'Edit', "/speaker_portals/edit_pdf/#{pdf_file.id}", class:"btn btn-outline-success" %>
+							<%= link_to 'Delete', "/speaker_portals/delete_pdf/#{pdf_file.id}", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-outline-danger" %>
+						</div>
+					</td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>

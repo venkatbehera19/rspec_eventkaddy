@@ -1,0 +1,32 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  name: MyString
+  description: MyText
+  localtime: 2017-07-11 11:10:20
+  active_time: 2017-07-11 11:10:20
+  status: MyString
+  curl_result: MyText
+  pn_filters: MyText
+
+two:
+  event: two
+  name: MyString
+  description: MyText
+  localtime: 2017-07-11 11:10:20
+  active_time: 2017-07-11 11:10:20
+  status: MyString
+  curl_result: MyText
+  pn_filters: MyText
+
+three:
+  event: one
+  name: MyString
+  description: MyText
+  localtime: 2017-07-11 11:10:20
+  active_time: 2017-07-11 11:10:20
+  status: MyString
+  curl_result: MyText
+  pn_filters: MyText
+

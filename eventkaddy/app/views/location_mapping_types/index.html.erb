@@ -1,0 +1,23 @@
+<h1>Listing location_mapping_types</h1>
+<%= link_to 'New Location mapping type', new_location_mapping_type_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Type name</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @location_mapping_types.each do |location_mapping_type| %>
+  <tr>
+    <td><%= location_mapping_type.type_name %></td>
+    <td><%= link_to 'Show', location_mapping_type ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_location_mapping_type_path(location_mapping_type) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', location_mapping_type, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+

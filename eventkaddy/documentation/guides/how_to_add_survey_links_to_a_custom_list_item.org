@@ -1,0 +1,30 @@
+#+TITLE: How to Add Survey Links To A Custom List Item
+
+* Step 1
+Create surveys.
+* Step 2
+Using ids from the surveys, add links to the custom_list_item content with the following special string. Very similar to adding a ce certificate button.
+
+#+NAME: special string
+#+BEGIN_SRC
+==Survey^^{survey_id}^^{button text}==
+#+END_SRC
+
+Ex:
+
+#+NAME: special string
+#+BEGIN_SRC
+==Survey^^261^^global poll 2==
+#+END_SRC
+
+The user will be returned to the custom list item after submitting the survey (using backOneLocation()).
+
+* Optional
+
+surveys have a post_action column, which can have a value "EmailCredits^^Nameofcertificate" in order to email a certificate before returning to the custom list item. This is not the value of the custom_list_item.content.
+
+Ex:
+
+EmailCredits^^Certificate_Of_Completion
+
+

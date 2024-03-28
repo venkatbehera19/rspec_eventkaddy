@@ -1,0 +1,122 @@
+= admin_bubble('This data is collected via a single SQL query and then iterated over in Ruby. This is okay as a long as the number of tags being collected is less than 1000, otherwise we will start creating objects that don\'t garbage collect as expected, and that can cause memory issues.')
+.alert.alert-info
+    Please note: you can edit the tags by clicking on them.
+%b Session Tags 
+= @session_tags.length
+%br
+%br
+
+- all_tags = []
+
+- @session_tags.select {|t| t.leaf == true}.each do |leaf|
+    - tags      = []
+    - level     = leaf.level
+    - parent_id = leaf.parent_id
+    - tag_name  = leaf.name + " [#{leaf.id}]"
+    - tags.push(link_to tag_name, edit_tag_path(leaf.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+
+    - while level!=0
+        - level -= 1
+        - ct = @session_tags.find {|t| t.id == parent_id }
+
+        - if ct
+            - parent_id = ct.parent_id
+            - tag_name  = ct.name + " [#{ct.id}]"
+            - tags.push(link_to tag_name, edit_tag_path(ct.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+    - all_tags << tags.reverse.join(' > ')
+
+- all_tags.sort.each do |t|
+    = t.html_safe
+    %br
+    %br
+
+- all_tags = []
+
+%b Audience Tags
+= @audience_tags.length
+%br
+%br
+
+- @audience_tags.select {|t| t.leaf == true}.each do |leaf|
+    - tags      = []
+    - level     = leaf.level
+    - parent_id = leaf.parent_id
+    - tag_name  = leaf.name + " [#{leaf.id}]"
+    - tags.push(link_to tag_name, edit_tag_path(leaf.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+
+    - while level!=0
+        - level -= 1
+        - ct = @audience_tags.find {|t| t.id == parent_id}
+
+        - if ct
+            - parent_id = ct.parent_id
+            - tag_name  = ct.name + " [#{ct.id}]"
+            - tags.push(link_to tag_name, edit_tag_path(ct.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+
+    - all_tags << tags.reverse.join(' > ')
+
+- all_tags.sort.each do |t|
+    = t.html_safe
+    %br
+    %br
+
+- all_tags = []
+
+%b Exhibitor Tags
+= @exhibitor_tags.length
+%br
+%br
+
+- @exhibitor_tags.select {|t| t.leaf == true}.each do |leaf|
+    - tags      = []
+    - level     = leaf.level
+    - parent_id = leaf.parent_id
+    - tag_name  = leaf.name + " [#{leaf.id}]"
+    - tags.push(link_to tag_name, edit_tag_path(leaf.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+
+    - while level!=0
+        - level -= 1
+        - ct = @exhibitor_tags.find {|t| t.id == parent_id}
+
+        - if ct
+            - parent_id = ct.parent_id
+            - tag_name  = ct.name + " [#{ct.id}]"
+            - tags.push(link_to tag_name, edit_tag_path(ct.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+
+    - all_tags << tags.reverse.join(' > ')
+
+- all_tags.sort.each do |t|
+    = t.html_safe
+    %br
+    %br
+
+- all_tags = []
+
+%b Attendee Tags
+= @attendee_tags.length
+%br
+%br
+
+- @attendee_tags.select {|t| t.leaf == true}.each do |leaf|
+    - tags      = []
+    - level     = leaf.level
+    - parent_id = leaf.parent_id
+    - tag_name  = leaf.name + " [#{leaf.id}]"
+    - tags.push(link_to tag_name, edit_tag_path(leaf.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+
+    - while level!=0
+        - level -= 1
+        - ct = @attendee_tags.find {|t| t.id == parent_id}
+
+        - if ct
+            - parent_id = ct.parent_id
+            - tag_name  = ct.name + " [#{ct.id}]"
+            - tags.push(link_to tag_name, edit_tag_path(ct.id) , {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#edit-tags-window', class: 'btn'})
+
+    - all_tags << tags.reverse.join(' > ')
+
+- all_tags.sort.each do |t|
+    = t.html_safe
+    %br
+    %br
+#edit-tags-window.modal{"aria-hidden" => "true", "aria-labelledby" => "modal-windowLabel", :tabindex => "-1"}

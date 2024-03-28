@@ -1,0 +1,24 @@
+SERVER SIDE
+
+	respond to room creation requests
+	route user messages to correct room
+	
+	
+
+CLIENT SIDE
+
+	check to make sure user is online
+	create user-defined rooms
+	enter/leave any room
+	messages broadcast to entire room
+	private message another user (potentially not in beta version)
+
+
+
+DESIGN NOTES
+
+	main screen has button to create room at top, then get the list of available rooms from server
+	display available rooms and the number of users in the rooms
+	tapping list item enters the room
+	no history stored in room
+	

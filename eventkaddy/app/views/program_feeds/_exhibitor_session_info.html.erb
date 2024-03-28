@@ -1,0 +1,159 @@
+<div class="container bootstrap snippets bootdey p-0 m-0" style="max-width: 100% !important;">
+  <%= link_to "/#{params[:event_id]}/program_exhibitor", class: 'btn back-to-exhibitors' do %>
+    <i class="fa fa-arrow-circle-o-left" aria-hidden="true"><span style="font-family: verdana, arial, helvetica, sans-serif;" > Back</span></i>
+  <%end%>
+  <div class="row">
+    <div class="profile-nav col-md-3">
+      <div class="panel">
+        <div class="user-heading round">
+          <% url = @exhibitor.logo_path %>
+          <% if url %>
+              <%= image_tag '/defaults/avatar.png', alt: "Profile pic", data: {original: url}, class: "speaker-profile-pic mt-3 lazyloaded" %>
+          <% else %>
+              <%= image_tag '/defaults/avatar.png', alt: "Profile pic", class: "speaker-profile-pic mt-3" %>
+          <% end %>
+          <h1><%= @exhibitor.company_name %></h1>
+        </div>
+        <span><%= @exhibitor.location_name ? "Booth: #{@exhibitor.location_name}" : nil %></span>
+        <br>
+        <span><%= @exhibitor.url_web.present? ? "Website: #{@exhibitor.url_web}" : nil %></span>
+        <br>
+        <span><%= @exhibitor.phone.present? ? "Phone: #{@exhibitor.phone}" : nil %></span>
+        <br>
+        <span><%= @exhibitor.sponsor_level_type ? "Sponsor Level : #{@exhibitor.sponsor_level_type.sponsor_type}" : nil %></span>
+      </div>
+    </div>
+    <div class="profile-info col-md-9">
+      <div class="panel">
+        <%unless @exhibitor.description.blank? %>
+          <div class="bio-graph-heading">
+            <div class="description">
+              <div class="biography"><%= sanitize @exhibitor.description %></div>
+            </div>
+            <span class="bio-show-more">Show More</span>  
+          </div>
+        <% end -%>
+      </div>
+        <div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="sessions-list">
+                <% @sessions.each do |time, sessions|%>
+                  <div class="card mt-1 time-sesions" id="<%= "session_at_#{time.strftime("%H").to_i}"%>">
+                    <div class="alert alert-info time_header" role="alert">
+                      <%= sessions.first.date.strftime("%a, %B %d") %>
+                      <%= twelve_hour_format?(params[:event_id]) ? tweleve_hour_format(time) : twenty_four_hour_format(time)  %>
+                    </div>
+                    <div class="tobesticky alert alert-info sticky">
+                      <%= sessions.first.date.strftime("%a, %B %d") %>
+                      <%= twelve_hour_format?(params[:event_id]) ? tweleve_hour_format(time) : twenty_four_hour_format(time) %>
+                    </div>
+                    <div class="card-body session-body p-0">
+                      <% sessions.uniq.each do |session| %>
+                        <div class="session card">
+                          <div class="card-header">
+                            <p class="title mb-0"><%= session.title %>
+                              <% if @current_attendee %>
+                                <div class="favourite-option" style="font-size:20px">
+                                  <% if session_favorite(session.id) %>
+                                    <i class="fa fa-star text-danger make-favourite" aria-hidden="true" data-session="<%= session.id %>" data-favourite="true"></i>
+                                  <% else%>
+                                    <i class="fa fa-star-o make-favourite" aria-hidden="true" data-session="<%= session.id %>" data-favourite="false"></i>
+                                  <% end %>
+                                </div>
+                              <% end %>
+                            </p>
+                          </div>
+                          <div class="card-body pt-1">
+                            <div class="d-flex">
+                              <% if twelve_hour_format?(params[:event_id]) %>
+                                <strong>Time: </strong><span class="pl-1"><%= "#{session.start_at.strftime("%I:%M %p")} - #{session.end_at.strftime("%I:%M %p")}" %> </span>
+                              <% else %>
+                                <strong>Time: </strong><span class="pl-1"><%= "#{session.start_at.strftime('%H:%M')} - #{session.end_at.strftime('%H:%M')}" %> </span>
+                              <% end %>
+                            </div>
+                            <div class="session_room">
+                              <% if session.location_mapping&.name.present? %>
+                                <b> Room: </b><%=session.location_mapping&.name %>
+                               <% end %>
+                            </div>
+                            <div class="session_track_subtrack.present?">
+                              <% if session.track_subtrack %>
+                                <b>Primary Audience: </b><%= session.track_subtrack %>
+                              <% end %>
+                            </div>
+                            <div class="session.custom_filter_3">
+                              <% if session.custom_filter_3.present? %>
+                                <b>Continuing Education: </b> <%= session.custom_filter_3 %>
+                              <% end %>
+                            </div>
+                            <div class="session.custom_filter_2">
+                              <%= "#{session.custom_filter_2.present? ? session.custom_filter_2 : nil }"  %>
+                            </div> 
+                            <div class="description">
+                              <br>
+                              <p><%= session.description.html_safe %></p>
+                              <% @str="Learning Objective(s): " %>
+                              <% sanitize @str %>
+                              <p style="font-weight:bold;"> <%= "#{session.learning_objective.present? ? @str.html_safe : nil }"  %></p>
+                              <p style="font-weight:normal;"><%= session.learning_objective.html_safe %></p>
+                            </div>
+                            <% if session.speakers.present? %>
+                              <div>
+                                <p class="mb-0 pt-2 pb-2" style="font-weight:bold;font-size:15px;">Speaker(s): </p>
+                                <% session.speakers.each do |speaker| %>
+                                  <p>
+                                    <span><b><%= speaker.full_name %></span></b><br><%= "#{speaker.company}" %>
+                                  </p>
+                                <%end%>
+                              </div>
+                            <% end -%>  
+                            <div>
+                              <% if session.sponsors.present? %>
+                                <p>Sponsored By: </p>
+                                <% session.sponsors.each do |sponsor| %>
+                                  <p><%= sponsor.company_name%></p>
+                                <% end %>
+                              <% end %>
+                            </div>
+                          </div>
+                          <% if session.description.present? || session.learning_objective.present? %>
+                            <div class="show-more-less pl-3">
+                              <p class="show_more">Show More</p>
+                              <p class="show_less d-none">Show Less</p>                  
+                            </div>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                    <div class="session-end"></div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+  canvas {
+      height: 11rem;
+      border-radius: 50%;
+  }
+</style>
+
+
+<script>
+$('.lazyloaded').lazyload({
+  load : function() {
+    crop(this.src, 1).then((canvas) => {
+        if(!$(this.parentElement).find('canvas')[0]){
+          $(this.parentElement).prepend(canvas)
+          $(this).hide()
+        }
+      });
+    }
+});
+</script>

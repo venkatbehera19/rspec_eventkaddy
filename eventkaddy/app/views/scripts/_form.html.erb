@@ -1,0 +1,54 @@
+<%= form_for(@script) do |f| %>
+  <% if @script.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@script.errors.count, "error") %> prohibited this script from being saved:</h2>
+
+      <ul>
+      <% @script.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.hidden_field :event_id, :value => @event.id %>
+
+  <div class="form-group">
+    <%= f.label :button_label %>
+    <%= f.text_field :button_label, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :file_name %>
+    <%= f.text_field :file_name, class: "form-control" %>
+  </div>
+
+  <%= f.label :script_type_id do%>
+  Script Type
+    <%= f.collection_select :script_type_id, ScriptType.all, :id, :name, {}, class: "custom-select" %>
+  <%end%>
+  <br><br>
+  <%= f.label :published do %>
+    <%= f.check_box :published %>
+    Published
+  <% end %><br>
+  
+  <%= f.label :run_start_at do %>
+    Start At
+    <%= f.datetime_field :run_start_at, {class: "custom-select"}%>
+  <% end %><br>
+
+  <%= f.label :run_till do %>
+    End At
+    <%= f.datetime_field :run_till, {class: "custom-select"} %>
+  <% end %><br>
+
+  <div class="form-group">
+    <%= f.label :run_at_intervals%>
+    <%= f.select :run_at_intervals,  Script.run_at_intervals, {:include_blank => true, :default => nil} %><br>
+  </div><br>
+
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

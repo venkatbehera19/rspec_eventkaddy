@@ -1,0 +1,445 @@
+.lvnavbar {
+  background-color: #101010;
+  border-bottom-color: #101010;
+  border-bottom-width: 2px;
+}
+.navbar-inverse .navbar-nav > li > .lvnavlink {
+  color: #c3e1e1;
+}
+.navbar-inverse .navbar-nav > li > .lvnavlink:hover {
+  color: #ffffff;
+}
+.lvpale {
+  border-bottom-color: #c3e1e1;
+  background-color: #c3e1e1;
+  border-bottom: 1px solid #101010;
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 3px -2px rgba(0, 0, 0, 0.2),
+    0 1px 8px 0 rgba(0, 0, 0, 0.12);
+}
+.navbar {
+  margin-bottom: 20px;
+}
+.lvheader {
+  color: #101010;
+  background-color: #ffffff00;
+}
+.lvheader-video {
+  color: #101010;
+  background-color: #ffffff00;
+  margin-top: 0px;
+}
+.threads-nav-header {
+  color: #101010;
+}
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  background-color: #101010;
+}
+.single-page-app-top-banner {
+  height: auto;
+  width: auto;
+}
+#footer-one {
+  height: auto;
+  width: auto;
+}
+#footer-two {
+  margin-top: 30px;
+  height: auto;
+  width: auto;
+}
+.login-header {
+  background-color: #101010;
+  color: #c3e1e1;
+}
+.survey-header {
+  background-color: #101010;
+  color: #c3e1e1;
+}
+.message-button {
+  background-color: #101010;
+  color: #c3e1e1;
+}
+.message-button:hover {
+  background-color: #c3e1e1;
+  color: #101010;
+}
+.thread-buttons span {
+  background-color: #101010;
+  color: #c3e1e1;
+}
+.thread-buttons span:hover {
+  color: #101010;
+  background-color: #c3e1e1;
+}
+.sessions-date-container {
+  color: #101010;
+}
+.session-link:link,
+.session-link:visited,
+.session-link:hover,
+.session-link:active {
+  color: #101010;
+}
+.options-header {
+  background-color: #101010;
+  color: #c3e1e1;
+}
+.options-header:link {
+  background-color: #101010;
+  color: #143a5f;
+}
+
+.triangle-color_color {
+  color: #000000;
+}
+
+.dash-content {
+  top: 35%;
+}
+#dash-schedule {
+  color: #e90a12;
+  background-color: #ffdfdc;
+}
+#dash-schedule:hover {
+  background-color: #e90a12;
+  color: #ffdfdc;
+  text-decoration: none;
+}
+#dash-messages {
+  color: #000b7f;
+  background-color: #e2fcff;
+}
+#dash-messages:hover {
+  color: #e2fcff;
+  background-color: #000b7f;
+  text-decoration: none;
+}
+#dash-exhibitors {
+  color: #8b8500;
+  background-color: #fffcd6;
+}
+#dash-exhibitors:hover {
+  color: #fffcd6;
+  background-color: #8b8500;
+  text-decoration: none;
+}
+#dash-help {
+  color: #067500;
+  background-color: #e3ffde;
+}
+#dash-help:hover {
+  color: #e3ffde;
+  background-color: #067500;
+  text-decoration: none;
+}
+#dash-survey {
+  color: #734100;
+  background-color: #f9c26c;
+}
+#dash-survey:hover {
+  color: #f9c26c;
+  background-color: #734100;
+  text-decoration: none;
+}
+#dash-photo_gallery {
+  color: #ffffff;
+  background-color: #153f6f;
+}
+#dash-photo_gallery:hover {
+  color: #ffffff;
+  background-color: #22b6ef;
+  text-decoration: none;
+}
+#dash-booked-slots {
+  color: #ffffff;
+  background-color: #153f6f;
+}
+#dash-booked-slots:hover {
+  color: #ffffff;
+  background-color: #22b6ef;
+  text-decoration: none;
+}
+#dash-notifications {
+  color: #ffffff;
+  background-color: #0382bf;
+}
+#dash-notifications:hover {
+  color: #ffffff;
+  background-color: #0382bf;
+  text-decoration: none;
+}
+#dash-booked-slots {
+  color: #ffffff;
+  background-color: #0382bf;
+}
+#dash-booked-slots:hover {
+  color: #ffffff;
+  background-color: #0382bf;
+  text-decoration: none;
+}
+#dash-survey {
+  color: #ffffff;
+  background-color: #0382bf;
+}
+#dash-survey:hover {
+  color: #ffffff;
+  background-color: #0382bf;
+  text-decoration: none;
+}
+#dash-blog {
+  color: #ffffff;
+  background-color: #0382bf;
+}
+#dash-blog:hover {
+  color: #ffffff;
+  background-color: #0382bf;
+  text-decoration: none;
+}
+#dash-game {
+  color: #ffffff;
+  background-color: #0382bf;
+}
+#dash-game:hover {
+  color: #ffffff;
+  background-color: #0382bf;
+  text-decoration: none;
+}
+.dash-icon {
+  display: block;
+  font-size: 60px;
+  font-weight: 300;
+}
+.dashboard-title {
+  background-color: #ffffff;
+}
+.btn-primary {
+  background-color: #101010;
+  border-color: #101010;
+}
+.btn-primary:focus,
+.btn-primary:hover,
+.btn-primary:active:hover,
+.btn-primary:active,
+.btn-primary:active:focus {
+  color: #101010;
+  background-color: #c3e1e1;
+}
+.my-sessions-options-container {
+  margin: 0 auto;
+  text-align: center;
+  color: #101010;
+  font-weight: 400;
+  margin-bottom: 0px;
+  background-color: #cfc696;
+  border-bottom: 2px solid #454545;
+  border-radius: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-top: 20px;
+}
+.my-exhibitors-options-container {
+  margin: 0 auto;
+  text-align: center;
+  border-bottom: 2px solid #454545;
+  margin-bottom: 0px;
+  border-radius: 0px;
+  font-size: 1.5em;
+  color: #ffffff;
+  font-weight: 400;
+  background-color: #143a5f;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 20px;
+}
+.my-attendees-options-container {
+  margin: 0 auto;
+  text-align: center;
+  border-bottom: 2px solid #454545;
+  margin-bottom: 0px;
+  border-radius: 0px;
+  font-size: 1.5em;
+  color: #ffffff;
+  font-weight: 400;
+  background-color: #143a5f;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 20px;
+}
+
+.featured-container {
+  margin: 0 auto;
+  text-align: center;
+  color: #101010;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 0px;
+  background-color: #cfc696;
+  border-bottom: 2px solid #454545;
+  border-radius: 0px;
+}
+
+.previous_button {
+  font-weight: 300;
+  float: left;
+  margin-left: 10px;
+  font-size: 0.8em;
+  line-height: 1;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding-right: 10px;
+  color: #143a5f;
+}
+
+.next_button {
+  font-weight: 300;
+  float: left;
+  margin-left: 10px;
+  font-size: 0.8em;
+  line-height: 1;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding-right: 10px;
+  color: #143a5f;
+}
+
+.sessions-title-container {
+  margin-top: 10px;
+  color: #ffffff;
+  background-color: #e3d9a6;
+  padding: 20px;
+  font-weight: 500;
+  width: 100%;
+  font-size: 16px;
+  text-align: left;
+}
+
+.sessions-container {
+  background-color: #d0c697;
+  margin: 0 auto;
+  margin-bottom: 30px;
+}
+
+.banner-ad-center {
+  border: 0px;
+  border-radius: 0px;
+  background-color: #143a5f;
+  max-height: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  max-width: 940px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.banner-center {
+  border: 0px;
+  border-radius: 0px;
+  background-color: #ffffff;
+  max-height: 65px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.embedded-chat-container {
+  vertical-align: bottom;
+}
+
+.footer-bottom-half {
+  height: 100%;
+}
+
+.footer {
+  height: 235px;
+}
+
+a {
+  color: #143a5f;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: #1087d0;
+  text-decoration: none;
+}
+
+a:focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+body {
+  background-repeat: no-repeat;
+  background-color: #133a5e4f;
+  background-image: url('/ek/brushed.png');
+  background-size: 1920px 1920px;
+  background-attachment: fixed;
+  background-position: center;
+}
+#exhibitor-logo {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-info {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-files {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-notes {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-survey {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-products {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-links {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-messages {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-chat {
+  background-color: transparent;
+  border-radius: 0px;
+}
+#exhibitor-misc {
+  background-color: transparent;
+  border-radius: 0px;
+}
+.exhibitor-bottom-nav {
+  background-color: #002b4f;
+  color: #ffffff;
+}
+
+.window-header {
+  background-color: #011e3d;
+  color: #ffffff;
+}
+
+.minimize-btn {
+  color: whitesmoke;
+}
+
+.exhibitor-bottom-nav .active {
+  color: #ffc107bf;
+  box-shadow: 0 3px 1px -2px #ffc107bf, 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 #ffc107bf;
+}
+
+.exhibitor-bottom-nav .btn:hover {
+  color: rgb(255 255 255 / 70%);
+}

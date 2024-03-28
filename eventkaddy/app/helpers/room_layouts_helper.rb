@@ -1,0 +1,2 @@
+module RoomLayoutsHelper
+end

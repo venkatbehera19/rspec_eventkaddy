@@ -1,0 +1,54 @@
+#+TITLE: How to Add Users to Speaker and Exhibitor Portals
+
+* Speaker Portals
+Often we do this via integration. We do not currently have a generic solution, but one should be possible mimicing the example set by the exhibitor import. A custom adjustment script exists for adding users that already exist to a new event_id, but is not currently suitable for creating new users.
+
+** TODO first or create speaker method and script integration
+
+** TODO speaker.user_id missing
+One slightly tricky thing about this is that speakers do not currently have a user_id. It relies completely on the email to match, which means a speaker changing their email is problematic, both because it creates a new user, and because they now have an abanadoned user account. We should probably just change this.
+
+#+BEGIN_SRC ruby
+app/controllers/speaker_portals_controller.rb:
+486     def get_speaker
+487       user = User.find(current_user.id)
+488       return Speaker.where(email:user.email,event_id:session[:event_id]).first
+489 
+490     end
+#+END_SRC
+
+** TODO Banner hard coded
+Another TODO is that the banner is hard coded on the event select page:
+
+#+BEGIN_SRC ruby
+app/views/layouts/speakerportal_eventselect_2013.html.erb:
+20   		<div class="pull-left logo">
+21   			<img src="https://wvcspeakers.eventkaddy.net/event_data/43/portal_logo_photo/43_portal_logo_photo_20140806154151.png" width="50px">
+22   		</div>
+#+END_SRC
+
+** TODO maybe fixing some convuluted code
+#+BEGIN_SRC ruby
+app/models/user.rb:
+ 97   def updateSpeakerRow(params)
+ 98     @speaker       = Speaker.where(email:original_email).first
+ 99     @speaker.email = email
+100     @speaker.save
+
+app/models/user.rb:
+9 	attr_accessor :original_email
+#+END_SRC
+
+
+* Exhibitor Portal
+Often we do this via integration. It will also happen during the generic exhibitor upload from the configure page when an email and a password column have data via these lines:
+
+#+BEGIN_SRC ruby
+ek_scripts/config_page_scripts/import-exhibitors-mysql2-matched-v3.rb:
+471       User.first_or_create_for_exhibitor(
+472         exhibitor, valueFor[@password_col]
+473       )
+#+END_SRC
+
+Where the resultant user will have the email of the exhibitor. The password of an existing user may be updated in this way, when the user's only role is an exhibitor (to prevent changing passwords of users with client or superadmin roles).
+

@@ -1,0 +1,37 @@
+#+TITLE: Speaker Portal Customization
+
+* Settings Page Tabs
+Select visible settings tabs in settings layout. "Hide Speaker Portal AV Request Items" is new.
+
+[[/settings/cms]]
+
+* Banner and Logo
+Same as always, an event_settings table feature.
+
+[[/event_settings/edit_general_portal_settings]]
+* Legacy Settings
+Original events_setting table settings. Ones not listed here that adjusted biography and such are deprecated for newer version below.
+
+- Can edit session titles and descriptions
+- Can edit profiles
+- Can upload files (might be refering to speaker_files, which had special info in the past)
+- Can create Session Files
+- Can make av requests
+
+[[/event_settings/edit_event_settings]]
+* Settings, hide and lock
+Every setting on the contact info form can be hidden or locked, including CV uploads, profile image uploads, etc.
+
+[[/settings/speaker_portal]]
+* Tabs, headers and footers
+Legacy Feature. Edit what tabs are visible in the portal, edit their titles, and the headers and footers
+
+[[/event_settings/edit_event_tabs]]
+* Speaker Requirements Checklist
+Edit the checklist speakers see in the top right, which informs them of their todos.
+
+[[/event_settings/edit_requirements]]
+* AV List Items
+Create AV List items using the input at the top of the form. They are created asychronously and automatically added to a multiselect in the second part of the form, preselected. Next select and deselect available AV list items as necessary to limit what speakers see in the speaker portal. Submit to finish. Items which are asychonously added in first step (create av list item that doesn't already exist) are added to event_settings even without submitting, but submitting will not hurt
+
+[[/events_av_list_items/select]]

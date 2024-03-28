@@ -1,0 +1,21 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   exhibitor_id: 1
+#   qr_code_id: 1
+#   product_image_id: 1
+#   name: MyString
+#   description: MyText
+#   product_url: MyString
+#   youtube_url: MyString
+
+# two:
+#   event_id: 1
+#   exhibitor_id: 1
+#   qr_code_id: 1
+#   product_image_id: 1
+#   name: MyString
+#   description: MyText
+#   product_url: MyString
+#   youtube_url: MyString

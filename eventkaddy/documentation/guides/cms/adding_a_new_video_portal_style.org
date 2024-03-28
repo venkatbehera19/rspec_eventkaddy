@@ -1,0 +1,30 @@
+#+TITLE: How to add a new Video Portal Style
+
+* Explanation
+While some video portal settings - strings and booleans - are stored in the settings table, css styles are stored in a generated stylesheet. 
+
+The code uses the Video Portal Style Dictionary and Video Portal Category Dictionary to generate styles.
+There is a default stylesheet located at /public/defaults/video_portal_stylesheet/tailored.css that is modified and stored in public/event_data/{event_id}/video_portal_stylesheet/tailored.css. This file is updated everytime the user edits files at /settings/video_portal_styles and created the first time the user creates a new stylesheet for this event. 
+
+* How To
+1. Navigate to /public/defaults/video_portal_stylesheet/tailored.css and add your new style. Here is an example: 
+
+   .login-header {
+
+       background-color: 0px;
+
+   }
+
+2. Navigate to the style dictionary - /app/domain_objects/dictionaries/style_dictionaries.rb
+
+3. To the top of the StyleDictionary, under the video_portal_style_dictionary method, add:
+
+   '.login-header_background-color'                      => 'Login Header Background Color'
+
+   This creates a description for the new css item which appears in the Video Portal Styles form. Notice the lines is composed of the css class + the css property with an underscore between them. 
+
+4. To the bottom of the StyleDictionary, under video_portal_category_dictionary, add:
+
+   '.login-header_background-color'                      => 'Login',
+
+   This assigns the new item to a header in the Video Portal Styles form. 

@@ -1,0 +1,42 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |style|
+  @black_cell = style.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { wrap_text: true, :horizontal=> :left }
+  @bold_cell  = style.add_style :sz => 16
+end
+
+def add_basic_info sheet, event
+  sheet.add_row ["#{event.name}"],        style: @black_cell, :height => 30
+  sheet.add_row ["Incomplete Daily Health Check Survey Attendees"],       style: @black_cell, :height => 30
+end
+
+def add_headers sheet
+  heads = ["Registration ID", "Name", "Email", "Phone Number", "Title", "Custom Fields 1", "Custom Fields 2", "PN Filters" ]
+  style = []
+
+  heads.each {|h| style << @black_cell }
+  sheet.add_row heads, :style => style
+end
+
+
+# wb.add_worksheet(name: "incomplete survey attendees") do |sheet|
+#   add_basic_info sheet, @event
+#   add_headers sheet
+#   
+#   @unsubmitted_attendees.each do |attendee|
+#     row = [attendee.account_code, attendee.full_name, attendee.email, attendee.mobile_phone, attendee.title, attendee.custom_fields_1, attendee.custom_fields_2, attendee.pn_filters]
+#     sheet.add_row row
+#   end
+#   sheet.column_widths 100
+# end
+
+if !defined? @background_job
+  @unsubmitted_attendees = Attendee.where("id not in (?) and event_id = ?", @health_check_done_attendee_ids, @event_id)
+end
+
+if !defined? @desired_date
+  IncompleteDailyCheckupAttendees.new @event_id, wb, @job
+else
+  IncompleteDailyCheckupAttendees.new @event_id, wb, @job, nil, @desired_date
+end

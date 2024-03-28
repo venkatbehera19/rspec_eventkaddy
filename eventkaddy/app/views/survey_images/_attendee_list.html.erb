@@ -1,0 +1,37 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col" >Name</th>
+      <th scope="col" >Email</th>
+      <th scope="col" >Mobile Phone</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @attendee_not_gave_survey.each do |attendee| %>
+      <tr>
+        <td><%= attendee.full_name %></td>
+        <td><%= attendee.email %></td>
+        <td><%= attendee.mobile_phone %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= hidden_field_tag :total_pages, @total_pages %>
+
+
+<style type="text/css">
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+    }
+    /* Zebra striping */
+    td, th { 
+      padding: 6px; 
+      border: 1px solid #ccc; 
+      text-align: left; 
+    }
+
+    table.table { table-layout:fixed; }
+    table.table td { overflow: hidden; }
+  
+</style>

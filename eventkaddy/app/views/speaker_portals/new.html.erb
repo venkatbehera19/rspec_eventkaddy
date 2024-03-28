@@ -1,0 +1,166 @@
+<h1>Propose Session</h1>
+<br/>
+<hr/>
+<br/>
+<% if !@speaker_portal_settings.program_types.blank? %>
+  <div class="form">
+    <%= form_for(@session, :html => { :class => "form" }, :url => { :action => "create" } ) do |f| %>
+      <% if @session.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@session.errors.count, "error") %> prohibited this session from being saved:</h2>
+          <ul>
+            <% @session.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="form-group">
+        <p> <%= f.label :title, "Title *", class: "form-label" %> </p>
+        <p> <%= f.text_field :title, class: "form-control", :required => true%> </p>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :program_type, class: "form-label" %>
+        <%= f.collection_select(:program_type_id, ProgramType.where( name: @speaker_portal_settings.program_types), :id, :name, {}, class: "custom-select") %>
+      </div>
+
+      <% if !@speaker_portal_settings.hide_abstract %>
+        <div class="form-group">
+          <%= f.label :description, "Abstract #{@speaker_portal_settings&.required_abstract ? '*' : ''}" %>
+          <%= f.text_area :description, size: "70x5", class: "form-control" , :required => @speaker_portal_settings&.required_abstract ? @speaker_portal_settings&.required_abstract : false %>
+          <!-- <p><em>Please limit your abstract to 600 character. We suggest a minimum of 300 character.</em></p> -->
+        </div>
+      <% end %>
+      
+      <br/>
+      <% if !@speaker_portal_settings.hide_learning_objectives %>
+        <div class="form-group">
+          <%= f.label :learning_objective, "Learning Objectives #{ @speaker_portal_settings&.required_learning_objectives ? '*': ''}" %>
+          <%= f.text_area :learning_objective, class: "form-control", :required => @speaker_portal_settings&.required_learning_objectives ? @speaker_portal_settings&.required_learning_objectives : false  %>
+          <p><em>In one or two sentences, WHAT WILL BE THE “TAKE-AWAY” MESSAGE from your presentation? </em></p>
+          <!-- <p><em>Please limit your abstract to 500 character. We suggest a minimum of 300 character.</em></p> -->
+        </div>
+      <% end %>
+      
+      <% if !@speaker_portal_settings.hide_tags %>
+        <div class="form-group"> 
+          <%= f.label "Select Tags #{ @speaker_portal_settings&.required_tags ? '*' : '' }" %>
+          <%= f.select :session_tag, options_for_select(@event.tag_sets_hash ? @event.tag_sets_hash["1"].flatten : []), {}, :multiple=> true, :validate=> true, :class=> 'form-control session-select', :required => @speaker_portal_settings&.required_tags ? @speaker_portal_settings&.required_tags : false %> 
+          <p><em>hold shift to select multiple tags </em></p>
+        </div>
+        <hr/>
+      <% end %>
+
+
+      <%= f.hidden_field :tag_type, :value => @tag_type.id %>
+      <%= f.hidden_field :event_id, :value => @event.id %>
+
+      <% if !@speaker_portal_settings.hide_other_tags %>
+        <div class="form-group">
+          <%= f.label "Other Tags #{ @speaker_portal_settings&.required_other_tags ? '*': ''}" %>
+          <%= f.text_field :other_session_tag, class: "form-control", :required => @speaker_portal_settings&.required_other_tags ? @speaker_portal_settings&.required_other_tags : false %>
+          <p><em>(Other Tags should be Separated by || ) Example: Animal Medicine||Surgery||Felines</em></p>
+        </div>
+      <% end %>
+
+      <% if !@speaker_portal_settings.hide_keywords %>
+        <div class="form-group"> 
+          <%= f.label "Select KeyWords #{ @speaker_portal_settings&.required_keywords ? '*':'' }" %>
+          <%= f.select :session_keyword, options_for_select(@keywords), {}, :multiple=> true, :validate=> true, :class=> 'form-control session-select', :required => @speaker_portal_settings&.required_keywords ? @speaker_portal_settings&.required_keywords : false %> 
+          <p><em>hold shift to select multiple keywords </em></p>
+        </div>
+      <% end %>
+
+      <% if !@speaker_portal_settings.hide_other_keywords %>
+        <div class="form-group">
+          <%= f.label "Other KeyWords #{@speaker_portal_settings&.required_other_keywords ? '*': ''}" %>
+          <%= f.text_field :other_keyword_tag, class: "form-control", :required => @speaker_portal_settings&.required_other_keywords ? @speaker_portal_settings&.required_other_keywords : false %>
+          <p><em>(Other KeyWords should be Separated by || ) Example: Animal Medicine||Surgery||Felines</em></p>
+        </div>
+      <% end %>
+
+      <% if @speaker_portal_settings.fields && (can_be_fields? (@speaker_portal_settings.fields)) %>
+        <% @speaker_portal_settings.fields.each do |field, type| %>
+          <div class="form-group">
+            <% if type == 'text' %>
+              <%= f.label field.titleize.gsub('_', ' ') %>
+              <%= text_field_tag "user[#{field}]", nil, class: "form-control", required: true, placeholder: field.titleize.gsub('_', ' ') %>
+            <% elsif type == 'number' %>
+            <% elsif type == 'checkbox' %>
+              <%= check_box_tag "user[#{field}]", true, false %> 
+              <%= label_tag "user[#{field}]", field.titleize.gsub('_', ' ') %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+      <% if @speaker_portal_settings.fields && (can_be_fields? (@speaker_portal_settings.fields)) %>
+        <% @speaker_portal_settings.fields.each do |field| %>
+          <% if field["type"] == 'text' %>
+            <%= f.label field["label"]&.gsub(/(&nbsp;|\s)+/, " ") %>
+            <%= text_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+          <% elsif field["type"] == 'textarea' %>
+            <%= f.label field["label"]&.gsub(/(&nbsp;|\s)+/, " ") %>
+            <%= text_area_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+          <% elsif field["type"] == 'checkbox-group' %>
+            <%= f.label field["label"] %>
+            <br/>
+            <% field["values"].each do |option| %>
+              <%= check_box_tag "user[#{field["name"]}][]", option["label"], option["selected"] ? option["selected"] : false %>
+              <%= label_tag option["label"], option["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+              <br>
+            <% end %>
+          <% elsif field["type"] == 'radio-group' %>
+            <%= f.label field["label"] %>
+            <% field["values"].each do |option| %>
+              <%= radio_button_tag "user[#{field["name"]}]", option["label"], option["selected"] ? option["selected"] : false %>
+              <%= label_tag option["label"], option["label"].gsub!(/(&nbsp;|\s)+/, " ") %>
+            <% end %>
+            <br/>
+          <% elsif field["type"] == 'date' %>
+            <%= f.label field["label"] %>
+            <%= date_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+          <% elsif field["type"] == 'number' %>
+            <%= f.label field["label"]&.gsub(/(&nbsp;|\s)+/, " ") %>
+            <%= number_field_tag "user[#{field["name"]}]", nil, class: field["className"], required: field["required"] %>
+          <% elsif field["type"] == 'header' %>
+            <h1><%= field["label"] %></h1>
+          <% elsif field["type"] == 'paragraph' %>
+            <p><%= field["label"].html_safe %></p>
+          <% end %>
+        <% end %>
+      <% end %>
+      <br/>
+      <p><%= f.submit "Create Session", class: "btn btn-primary" %></p>
+
+    <% end %>
+  </div>
+
+
+<% else %>
+  <div class="form-group">
+    <h3>There is no Program Types . Please contact Admin.</h3>
+  </div>
+<% end %>
+
+<style>
+  .session-select{
+    height: 200px !important;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('selections-form');
+    form.addEventListener('submit', function(event) {
+      var checkboxes = form.querySelectorAll('input[type="checkbox"]');
+      var isChecked = Array.prototype.slice.call(checkboxes).some(function(checkbox) {
+        return checkbox.checked;
+      });
+      if (!isChecked) {
+        alert('Please select at least one option.');
+        event.preventDefault();
+      }
+    });
+  });
+</script>

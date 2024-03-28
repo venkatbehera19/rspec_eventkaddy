@@ -1,0 +1,99 @@
+%h4 Listing attendees with Uploaded Survey Images
+%br
+%br
+%table#survey-attendee-images.table.table-striped.table-bordered
+    %thead
+        %tr
+            %th First Name
+            %th Last Name
+            %th Registration ID
+            %th Upload Count
+            %th
+    %tbody
+        - @attendees.each do |a|
+            %tr
+                %th= a["first_name"]
+                %th= a["last_name"]
+                %th= a["account_code"]
+                %th= a["total_images"]
+                %td.table-actions
+                    .btn-group.d-flex
+                        - if a["job_status"] == nil
+                            = link_to "/attendee_survey_images/download?attendee=#{a["account_code"]}", class:"btn btn-outline-info download-btn",id: "download-btn-#{a["account_code"]}",remote: true do
+                                Create
+                                %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                        - elsif a["job_status"] == "error"
+                            -# error
+                        - elsif a["job_status"] == "started" || a["job_status"] == "inProgress"
+                            = link_to "#", class:"btn btn-outline-info download-btn disabled",id: "download-btn-#{a["account_code"]}",remote: true do
+                                %span.spinner-grow.spinner-grow-sm{"aria-hidden" => "true", :role => "status", :style => "margin-right:10px;"}
+                                Creating Zip...
+                        - elsif a["job_status"] == "completed"
+                            = link_to "/attendee_survey_images/download?attendee=#{a["account_code"]}", class:"btn btn-outline-success download-btn",id: "download-btn-#{a["account_code"]}",data: {turbolinks: false} do 
+                                Download 
+                                %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                        = link_to "View", "/attendee_survey_images/show?attendee=#{a["account_code"]}", class:"btn btn-outline-success"
+                        - if a["job_status"] == "completed"
+                            = link_to "Reset", "/attendee_survey_images/reset?attendee=#{a["account_code"]}", data: { confirm: "Are you sure you want to reset attendee images?" }, :method => :delete, class:"btn btn-outline-danger",id: "reset-btn-#{a["account_code"]}",remote: true
+                        - else
+                            = link_to "Reset", "#", class:"btn btn-outline-danger reset-btn",id: "reset-btn-#{a["account_code"]}"
+                    .dropdown
+                        %a{'data-toggle': 'dropdown', style: 'font-size: 1.4rem; cursor: pointer;'}
+                            %i.fa.fa-ellipsis-v
+                        .dropdown-menu
+                            - if a["job_status"] == nil
+                                = link_to "/attendee_survey_images/download?attendee=#{a["account_code"]}", class:"btn btn-outline-info download-btn",id: "download-btn-#{a["account_code"]}",remote: true do
+                                    Create
+                                    %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                            - elsif a["job_status"] == "error"
+                                -# error
+                            - elsif a["job_status"] == "started" || a["job_status"] == "inProgress"
+                                = link_to "#", class:"btn btn-outline-info download-btn disabled",id: "download-btn-#{a["account_code"]}",remote: true do
+                                    %span.spinner-grow.spinner-grow-sm{"aria-hidden" => "true", :role => "status", :style => "margin-right:10px;"}
+                                    Creating Zip...
+                            - elsif a["job_status"] == "completed"
+                                = link_to "/attendee_survey_images/download?attendee=#{a["account_code"]}", class:"btn btn-outline-success download-btn",id: "download-btn-#{a["account_code"]}",data: {turbolinks: false} do 
+                                    Download 
+                                    %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                            = link_to 'View', "/attendee_survey_images/show?attendee=#{a["account_code"]}", class:"btn text-warning dropdown-item"
+                            - if a["job_status"] == "completed"
+                                = link_to "Reset", "/attendee_survey_images/reset?attendee=#{a["account_code"]}", data: { confirm: "Are you sure you want to reset attendee images?" }, :method => :delete, class:"btn btn-outline-danger",id: "reset-btn-#{a["account_code"]}",remote: true
+                            - else
+                                = link_to "Reset", "#", class:"btn btn-outline-danger reset-btn",id: "reset-btn-#{a["account_code"]}"
+:javascript
+    $(function() {
+      $("#survey-attendee-images").dataTable({
+        "order": [] ,
+        "sDom": "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+        fnInitComplete: () => { 
+                $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+                $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+                $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+                    .prepend("<span class='d-none d-md-inline'>Show:</span>");
+                //$(".dataTables_length option[value='10']").attr('selected', 'selected')
+            }
+      });
+    let socket_url   = "#{@socket_url}"
+    let CLIENT       = new Faye.Client(socket_url + "/faye");
+
+    $(document).on('click', '.reset-btn', function(){
+        alert("No Zip File for this attendee.");
+    });
+
+    createSocketConnection();
+    function createSocketConnection(){
+      CLIENT.subscribe('/attendee_survey_images', function (payload) {
+        attendee_account_code = payload.account_code
+        download_btn = $(`#download-btn-${attendee_account_code}`)
+        reset_btn    = $(`#reset-btn-${attendee_account_code}`)
+        if(payload.status=="completed"){
+            download_btn.replaceWith(`<a id='download-btn-${attendee_account_code}' class='btn btn-outline-success download-btn' data-turbolinks='false' href='/attendee_survey_images/download?attendee=${attendee_account_code}'>Download
+            <i aria-hidden="true" class="fa fa-file-archive-o ml-1"></i>
+            </a>`);
+            reset_btn.replaceWith(`<a data-confirm="Are you sure you want to reset attendee images?" class="btn btn-outline-danger" id="reset-btn-${attendee_account_code}" rel="nofollow" data-remote="true" data-method="delete" href="/attendee_survey_images/reset?attendee=${attendee_account_code}">Reset</a>`)
+        }else if(payload.status=="error"){
+            /* Code for error handling */
+        }
+      })
+    }
+    });

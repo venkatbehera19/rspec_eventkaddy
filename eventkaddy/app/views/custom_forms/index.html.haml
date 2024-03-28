@@ -1,0 +1,45 @@
+%h4 Custom Form
+
+.btn-toolbar.my-2 
+  .btn-group.mr-2 
+    = link_to new_custom_form_path, class:"btn btn-primary" do
+      Custom Form
+      %i.fa.fa-plus
+%br/
+
+%table#custom-form-data-table.table.table-striped.table-bordered
+  %thead 
+    %tr 
+      %th Title
+      %th Type 
+      %th 
+  %tbody 
+    - @custom_forms.each do |custom_form|
+      %tr 
+        %th= custom_form.name
+        %th= custom_form.custom_form_type.name
+        %td.table-actions
+          .btn-group.d-flex
+            = link_to 'Show', "/custom_forms/#{custom_form.id}", class:"btn btn-outline-info"
+            = link_to 'Delete', "/custom_forms/#{custom_form.id}", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-outline-danger" 
+          .dropdown
+            %a{'data-toggle': 'dropdown', style: 'font-size: 1.4rem; cursor: pointer;'}
+              %i.fa.fa-ellipsis-v
+            .dropdown-menu
+              = link_to 'Show', "/custom_forms/#{custom_form.id}", class:"btn btn-outline-info"
+              = link_to 'Delete', "/custom_forms/#{custom_form.id}", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-outline-danger"
+:javascript
+  $(function() {
+    $.extend( $.fn.dataTableExt.oStdClasses, {"sWrapper": "dataTables_wrapper form-inline table-responsive"} );
+
+    $('#custom-form-data-table').dataTable({
+      "sDom": "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+      fnInitComplete: () => {
+        $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+        $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+        $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+                    .prepend("<span class='d-none d-md-inline'>Show:</span>");
+      }
+    })
+    $('table.dataTable th').css('padding-right','20px');
+  })

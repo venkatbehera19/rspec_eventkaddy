@@ -1,0 +1,91 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+def add_basic_info sheet, survey
+  sheet.add_row ["#{survey.title}"],       style: @black_cell, :height => 30
+  sheet.add_row ["#{survey.description}"], style: @black_cell, :height => 30
+end
+
+def add_headers sheet, questions
+  style = []
+  heads = [
+    'Session Code',
+    'Title',
+    'Date',
+    'Start Time',
+    'End Time',
+    'Track || Subtrack',
+    'Session Tags',
+    'Speakers',
+    'Registration ID',
+    'Attendee Name'
+  ]
+  questions.map {|q| heads << q }
+  heads << "Response Last Updated At"
+  heads << "(Local Time) Response Last Updated At"
+  heads.each {|h| style << @black_cell }
+  sheet.add_row heads, :style => style
+end
+
+survey_type_id = SurveyType.where(name:'Session Survey').first.id
+
+wb.styles do |style|
+  @black_cell = style.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+  @bold_cell  = style.add_style :sz => 16
+end
+
+utc_offset = Event.find( @event_id ).utc_offset || "+00:00"
+
+if @job
+  @job.update!(
+    status: "Processing Rows",
+    total_rows: Response.
+                  select('DISTINCT survey_response_id').
+                  joins('LEFT JOIN survey_responses ON survey_responses.id=responses.survey_response_id').
+                  where(event_id:@event_id).
+                  where('survey_responses.session_id IS NOT NULL').
+                  count
+  )
+  @job.write_to_file
+end
+
+Survey.where(event_id:@event_id, survey_type_id: survey_type_id).each do |survey|
+
+  wb.add_worksheet(name: survey.title) do |sheet|
+
+    add_basic_info sheet, survey
+
+    question_ids = []
+    questions    = []
+    questions_type_ids    = []
+    survey.questions.order('questions.survey_section_id, questions.order').each {|q| questions << q.question; question_ids << q.id; questions_type_ids << q.question_type_id }
+    sheet.add_row []
+    add_headers sheet, questions
+
+    survey.sessions.order(:session_code).each do |session|
+
+      speakers = session.speakers.map {|s| s.full_name }.join ' | '
+      tags     = session.tags_string
+      date     = session.date ? session.date.strftime('%F') : ''
+      start_at = session.start_at_formatted
+      end_at   = session.end_at_formatted
+
+      SurveyResponse.where(session_id:session.id).order('attendee_id').each do |sr|
+
+        attendee  = Attendee.find(sr.attendee_id)
+        responses = sr.responses
+
+        next if responses.blank?
+
+        row = [ session.session_code, session.title, date, start_at, end_at, session.track_subtrack, tags, speakers, attendee.account_code, attendee.full_name ]
+
+        row.concat Answer.answers_as_array( question_ids, responses, questions_type_ids )
+        row << sr.updated_at.to_s
+        row << Time.parse("#{sr.updated_at.strftime('%Y-%m-%d %H:%M:%S')}Z").localtime(utc_offset).to_s
+        sheet.add_row row
+        @job.plus_one_row if @job
+      end
+    end
+  end
+end
+

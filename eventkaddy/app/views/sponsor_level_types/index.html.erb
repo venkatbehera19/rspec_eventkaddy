@@ -1,0 +1,206 @@
+<style>
+  .sortable{
+    min-height: 2.6rem;
+    border: 1px solid rgba(0, 0, 0, 0.13);
+    border-radius: 0.3rem;
+  }
+  .sorting-disabled{
+    background-color: #fac282ef;
+  }
+  .sponsor-medal{
+    max-width: 1.5rem;
+    height: auto;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js" integrity="sha512-jNDtFf7qgU0eH/+Z42FG4fw3w7DM/9zbgNPe3wfJlCylVDTT3IgKW5r92Vy9IHa6U50vyMz5gRByIu4YIXFtaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> 
+<%= hidden_field_tag :is_super_admin, @is_super_admin %>
+<h1>Sponsor Level Types</h1>
+<%= button_tag 'New Sponsor level type', class:"btn btn-primary", type: "button", id: "new_sponsor_level_type_trigger" %> <br/><br/>
+<div class="save-alert text-success" style="display: none;">Saved!</div>
+<div class="sponsor-type-container">
+  <div class="event-type-table">
+    <h5>
+      Event Sponsor Type Levels
+    </h5>
+    <ul id="event-sponsor-types" class="sortable list-group">
+      <% @event_sponsor_level_types.each do |event_sponsor_level_type| %>
+        <li class="<%= event_sponsor_level_type.sponsor_level_type.has_associated_exhibitors?(@event.id) ? "sorting-disabled" : "" %> list-group-item" 
+          id="<%= event_sponsor_level_type.sponsor_level_type_id %>">
+            <%= event_sponsor_level_type.sponsor_level_type.sponsor_type %>
+            <% sponsor_level_medal_url = event_sponsor_level_type.sponsor_level_type.medal_image ? event_sponsor_level_type.sponsor_level_type.medal_image.get_aws_url : nil %>
+          <button type="button" class="btn pull-right badge trigger-img-modal" data-scope='event_level' data-sponsor-level-id="<%= event_sponsor_level_type.sponsor_level_type_id %>" data-global-url="<%= sponsor_level_medal_url %>">
+            <% if event_sponsor_level_type.medal_image %>
+              <%= image_tag "/defaults/sponsor-placeholder.png", data: { original: event_sponsor_level_type.medal_image.get_aws_url }, class: 'sponsor-medal' %>
+            <% elsif event_sponsor_level_type.sponsor_level_type.medal_image %>
+              <%= image_tag "/defaults/sponsor-placeholder.png", data: { original: sponsor_level_medal_url}, class: 'sponsor-medal' %>
+            <% else %>
+              <img src="/defaults/sponsor-placeholder.png" class="sponsor-medal">
+            <% end %>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="global-type-table">
+    <h5>
+      Global Sponsor Type Levels
+    </h5>
+
+    <ul id="global-sponsor-types" class="sortable list-group">
+      <% @sponsor_level_types.each do |sponsor_level_type| %>
+        <li id="<%= sponsor_level_type.id %>" class="list-group-item">
+          <%= sponsor_level_type.sponsor_type %>
+          <button type="button" class="btn pull-right badge trigger-img-modal" data-scope='global_level' data-sponsor-level-id="<%= sponsor_level_type.id %>">
+            <% if sponsor_level_type.medal_image %>
+              <%= image_tag "/defaults/sponsor-placeholder.png", data: { original: sponsor_level_type.medal_image.get_aws_url }, class: 'sponsor-medal' %>
+            <% else %>
+              <img src="/defaults/sponsor-placeholder.png" class="sponsor-medal">
+            <% end %>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+  
+</div>
+<br />
+<%= render 'form' %>
+<div class="modal fade" id="sponsor_level_img_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Change Sponsor Level Type Medal</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <%= form_for :sponsor_level_type, html: {id: 'medal_img_form'}, url: '/sponsor_level_types/add_medal_image' do |f| %>
+        <%= f.hidden_field :id %>
+        <%= f.hidden_field :scope %>
+        <div class="modal-body">
+          <div class='toast'>
+            <div class='toast-body'>
+              Medal Image Save
+            </div>
+          </div>
+          <%= f.label :photo, "Add Image" %>
+          <%= f.file_field  :photo%>
+        </div>
+        <div class="modal-footer">
+          <%= f.submit "Submit", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<script>
+  $("#global-sponsor-types, #event-sponsor-types").sortable({
+    connectWith: ".sortable",
+    stop: function(e, ui){
+      //Restricts user from removing an sponsor level type with associated exhibitors from the event sponsor level type list
+      if (ui.item.hasClass('sorting-disabled') && ui.item.parent().attr('id') === 'global-sponsor-types'){
+        $(this).sortable('cancel');
+        return;
+      }
+      if (ui.item.parent().attr('id') === 'global-sponsor-types'){
+        if (window.confirm("Do the same will also permanently delete the event level medal images?")){
+          $.post("/remove_from_event_sponsor_level_type", {sponsor_level_type_id: ui.item.attr('id')},
+            function (data, textStatus, jqXHR) {
+              if (data.notice === 'ok')
+                saveEventSponsorStates();
+                console.log('replacing');
+                let icon_btn = ui.item.find('.trigger-img-modal');
+                icon_btn.html('<img src="/defaults/sponsor-placeholder.png" data-original="' +  icon_btn.data('global-url') +'" class="sponsor-medal">');
+                $('.sponsor-medal').lazyload();
+            }
+          );
+          ui.item.find('.trigger-img-modal').attr('data-scope', 'global_level');
+          //disable change medal button if no super admin
+          if ($('#is_super_admin').val() !== 'true'){
+            ui.item.find('.trigger-img-modal').attr('disabled', 'disabled');
+          }
+        } else {
+          $("#global-sponsor-types, #event-sponsor-types").sortable('cancel');
+        }
+      } else{
+        ui.item.find('.trigger-img-modal').attr('data-scope', 'event_level');
+        ui.item.find('.trigger-img-modal').attr('data-global-url', ui.item.find('.sponsor-medal').attr('data-original'));
+        saveEventSponsorStates();
+      }
+    }
+  });
+
+  function updatedEventSponsorLevelStates(){
+    let updatedStates = [];
+    $('#event-sponsor-types').children().each(function(){
+      updatedStates.push({
+        sponsor_type_id: $(this).attr('id'),
+        ranking_position: $(this).index()
+      })
+    });
+    return updatedStates;
+  }
+
+  function saveEventSponsorStates(){
+    $.post("/update_event_sponsor_level_types", {sponsor_level_types: updatedEventSponsorLevelStates()},
+      function (data, textStatus, jqXHR) {
+        if (data.notice === 'ok'){
+          $('.save-alert').show().fadeOut(900);
+        }
+      }
+    );
+  }
+
+  $('#new_sponsor_level_type_trigger').on('click', function(){
+    let modal = $("#sponsor_level_type_modal");
+    modal.find('.modal-title').text('New Sponsor Level Type');
+    modal.attr('action', '/sponsor_level_types');
+    modal.modal();
+  });
+
+  $('.trigger-img-modal').on('click', function(){
+    let scopeLevel = $(this).data('scope');
+    let sponsorLevelTypeId = $(this).data('sponsor-level-id');
+    $('#sponsor_level_type_id').val(sponsorLevelTypeId);
+    $('#sponsor_level_type_scope').val(scopeLevel);
+    $('#sponsor_level_img_modal').find('form').trigger('reset');
+    $('#sponsor_level_img_modal').modal();
+  });
+
+  $('#medal_img_form').submit(function(e){
+    e.preventDefault();
+    let form = $(this);
+    let url = form.attr('action');
+    let formdata = new FormData();
+    formdata.append('sponsor_level_id', form.find('#sponsor_level_type_id').val());
+    formdata.append('scope_level', form.find('#sponsor_level_type_scope').val());
+    formdata.append('sponsor_medal', form.find('#sponsor_level_type_photo')[0].files[0]);
+    let file = form.find('#sponsor_level_type_photo')[0].files[0];
+    $.ajax({
+      type: "post",
+      url: url,
+      data: formdata,
+      processData: false,
+      contentType: false,
+      dataType: 'json',
+      mimeType: 'multipart/form-data',
+      success: function (response) {
+        let data = response.data;
+        let elem = $("[data-scope='"+ data.scope + "']" + "[data-sponsor-level-id='" + data.id + "']");
+        elem.html("<img src='/defaults/sponsor-placeholder.png' data-original='" + data.url + "' class='sponsor-medal'>");
+        $('.sponsor-medal').lazyload();
+        $('#medal_img_form').trigger('reset');
+        $('#medal_img_form').find('input[type="submit"]').removeAttr('disabled');
+        $('.toast').toast({delay: 1000});
+        $('.toast').toast('show');
+      }
+    });
+  });
+
+  $('.sponsor-medal').lazyload();
+
+  // disable global level side medal image modification if no super admin
+  if ($('#is_super_admin').val() !== 'true'){
+    $('.trigger-img-modal[data-scope="global_level"]').attr('disabled', 'disabled')
+  }
+</script>
+

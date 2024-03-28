@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  session: one
+  speaker: one
+  av_list_item: one
+  additional_notes: MyText
+
+two:
+  event: two
+  session: two
+  speaker: two
+  av_list_item: two
+  additional_notes: MyText

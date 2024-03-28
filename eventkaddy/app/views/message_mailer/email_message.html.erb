@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+	<h1> <%=@message.title%> </h1><hr style='color:black;'>
+	<%=sanitize @message.content, tags: %w(h1 h2 h3 h4 b i p u a pre div span br ul ol li em strong strike img), attributes: %w(style src)%>
+
+	<p>You are recieving this message because you are participating in <%= @message.event.name%>. To unsubscribe from these emails, please follow this link: <a href="<%=root_url%>messages/unsubscribe/<%=@token%>">Unsubscribe</a></p>
+  </body>
+</html>

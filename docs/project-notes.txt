@@ -1,0 +1,19 @@
+RVM VERSION
+
+	rvm ree-1.8.7-2010.02@eventkaddy
+	
+ERD
+
+
+MYSQL-RUBY
+
+	http://www.kitebird.com/articles/ruby-dbi.html
+	http://www.kitebird.com/articles/ruby-mysql.html
+	
+
+CSS FRAMEWORKS
+
+	http://designreviver.com/tips/how-to-choose-right-css-framewords/
+	http://net.tutsplus.com/tutorials/html-css-techniques/a-closer-look-at-the-blueprint-css-framework/
+	
+	

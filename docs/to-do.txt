@@ -1,0 +1,15 @@
+DB
+
+	look at moving to mysql 5.5 from 5.1, can do live db backups
+	read white paper on scaling out mysql/databases
+
+
+MOBILE
+
+	-setup WebSQL (sqlite) db module
+	-auto-checking/updating of notification list
+	-subnav rendering glitch
+	-highlighting of lists and home screen icons
+	-downloading map updates
+	
+	

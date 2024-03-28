@@ -1,0 +1,31 @@
+<h4><%= @user.email %></h4>
+ 
+<%= link_to_if(can?(:update,@user), "Edit", edit_user_path(@user), class:"btn edit") %> <%= link_to_if(can?(:delete, @user), "Delete", user_path(@user), :confirm => "Are you sure?", :method => :delete, class:"btn delete") {} %>
+ 
+<br/><br/> 
+<table class="table">
+	<tbody>
+		<tr>
+			<td>Email:</td>
+			<td><%= @user.email %></td>
+		</tr>
+		<tr>
+			<td>Role:</td>
+			<td><%= @user.roles.first.name %></td>
+		</tr>
+	<% if can?(:see_timestamps,User) %>
+		<tr>
+			<td>Created at:</td>
+			<td><%= @user.created_at %></td>
+		</tr>
+		<tr>
+			<td>Last Sign In:</td>
+			<td><%= @user.last_sign_in_at %></td>
+		</tr>
+		<tr>
+			<td>Sign In Count:</td>
+			<td><%= @user.sign_in_count %></td>
+		</tr>
+	<% end %>
+	</tbody>
+</table>

@@ -1,0 +1,35 @@
+<div class="btn-group pull-right">
+	<%= link_to 'Grid View', '/grid_view', class:"btn btn-primary" %>
+	<div class="dropdown btn-group">
+		<button class="btn btn-primary" data-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></button>
+		<div class="dropdown-menu">
+			<%= link_to "Export Sessions To Spreadsheet", "/sessions/sessions_report.xlsx", :class=>"dropdown-item text-primary" %>
+
+			<%= link_to "Export AV Requests To Spreadsheet", "/sessions/session_av_report.xlsx", :class=>"dropdown-item text-primary" %>
+		</div>
+	</div>
+</div>
+<% settings = Setting.return_cms_settings session[:event_id] %>
+<br><br><br>
+
+<table id="sessions" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" data-source="<%= trackowner_portals_sessions_url(format: "json") %>">
+	<thead>
+		<tr>
+			<th class="hide-on-mob">Session code</th>
+			<th>Title</th>
+			<th>Room Name</th>
+			<th>Date/Time</th>
+			<th class="hide-on-mob">Conf. Note Versions</th>
+			<% unless settings.method("hide_session_form_sold_out").call %>
+					<th class="hide-on-mob">Sold Out?</th>
+			<% end %>
+			<% unless settings.method("hide_session_form_is_poster").call %>
+					<th class="hide-on-mob">Is Poster?</th>
+			<% end %>
+			<th></th>
+  	</tr>
+	</thead>
+
+	<tbody>
+	</tbody>
+</table>

@@ -1,0 +1,35 @@
+<% settings = Setting.return_cms_settings session[:event_id] %>
+<% content_for :content do %>
+  <%# <h1 style="color:white;padding:10px;background-color:#a4b5c0;border-radius:10px;">Dashboard</h1> %>
+  <ul id="dashboard-tabs" class="nav nav-tabs">
+      <li id="configure-tab" class="nav-item"><%= link_to "Import / Export", "/events/configure/#{session[:event_id]}", class: "nav-link" %></li>
+      <li id="statistics-tab" class="nav-item"><%= link_to "Statistics", "/events/statistics", class: "nav-link" %></li>
+      <% unless settings.method("hide_menu_app_game").call %>
+          <li id="game-statistics-tab" class="nav-item"><%= link_to "Game Statistics", "/events/game_statistics", class: "nav-link" %></li>
+      <% end %>
+      <li id="reports-tab" class="nav-item"><%= link_to "Report Downloads", "/events/report_downloads", class: "nav-link" %></li>
+      <% unused_tags = Tag.unused_leaf_tags_for_event( session[:event_id] ).size %>
+      <% if unused_tags > 0 %>
+          <li id="abandoned_tags-tab" class="nav-item"><%= link_to "#{unused_tags} Abandoned Tags", "/tags/abandoned_tags", class: "nav-link" %></li>
+      <% end %>
+      <li id="change_reports-tab" class="nav-item"><%= link_to "Change Reports", "/events/change_reports", class: "nav-link" %></li>
+      <li id="attendee_checked_in-tab" class="nav-item"><%= link_to "Attendee Badge Printed", "/events/attendee_checked_in", class: "nav-link" %></li>
+  </ul>
+  <%= content_for?(:dashboard_content) ? yield(:dashboard_content) : yield %>
+<% end %>
+
+<%= render template: "layouts/subevent_2013" %>
+
+<script>
+    $(function() {
+        $('#dashboard-tabs li').removeClass('active');
+        var wh = window.location.pathname;
+        if      ( wh.match("configure")        ) { $('#configure-tab a').addClass("active");       }
+        else if ( wh.match("game_statistics")  ) { $('#game-statistics-tab a').addClass("active"); }
+        else if ( wh.match("statistics")       ) { $('#statistics-tab a').addClass("active");      }
+        else if ( wh.match("report_downloads") ) { $('#reports-tab a').addClass("active");         }
+        else if ( wh.match("abandoned_tags")   ) { $('#abandoned_tags-tab a').addClass("active");  }
+        else if ( wh.match("change_reports")   ) { $('#change_reports-tab a').addClass("active");  }
+        else if ( wh.match("attendee_checked_in")   ) { $('#attendee_checked_in-tab a').addClass("active");  }
+    });
+</script>

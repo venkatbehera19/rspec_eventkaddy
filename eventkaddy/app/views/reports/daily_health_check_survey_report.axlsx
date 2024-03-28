@@ -1,0 +1,5 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+survey_type_id = 7
+render :partial => 'daily_health_check_report', :locals => {wb: wb, :survey_type_id => survey_type_id, :event => @event, event_id: @event.id}

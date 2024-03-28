@@ -1,0 +1,11 @@
+= link_to 'Back', app_images_path, class:"btn btn-primary"
+%br
+%br
+%h3 Edit Image
+
+= link_to image_tag(@app_image.path, style: "height: 17rem; width: 18rem;"), @app_image.path
+%br/
+%br/
+= render 'form'
+%br
+%br

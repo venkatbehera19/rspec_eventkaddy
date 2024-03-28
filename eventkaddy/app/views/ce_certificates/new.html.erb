@@ -1,0 +1,39 @@
+<div class="bg-light custom-border px-3 py-3" style="min-height:500px;">
+
+    <h3>CE Certificate New</h3>
+
+    <%= link_to 'Cancel', ce_certificates_path,class:"btn btn-danger" %> 
+    <%= form_tag("/ce_certificates", :method => "post", :id => "ce_create_form", :multipart => true) do %>
+    <br/><br/>
+      <div class="form-group">
+        <%= label_tag :title_, "Certificate Title" %>
+        <%= text_field :title, "", placeholder: 'Certificate of Attendance', class: "form-control" %>
+      </div>
+      <div class="form-group">
+          <%= label_tag :certificate_background, "Upload Certificate Background Image" %> <br>
+          <%= file_field_tag :certificate_background, accept: "image/*" %>
+      </div>
+      <div class="form-group">
+          <%= label_tag :type, "Certificate Type" %>
+          <select id="type" class="custom-select" disabled>
+            <option value="default" selected="selected">Default</option>
+            <option value="detailed">Detailed</option>
+          </select>
+      </div><br />
+      <div class="actions">
+      <%= submit_tag("Create", :class => "btn btn-primary") %>
+      </div>
+    <% end %>
+
+</div>
+
+<script>
+  $('form#ce_create_form').submit(function() {
+      let title = $('#title_').val()
+      if (title == "") {
+        alert("Please add a title")
+        return false
+      }
+      return true
+    })
+</script>

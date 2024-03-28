@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content">
+      <h4>Product Coupons</h4>
+      <div class="btn-toolbar my-2">
+				<div class="btn-group mr-2">
+					<a class="btn btn-primary" href="<%= new_coupon_path %>">New Product
+						<i class="fa fa-plus"></i>
+					</a>
+				</div>
+			</div>
+      <br>
+
+      <table class="table table-striped" id="products_table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Amount/Percentage</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Max Usage</th>
+            <th>Remaining Usage</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @coupons.each do |coupon| %>
+            <tr>
+              <td><%= coupon.coupon_name %></td>
+              <td><%= coupon.coupon_code %></td>
+              <td style="text-align: center;">
+                <% if coupon.is_percentage? %>
+                  <%= coupon.amount %> %
+                <% else %>
+                  $ <%= sprintf "%.2f",coupon.amount %>
+                <% end %>
+              </td>
+              <td><%= coupon.start_date %></td>
+              <td><%= coupon.end_date %></td>
+              <td><%= coupon.max_usage %></td>
+              <td><%= coupon.remaining_usage %></td>
+              <td>
+                <div class="table-actions">
+                  <div class="btn-group d-flex">
+                    <%= link_to 'Show', coupon , class: "btn btn-outline-primary" %>
+                    <%= link_to('Edit', edit_coupon_path(coupon), class: "btn btn-outline-success") %>
+                    <%= link_to('Delete', coupon_path(coupon), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger") %>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+<br />
+
+

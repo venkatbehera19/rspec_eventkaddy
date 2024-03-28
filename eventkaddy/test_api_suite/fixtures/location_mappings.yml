@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  map: one
+  name: MyString
+  mapping_type: 1
+  x: 1
+  'y': 1
+  booth_size_type: one
+
+two:
+  event: two
+  map: two
+  name: MyString
+  mapping_type: 1
+  x: 1
+  'y': 1
+  booth_size_type: two

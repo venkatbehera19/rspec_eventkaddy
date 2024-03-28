@@ -1,0 +1,55 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div id="content">
+      <h4>Purchase Details <%= @exhibitor.email %></h4>
+      <br>
+        <table class="table table-striped" id="event_ticket_table">
+          <thead>
+            <tr>
+              <th>Items</th>
+              <th>Transaction ID</th>
+              <th>Transaction Status</th>
+              <th>Payment Mode</th>
+              <th>Amount</th>
+              <th>Date/Time</th>
+              <!-- <th>Invoice</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <% @orders.each do |order| %>
+              <tr>
+                <% transaction = order.transaction_detail %>
+                <% mode_of_payment = transaction.mode_of_payment %>
+                <td>
+                  <ul>
+                    <% order.order_items.each do |order_item| %>
+                      <li>
+                        <% if order_item.item_type == 'LocationMapping' %>
+                          <%= order_item.item.name %>
+                        <% elsif order_item.item_type == 'SponsorLevelType' %>
+                          <%= order_item.item.sponsor_type %>
+                        <% elsif order_item.item_type == 'Product' %>
+                          <%= order_item.item.name %>(Qty: <%= order_item.quantity %>)
+                        <% end %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </td>
+                <% if mode_of_payment.name == 'PayPal'%>
+                  <td><%= transaction.external_transaction_id %></td>
+                <% elsif mode_of_payment.name == 'Stripe'%>
+                  <td><%= transaction.external_payment_id %></td>
+                <% end%>  
+                <td><%= transaction.external_status %></td>
+                <td><%= mode_of_payment.name %></td>
+                <td>$<%= order.total.to_f %></td>
+                <td><%= transaction.updated_at %></td>
+                <!-- <td><%#= link_to 'Download', "download_invoice/#{order.transaction_id}", class: 'btn btn-outline-success', target: '_blank'%></td> -->
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+

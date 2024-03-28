@@ -1,0 +1,179 @@
+<% content_for :event_sub_menu do %>
+
+		<!-- <li>Session: <%= @session.session_code %></li> -->
+		<!-- <li><%= link_to 'Add Link', "/links/new/#{@session.id}" %></li> -->
+
+<% end %>
+
+<h4 class="view-title">Session Details</h4>
+
+<%= link_to 'Back', '/sessions' ,class:"btn btn-outline-secondary" %>
+<%= link_to 'Edit', edit_event_session_path(@session) ,class:"btn btn-outline-success" %>
+
+<% settings = Setting.return_cms_settings session[:event_id] %>
+
+<% unless settings.method("hide_session_show_page_speakers_button").call %>
+    <%= link_to 'Speakers',"/sessions/#{@session.id}/session_speakers", class:"btn btn-link" %>
+<% end %>
+
+<% unless settings.method("hide_session_show_page_sponsors_button").call %>
+    <%= link_to 'Sponsors',"/sessions/#{@session.id}/session_sponsors" ,class:"btn btn-link" %>
+<% end %>
+
+<% unless settings.method("hide_session_show_page_session_tags_button").call %>
+    <%= link_to 'Session Tags',"/sessions/#{@session.id}/session/session_tags" ,class:"btn btn-link" %>
+<% end %>
+
+<%= link_to 'Subtitles', "/sessions/#{@session.id}/subtitles", class:"btn btn-link"%>
+<br/>
+
+<% if settings.method("show_session_show_page_audience_tags_button").call %>
+    <%= link_to 'Audience Tags',"/sessions/#{@session.id}/session-audience/session_tags" ,class:"btn btn-link" %>
+<% end %>
+
+<% unless settings.method("hide_session_show_page_session_files_button").call %>
+    <%= link_to 'Session Files',"/session_files/#{@session.id}/index" ,class:"btn btn-link" %>
+<% end %>
+
+<% unless settings.method("hide_session_show_page_media_files_button").call %>
+    <%= link_to 'Media Files',"/media_files/sessions/#{@session.id}/index" ,class:"btn btn-link" %>
+<% end %>
+
+<% if settings.method("show_session_show_page_av_requests_button").call %>
+    <%= link_to 'AV Requests', "/session_av_requirements/#{@session.id}/index" ,class:"btn btn-link" %>
+<% end %>
+
+<% if settings.method("show_session_show_page_room_layouts_button").call %>
+    <%= link_to 'Room Layouts', "/room_layouts/#{@session.id}/session_links" ,class:"btn btn-link" %>
+<% end %>
+
+<% if @session.surveys.length > 0 %>
+	<%= link_to "Export Session Surveys", "/reports/session_survey_report.xlsx?session_id=#{@session.id}", class:'btn btn-link'%>
+<% end %>
+
+<!-- The event needs an s3_storage_type_id and the session needs a video_file_location for the following three methods to work -->
+<% if settings.method("show_session_show_page_get_video_url").call %>
+   <%= link_to 'Get Video URL', "/custom_adjustments/get_video_url_for_one_session/#{@session.id}", class:"btn btn-link" %>
+<% end %>
+
+<% if settings.method("show_session_show_page_encode_video").call %>
+   <%= link_to 'Encode Video', "/custom_adjustments/encode_video_for_one_session/#{@session.id}", class:"btn btn-link" %>
+<% end %>
+
+<% if settings.method("show_session_show_page_search_for_encoded_video").call %>
+   <%= link_to 'Search for Encoded Video', "/custom_adjustments/search_for_encoded_video/#{@session.id}", class:"btn btn-link" %>
+<% end %>
+
+<% if settings.method("show_session_show_page_video_thumbnail").call %>
+   <%= link_to 'Create Video Thunbnail', "/custom_adjustments/create_thumbnail_for_one_session/#{@session.id}", class:"btn btn-link"%>
+<% end %>
+
+<!--%= link_to 'Back', event_sessions_path %-->
+
+<br/><br/>
+
+<table class="table">
+<tr><th>Session Code</th><td><%= @session.session_code %></td></tr>
+<tr><th>Title</th> <td><%= @session.title %></td></tr>
+<tr><th>Description</th><td><%= @session.description&.html_safe %></td></tr>
+<tr><th>Embedded Video URL</th><td><%= @session.embedded_video_url %></td></tr>
+<tr><th>Thumbnail</th><td><%= image_tag(@session.thumbnail_event_file.path) if @session.thumbnail_event_file %></td></tr>
+<tr><th>Encoded Videos</th><td><%= @session.encoded_videos %></td></tr>
+<% if @session.location_mapping!=nil then %>
+	<tr><th>Room #</th><td><%= @session.location_mapping.name %></td></tr>
+<% else %>
+	<tr><th>Room #</th><td>Not Assigned</td></tr>
+<% end %>
+
+<tr><th>Date</th> <td><%= @session.date %></td></tr>
+<% if (@session.start_at!=nil && @session.end_at!=nil) then %>
+	<tr><th>Start At</th>  <td>
+		<%= current_user.twelve_hour_format ? @session.start_at.strftime("%I:%M %p") : @session.start_at.strftime("%H:%M") %>
+	</td></tr>
+	<tr><th>End At</th>  <td>
+		<%= current_user.twelve_hour_format ? @session.end_at.strftime("%I:%M %p") : @session.end_at.strftime("%H:%M") %>
+	</td></tr>
+<% else %>
+	<tr><th>Start At</th>  <td>Not Assigned</td></tr>
+	<tr><th>End At</th>  <td>Not Assigned</td></tr>
+<% end %>
+
+<tr><th>Session Cancelled</th>  <td><%= @session.session_cancelled %></td></tr>
+<tr><th>Conf. Note Versions</th>
+	<td>
+	<%
+		session_file_versions = SessionFileVersion.joins('
+			LEFT JOIN session_files ON session_file_versions.session_file_id=session_files.id
+			LEFt JOIN session_file_types ON session_file_types.id=session_files.session_file_type_id
+			').where('session_files.session_id=? AND session_file_types.name=?',@session.id,'conference note')
+	%>
+	<%= session_file_versions.length %>
+	</td>
+</tr>
+
+<tr><th>Credit Hours</th><td><%= @session.credit_hours %></td></tr>
+
+<% if (@session.program_type!=nil) then %>
+<tr><th>Program Type</th> <td><%= @session.program_type.name %></td></tr>
+<% else %>
+<tr><th>Program Type</th><td>Not Assigned Yet</td></tr>
+<% end %>
+
+<tr><th>Track - Subtrack Meta Data</th><td> <%= @session.track_subtrack %></td></tr>
+
+<tr><th>Promotion</th><td> <%= @session.promotion %></td></tr>
+<tr><th>Keywords</th><td> <%= @session.keyword %></td></tr>
+<tr><th>Premium Access</th><td><%= @session.premium_access%></td></tr>
+<tr><th>On Demand</th><td><%= !!@session.on_demand%></td></tr>
+
+<% if (/WVC/.match(@session.event.name)!=nil) then %>
+<tr><th></th> <td><h5>Client-Specific Fields</h5></td></tr>
+<tr><th>Price</th> <td><%= @session.price %></td></tr>
+<tr><th>Ticket Required</th> <td><%= @session.ticketed %></td></tr>
+<tr><th>RACE Approved</th> <td><%= @session.race_approved %></td></tr>
+<tr><th>WVC-TV</th> <td><%= @session.wvctv %></td></tr>
+<% end %>
+
+<% if @session.fields %>
+	<% JSON.parse(@session.fields).each do |question| %>
+		<% if question["type"] == 'text' || question["type"] == 'textarea'  %>
+			<tr><th><%= question["label"].gsub!(/(&nbsp;|\s)+/, " ") %></th> <td><%= question["value"] %></td> </tr>
+		<% elsif question['type'] == 'checkbox-group'%>
+			<tr>
+				<th><%= question["label"] %></th> 
+				<td>
+					<%=  question["value"].blank? ? 'N/A' : question["value"].reduce('') { |init, new| init += new + "," }.split(',').join(',') %>
+				</td> 
+			</tr>
+		<% else %>
+			<tr><th><%= question["label"].html_safe %></th> <td><%= question["value"] %></td> </tr>
+		<% end %>
+	<% end %>
+<% end %>
+
+</table>
+
+<% if (@links.count > 0) then %>
+	<h4>Session Links</h4>
+	<table class="item-list">
+	  <tr>
+	    <th>Name</th>
+	    <th>Filename</th>
+	    <th>Type</th>
+	    <th></th>
+	    <th></th>
+	  </tr>
+
+	<% @links.each do |link| %>
+	  <tr>
+	    <td><%= link.name %></td>
+	    <td><%= link.filename %></td>
+	    <td><%= link.link_type.link_type %></td>
+
+	    <td><%= link_to 'Edit', edit_link_path(link) ,class:"btn edit" %></td>
+	    <td><%= link_to 'Delete', "/links/#{link.id}", :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+	  </tr>
+
+	<% end %>
+	</table>
+<% end %>

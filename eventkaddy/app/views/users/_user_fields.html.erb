@@ -1,0 +1,54 @@
+<div class="form-group">
+    <%= f.label :email %>
+    <%= f.text_field :email, class: "form-control" %>
+</div>
+<% if can? :read, Role %>
+	<!--<p><%= f.label :role %></p>
+	<ul class="no-pad no-bullets">
+		<%= habtm_checkboxes(@user, :role_ids, @accessible_roles, :name) %>
+	</ul> -->
+    Role <br>
+    <% @accessible_roles.each do |role| %>
+        <div class="form-check-inline">
+            <label class="form-check-label">
+                <%= check_box_tag 'user[role_ids][]', role.id, @user.roles.include?(role), class: 'form-check-input' %>
+                <%= role.name %>
+            </label>
+        </div>
+    <% end %>
+<% end %>
+
+<% user_events = @user.events.map {|event| [event.name, event.id] } %>
+<br> <br>
+
+<div class="form-group">
+    <%= label_tag(:add_events, "Add Events:") %>
+    <%= select_tag(:event_ids,
+                   options_for_select(
+                     Event.options_for_select_events(user_events)
+                   ), :multiple => true, size: 50, class: "form-control") %>
+</div>
+<% if user_events.length > 0 %>
+    <div class="form-group">
+        <%= label_tag(:revoke_events, "Revoke Events:") %>
+        <%= select_tag(:revoke_event_ids, options_for_select(user_events), :multiple => true, :size => 5, class: 'form-control') %>
+    </div>
+<% end %>
+
+
+<% user_orgs = @user.organizations.map {|org| [org.name, org.id] } %>
+
+<div class="form-group">
+    <%= label_tag(:add_organization, "Add Organization:") %>
+    <%= select_tag(:org_ids,
+                   options_for_select(
+                     Organization.options_for_select_orgs(user_orgs)
+                   ), :multiple => true, size: 30, class: "form-control") %>
+</div>
+
+<% if user_orgs.length > 0 %>
+    <div class="form-group">
+        <%= label_tag(:revoke_org, "Revoke Organizations:") %>
+        <%= select_tag(:revoke_orgs_ids, options_for_select(user_orgs), :multiple => true, :size => 5, class: 'form-control') %>
+    </div>
+<% end %>

@@ -1,0 +1,52 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div id="content">
+			<h4>Subtitles</h4>
+			<div class="btn-toolbar my-2">
+				<div class="btn-group mr-2">
+					<a class="btn btn-outline-dark mr-2" href="<%= "/sessions/#{@session.id}"%>">Back</a>
+					<%= link_to 'Upload Subtitle', "/sessions/#{@session.id}/subtitle/new", class: 'btn btn-primary' %>
+				</div>
+			</div>
+			<br>
+
+				<table class="table table-striped" id="event_ticket_table">
+					<thead>
+			      <tr>
+			        <th>srcLang</th>
+			        <th>Label</th>
+			        <th>src/File Name</th>
+			        <th>Actions</th>
+			      </tr>
+					</thead>
+					<tbody>
+						<% @subtitles.each do |subtitle| %>
+							<tr>
+								<td><%= subtitle["srclang"]%></td>
+								<td><%= subtitle["label"]%></td>
+								<td><%= subtitle["src"]%></td>
+								<td>
+									<div class="table-actions">
+										<div class="btn-group d-flex">
+											<%= link_to('Edit', "/sessions/#{@session.id}/subtitles/edit?src=#{subtitle["src"]}", class: "btn btn-outline-success") %>
+											<%= link_to('Delete', "/sessions/#{@session.id}/subtitles/destroy?src=#{subtitle["src"]}", data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger") %>
+									</div>
+									<div class="dropdown">
+										<a data-toggle= 'dropdown' style="font-size:1.4rem; cursor: pointer;">
+											<i class="fa fa-ellipsis-v"></i>
+										</a>
+										<div class="dropdown-menu">
+												<%= link_to('Edit', '#', class: "btn text-info dropdown-item") %>
+												<%= link_to('Delete', "/sessions/#{@session.id}/subtitles/destroy?src=#{subtitle["src"]}", data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn text-danger dropdown-item") %>
+											</div>
+										</div>
+									</div>
+								 </td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  attendee: realistic
+  exhibitor: realistic
+  flag: MyString
+  company_name: A realistic company
+
+two:
+  attendee: two
+  exhibitor: two
+  flag: MyString
+  company_name: MyText

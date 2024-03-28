@@ -1,0 +1,54 @@
+def add_header(sheet, title, style)
+
+
+  sheet.add_row ['','','',''], :style => [style,style,style,style]
+  sheet.add_row [title,'','',''], :style => [style,style,style,style]
+  sheet.add_row ['','','',''], :style => [style,style,style,style]
+end
+
+wb = xlsx_package.workbook
+
+
+wb.styles do |s|
+
+  black_cell  = s.add_style :bg_color => '00', :fg_color => 'FF', :sz => 14, :alignment => { :horizontal=> :center }
+  header_cell = s.add_style :bg_color => '00', :fg_color => 'FF', :sz => 14
+  # header_cell = s.add_style :bg_color => '00', :fg_color => 'FF', :sz => 30, :height => 30
+  white_cell = s.add_style :bg_color => 'FF', :fg_color => '00', :sz => 14, :alignment => { :horizontal=> :center }
+  heads      = ['Time Viewed','Attendee Name','Attendee Code', 'Attendee Title','Exhibitor Product']
+  style      = []
+
+  heads.each {|h| style << black_cell }
+
+  wb.add_worksheet(name: "Attendee Data") do |sheet|
+
+    add_header(sheet, 'General Statistics', header_cell)
+
+    sheet.add_row ['Total Unique Views', AttendeesExhibitorProduct.where(event_id:@event_id).size]
+    sheet.add_row
+
+    add_header(sheet, 'Detailed Statistics', header_cell)
+
+    sheet.add_row ['','','',''], :style => [white_cell,white_cell,white_cell,white_cell]
+    sheet.add_row heads, :style => style
+
+    products = AttendeesExhibitorProduct.where(event_id:@event_id)
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: products.length)
+      @job.write_to_file
+    end
+
+    products.each do |aep|
+
+      exhibitor_product_name = aep.exhibitor_product.name
+      attendee               = aep.attendee
+      attendeename           = "#{attendee.honor_prefix} #{attendee.first_name} #{attendee.last_name} #{attendee.honor_suffix}".strip
+
+      sheet.add_row [aep.created_at,attendeename,attendee.account_code, attendee.title,exhibitor_product_name]
+      @job.plus_one_row if @job
+      sheet.column_widths 20,40,40,40
+    end
+
+  end
+end

@@ -1,0 +1,162 @@
+%h3
+    Statistics for
+    = @event.name
+
+- if DateTime.now.mjd < @first_session.date.mjd
+    = "Event runs across #{@last_session.date.mjd - @first_session.date.mjd + 1} days."
+- else
+    = "Event ran across #{@last_session.date.mjd - @first_session.date.mjd + 1} days."
+%br
+%br
+
+- if DateTime.now.mjd < @first_session.date.mjd
+    = "Event begins in #{(DateTime.now.mjd - @first_session.date.mjd).to_i} days."
+- else
+    = "Event ended #{(DateTime.now.mjd - @last_session.date.mjd).to_i} days ago."
+
+%br
+%br
+
+First Session on
+= "<i>#{@first_session.date.strftime('%A, %B %e, %Y')}</i> at <i>#{@first_session.start_at.strftime('%l:%M %p')}</i>".html_safe
+%br
+%br
+Last Session on
+= "<i>#{@last_session.date.strftime('%A, %B %e, %Y')}</i> at <i>#{@last_session.start_at.strftime('%l:%M %p')}</i>".html_safe
+
+%br
+%br
+
+%table.table.table-bordered.table-striped.table-condensed
+
+    %thead
+
+        %tr
+            %td
+                %b Attendee Statistics
+
+    %tbody
+
+        %tr
+            %td Registered Attendees:
+            %td= @attendees_count
+
+        %tr
+            %td Favourited Sessions:
+            %td= @number_of_favourited_sessions
+
+        %tr
+            %td Attended Sessions:
+            %td= @number_of_attended_sessions
+
+        %tr
+            %td Favourited Exhibitors:
+            %td= @number_of_favourited_exhibitors
+
+        %tr
+            %td Notes Taken
+            %td= @number_of_notes
+
+        %tr
+            %td Message Threads Created
+            %td= @number_of_message_threads
+
+        %tr
+            %td Total Messages Sent
+            %td= @number_of_messages
+
+        %tr
+            %td Session Feedback Received
+            %td= @session_feedback_count
+
+        %tr
+            %td Speaker Feedback Received
+            %td= @speaker_feedback_count
+
+        %tr
+            %td Number of Unique CE Certificates Requested
+            %td= @attendance_certificate_count
+
+        %tr
+            %td Number of Exhibitor Game Participants (Score Greater than Zero)
+            %td= @exhibitor_game_participants
+
+%br
+
+%table.table.table-bordered.table-striped.table-condensed
+
+    %thead
+
+        %tr
+            %td
+                %b Sessions Statistics
+
+    %tbody
+
+        %tr
+            %td Sessions Scheduled:
+            %td= @sessions_leftover
+
+        %tr
+            %td Sessions Cancelled:
+            %td= @sessions_cancelled_count
+
+        %tr
+            %td Total Sessions:
+            %td= @sessions_count
+
+%br
+
+%table.table.table-bordered.table-striped.table-condensed
+
+    %thead
+
+        %tr
+            %td
+                %b Top Ten Favourited Sessions
+
+    %tbody
+
+        - @top_ten_sessions.each do |session|
+            %tr
+                %td= link_to '[' + session[:session_code].to_s + '] ' + session[:title], "/sessions/#{session[:id]}"
+                %td= session[:count]
+
+%br
+
+%table.table.table-bordered.table-striped.table-condensed
+
+    %thead
+
+        %tr
+            %td
+                %b Exhibitor Statistics
+
+    %tbody
+
+        %tr
+            %td Total Exhibitors:
+            %td= @exhibitors_count
+
+%br
+
+%table.table.table-bordered.table-striped.table-condensed
+
+    %thead
+
+        %tr
+            %td
+                %b Top Ten Favourited Exhibitors
+
+    %tbody
+
+        - @top_ten_exhibitors.each do |exhibitor|
+            %tr
+                %td= link_to '[' + exhibitor[:exhibitor_code].to_s + '] ' + exhibitor[:company_name], "/exhibitors/#{exhibitor[:id]}"
+                %td= exhibitor[:count]
+
+
+
+
+
+

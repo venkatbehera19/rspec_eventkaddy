@@ -1,0 +1,24 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = ['ID', 'Name', 'Description', 'On-site Time', 'Notification Filters' ]
+
+  wb.add_worksheet(name: "Notifications Data") do |sheet|
+
+    sheet.add_row heads, :style => heads.map { |h| black_cell }
+
+    Notification.where(event_id:@event_id).each do |n|
+
+      sheet.add_row [
+        n.id,
+        n.name,
+        n.description,
+        n.localtime.strftime('%Y-%m-%d %H:%M:%S'),
+        n.pn_filters ? JSON.parse(n.pn_filters).join(', ') : nil
+      ]
+      sheet.column_widths 20, 20, 60, 20, 30
+    end
+  end
+end

@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+Fiserv:
+  name: Fiserv
+  description: MyText
+  address_line1: MyString
+  address_line2: MyString
+  city: MyString
+  zip: MyString
+  state: MyString
+  country: MyString
+  contact_name: MyString
+  contact_phone: MyString
+  contact_mobile: MyString
+  url_web: MyString
+  url_twitter: MyString
+  url_facebook: MyString
+
+two:
+  name: MyString
+  description: MyText
+  address_line1: MyString
+  address_line2: MyString
+  city: MyString
+  zip: MyString
+  state: MyString
+  country: MyString
+  contact_name: MyString
+  contact_phone: MyString
+  contact_mobile: MyString
+  url_web: MyString
+  url_twitter: MyString
+  url_facebook: MyString

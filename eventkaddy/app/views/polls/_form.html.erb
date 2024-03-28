@@ -1,0 +1,117 @@
+<%= form_for(@poll) do |form| %>
+  <% if @poll.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(poll.errors.count, "error") %> prohibited this poll from being saved:</h2>
+
+      <ul>
+        <% poll.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <% no_of_options = @poll.options.length %>
+  <%= hidden_field_tag :next_opt_number, (no_of_options > 2 ? no_of_options : 2)  %>
+  <% if params[:session_id].present?  %>
+    <%= hidden_field_tag :session_id, params[:session_id]  %> 
+  <% end %>
+  <div class="form-group mt-4">
+    <h5>Title</h5>
+    <%= form.text_field :title, class:'form-control', required:true %>
+  </div>
+
+  <% @poll.options.each_with_index do |option, i| %>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <%= label_tag "poll[option_texts][#{i+1}]", "Option #{i+1}", class:"input-group-text" %>
+      </div>
+      <%= text_field_tag "poll[option_texts][#{i+1}]", option.text, class: 'form-control', disabled: true %>
+      <div class="input-group-append">
+        <%= link_to "<i class='fa fa-trash-o'></i>".html_safe, "options/#{option.id}", :method => :delete , class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if 2 - no_of_options > 0 %>
+    <% (2 - no_of_options).times do |i| %>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <%= label_tag "poll[option_texts][#{i+1}]", "Option #{i+1}", class:"input-group-text" %>
+      </div>
+      <%= text_field_tag "poll[option_texts][#{i+1}]", nil, class: 'form-control', required: true %>
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" disabled="true"><i class='fa fa-trash-o'></i></button>
+      </div>
+    </div>
+    <% end %>
+  <% end %>
+
+  <div id="options_margin"></div>
+  <%= button_tag "<i class='fa fa-plus'></i> Add Option".html_safe ,class:"btn btn-outline-primary", type:"button", onclick:"insertOption()"%>
+
+  <br/>
+  <br/>
+  <br/>
+  <div class="form-group">
+    <%= form.label :response_limit, 'Number of times an attendee can respond to it' %>
+    <%= form.number_field :response_limit, class:'form-control', min:1, max:(no_of_options > 1 ? no_of_options : 1) %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :options_select_limit, 'Number of Options that can be selected(Multiselect)' %>
+    <%= form.number_field :options_select_limit, class:'form-control', min: 1 %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :result_display_type %>
+    <%= form.select :result_display_type, [['VERTICAL CHART', 'VERTICAL_CHART'], ['HORIZONTAL CHART', 'HORIZONTAL_CHART'], ['TABLE', 'TABLE']], {}, {class: "form-control"}%>
+  </div>
+
+  <div class="custom-control custom-switch mb-3">
+    <%= form.check_box :allow_answer_change, class: "custom-control-input" %>
+    <%= form.label :allow_answer_change, 'Allow attendee to change answer after sumbit', class: "custom-control-label" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :timeout_time, 'Time-out Time (in secs)' %>
+    <%= form.number_field :timeout_time, value: @poll.timeout_time || 30, class:'form-control', min: 15 %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit class:'btn btn-primary' %>
+  </div>
+<% end %>
+
+
+<script>
+
+  function deleteOption(ele) {
+    let ele_btn = $(ele);
+    console.log(ele_btn.parent().prev().attr('id'));
+    ele_btn.parent().parent().remove();
+    let nextOptNumber = $('#next_opt_number');
+    let opt_id = parseInt(nextOptNumber.val()); 
+    let curr_id = ele_btn.parent().prev().attr('id').split('_').pop();
+    // Update ids and labels of all the elements from curr_id + 1 to id with nextOptNumber
+    for(let i = parseInt(curr_id) + 1; i <= opt_id ; ++i){
+      let label = $("label[for='poll_option_texts_" + i + "']");
+      let input = $("#poll_option_texts_" + i);
+      let prev_id = i - 1;
+      label.text("Option " + prev_id);
+      label.attr('for', ("poll_option_texts_" + prev_id));
+      input.attr({'id':("poll_option_texts_" + prev_id), 'name': ("poll[option_texts][" + prev_id + "]")});
+    }
+    opt_id = opt_id- 1;
+    nextOptNumber.val(opt_id);
+  }
+
+  function insertOption() {
+    let optionsMargin = $('#options_margin');
+    let nextOptNumber = $('#next_opt_number');
+    let opt_id = parseInt(nextOptNumber.val()) + 1;
+    let newOption = "<div class='input-group mb-3'><div class='input-group-prepend'><label class='input-group-text' for='poll_option_texts_" + opt_id + "'>Option " + opt_id + "</label></div><input type='text' name='poll[option_texts]["+ opt_id +"]' id='poll_option_texts_" + opt_id +"' class='form-control' required='required'><div class='input-group-append'><button class='btn btn-outline-secondary' type='button' onclick='deleteOption(this)'><i class='fa fa-trash-o'></i></button></div></div>"
+    $(newOption).insertBefore(optionsMargin);
+    nextOptNumber.val(opt_id);
+  }
+
+</script>

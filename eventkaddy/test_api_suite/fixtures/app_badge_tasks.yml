@@ -1,0 +1,35 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  app_badge: one
+  event_file: one
+  alt_image_url: MyString
+  name: MyString
+  description: MyString
+  details: MyText
+  position: 1
+  app_badge_task_type: one
+  scavenger_hunt: one
+  scavenger_hunt_item: one
+  survey: one
+  points_per_action: 1
+  points_to_complete: 1
+  max_points_allotable: 1
+
+two:
+  event: two
+  app_badge: two
+  event_file: one
+  alt_image_url: MyString
+  name: MyString
+  description: MyString
+  details: MyText
+  position: 1
+  app_badge_task_type: two
+  scavenger_hunt: two
+  scavenger_hunt_item: two
+  survey: two
+  points_per_action: 1
+  points_to_complete: 1
+  max_points_allotable: 1

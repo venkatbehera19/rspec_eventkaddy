@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  event_file: one
+  name: MyString
+  icon_button: Social.png
+  position: 1
+
+two:
+  event: two
+  event_file: two
+  name: MyString
+  icon_button: social.png
+  position: 1

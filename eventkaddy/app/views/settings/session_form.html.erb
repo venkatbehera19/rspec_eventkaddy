@@ -1,0 +1,56 @@
+<% fields = @speaker_portal_settings.json["fields"]&.to_json %>
+<div class="build-wrap">
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.8.3/form-builder.min.js" integrity="sha512-H2n4sb6jgsXLkQpJNWrU8+Z9GNkeFaWnPCW3IACoqBzf4hbjMyEfSRCbSNA671SgiBrjTqJq2Atbmf3/dM6B9w==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</script>
+
+<script>
+  json_fields = <%= raw fields %>
+
+  $(document).ready(function(){
+    var options = {
+      formData: JSON.stringify(json_fields),
+      disableFields: ['autocomplete', 'button', 'hidden', 'file', 'select'],
+      onClearAll: function(formData) {
+          console.log("first", formData)
+          $.ajax({
+          type: 'POST',
+          url: '/settings/update_speaker_portal_session_form',
+          data: {formData: []},
+          success: function(response){
+            if(response.success){
+              alert('all fields removed');
+            }
+          },
+          error: function(xhr, textStatus, errorThrown){
+            alert('something went wrong', errorThrown)
+          }
+        })
+        },
+      onSave: function(evt, formData) {
+        console.log("FormData", JSON.parse(formData) )
+        $.ajax({
+          type: 'POST',
+          url: '/settings/update_speaker_portal_session_form',
+          data: {formData: formData},
+          success: function(response){
+            if(response.success){
+              alert('session form update succesfully')
+            }
+          },
+          error: function(xhr, textStatus, errorThrown){
+            alert('something went wrong', errorThrown)
+          }
+        })
+      }
+    }
+    $('.build-wrap').formBuilder(options)
+  })
+</script>
+
+<style>
+  li.form-field{
+  width: 100% !important;
+}
+</style>

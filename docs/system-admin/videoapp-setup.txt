@@ -1,0 +1,28 @@
+dns subdomain
+	videoapp.eventkaddy.net
+	
+rvm gemset on linode
+
+	ruby-1.9.3-p194@videoapp2013
+	
+/etc/init.d script
+	
+	thin-ekvideoapp
+
+thin wrapper
+
+	/usr/local/rvm/bin/ekvideoapp_thin	
+
+thin config
+
+	/etc/thin/ekvideoapp.yml
+	
+listening on socket
+
+	/tmp/thin.ekvideoapp.sock
+	
+
+ruby app document root
+
+	/home/deploy/ek-videoapp/public	
+		

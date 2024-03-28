@@ -1,0 +1,49 @@
+<h4>Listing subtracks for:<b> <%= session[:event_name] %></b></h4>
+
+<%= link_to 'New Subtrack', new_subtrack_path,class:"btn btn-primary" %> <br/><br/>
+
+<% columns = [{:type => 'html', :class => "first"}, {:type => 'html'},{:type => nil, :sortable => 'false'},{:type => nil, :sortable => 'false'}, {:type => nil, :class => "last", :sortable => 'false'}] %>
+
+<table id="subtracks-table" class="datatable table table-striped table-bordered"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+  <thead>
+  <tr>
+    <th>Subtrack Name</th>
+    <th>Track Name</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+  
+  <tbody>
+<% @subtracks.each do |subtrack| %>
+  <tr>
+    <td><%= subtrack.name %></td>
+    <td><%= subtrack.track_name %></td>
+    <td><%= link_to 'Show', subtrack ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_subtrack_path(subtrack) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', subtrack, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+  </tbody>
+</table>
+
+<br />
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline'
+    })
+    $('#subtracks-table').dataTable({
+      sDom: "<'row'<'span5'l><'span5'f>r>t<'row'<'span5'i><'span5'p>>",
+      sPaginationType: 'bootstrap',
+      processing: image_tag("spinner.gif") }).html_safe,
+      sort_by: "[0, 'desc']"
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

@@ -1,0 +1,37 @@
+%h4
+  Listing messages for:
+  %b= session[:event_name]
+
+= link_to 'New Message', new_message_path,class:"btn btn-primary"
+
+%br
+%br
+.table-responsive
+  %table#messages.table.table-striped.table-bordered{:border => "0", :cellpadding => "0", :cellspacing => "0"}
+
+    %thead
+      %tr
+        %th Title
+        %th Type
+        %th Content
+        %th
+
+    %tbody
+      - @messages.each do |message|
+        %tr
+          %td= message.title
+          %td= message.type_name.titleize
+          %td= message.content.truncate(50).html_safe
+          %td.table-actions
+            .btn-group.d-flex
+              = link_to 'Show', "/messages/display_message/#{message.id}", class:"btn btn-outline-info"
+              = link_to 'Edit', edit_message_path(message), class:"btn btn-outline-success"
+              = link_to 'Delete', message, :confirm => 'Are you sure?', :method => :delete, class:"btn btn-outline-danger"
+            
+            .dropdown
+              %a{"data-toggle": "dropdown", style: "font-size: 1.4rem; cursor: pointer;"}
+                %i.fa.fa-ellipsis-v
+              .dropdown-menu
+                = link_to 'Show', "/messages/display_message/#{message.id}", class:"btn dropdown-item text-info"
+                = link_to 'Edit', edit_message_path(message), class:"btn dropdown-item text-success"
+                = link_to 'Delete', message, :confirm => 'Are you sure?', :method => :delete, class:"btn dropdown-item text-danger"

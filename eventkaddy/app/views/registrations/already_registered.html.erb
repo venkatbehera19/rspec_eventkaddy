@@ -1,0 +1,106 @@
+<div class="<%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+  <section class="vh-100">
+    <div class="container-fluid h-custom">
+      <% if notice %>
+        <div class="alert alert-success shadow" role="alert" style="border-left:#155724 5px solid; border-radius: 0px;margin-top: 20px;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true" style="color:#155724">&times;</span>
+          </button>
+          <div class="row">
+            <i class="fa fa-check-circle-o success-font"></i>
+            <p style="font-size:17px" class="mb-0 font-weight-light"><%= notice %></p>
+          </div>
+        </div>
+      <% end %>
+      <% if alert %>
+          <div class="alert alert-danger shadow mt-10" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px; margin-top: 20px;">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true" style="color:#721C24">&times;</span>
+              </button>
+              <div class="row">
+                      <i class="fa fa-exclamation-circle danger-font"></i>
+                      <p style="font-size:17px" class="mb-0 font-weight-light"><%= alert %></p>
+              </div>
+          </div>
+      <% end %>
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-md-9 col-lg-6 col-xl-5">
+          <% if @event.logo_event_file_id.present? %>
+            <h2><%= @event.name %></h2>
+            <p>1) <span style="color:red !important;">SPONSORS/ EXHIBITORS Do Not Register Here</span>. our Company Representative will receive a Special Attendee Link in Late November 2023. Except for individuals who wish to attend workshops. Please ONLY register for the workshop here.<br><br>
+               2) Are you logged in as a member? Please login via the Green Button Below to see your USCC member discounted pricing.<br><br>
+               3) If you are not a member and want to be, please sign up via this <a style="color:#007bff !important;" href="https://www.compostingcouncil.org/page/MemberJoin" target="_blank">link.</a><br><br>
+
+4) If you are attempting to register a second attendee, please make sure to use a "Private / Incognito Browsing Window" or a separate computer for each additional attendee.<br><br>
+<small>*Please note, new membership account may require up to 24 hours for final approval. Please make sure you
+                  join at the appropriate membership type and level.</small>
+            </p>
+            <div class="text-center mt-2 d-flex">
+              <%= link_to "Register as USCC Member", "#", :class=>"btn btn-success",:id => "ym_login", :style=>"width:50%; margin-left:10px;margin-right:10px;" %>
+              <%= link_to "Register as Non-Member", "/#{params[:event_id]}/registrations/new", :class=>"btn btn-default", :style=>"width:50%; margin-right:10px;margin-left:10px;" %>
+            </div>
+          <% else %>
+            <img src="/assets/defaults/ek_logo.png", class="img-fluid"/>
+          <% end %>
+        </div>
+        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+          <h2><%= @event.name %></h2>
+          <%= form_for @user, :url => session_path(@user) do |f| %>
+            <%= hidden_field_tag :event_id, @event.id %>
+            <div class="form-outline mb-4">
+              <%= f.label "Email", :class => "row-form-label" %>
+              <%= f.text_field :client_iid, :class => "form-control form-control-lg", :placeholder=>"Email", :type=>"email", :required=>"true" %>
+            </div>
+            <div class="form-outline mb-3">
+              <%= f.label "Password", :class => "row-form-label" %>
+              <%= f.password_field :client_digest, :class=>"form-control form-control-lg", :placeholder=>"Password", :type=>"password", :required=>"true" %>
+            </div><br/>
+              <%= f.hidden_field :is_attendee, value: true %>
+            <div class="text-center text-lg-start mt-2">
+              <%= f.submit "Log In", :class=>"btn btn-primary", :style=>"width:100%;" %>
+            </div>
+            <div class="text-center mt-2 d-flex">
+              <%= link_to "Register Now", "/#{params[:event_id]}/registrations/new", :class=>"btn btn-success", :style=>"width:50%; margin-right:10px;" %>
+              <%= link_to "Register With YM", "#", :class=>"btn btn-danger", :id => "ym_login", :style=>"width:50%; margin-left:10px;" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<style>
+  .divider:after,
+  .divider:before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+  }
+  .h-custom {
+    height: calc(100% - 73px);
+  }
+  @media (max-width: 450px) {
+    .h-custom {
+      height: 100%;
+    }
+  }
+</style>
+
+<script>
+
+  var event_id = <%= params[:event_id] %>;
+  
+  function logout(){
+    // debugger
+    var url = `/${event_id}/ym_registrations`;
+    window.open(url);
+    // window.open("https://www.compostingcouncil.org/Logout.aspx", "_blank");
+
+  }
+
+  $('#ym_login').on('click', logout);
+
+</script>

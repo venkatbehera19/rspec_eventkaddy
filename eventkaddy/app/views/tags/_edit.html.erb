@@ -1,0 +1,27 @@
+<%= form_for(@tag) do |f| %>
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+  <h3 id="myModalLabel">Edit Tag Name</h3>
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+</div>
+
+<div class="modal-body">
+    <p>
+      <small>Please be careful while updating the tag name as the name will get changed in all the ocurrences of the tag in the tags list.</small>
+      <small>Also, tags will not have any change in levels due to the name change.</small>
+    </p>
+    <hr/>
+    <div class="form-group">
+      <%= f.label :name, "Tag name" %>
+      <%= f.text_field :name, class:'clear-on-submit', required:true, class: "form-control" %>
+    </div>
+
+</div>
+<div class="modal-footer">
+  <button class="btn btn-outline-danger" data-dismiss="modal" aria-hidden="true" type="button">Cancel</button> 
+  <%= f.submit id:"quick-add-submit", data: { confirm: 'This will change the name of tag in all its ocurrences in the tags list. Continue?'}, class:"btn btn-primary" %>
+</div>
+</div>
+</div>
+<% end %>

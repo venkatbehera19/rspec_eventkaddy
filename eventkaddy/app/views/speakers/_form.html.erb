@@ -1,0 +1,210 @@
+<%= form_for(@speaker, :html => { :multipart => true, :class=>"form-horizontal well" } ) do |f| %>
+  <% if @speaker.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@speaker.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+      <ul>
+      <% @speaker.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% settings = Setting.return_cms_settings session[:event_id] %>
+
+  <% text_field = ->(col, label, options={}) {
+      unless settings.method("hide_speaker_form_#{col}").call
+        "<div class='form-group'>#{f.label col, label}#{f.text_field col, options}</div>".html_safe
+      end
+  } %>
+
+  <% text_area = ->(col, label, options={}) {
+      unless settings.method("hide_speaker_form_#{col}").call
+        "<div class='form-group'>#{f.label col, label}#{f.text_area col, options}</div>".html_safe
+      end
+  } %>
+
+  <% cktext_area = ->(col, label, options={}) {
+      unless settings.method("hide_speaker_form_#{col}").call
+        "<div class='form-group'>#{f.label col, label}#{f.cktext_area col, options}</div>".html_safe
+      end
+  } %>
+
+  <% check_box = ->(col, label) {
+      unless settings.method("hide_speaker_form_#{col}").call
+        f.label(col) { f.check_box(col) + " #{label}" } + "<br>".html_safe
+      end
+  } %>
+
+  <div class="field">
+    <%= f.hidden_field :event_id, :value => session[:event_id] %>
+  </div>
+
+  <% unless settings.method("hide_speaker_form_event_file_photo").call %>
+    <div class="row">
+      <%= file_field_tag :photo_file, class: "profile-pic-file" %>
+      <% if (@speaker.event_file_photo.nil?) then %>
+        <div class="pic-upload-container mx-auto my-2">
+          <%= image_tag '/defaults/profile_default.png', class: "profile-pic" %>
+          <%= label_tag :photo_file do %>
+            <i class="fa fa-camera pic-action"></i>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="pic-upload-container mx-auto my-2">
+          <%= image_tag @speaker.event_file_photo.path, class: "profile-pic" %>
+          <%= label_tag :photo_file do %>
+            <i class="fa fa-camera pic-action"></i>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% unless Event.find(session[:event_id]).master_url.blank? %>
+      <div class="field" style="<%= 'display:none;' if settings.method("hide_speaker_form_online_url").call %>">
+          <%= label_tag :online_url do %>
+            <%= check_box_tag :online_url, 1, @speaker.online_photo? %>
+            Include Online Copy of Latest Speaker Photo
+          <% end %>
+      </div>
+  <% end %>
+
+  <% unless settings.method("hide_speaker_form_event_file_cv").call %>
+      <table>
+          <% if @speaker.event_file_cv!=nil %>
+              <tr>
+                  <td>
+                      <%= link_to(@speaker.event_file_cv.name, @speaker.event_file_cv.path) %>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      <div class="field">
+                          <%= label_tag :cv_file, "CV successfully uploaded" %>
+                          <br>
+                          <%= file_field_tag :cv_file %>
+                      </div>
+                      <br>
+                  </td>
+              </tr>
+          <% else %>
+              <tr>
+                  <td>
+                      <div class="field">
+                          <%= label_tag :cv_file, "Upload a CV" %>
+                          <br>
+                          <%= file_field_tag :cv_file %>
+                      </div>
+                      <br>
+                  </td>
+              </tr>
+          <% end %>
+      </table>
+  <% end %>
+
+  <% unless settings.method("hide_speaker_form_event_file_fd").call %>
+      <table>
+          <% if @speaker.event_file_fd!=nil %>
+              <tr>
+                  <td>
+                      <%= link_to(@speaker.event_file_fd.name, @speaker.event_file_fd.path) %>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      <div class="field">
+                          <%= label_tag :fd_file, "FD successfully uploaded" %>
+                          <br>
+                          <%= file_field_tag :fd_file %>
+                      </div>
+                      <br>
+                  </td>
+              </tr>
+          <% else %>
+              <tr>
+                  <td>
+                      <div class="field">
+                          <%= label_tag :fd_file, "Upload a FD" %>
+                          <br>
+                          <%= file_field_tag :fd_file %>
+                      </div>
+                      <br>
+                  </td>
+              </tr>
+          <% end %>
+      </table>
+  <% end %>
+
+  <%= text_field["speaker_code",    "Speaker Code", class: "form-control"] %>
+  <%= text_field["first_name",     "First Name", class: "form-control"] %>
+  <%= text_field["middle_initial", "Middle Initials",class: "form-control"] %>
+  <%= text_field["last_name",      "Last Name", class: "form-control"] %>
+  <%= text_field["email",          "Email", class: "form-control"] %>
+  <%= text_field["honor_prefix",   "Honor Prefix", class: "form-control"] %>
+  <%= text_field["honor_suffix",   "Honor Suffix", class: "form-control"] %>
+  <%= text_field["title",          "Title", class: "form-control"] %>
+  <%= text_field["company",        "Organization", class: "form-control"] %>
+  <%= text_field["address1",       "Address Line 1", class: "form-control"] %>
+  <%= text_field["address2",       "Address Line 2", class: "form-control"] %>
+  <%= text_field["address3",       "Address Line 3", class: "form-control"] %>
+  <%= text_field["city",           "City", class: "form-control"] %>
+  <%= text_field["state",          "State", class: "form-control"] %>
+  <%= text_field["country",        "Country", class: "form-control"] %>
+  <%= text_field["zip",            "Zip", class: "form-control"] %>
+  <%= text_field["work_phone",     "Work Phone", class: "form-control"] %>
+  <%= text_field["mobile_phone",   "Mobile Phone", class: "form-control"] %>
+  <%= text_field["home_phone",     "Home Phone", class: "form-control"] %>
+  <%= text_field["fax",            "Fax", class: "form-control"] %>
+
+  <%# Potentially it could be a cms option whether this was Full toolbar or a
+      basic text_area %>
+  <%# <%= text_area["biography",       "Biography"] %1> %>
+<%#= text_area["biography",       "Biography", class: "form-control"] %>
+  <%= cktext_area[:biography, "Biography", ckeditor:{toolbar: "Full"}] %>
+
+  <%= text_area["notes",              "Additional Notes", class: "form-control"] %>
+  <%= text_area["availability_notes", "Availability Notes", class: "form-control"] %>
+
+  <% unless settings.method("hide_speaker_form_financial_disclosure_section").call %>
+      <br>
+      <b><u>Financial Disclosure Section</b></u>
+      <br>
+      (add contact/address info if different from primary contact info)
+      <br><br>
+  <% end %>
+
+  <%= text_area["financial_disclosure", "Financial Disclosure", class: "form-control"] %>
+
+  <%= text_field["fd_tax_id",         "Tax ID", class: "form-control"] %>
+  <%= text_field["fd_pay_to",         "Pay To", class: "form-control"] %>
+  <%= text_field["fd_street_address", "Street Address", class: "form-control"] %>
+  <%= text_field["fd_city",           "City", class: "form-control"] %>
+  <%= text_field["fd_state",          "State", class: "form-control"] %>
+  <%= text_field["fd_zip",            "Zip", class: "form-control"] %>
+
+  <%= check_box["unpublished", "Unpublished (Hide in App)"] %>
+
+  <%# previously not included columns %>
+  <%= text_field["photo_filename", "Photo Filename (can be online url)", class: "form-control"] %>
+
+  <%= text_field["twitter_url",      "Twitter Url", class: "form-control"] %>
+  <%= text_field["facebook_url",     "Facebook Url", class: "form-control"] %>
+  <%= text_field["linked_in",        "Linked In", class: "form-control"] %>
+  <%= text_field["custom_filter_1",  "Custom Filter 1", class: "form-control"] %>
+  <%= text_field["custom_filter_2",  "Custom Filter 2", class: "form-control"] %>
+  <%= text_field["custom_filter_3",  "Custom Filter 3", class: "form-control"] %>
+
+  <%# shouldn't be used, but included for completeness %>
+  <%# was part of a speaker mailer feature that I don't think %>
+  <%# ended up being used %>
+  <%= text_field["unsubscribed", "Unsubscribed", class: "form-control"] %>
+  <%= text_field["token",        "Token", class: "form-control"] %>
+
+  <br>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

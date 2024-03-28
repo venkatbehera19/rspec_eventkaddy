@@ -1,0 +1,8 @@
+<h4 class="view-title">Message Details</h4>
+<%= link_to 'Edit', edit_message_path(@message) ,class:"btn btn-outline-success" %>
+
+<table class="table">
+<tr><th>Title</th><td><%= @message.title %></td></tr>
+<tr><th>Content</th><td><%= @message.content %></td></tr>
+<tr><th>Event Name</th><td><%= @message.event.name %></td></tr>
+</table>

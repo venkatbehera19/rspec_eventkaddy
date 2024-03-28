@@ -1,0 +1,40 @@
+#upload-notice
+
+.current-job-status
+  .status-header
+    Current Job Status
+  .cancel-job.btn.btn-warning.btn-sm
+    Cancel Job
+  .cancel-info
+    Does not cancel the background process. Use only if you
+    %br
+    believe the import has halted. If the import is still running,
+    %br
+    a cancelled job will be marked complete when finished.
+  .status
+  .row-progress
+    0 rows processed.
+
+  .progress.progress-striped
+    .bar
+  %br/
+  .errors
+
+  .warnings
+
+  .job-info
+
+= content_for?(:job_form) ? yield(:job_form) : yield
+
+%script{type:"text/javascript", src:"/non_pipeline_assets/job.js"}
+%link{href:"/non_pipeline_assets/job.css", media:"all", rel:"stylesheet", type:"text/css"}
+
+:javascript
+  CMS.Job.setupJob( #{event.id}, JSON.parse("#{Job.running_statuses}".replace(/&quot;/g, '"')) );
+
+- running_jobs = Job.running_jobs event.id
+- if running_jobs.length > 0
+  :javascript
+    var options = { job_id: #{running_jobs.last.id} };
+    job = job || Object.create(CMS.Job).resume(options); // TODO: intentionally global, but should be refactored.
+

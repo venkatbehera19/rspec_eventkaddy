@@ -1,0 +1,28 @@
+<div class="card">
+  <div class="card-header" id="headingThree">
+    <h4 class="mb-0">
+      Select <%= product_category.first.product_category.name%>
+    </h4>
+    <span>*Multiple can be added</span>
+  </div>
+  <div class="card-body row">
+    <% product_category.each do |product| %>
+      <div class="card-wrapper col-lg-4 col-md-6 col-xs-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%= product.name %> at $<%= product.price.to_f %></h5>
+            <p class="card-text sponsor-description"><%= product.description %></p>
+            <div class="show-more-less">
+              <p class="show_more">Show More</p>
+              <p class="show_less d-none">Show Less</p>
+            </div>
+            <div class="row pl-3">
+              <%= number_field_tag :quantity, @cart.cart_items.find_by(item_id: product.id)&.quantity, class: 'form-control', style: "width: 5rem;", min: 0, step: 1 %>
+              <a href="#" class="btn btn-primary add-member" id="extra-member-<%= product.id%>" data-product="<%= product.id %>" data-extraMember="true">Add To Cart</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

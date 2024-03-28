@@ -1,0 +1,29 @@
+<h1>Listing sessions_speakers</h1>
+<%= link_to 'New Sessions speaker', new_sessions_speaker_path,class:"btn btn-primary" %> <br/><br/>
+
+<table>
+  <tr>
+    <th>Session</th>
+    <th>Speaker</th>
+    <th>Is moderator</th>
+    <th>Speaker type</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @sessions_speakers.each do |sessions_speaker| %>
+  <tr>
+    <td><%= sessions_speaker.session_id %></td>
+    <td><%= sessions_speaker.speaker_id %></td>
+    <td><%= sessions_speaker.is_moderator %></td>
+    <td><%= sessions_speaker.speaker_type_id %></td>
+    <td><%= link_to 'Show', sessions_speaker ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_sessions_speaker_path(sessions_speaker) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', sessions_speaker, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+

@@ -1,0 +1,25 @@
+<h1>Listing record_comments</h1>
+<%= link_to 'New Record comment', new_record_comment_path,class:"btn btn-primary" %> <br/><br/>
+<table>
+  <tr>
+    <th>Comment</th>
+    <th>User</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @record_comments.each do |record_comment| %>
+  <tr>
+    <td><%= record_comment.comment %></td>
+    <td><%= record_comment.user_id %></td>
+    <td><%= link_to 'Show', record_comment ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_record_comment_path(record_comment) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', record_comment, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

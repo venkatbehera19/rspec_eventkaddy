@@ -1,0 +1,28 @@
+<%= form_for(@event,
+             :html => { :class => "form-horizontal well" },
+             :url  => { :action => "generate_ce_sessions_pdf_report_cms"} ) do |f| %>
+
+    <div>
+        Username
+        <%= text_field_tag :username %>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <%= text_field_tag :event_id, @event.id, style:'display:none;' %>
+
+    <div>
+        Enter your Email to Receive your Certificate
+        <%= text_field_tag :email %>
+    </div>
+
+    <br>
+    <br>
+
+    <div>
+        <%= f.submit  "Email Certificate", class:"btn btn-primary" %>
+    </div>
+<% end %>

@@ -1,0 +1,28 @@
+%h4 Video Portal Contents
+%br/
+.bg-light.custom-border.px-4.py-4{style:'min-height:500px;'}
+
+    = form_for @video_portal_contents, :html => { :method => :post }, :url => '/settings/update_video_portal_contents' do |f|
+        .field
+            %label Dashboard Content
+            = f.cktext_area :dashboard_title, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Dashboard Slider Content
+            = f.cktext_area :dashboard_slider, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Login Page Content
+            = f.cktext_area :login_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label External CE Content
+            = f.cktext_area :external_ce_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Internal CE Content
+            = f.cktext_area :internal_ce_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Help Page Content
+            = f.cktext_area :help_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Standby Screen Content
+            = f.cktext_area :standby_screen_text, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+
+        = f.submit 'Update Video Portal Content Settings', class:'btn btn-primary'

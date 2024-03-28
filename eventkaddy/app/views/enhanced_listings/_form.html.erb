@@ -1,0 +1,38 @@
+<%= form_for(@enhanced_listing) do |f| %>
+  <% if @enhanced_listing.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@enhanced_listing.errors.count, "error") %> prohibited this enhanced_listing from being saved:</h2>
+
+      <ul>
+      <% @enhanced_listing.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :exhibitor_id, :value => @exhibitor_id %>
+  </div>
+
+  <div class="field">
+    <%= f.label :product_name %>
+    <%= f.text_field :product_name %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :product_description %>
+    <%= f.text_field :product_description %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :product_link %>
+    <%= f.text_field :product_link %><br /><br />
+  </div>
+  <div class="field">
+    <%= f.label :product_image %>
+    <%= f.text_field :product_image %><br /><br />
+  </div>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

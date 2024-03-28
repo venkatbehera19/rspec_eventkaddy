@@ -1,0 +1,48 @@
+%h3 Event Settings
+
+- if current_user.role? :super_admin
+  .bg-light.custom-border.px-3.py-3{style:'min-height:500px;'}
+
+    = form_for @event, :html => { :method => :post }, :url => '/events/update_event_settings' do |f|
+      .form-group
+        = f.label :notification_UA_AMS, "UA_AMS Notification Key"
+        = f.text_field :notification_UA_AMS, class: "form-control"
+      .form-group
+        = f.label :notification_UA_AK, "UA_AK Notification Key"
+        = f.text_field :notification_UA_AK, class: "form-control"
+      .form-group
+        = f.label :master_url, "Master URL (determines things like what root to use for pdf assets)"
+        = f.text_field :master_url, :placeholder => "Something like: https://olympus-cms.eventkaddy.net", class: "form-control"
+      .form-group
+        = f.label :event_server, "Event Server (This is what Cordova uses to figure out who to connect to)"
+        = f.text_field :event_server, :placeholder => "Something like https://phoenix.eventkaddy.mobi", class: "form-control"
+      .form-group
+        = f.label :cms_url, "CMS URL (CMS used for the event)"
+        = f.collection_select(:cms_url, Domain.where(domain_type_id:@cms_domain_type_id), :full_domain, :full_domain, {}, class: "custom-select") 
+      .form-group
+        = f.label :virtual_portal_url, "Video Portal URL (Video Portal used for the event)"
+        = f.collection_select(:virtual_portal_url, Domain.where(domain_type_id:@video_portal_domain_type_id), :full_domain, :full_domain, {}, class: "custom-select") 
+      .form-group
+        = f.label :cms_url, "Chat/Poll URL (Chat domain used for the event)"
+        = f.collection_select(:chat_url, Domain.where(domain_type_id:@chat_domain_type_id), :full_domain, :full_domain, {}, class: "custom-select")
+      .form-group
+        = f.label :cms_url, "Reporting URL (Reporting domain used for the event)"
+        = f.collection_select(:reporting_url, Domain.where(domain_type_id:@reporting_domain_type_id), :full_domain, :full_domain, {}, class: "custom-select")
+      .form-group
+        = f.label :cloud_storage_type_id, "Cloud Storage Type"
+        = f.collection_select(:cloud_storage_type_id, CloudStorageType.all, :id, :name, { include_blank: true }, class: "custom-select")
+      .form-group
+        = f.label :utc_offset, "UTC Offset (string)"
+        = f.text_field :utc_offset, :placeholder => "Something like -05:00", class: "form-control"
+      .form-group
+        = f.label :pn_filters, "Push Notification Filters (comma delimited)"
+        = f.label :pn_note, "Will be saved as camel case regardless of input", style: 'font-size:10px;'
+        = f.text_field :pn_filters, :placeholder => "groupA, groupB, groupC", :value => !@event.pn_filters ? nil : JSON.parse(@event.pn_filters).join(', '), class: "form-control"
+
+      .form-group
+        = f.label :mailer_name, "Mailer Name"
+        = f.text_field :mailer_name, :placeholder => "Enter the mailer name", class: "form-control"
+
+      = f.submit 'Update Event Settings', class: 'btn btn-primary'
+- else
+  Sorry, this page is for super admins only.

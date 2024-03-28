@@ -1,0 +1,102 @@
+%h4 Surveys
+
+%table#survey-data-table.table.table-striped.table-bordered
+    %thead
+        %tr
+            %th Title
+            %th Available From
+            %th Closes On
+            %th
+    %tbody
+        - @surveys.each do |s|
+            %tr
+                %th= s["title"]
+                %th= s["begins"].blank? ? '' : (current_user.twelve_hour_format ?  DateTime.parse(s["begins"]).strftime("%Y-%m-%d %I:%M %p") : s["begins"].to_s.gsub(/\sUTC/, ''))
+                %th= s["ends"].blank? ? '' : (current_user.twelve_hour_format ?  DateTime.parse(s["ends"]).strftime("%Y-%m-%d %I:%M %p") : s["ends"].to_s.gsub(/\sUTC/, ''))
+                %td.table-actions
+                    .btn-group.d-flex
+                        - if s["job_status"] == nil
+                            = link_to "/survey_images/download?survey=#{s["id"]}", class:"btn btn-outline-info download-btn",id: "download-btn-#{s["id"]}",remote: true do
+                                Create
+                                %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                        - elsif s["job_status"] == "error"
+                            -# error
+                        - elsif s["job_status"] == "started" || s["job_status"] == "inProgress"
+                            = link_to "#", class:"btn btn-outline-info download-btn disabled",id: "download-btn-#{s["id"]}",remote: true do
+                                %span.spinner-grow.spinner-grow-sm{"aria-hidden" => "true", :role => "status", :style => "margin-right:10px;"}
+                                Creating Zip...
+                        - elsif s["job_status"] == "completed"
+                            = link_to "/survey_images/download?survey=#{s["id"]}", class:"btn btn-outline-success download-btn",id: "download-btn-#{s["id"]}",data: {turbolinks: false} do 
+                                Download 
+                                %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                        = link_to "View", survey_image_path(s["id"]), class:"btn btn-outline-success"
+                        - if s["job_status"] == "completed"
+                            = link_to "Reset", "/survey_images/reset?survey=#{s["id"]}", data: { confirm: "Are you sure you want to reset attendee images?" }, :method => :delete, class:"btn btn-outline-danger",id: "reset-btn-#{s["id"]}",remote: true
+                        - else
+                            = link_to "Reset", "#", class:"btn btn-outline-danger reset-btn",id: "reset-btn-#{s["id"]}"
+                    .dropdown
+                        %a{'data-toggle': 'dropdown', style: 'font-size: 1.4rem; cursor: pointer;'}
+                            %i.fa.fa-ellipsis-v
+                        .dropdown-menu
+                            - if s["job_status"] == nil
+                                = link_to "/survey_images/download?survey=#{s["id"]}", class:"btn btn-outline-info download-btn",id: "download-btn-#{s["id"]}-m",remote: true do
+                                    Create
+                                    %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                            - elsif s["job_status"] == "error"
+                                -# error
+                            - elsif s["job_status"] == "started" || s["job_status"] == "inProgress"
+                                = link_to "#", class:"btn btn-outline-info download-btn disabled",id: "download-btn-#{s["id"]}-m",remote: true do
+                                    %span.spinner-grow.spinner-grow-sm{"aria-hidden" => "true", :role => "status", :style => "margin-right:10px;"}
+                                    Creating Zip...
+                            - elsif s["job_status"] == "completed"
+                                = link_to "/survey_images/download?survey=#{s["id"]}", class:"btn btn-outline-success download-btn",id: "download-btn-#{s["id"]}-m",data: {turbolinks: false} do 
+                                    Download 
+                                    %i.fa.fa-file-archive-o.ml-1{"aria-hidden" => "true"}
+                            = link_to 'View', survey_image_path(s["id"]), class:"btn text-warning dropdown-item"
+                            - if s["job_status"] == "completed"
+                                = link_to "Reset", "/survey_images/reset?survey=#{s["id"]}", data: { confirm: "Are you sure you want to reset attendee images?" }, :method => :delete, class:"btn btn-outline-danger",id: "reset-btn-#{s["id"]}-m",remote: true
+                            - else
+                                = link_to "Reset", "#", class:"btn btn-outline-danger reset-btn",id: "reset-btn-#{s["id"]}-m"
+:javascript
+    $(function() {
+      $("#survey-data-table").dataTable({
+        "sDom": "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+        fnInitComplete: () => { 
+                $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+                $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+                $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+                    .prepend("<span class='d-none d-md-inline'>Show:</span>");
+                //$(".dataTables_length option[value='10']").attr('selected', 'selected')
+            }
+      });
+
+    let socket_url   = "#{@event.chat_url}"
+    let CLIENT       = new Faye.Client(socket_url + "/faye");
+
+    $(document).on('click', '.reset-btn', function(){
+        alert("No Zip File for this attendee.");
+    });
+
+    createSocketConnection();
+    function createSocketConnection(){
+      CLIENT.subscribe('/attendee_survey_images', function (payload) {
+        survey_id = payload.id
+        download_btn = $(`#download-btn-${survey_id}`)
+        download_btnm = $(`#download-btn-${survey_id}-m`)
+        reset_btn    = $(`#reset-btn-${survey_id}`)
+        reset_btnm   = $(`#reset-btn-${survey_id}-m`)
+        if(payload.status=="completed"){
+            download_btn.replaceWith(`<a id='download-btn-${survey_id}' class='btn btn-outline-success download-btn' data-turbolinks='false' href='/survey_images/download?survey=${survey_id}'>Download
+            <i aria-hidden="true" class="fa fa-file-archive-o ml-1"></i>
+            </a>`);
+            download_btnm.replaceWith(`<a id='download-btn-${survey_id}-m' class='btn btn-outline-success download-btn' data-turbolinks='false' href='/survey_images/download?survey=${survey_id}'>Download
+            <i aria-hidden="true" class="fa fa-file-archive-o ml-1"></i>
+            </a>`);
+            reset_btn.replaceWith(`<a data-confirm="Are you sure you want to reset survey images?" class="btn btn-outline-danger" id="reset-btn-${survey_id}" rel="nofollow" data-remote="true" data-method="delete" href="/survey_images/reset?survey=${survey_id}">Reset</a>`)
+            reset_btnm.replaceWith(`<a data-confirm="Are you sure you want to reset survey images?" class="btn btn-outline-danger" id="reset-btn-${survey_id}-m" rel="nofollow" data-remote="true" data-method="delete" href="/survey_images/reset?survey=${survey_id}">Reset</a>`)            
+        }else if(payload.status=="error"){
+            /* Code for error handling */
+        }
+      })
+    }
+    });

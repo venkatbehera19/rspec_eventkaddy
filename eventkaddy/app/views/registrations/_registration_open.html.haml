@@ -1,0 +1,124 @@
+%body
+  / ======= Header =======
+  %header#registration-page-header.d-flex.align-items-center
+    .container.d-flex.flex-column.align-items-center.mx-auto
+      %h1= @settings.html_title || @event.name
+      - if !@settings.closing_date.blank?
+        %h2.mb-4 Registration portal will close in
+        .countdown.row{"data-count" => @closing_date_time.strftime("%m/%d/%Y %H:%M:%S") }
+          %div.col-sm-2
+            %h3 %D
+            %h4 Days
+          %div.col-sm-2
+            %h3 %H
+            %h4 Hours
+          %div.col-sm-2
+            %h3 %M
+            %h4 Minutes
+          %div.col-sm-2
+            %h3 %S
+            %h4 Seconds
+      - if user_signed_in?
+        = link_to "<button class='btn reg-btn #{@settings.reg_button_class.blank? ? 'btn-danger': @settings.reg_button_class}'>View and Edit Profile</button>".html_safe, "/#{@event.id}/registrations/login_to_profile"
+      - else
+        .subscribe{style: "width: 100%"}
+          %h2 Register Now
+          %form{:action => "/#{@event.id}/registrations/new", :method => "post", :role => "form", :autocomplete => "false"}
+            .form-inline.row.mx-auto.register-form{:autocomplete => "off"}
+              %input.form-control.col-sm-9{:name => "email", :placeholder => "Email", :type => "email", :required => "true"}/
+              %input.btn.form-control.reg-btn.mt-auto.col-sm-3{:type => "submit", :value => "Register", :class=>(@settings.reg_button_class.blank? ? 'btn-danger': @settings.reg_button_class)}/
+          = link_to "Already registered?", "/#{@event.id}/registrations/login_to_profile"
+      .social-links.text-center
+        - unless @settings.twitter_link.blank?
+          %a.twitter{:href => @settings.twitter_link}
+            %i.fa.fa-twitter
+        - unless @settings.facebook_link.blank?      
+          %a.facebook{:href => @settings.facebook_link}
+            %i.fa.fa-facebook
+        - unless @settings.instagram_link.blank?
+          %a.instagram{:href => @settings.instagram_link}
+            %i.fa.fa-instagram
+        - unless @settings.skype_link.blank?
+          %a.google-plus{:href => @settings.skype_link}
+            %i.fa.fa-skype
+        - unless @settings.linkedin_link.blank?
+          %a.linkedin{:href => @settings.linkedin_link}
+            %i.fa.fa-linkedin
+  / End #header
+  %main#main
+    / ======= About Us Section =======
+    %section#about.about
+      .container
+        .row.content
+          .col-lg-6
+            = @settings.event_details_1.to_s.html_safe
+          .col-lg-6.pt-4.pt-lg-0
+            = @settings.event_details_2.to_s.html_safe
+    / End About Us Section
+    / ======= Contact Us Section =======
+    -# %section#contact.contact
+    -#   .container
+    -#     .section-title
+    -#       %h2 Contact Us
+    -#     .row.justify-content-center
+    -#       .col-lg-10
+    -#         .info-wrap
+    -#           .row
+    -#             .col-lg-4.info
+    -#               %i.icofont-google-map
+    -#               %h4 Location:
+    -#               %p
+    -#                 A108 Adam Street
+    -#                 %br>/
+    -#                 New York, NY 535022
+    -#             .col-lg-4.info.mt-4.mt-lg-0
+    -#               %i.icofont-envelope
+    -#               %h4 Email:
+    -#               %p
+    -#                 info@example.com
+    -#                 %br>/
+    -#                 contact@example.com
+    -#             .col-lg-4.info.mt-4.mt-lg-0
+    -#               %i.icofont-phone
+    -#               %h4 Call:
+    -#               %p
+    -#                 +1 5589 55488 51
+    -#                 %br>/
+    -#                 +1 5589 22475 14
+    -#     .row.justify-content-center
+    -#       .col-lg-10
+    -#         %form.contact-us-email-form{:action => "forms/contact.php", :method => "post", :role => "form"}
+    -#           .form-row
+    -#             .col-md-6.form-group
+    -#               %input#name.form-control{"data-msg" => "Please enter at least 4 chars", "data-rule" => "minlen:4", :name => "name", :placeholder => "Your Name", :type => "text"}/
+    -#               .validate
+    -#             .col-md-6.form-group
+    -#               %input#email.form-control{"data-msg" => "Please enter a valid email", "data-rule" => "email", :name => "email", :placeholder => "Your Email", :type => "email"}/
+    -#               .validate
+    -#           .form-group
+    -#             %input#subject.form-control{"data-msg" => "Please enter at least 8 chars of subject", "data-rule" => "minlen:4", :name => "subject", :placeholder => "Subject", :type => "text"}/
+    -#             .validate
+    -#           .form-group
+    -#             %textarea.form-control{"data-msg" => "Please write something for us", "data-rule" => "required", :name => "message", :placeholder => "Message", :rows => "5"}
+    -#             .validate
+    -#           .mb-3
+    -#             .loading Loading
+    -#             .error-message
+    -#             .sent-message Your message has been sent. Thank you!
+    -#           .text-center
+    -#             %button{:type => "submit"} Send Message
+
+
+:javascript
+  !(function($) {
+  "use strict";
+
+  // Set the count down timer
+  if ($('.countdown').length) {
+    var count = $('.countdown').data('count');
+    var template = $('.countdown').html();
+    $('.countdown').countdown(count, function(event) {
+      $(this).html(event.strftime(template));
+    });
+  }
+  })(jQuery);

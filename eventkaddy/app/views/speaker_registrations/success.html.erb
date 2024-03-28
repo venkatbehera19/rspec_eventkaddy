@@ -1,0 +1,18 @@
+<% if !@speaker_registration_settings.blank? %>
+  <div class="row">
+    <% if flash[:login_notice] %>
+        <div class="card" style="margin:auto; padding-bottom:10px">
+          <div class="card-body">
+            <h2 class="card-title">Message</h2>
+            <p class="card-text" style="font-size:18px"><%= flash[:login_notice] %></h4>
+          </div>
+        </div>
+    <% end %>
+  </div>
+  <div class="speaker_registration_heading" style="margin: auto;">
+    <%= @speaker_registration_settings.speaker_post_registration_heading&.html_safe %>
+  </div>
+  <div class="simple_registration_subheading">
+    <%= @speaker_registration_settings.speaker_post_registration_subheading&.html_safe %>
+  </div>
+<% end %>

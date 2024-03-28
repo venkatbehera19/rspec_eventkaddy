@@ -1,0 +1,53 @@
+.form-horizontal.well
+
+    %a.btn.btn-secondary{href:'/surveys'}
+        Return to Index
+
+    %h3
+        Questions Order for
+        = @survey.title
+
+    %table#tabstable.tabstable
+        %thead
+            %tr
+                %th
+            %tr
+            %td
+                %ul#position.connectedSortable
+                    - @questions.each do |question|
+                        %li.ui-state-default{:id => question.id}= question.question
+
+    %br
+
+    = form_for(@survey_section, :url => {:controller => 'surveys', :action => "update_questions_order"}) do |f|
+        = hidden_field_tag :json
+        = f.hidden_field :id, :value => params[:survey_section_id]
+
+        = f.submit "Update Questions Order", class:"btn btn-primary"
+
+:javascript
+    $(function () {
+        $("#position").sortable({
+            connectWith: ".connectedSortable",
+            update: function () {
+
+                var newstatus = [];
+
+                $(this).children().each(function () {
+
+                    var column   = $(this).parent().attr("id");
+                    var id       = $(this).attr("id");
+                    var question = $(this).html();
+                    var order    = $(this).index() + 1;
+
+                    return newstatus.push({
+                        id       : id,
+                        column   : column,
+                        question : question,
+                        order    : order
+                    });
+                });
+                $("#json").empty().attr("value",JSON.stringify(newstatus));
+            }
+        })
+    });

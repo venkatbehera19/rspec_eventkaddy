@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>EventKaddy CMS</title>
+  <!--%= stylesheet_link_tag "scaffold" %-->
+  	<%= stylesheet_link_tag    "application", :media => "all" %>
+    <%= javascript_include_tag "application" %>
+ 
+    <%= csrf_meta_tag %>
+
+</head>
+
+<body>
+
+    <div class="container-narrow">
+
+      	<div class="masthead">
+        	<ul class="nav nav-pills pull-right">
+			<% if user_signed_in? then %>
+				<li><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete %></li>
+			<% else %>
+				<li><%= link_to "Speaker Portal", "/users/sign_in" %></li>
+				<li><%= link_to "Manager Login", "/users/sign_in?manager=true" %></li>
+			<% end %>
+        	</ul>
+
+        	<ul class="nav nav-pills pull-right">
+        	<% if @organization_for_events then %>
+				<li><%= link_to @organization_for_events.name, "/events/indexfororg/#{@organization_for_events.id}" %></li>
+			<% else %>
+				<li></li>
+			<% end %>
+			</ul>
+      	</div>
+
+      <div class="jumbotron">
+        <h1><img src="/assets/ek_logo_large.png" width="50%" height="50%"></h1>
+        <p class="lead">Your gateway to mobile conference apps.</p>
+        <!-- <a class="btn btn-lg btn-success" href="#"></a> -->
+      </div>
+
+      <hr>
+
+		
+		<div class="footer">
+ 			<div class="footer-text">
+ 				Questions?  Email support@eventkaddy.com
+			<!-- </div>footer-text -->
+		</div>
+	
+	</div><!--container-narrow-->
+	
+</body>
+</html>

@@ -1,0 +1,66 @@
+:ruby
+    setting_tab = ->(form, setting_name, el_id, label, path) {
+        form.unless_setting(setting_name) {
+            "<li id='#{el_id}' class='nav-item'>#{link_to label, path, class: "nav-link"}</li>"
+        } || ""
+    }
+
+    tabs = [
+        [:hide_settings_tab_general_portal_settings,         'edit-general-portal-settings-tab',    "General Portal Settings",         "/event_settings/edit_general_portal_settings"],
+        [:hide_settings_tab_event_settings,                  'edit-event-settings-tab',             "Event Settings",                  "/event_settings/edit_restricted_event_settings"],
+        [:hide_settings_tab_speaker_portal_settings,         'speaker-portal-settings-tab',         "Speaker Portal Settings",         "/settings/speaker_portal"],
+        # [:hide_settings_tab_speaker_portal_av_request_items, 'speaker-portal-av-request-items-tab', "Speaker Portal AV Request Items", "/events_av_list_items/select"],
+        # [:hide_settings_tab_speaker_portal_tabs,             'edit-event-tabs-tab',                 "Speaker Portal Tabs",             "/event_settings/edit_event_tabs"],
+        # [:hide_settings_tab_speaker_required_data,           'edit-requirements-tab',               "Speaker Required Data",           "/event_settings/edit_requirements"],
+        [:hide_settings_tab_exhibitor_portal_settings,       'exhibitor-portal-settings-tab',       "Exhibitor Portal Settings",       "/settings/exhibitor_portal"],
+        # I had a choice to split this into booleans and strings;
+        # We started with just booleans, so this name is unfortunately
+        # too specific and a little wrong, but I think it is confusing
+        # for a user to have it on separate pages, at least for now
+        # while there are very few settings. The naming may be fixed
+        # in the future.
+        [:hide_settings_tab_mobile_app_booleans,             'cordova-booleans-tab',                "Mobile App Settings",             "/settings/cordova"],
+        [:hide_settings_tab_qna_page_settings,               'qna-settings-tab',                    "Q&A Page Settings",               "/settings/qna"],
+        [:hide_settings_tab_guest_view_settings,             'guest-view-settings-tab',             "Guest View Settings",             "/settings/guest_view"],
+        [:hide_settings_tab_video_portal_booleans,           'video-portal-booleans-tab',           "Video Portal Booleans",           "/settings/video_portal"],
+        [:hide_settings_tab_video_portal_headings,           'video-portal-headings-tab',           "Video Portal Headings",           "/settings/video_portal_headings"],
+        [:hide_settings_tab_video_portal_contents,           'video-portal-contents-tab',           "Video Portal Contents",           "/settings/video_portal_contents"],
+        [:hide_settings_tab_video_portal_styles,             'video-portal-styles-tab',             "Video Portal Styles",             "/settings/video_portal_styles"],
+        [:hide_settings_tab_video_portal_images,             'video-portal-images-tab',             "Video Portal Images",             "/settings/video_portal_images"],
+        [:hide_settings_tab_simple_registration_settings,    'simple-registration-settings-tab',    "Simple Registration Settings",    "/settings/simple_registration_settings"],
+        [:hide_settings_tab_registration_portal_settings,    'registration-portal-settings-tab',    "Registration Portal Settings",    "/settings/registration_portal_settings"],
+        [:hide_settings_tab_exhibitor_registration_portal_settings, 'exhibitor-registration-portal-settings-tab', "Exhibitor Registration Portal Settings",    "/settings/exhibitor_registration_portal_settings"],
+
+
+        # Temporarily disabled to prioritize scavenger hunt work
+        [:hide_settings_tab_speaker_email_password_template,  'speaker-email-template-tab',  "Speaker Email Password Template",  "/settings/speaker_email_password_template"],
+        [:hide_settings_tab_attendee_email_password_template, 'attendee-email-template-tab', "Attendee Email Password Template", "/settings/attendee_email_password_template"],
+        [:hide_settings_tab_attendee_email_confirmation_template, 'attendee-email-confirmation-template-tab', "Attendee Email Confirmation Template", "/settings/attendee_email_confirmation_template"],
+        [:hide_settings_tab_calendar_invitation_email_template, 'calendar-invitation-email-template-tab', "Calendar Invitation Email Template", "/settings/calendar_invitation_email_template"],
+        [:hide_menu_ce_certificate_email_template, 'ce-certificate-email-template-tab', "CE Certificate Email Template", "/settings/ce_certificate_email_template"],
+        # soon to come
+        [:hide_settings_tab_exhibitor_email_password_template,          'exhibitor-email-template-tab',          "Exhibitor Email Password Template",          "/settings/exhibitor_email_password_template"],
+        [:hide_settingsmember_subscribe_email_template, 'member_subscribe_email_template', 
+        "Send Mail", '/settings/member_subscribe_email_template']
+    ]
+
+-# %li#video-portal-reporting-tab
+-#     = link_to "Video Portal Reporting", "/settings/video_portal_reporting"
+
+-# - content_for :content do
+-#     %h1 Settings
+-#     - form = FormWithSettings.new 'cms_settings', session[:event_id]
+-#     %ul#settings-tabs.nav.nav-tabs.mb-2
+-#         = tabs.reduce('') {|html, tab| html + setting_tab[ form, tab[0], tab[1], tab[2], tab[3] ] }.html_safe
+-#     = content_for?(:settings_content) ? yield(:settings_content) : yield
+
+= render template: "layouts/subevent_2013"
+-#<!--<li id="edit_exhibitor_welcome-tab"><%= link_to "Exhibitor Welcome Page Content", "/event_settings/edit_exhibitor_welcome" %></li>-->
+:javascript
+    jQuery(function() {
+        // would maybe be more readable if I used a hash instead, but this is pretty simple
+        var tabs = JSON.parse("#{tabs.map {|tab| [ tab[3], "#" + tab[1] ] } }".replace(/&quot;/g,'"'))
+        $('#settings-tabs li a').removeClass('active');
+        $( tabs.find( path => path[0] == location.pathname )[1] + " a" ).addClass('active')
+    });
+

@@ -1,0 +1,158 @@
+<% if @client_id %>
+  <script src="https://cdn.affinipay.com/hostedfields/1.4.0/fieldGen_1.4.0.js"></script>
+<% end %>
+<script src="https://js.stripe.com/v3/"></script>
+<body>
+  <!-- ======= Banner ======= /
+  -->
+  <nav class="navbar navbar-light bg-light reg-banner">
+    <%= @settings.reg_banner.to_s.html_safe %>
+  </nav>
+  <!-- ======= Main ======= /
+  -->
+  <div class="container-fluid d-flex flex-column mx-auto reg-main">
+    <!-- ======= Header ======= /
+    -->
+    <div class="d-flex reg-section-container align-items-center reg-header pb-0" style="<%= "background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_edit_page %>"> 
+      <div class="row mx-auto d-flex reg-row">
+        <div class="col-12 d-flex reg-col">
+          <!-- ======= Nav ======= /
+          -->
+          <div class="row">
+            <nav class="navbar navbar-expand-sm navbar-light full-width">
+                <a class="navbar-brand text-wrap">
+                <% event_setting = EventSetting.select(:portal_logo_event_file_id).where(event_id:params[:event_id]).first_or_create %>
+                <% if event_setting && event_setting.event_file_portal_logo %>
+                  <%= image_tag(event_setting.event_file_portal_logo.path, :class =>'photo_preview') %>
+                <% else %>
+                  <img src="/assets/ek_logo.png" width="100px"/>
+                <% end %>
+              </a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <% if @attendee %>
+                <% registration_url = 'registrations' %>
+              <% elsif @exhibitor %>
+                <% registration_url = 'exhibitor_registrations' %>
+              <% end %>
+              <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto">
+                  <% if @cart %>
+                    <li class="nav-item HeaderCart" data-toggle="modal" data-target="#cartModal" >
+                      <span class="HeaderCart_icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z">
+                          </path>
+                        </svg>
+                      </span>
+                      <span>Your Cart</span>
+                      <span class="HeaderCart_badge"><%= @cart.cart_items.reduce(0){|sum,item| sum+=item.quantity}%></span>
+                    </li>
+                  <% end %>  
+                  <li class="nav-item">
+                      <a class="nav-link" href="/<%= params[:event_id] %>/<%= registration_url %>">
+                        <i class="fa fa-home"></i>
+                      </a>
+                    </li>
+                  <% if @settings.method("agenda").call() %>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/<%= params[:event_id] %>/<%= registration_url %>/agenda">
+                        AGENDA
+                      </a>
+                    </li>
+                  <% end %>
+                  <% if @settings.method("speakers").call() %>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/<%= params[:event_id] %>/<%= registration_url %>/speakers">
+                        SPEAKERS
+                      </a>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            </nav>
+          </div>
+
+          <!-- ======= Header Content ======= /
+          -->
+          <% if @settings.show_header_edit_page %>
+            <div class="row">
+              <div class="reg-header-content">
+                <% if !@settings.reg_header_content.blank? %>
+                  <% efile = EventFile.select(:event_id, :cloud_storage_type_id, :path).find(@settings.reg_header_content.to_i) %>
+                  <% if efile.cloud_storage_type_id.blank? %>
+                    <%= image_tag(efile.path, :class=>'photo_preview') %>
+                  <% else %>
+                    <%= image_tag(efile.return_authenticated_url['url'], :class=>'photo_preview') %>
+                  <% end %>
+                  <br/>
+                  <br/>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <br/>
+    <br/>
+    <% if alert %>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong><%= alert %></strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <% end %>
+    <div class="reg-section-container">
+      <%= render partial: 'show_for_whom'%>
+    </div>
+  </div>
+</body>
+<style>
+  .reg-header{
+    background-image: url("<%=(!!@settings.reg_header_bg_img && @settings.show_header_edit_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : '' %>");
+  }
+  label.registered-attendee-form-label {
+    font-size: 1.2rem;
+  }
+  .required-field::after {
+    content: '*';
+    color: red;
+    margin-left: 2px;
+  }
+  td {
+    font-weight: 100 !important;
+  }
+  li.nav-item.HeaderCart {
+      cursor: pointer;
+      font: inherit;
+      border: none;
+      background-color: white;
+      color: black;
+      padding: 0.35rem 1rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-radius: 25px;
+      font-weight: bold;
+  }
+
+  span.HeaderCart_icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      margin-right: 0.5rem;
+  }
+  span.HeaderCart_badge {
+      background-color: black;
+      padding: 0.25rem 1rem;
+      border-radius: 25px;
+      margin-left: 1rem;
+      font-weight: bold;
+      color: white;
+  }
+</style>
+
+

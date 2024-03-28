@@ -1,0 +1,11 @@
+- if @registration_portal_settings.no_of_content_sections.to_i > 0
+    - @registration_portal_settings.no_of_content_sections.times do |i|
+        %h6
+            Section Container_#{i+1}
+        .form-group
+            = f.text_field "reg_section_container#{i+1}_style".to_sym, class: 'form-control d-inline', style: "width: 85%;"
+        - !!@registration_portal_settings.column_list && !!@registration_portal_settings.column_list[i+1] && @registration_portal_settings.column_list[i+1].times do |j|
+            .form-group
+                %label Section Container_#{i+1}_col_#{j+1}
+                = f.text_field "reg_section_container#{i+1}_col#{j+1}_style".to_sym, class: 'form-control d-inline', style: "width: 85%;"
+        %hr/

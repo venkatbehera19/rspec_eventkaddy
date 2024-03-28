@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  exhibitor: one
+  event_file: one
+  product_name: MyString
+  product_image: MyString
+  product_description: MyString
+  product_link: MyString
+
+two:
+  exhibitor: two
+  event_file: two
+  product_name: MyString
+  product_image: MyString
+  product_description: MyString
+  product_link: MyString

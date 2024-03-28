@@ -1,0 +1,10 @@
+$("#sponsored-exhibitor-cards").html("<%= j (render partial: 'exhibitors_list', locals: {exhibitors: @sponsored_exhibitors}) %>");
+
+$('#total_pages_sponsor').val("<%= @total_pages_sponsor%>")
+
+$('.sponsored-exhibitor-pagination').removeAttr("disabled");
+
+if (sel_filter.exhibitorSponsorPage <= 1)
+	$("#prev_sponsored_exhibitors").attr("disabled", "disabled");
+if (sel_filter.exhibitorSponsorPage >= parseFloat($("#total_pages_sponsor").val()))
+	$("#next_sponsored_exhibitors").attr("disabled", "disabled");

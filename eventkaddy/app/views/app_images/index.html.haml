@@ -1,0 +1,81 @@
+= link_to 'Back', app_images_select_type_path, class:"btn btn-primary"
+= link_to 'New Image', new_app_image_path, class:"btn btn-primary"
+= link_to 'Manage Image Settings', device_app_image_sizes_path + '?app_image_type_id=' + @app_image_type.id.to_s, class:"btn btn-primary"
+%br
+%br
+
+.ek-heading
+    %h3 
+        =@app_image_type.name.titleize + "s"
+
+.bg-light.custom-border.px-3.py-3
+    - @app_images.each do |image|
+        .row.mx-2.my-2
+            .col-lg-8
+                %h4= image.hr_name
+                %h5 
+                    Position: 
+                    =image.position
+                .banner-image-container{style:'margin-bottom:10px;'}
+                    - unless image.event_file.blank?
+                        = link_to image_tag(image.path, style: "width: 100%; height: auto;"), image.path
+                    - image.device_type_id
+                    - unless image.app_image_size_id.blank?
+                        = image.app_image_size_id
+                    %br
+                    %br
+
+                    Links to
+                    = link_to image.link, image.link
+
+                .versions{style:'font-weight:900;'} Versions
+                - AppImage.where(parent_id:image.id).each do |copy|
+                    -# = link_to copy.device_type.name, copy.path
+                    %br
+
+            .col-lg-3.ml-auto.mt-2
+                = link_to 'Edit', edit_app_image_path(image) , class:"btn btn-outline-success mr-3"
+                = link_to 'Delete', "/app_images/#{image.id}", :confirm => 'Are you sure?', :method => :delete, class:"btn btn-outline-danger"
+       
+
+        %hr
+
+
+:javascript
+    window.onload = function () {
+        //Don't show new entry sortable unless on new page
+        if (/edit/i.test(window.location)) {
+            $("#new_entry").parent().remove();
+        }
+
+        $(function () {
+            $("#position, #new_entry").sortable({
+                connectWith: ".connectedSortable",
+                update: function () {
+                    var newstatus = [];
+                    $(this).children().each(function () {
+                        var column, id, name, order;
+                        column     = $(this).parent().attr("id");
+                        id         = $(this).attr("id");
+                        name       = $(this).html();
+                        order      = $(this).index();
+                        return newstatus.push({
+                            id       : id,
+                            column   : column,
+                            name     : name,
+                            order    : order
+                        });
+                    });
+                    $("#json").empty().attr("value",JSON.stringify(newstatus));
+                }
+            })
+        });
+
+        if ($("#media_file_name").val()!=="") { $("#new").empty().append($("#media_file_name").val()); }
+
+        $("#media_file_name").blur(function () {
+            $("#new").empty().append(this.value);
+        });
+    };
+
+

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  attendee: one
+  attendee_gps_data_point_type: pedometer
+  latitude: 9.99
+  longitude: 9.99
+  elevation: 9.99
+  description: MyText
+
+two:
+  event: two
+  attendee: two
+  attendee_gps_data_point_type: two
+  latitude: 9.99
+  longitude: 9.99
+  elevation: 9.99
+  description: MyText

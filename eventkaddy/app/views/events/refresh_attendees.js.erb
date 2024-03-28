@@ -1,0 +1,10 @@
+console.log("ajax response for adp refresh attendees");
+
+
+$('#refresh-attendees-form').bind("ajax:success", function(){
+
+	console.log("data successfully refreshed");
+	$('#upload-notice').append("<p class='notice'>Attendee Data Successfully Refreshed</p>");
+<!-- 	$('#upload-debug').append("<p class='notice'><%= escape_javascript(@import_attendee_result.html_safe) %></p>"); -->
+
+});

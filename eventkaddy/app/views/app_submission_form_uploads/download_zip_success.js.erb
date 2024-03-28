@@ -1,0 +1,25 @@
+var formType = "<%= @form_type%>"
+var formId   = "<%= @form_id%>"
+downloadBtn = $(`#download-btn-${formType}`);
+download_button_state("started",formType);
+$(`#errorMessage-${formType}`).empty();
+function download_button_state(job_status,btnType) {
+  downloadBtn = $(`#download-btn-${btnType}`)
+  switch (job_status) {
+    case "started":
+    case "inProgress":
+      downloadBtn.text("Creating Zip...");
+      downloadBtn.prepend('<span style="margin-right:10px;" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>');
+      downloadBtn.addClass("btn-outline-info disabled");
+      downloadBtn.removeClass("btn-outline-dark");
+      break;
+    case "completed":
+      $(`div#${btnType}-download-btn-container a:first`).replaceWith(`<a id='download-btn-${btnType}' class='btn btn-outline-success download-zip' data-turbolinks='false'href='/app_submission_form_uploads/download_zip?form_id=${formId}'>Download Zip</a>`);
+      break;
+    case "error":
+      $(`div#${btnType}-download-btn-container a:first`).replaceWith(`<a id='download-btn-${btnType}' class='btn btn-outline-dark download-zip' data-remote="true" href='/app_submission_form_uploads/download_zip?form_id=${formId}'>Create Zip</a>`);
+      break;
+    default:
+      break;
+  }
+}

@@ -1,0 +1,7 @@
+one:
+  event: one
+  attendee_scan_type: attendee_to_attendee
+  initiating_attendee_id: 7 #created attendee with id for method
+  attendee: barebones
+  session: realistic
+  exhibitor: realistic

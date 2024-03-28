@@ -1,0 +1,250 @@
+<div class="row">
+  <div class="col-md-10 mx-auto bg-light custom-border">
+    <h4>Add User</h4>
+    <%= form_for(@user, url: create_user_role_users_path ) do |f| %>
+        <% if @user.errors.any? %>
+            <div id="error_explanation">
+                <h2><%= pluralize(@user.errors.count, "error") %> could not register the new user:</h2>
+
+                <ul>
+                    <% @user.errors.full_messages.each do |msg| %>
+                        <li><%= msg %></li>
+                    <% end %>
+                </ul>
+            </div>
+        <% end %>
+      <div class="form-group">
+        <%= f.label :email %>
+        <%= f.text_field :email, class: "form-control" %>
+      </div>
+      <div class="instructions">
+      (Click to expand and select event to filter)
+      </div>
+      <br/>
+      <div class="dropdown-container1">
+        <div class="dropdown-button noselect">
+            <div class="dropdown-label">Events</div>
+            <div class="dropdown-quantity">(<span class="quantity">Any</span>)</div>
+            <i class="fa fa-filter"></i>
+        </div>
+        <div class="dropdown-list" style="display: none;">
+            <input type="search" placeholder="Search Event" class="dropdown-search drop-search"/>
+            <ul id="event_data"></ul>
+        </div>
+      </div>
+      <br />
+      <%= f.hidden_field :event_ids, id: 'selected_event_ids' %>
+      <div class="instructions">
+        (Click to expand and select Organization to filter)
+      </div>
+      <br/>
+      <!-- <div class="dropdown-container2">
+        <div class="dropdown-button noselect">
+          <div class="dropdown-label">Organizations</div>
+            <div class="dropdown-quantity">(<span class="quantity">Any</span>)</div>
+            <i class="fa fa-filter"></i>
+        </div>
+        <div class="dropdown-list" style="display: none;">
+          <input type="search" placeholder="Search Organization" class="dropdown-search drop-search"/>
+          <ul id="organization_data"></ul>
+        </div>
+      </div> -->
+      <div class="form-group d-none passwordField">
+        <%= f.label :password %>
+        <%= f.password_field :password, class: "form-control" %>
+      </div>
+      <div class="form-group d-none passwordField">
+        <%= f.label :password_confirmation %>
+        <%= f.password_field :password_confirmation, class: "form-control" %>
+      </div>
+      <%= f.submit "Add User", class:"btn btn-primary" %>
+    <% end %>
+
+  </div>
+</div>
+
+<% event_data_without_select = Event.event_options %>
+<% organization_data_without_select = Organization.organization_options %>
+
+<style>
+    .noselect {
+	 -webkit-touch-callout: none;
+	 -webkit-user-select: none;
+	 -khtml-user-select: none;
+	 -moz-user-select: none;
+	 -ms-user-select: none;
+	 user-select: none;
+    }
+    .dropdown-container1, .instructions {
+        /* width: 400px; */
+        /* margin: 20px auto 0; */
+        font-size: 14px;
+        font-family: sans-serif;
+        overflow: auto;
+    }
+    .instructions {
+        width: 100%;
+        /* text-align: center; */
+    }
+    .dropdown-button {
+        float: left;
+        width: 100%;
+        background: whitesmoke;
+        padding: 10px 12px;
+        cursor: pointer;
+        border: 1px solid lightgray;
+        box-sizing: border-box;
+    }
+    .dropdown-button .dropdown-label, .dropdown-button .dropdown-quantity {
+        float: left;
+    }
+    .dropdown-button .dropdown-quantity {
+        margin-left: 4px;
+    }
+    .dropdown-button .fa-filter {
+        float: right;
+    }
+    .drop-search{
+        width: 100%;
+        font-weight: 800;
+        text-align: center;
+    }
+    .dropdown-list {
+        float: left;
+        width: 100%;
+        border: 1px solid lightgray;
+        border-top: none;
+        box-sizing: border-box;
+        padding: 10px 12px;
+    }
+    .dropdown-list input[type="search"] {
+        padding: 5px 0;
+    }
+    .dropdown-list ul {
+        margin: 10px 0;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .dropdown-list ul input[type="checkbox"] {
+        position: relative;
+        top: 2px;
+    }
+    #event_data , #organization_data{
+        list-style-type: none;
+    }
+</style>
+
+
+<script>
+    $( document ).ready(function() {
+
+        if(['1','2'].includes( $("#new_user input[type='radio']:checked").val() ) ){
+			$(".passwordField").addClass('d-none');
+			$(".twoFactorSwitch").removeClass('d-none');
+		}
+		else {
+			$(".passwordField").removeClass('d-none');
+			$(".twoFactorSwitch").addClass('d-none');
+		}
+
+		$("#new_user input[type='radio']").click(function(){
+		if(['1','2'].includes( $("#new_user input[type='radio']:checked").val() ) ){
+			$(".passwordField").addClass('d-none');
+			$(".twoFactorSwitch").removeClass('d-none');
+		}
+		else {
+			$(".passwordField").removeClass('d-none');
+			$(".twoFactorSwitch").addClass('d-none');
+		}
+	});
+
+        // Events
+        var eventData = JSON.parse(<%=raw event_data_without_select.to_json %>);
+        var organizationData = JSON.parse(<%=raw organization_data_without_select.to_json %>);
+        $('.dropdown-container1')
+        .on('click', '.dropdown-button', function() {
+            $(this).siblings('.dropdown-list').toggle();
+        })
+        .on('input', '.dropdown-search', function() {
+            var target = $(this);
+            var dropdownList = target.closest('.dropdown-list');
+            var search = target.val().toLowerCase();
+        
+            if (!search) {
+                dropdownList.find('li').show();
+                return false;
+            }
+        
+            dropdownList.find('li').each(function() {
+                var text = $(this).text().toLowerCase();
+                var match = text.indexOf(search) > -1;
+                $(this).toggle(match);
+            });
+        })
+        .on('change', '[type="checkbox"]', function() {
+            var container = $(this).closest('.dropdown-container1');
+            var numChecked = container. find('[type="checkbox"]:checked').length;
+            container.find('.quantity').text(numChecked || 'Any');
+        });
+    
+        // <li> template rendering function
+        function renderStateTemplate(state) {
+            return `<li>
+                <input name="${state.id}" type="checkbox">
+                <label for="${state.id}">${state.capName}</label>
+            </li>`;
+        }
+        // Populating list with states
+        eventData.forEach(function(state){
+            state.capName = state.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+            var stateHTML = renderStateTemplate(state);
+            $('#event_data').append(stateHTML)
+        })
+
+        // its for dropdown2
+        $('.dropdown-container2')
+        .on('click', '.dropdown-button', function() {
+          $(this).siblings('.dropdown-list').toggle();
+        })
+        .on('input', '.dropdown-search', function() {
+            var target = $(this);
+            var dropdownList = target.closest('.dropdown-list');
+            var search = target.val().toLowerCase();
+        
+            if (!search) {
+                dropdownList.find('li').show();
+                return false;
+            }
+        
+            dropdownList.find('li').each(function() {
+                var text = $(this).text().toLowerCase();
+                var match = text.indexOf(search) > -1;
+                $(this).toggle(match);
+            });
+        })
+        .on('change', '[type="checkbox"]', function() {
+            var container = $(this).closest('.dropdown-container2');
+            var numChecked = container. find('[type="checkbox"]:checked').length;
+            container.find('.quantity').text(numChecked || 'Any');
+        });
+
+        // organizationData.forEach(function(state){
+        //     state.capName = state.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+        //     var stateHTML = renderStateTemplate(state);
+        //     $('#organization_data').append(stateHTML)
+        // })
+
+        function updateSelectedEventIds() {
+            var selectedIds = [];
+            $('#event_data input[type="checkbox"]:checked').each(function () {
+                selectedIds.push($(this).attr('name'));
+            });
+            $('#selected_event_ids').val(selectedIds);
+        }
+
+        $('#event_data').on('change', 'input[type="checkbox"]', function () {
+            updateSelectedEventIds();
+            console.log("event_data")
+        });
+    })
+</script>

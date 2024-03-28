@@ -1,0 +1,352 @@
+:javascript
+    $(function() {
+        var checkTrue = function() { $(this).children('input')[1].checked = true; };
+        var checkFalse = function() {
+            $(this).children('input')[0].value = 0;
+            $(this).children('input')[1].checked = false;
+        };
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true
+        });
+        $('.jpicker').jPicker({window:{position:{x:'100',y:'300'}}});
+    });
+
+:css
+    #accordion {
+       margin-top:10px;
+       margin-bottom:10px;
+    }
+    .acc-div {
+        padding:10px;
+    }
+
+    .jPicker.Container {
+        margin: 0;
+        top: 50% !important;
+        left: 50% !important;
+    }
+%h4 Exhibitor Portal Settings
+
+= link_to 'Exhibitor PDFs', '/exhibitor_portals/index_pdf', class:'btn btn-primary'
+= link_to 'Exhibitor Files', '/exhibitor_portals/files', class: 'btn btn-primary'
+
+%br/
+.bg-light.custom-border.py-3.px-3{style:'min-height:500px;'}
+
+    #accordion
+
+        %h4 Portal Images
+        .acc-div
+            = form_for @event_setting, :html => { :multipart => true, :method => :post }, :url => '/settings/update_exhibitor_portal_banner' do |f|
+                %table
+                    - if (@event_setting.exhibitor_banner_event_file_id!=nil) then
+                        %tr
+                            %td= image_tag(EventFile.where("id= ?",@event_setting.exhibitor_banner_event_file_id).first.path, :class=>'photo_preview')
+                        %tr
+                            %td  
+                        %tr
+                            %td{style: "word-break: break-word; white-space: normal;"}
+                                Download your current banner photo: #{link_to EventFile.where("id= ?",@event_setting.exhibitor_banner_event_file_id).first.name, EventFile.where("id= ?",@event_setting.exhibitor_banner_event_file_id).first.path}
+                        %tr
+                            %td  
+                        %tr
+                            %td
+                                .field
+                                    = label_tag "Upload a new Portal Banner:"
+                                    = file_field_tag :portal_banner_file
+                    - else
+                        %tr
+                            %td
+                                .field
+                                    = label_tag :portal_banner_file, "Choose a Portal Banner"
+                                    %br
+                                    = file_field_tag :portal_banner_file
+                %br
+                %br
+                = f.submit 'Update Exhibitor Portal Banner', class:'btn btn-primary'
+
+        %h4 Enhanced Portal Settings
+        .acc-div
+
+            = form_for @exhibitor_portal_settings, :html => { :method => :post }, :url => '/settings/update_exhibitor_portal_settings' do |f|
+                %br
+                .form-check
+                    %label(class="form-check-label") 
+                        = f.check_box :lock_enhanced_exhibitor_portal, class: "form-check-input"
+                        Restrict Exhibitors to configure their exhibitor show page
+                %small (If enabled, defaulted Exhibitor Portal Global Configurations will be applied to all.)           
+                
+                %br
+                %br/
+                .form-group
+                    Select Default Exhibitor Portal Configuration
+                    %br
+                    = f.select :default_portal_config, options_from_collection_for_select(ExhibitorPortalGlobalConfig.where(event_id: session[:event_id]), :setting_id, :name, @exhibitor_portal_settings.default_portal_config),{}, class: "custom-select"
+                    %br
+
+                %br
+                .form-check
+                    %label(class="form-check-label") 
+                        = f.check_box :check_email_domain, class: "form-check-input"
+                        Check Email Domain While Adding Staff
+                %br
+                
+                = f.submit 'Update Settings', class:'btn btn-primary'
+
+        %h4 Locked Fields (cannot be edited by exhibitor)
+        .acc-div
+
+            = form_for @exhibitor_portal_settings, :html => { :method => :post }, :url => '/settings/update_exhibitor_portal_settings' do |f|
+                .field
+                    = f.check_box :locked_company_name
+                    Company Name Locked
+                .field
+                    = f.check_box :locked_description
+                    Description Locked
+                .field
+                    = f.check_box :locked_email
+                    Email Locked
+                .field
+                    = f.check_box :locked_address_line1
+                    Address Line 1 Locked
+                .field
+                    = f.check_box :locked_address_line2
+                    Address Line 2 Locked
+                .field
+                    = f.check_box :locked_country
+                    Country Locked
+                .field
+                    = f.check_box :locked_city
+                    City Locked
+                .field
+                    = f.check_box :locked_state
+                    State Locked
+                .field
+                    = f.check_box :locked_zip
+                    Zip Locked
+                .field
+                    = f.check_box :locked_phone
+                    Phone Locked
+                .field
+                    = f.check_box :locked_fax
+                    Fax Locked
+                .field
+                    = f.check_box :locked_toll_free
+                    Toll Free Locked
+                .field
+                    = f.check_box :locked_url_web
+                    URL Web Locked
+                .field
+                    = f.check_box :locked_url_twitter
+                    URL Twitter Locked
+                .field
+                    = f.check_box :locked_url_facebook
+                    URL Facebook Locked
+                .field
+                    = f.check_box :locked_url_linkedin
+                    URL Linkedin Locked
+                .field
+                    = f.check_box :locked_url_rss
+                    URL RSS Locked
+                .field
+                    = f.check_box :locked_url_instagram
+                    URL Instagram Locked
+                .field
+                    = f.check_box :locked_url_youtube
+                    URL YouTube Locked
+                .field
+                    = f.check_box :locked_url_tiktok
+                    URL TikTok Locked
+                .field
+                    = f.check_box :locked_contact_name
+                    Contact Name Locked
+                .field
+                    = f.check_box :locked_contact_title
+                    Contact Title Locked
+                .field
+                    = f.check_box :locked_contact_email
+                    Contact Email Locked
+                .field
+                    = f.check_box :locked_contact_name_two
+                    Contact Name 2 Locked
+                .field
+                    = f.check_box :locked_contact_title_two
+                    Contact Title 2 Locked
+                .field
+                    = f.check_box :locked_contact_email_two
+                    Contact Email 2 Locked
+                .field
+                    = f.check_box :locked_contact_mobile_two
+                    Contact Mobile 2 Locked
+                .field
+                    = f.check_box :locked_message
+                    Message Locked
+                .field
+                    = f.check_box :locked_logo
+                    Logo Locked
+                = f.submit 'Update Lock Fields Settings', class:'btn btn-primary'
+
+
+        %h4 Hidden Fields
+        .acc-div
+            = form_for @exhibitor_portal_settings, :html => { :method => :post }, :url => '/settings/update_exhibitor_portal_settings' do |f|
+                .field
+                    = f.check_box :hide_company_name
+                    Company Hide Name
+                .field
+                    = f.check_box :hide_description
+                    Hide Description
+                .field
+                    = f.check_box :hide_email
+                    Hide Email
+                .field
+                    = f.check_box :hide_address_line1
+                    Address Hide Line 1
+                .field
+                    = f.check_box :hide_address_line2
+                    Address Hide Line 2
+                .field
+                    = f.check_box :hide_country
+                    Hide Country
+                .field
+                    = f.check_box :hide_city
+                    Hide City
+                .field
+                    = f.check_box :hide_state
+                    Hide State
+                .field
+                    = f.check_box :hide_zip
+                    Hide Zip
+                .field
+                    = f.check_box :hide_phone
+                    Hide Phone
+                .field
+                    = f.check_box :hide_fax
+                    Hide Fax
+                .field
+                    = f.check_box :hide_toll_free
+                    Hide Toll Free
+                .field
+                    = f.check_box :hide_url_web
+                    Hide URL Web
+                .field
+                    = f.check_box :hide_url_twitter
+                    Hide URL Twitter
+                .field
+                    = f.check_box :hide_url_facebook
+                    Hide URL Facebook
+                .field
+                    = f.check_box :hide_url_linkedin
+                    Hide URL Linkedin
+                .field
+                    = f.check_box :hide_url_rss
+                    Hide URL RSS
+                .field
+                    = f.check_box :hide_url_instagram
+                    Hide URL Instagram
+                .field
+                    = f.check_box :hide_url_youtube
+                    Hide URL YouTube
+                .field
+                    = f.check_box :hide_url_tiktok
+                    Hide URL TikTok
+                .field
+                    = f.check_box :contact_name
+                    Hide Contact Name
+                .field
+                    = f.check_box :contact_title
+                    Hide Contact Title
+                .field
+                    = f.check_box :hide_contact_email
+                    Hide Contact Email
+                .field
+                    = f.check_box :hide_contact_name_two
+                    Hide Contact 2 Name
+                .field
+                    = f.check_box :hide_contact_title_two
+                    Hide Contact 2 Title
+                .field
+                    = f.check_box :hide_contact_email_two
+                    Hide Contact 2 Email
+                .field
+                    = f.check_box :hide_contact_mobile_two
+                    Hide Contact 2 Mobile
+                .field
+                    = f.check_box :hide_message
+                    Hide Message
+                .field
+                    = f.check_box :hide_logo
+                    Hide Logo
+                = f.submit 'Update Hidden Fields Settings', class:'btn btn-primary'
+
+        %h4 Hidden Staff Fields
+        .acc-div
+            = form_for @exhibitor_portal_settings, :html => { :method => :post }, :url => '/settings/update_exhibitor_portal_settings' do |f|
+                .field
+                    = f.check_box :hide_staff_first_name
+                    Hide First Name
+                .field
+                    = f.check_box :hide_staff_last_name
+                    Hide Last Name
+                .field
+                    = f.check_box :hide_staff_title
+                    Hide Title
+                .field
+                    = f.check_box :hide_staff_email
+                    Hide Email
+                .field
+                    = f.check_box :hide_staff_business_phone
+                    Hide Business Phone
+                .field
+                    = f.check_box :hide_staff_mobile_phone
+                    Hide Mobile
+                .field
+                    = f.check_box :hide_staff_url_twitter
+                    Hide Twitter
+                .field
+                    = f.check_box :hide_staff_url_facebook
+                    Hide Facebook
+                .field
+                    = f.check_box :hide_staff_url_linkedin
+                    Hide Linkedin
+                .field
+                    = f.check_box :hide_staff_url_youtube
+                    Hide Youtube
+                .field
+                    = f.check_box :hide_staff_url_instagram
+                    Hide Instagram
+                .field
+                    = f.check_box :hide_staff_url_tiktok
+                    Hide TikTok
+                .field
+                    = f.check_box :hide_staff_biography
+                    Hide Bio
+                .field
+                    = f.check_box :hide_staff_interests
+                    Hide Intrest
+                .field
+                    = f.check_box :hide_staff_get_featured
+                    Hide Get Featured
+
+                = f.submit 'Update Hidden Fields Settings', class:'btn btn-primary'
+
+
+        %h4 Miscellaneous
+        .acc-div
+            = form_for @exhibitor_portal_settings, :html => { :method => :post }, :url => '/settings/update_exhibitor_portal_settings' do |f|
+                .field
+                    = f.check_box :hide_change_password
+                    Hide Change Password Button
+                .field
+                    = f.check_box :hide_message_image_upload
+                    Hide Message Image Upload
+                .form-inline
+                    = f.label :limit_no_of_staffs, "Total number of Staffs for Exhibitor Portal", class: "mr-2"
+                    = f.number_field :limit_no_of_staffs, :style => "width:fit-content", class: "form-control"
+                = f.submit 'Update Miscellaneous Settings', class:'btn btn-primary'
+
+
+        %h4 Exhibitor Tabs Configuration
+        .acc-div
+            = render "exhibitor_tabs_setting"

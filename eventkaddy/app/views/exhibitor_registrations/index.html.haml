@@ -1,0 +1,8 @@
+- if @settings.registration_open && @closing_date_time > DateTime.now().change(:offset => @event.utc_offset)
+  = render 'customized_registration_open'
+- else
+  = render 'registration_closed'
+
+
+  %br/
+  %br/

@@ -1,0 +1,43 @@
+ <h4>Editing Tab: <%= @tab.name %></h4>
+
+<%= link_to 'Back', "/event_settings/edit_event_tabs", class:"btn" %><br/><br/>
+
+  <ul id="sessionsettings-tabs" class="nav nav-tabs">
+  
+    <li id="edit_headers_footers-tab"><%= link_to "Headers and Footers", "/tabs/#{@tab.id}/edit" %></li>
+    <li id="edit_session_notes-tab"><%= link_to "Session Notes Content", "/event_settings/edit_session_notes_content" %></li>
+    <li id="edit_av_requests-tab"><%= link_to "AV Requests Content", "/event_settings/edit_av_requirements" %></li>
+  </ul>
+
+<%= form_for(@event_setting, :html => { :multipart => true, :class => "form-horizontal well" }, :url => {:action => "update_session_notes_content"}   ) do |f| %>
+
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+  <hr/>
+
+  <% if @event_setting.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@event_setting.errors.count, "error") %> prohibited this setting from being saved:</h2>
+
+      <ul>
+      <% @event_setting.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :session_notes_content, "Session Notes Content" %><br />
+    <%= f.cktext_area :session_notes_content, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"} %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+  
+<% end %>
+
+
+<br />

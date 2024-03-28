@@ -1,0 +1,65 @@
+<div class="well cms-ce-certificates" style="min-height:500px;">
+
+    <h3>CE Certificate Template</h3>
+
+    <%= link_to 'New Certificate', new_ce_certificate_path,class:"btn btn-primary" %> <br/><br/>
+
+  <br/>
+  <br/>
+  <br/>
+  <table
+    id="cms-ce-certificates-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped"
+  >
+    <thead>
+      <th>Title</th>
+      <th>Type</th>
+      <th></th>
+    </thead>
+    <% !@certificates.blank? && @certificates.each do |certificate| %>
+      <tr>
+        <td><%=certificate.name%></td>
+        <td><%=certificate.ce_certificate_type_id == 1 ? 'default' : 'detailed'%></td>
+        <td class="table-actions">
+          <div class="dropdown">
+            <a data-toggle="dropdown" class="ellipse-style">
+              <i class="fa fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu">
+              <%= link_to 'Edit', edit_ce_certificate_path(certificate.id), class: "btn dropdown-item text-success" %>
+              <%= link_to 'View', "ce_credits/event_#{@event_id}_generate_#{certificate.name.downcase.gsub(' ','_')}?id=#{certificate.id}",  target: "_blank", class: "btn dropdown-item text-info" %>
+              <%= link_to 'Delete', ce_certificate_path(certificate.id), :confirm => 'Are you sure?', :method => :delete, class: "btn dropdown-item text-danger" %>
+            </div>
+          </div>
+          <div class="btn-group d-flex">
+            <%= link_to 'Edit', edit_ce_certificate_path(certificate.id), class: "btn btn-outline-success" %>
+            <%= link_to 'View', "ce_credits/event_#{@event_id}_generate_#{certificate.name.downcase.gsub(' ','_')}?id=#{certificate.id}",  target: "_blank", class: "btn btn-outline-info" %>
+            <%= link_to 'Delete', ce_certificate_path(certificate.id), :confirm => 'Are you sure?', :method => :delete, class: "btn btn-outline-danger" %>
+          </div>
+        </td>
+      </tr>
+      <% end %>
+  </table>
+</div>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline table-responsive'
+    })
+    $('#cms-ce-certificates-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+      fnInitComplete: () => { 
+        $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+        $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+        $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+            .prepend("<span class='d-none d-md-inline'>Show:</span>");
+        
+      }
+    })
+    $('dataTables_filter').css('display', 'none')
+    //return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

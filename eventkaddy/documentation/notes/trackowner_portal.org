@@ -1,0 +1,54 @@
+#+TITLE: Trackowner Portal Notes
+
+* Method of filtering sessions
+We would basically use trackowner.sessions. the rest of the query in front of what would normally be the query.
+
+#+NAME: Sessions Datatable
+#+BEGIN_SRC ruby
+    if @current_user.role?(:track_owner)
+      sessions = @current_user.trackowner.sessions.select("DISTINCT sessions.*,location_mappings.name AS location_mapping_name, CONCAT_WS(' ', DATE_FORMAT(sessions.date, '%Y-%m-%d'),' | ',DATE_FORMAT(sessions.start_at, '%H:%i'),' - ',DATE_FORMAT(sessions.end_at, '%H:%i')) AS session_date").joins('
+        LEFT OUTER JOIN location_mappings ON sessions.location_mapping_id=location_mappings.id
+        ').where("sessions.event_id= ?",@event_id).order("#{sort_column} #{sort_direction}")
+#+END_SRC
+
+Doing the conditions this way makes it tedious to keep both queries up to date, the one for super admins and clients, vs the one for trackowners. Since the trackowner portal was never used, the trackowner queries have largely gone out of date, and if we're going to reboot the trackowner portal, this gives us a good opportunity to come up with a better design.
+
+As it is, trackowners are connected to sessions by the sessions_trackowners table, through which they must also get the speakers and other connections. Active record provide the following useful shorthands to make the joins easily.
+
+
+#+NAME: trackowners model
+#+BEGIN_SRC ruby
+  has_many :sessions_trackowners
+  has_many :sessions, :through => :sessions_trackowners
+  has_many :session_files, :through => :sessions
+  has_many :speakers, :through => :sessions
+  has_many :speaker_files, :through => :speakers
+#+END_SRC
+
+* Trackowner Portal
+The design is unfortunately a frankenstein from the very old and original naive approach taken for the speaker portal, which was also copied for the exhibitor portal. It has it's own controller which basically replicates existing views. One convenient thing about this is that at least the trackowner portal remains a simplified version of the real cms, although they still share code, particularly they share the datatables code.
+
+One idea to make the code DRY and easier to maintain, would be to add a method to the Session and Speaker models that takes a role as an argument, and returns either the class of the model, or an instance on an active record query ready to take on additional parameters. IE
+
+
+#+NAME: example
+#+BEGIN_SRC ruby
+def self.filter_by_user( user )
+  user.role? :track_owner ? user.trackowner.sessions : Session
+end
+
+Session.filter_by_user( @current_user ).blahblahblah
+#+END_SRC
+
+This would probably work in most cases, although in the past we have had parts in the app that aggressively remove data and rebuild it. Not sure if we still have any of those. We certainly don't want trackowners having the power to user delete_all methods.
+
+* DB bug on configure page
+Some issues noticed:
+- this is the first trackowner in the production system
+- user_id field is blank. trackowners were probably supposed to be imported by a script in the past when it was first designed
+- the User for the email does exist, and is correctly only a Trackowner role
+
+When you create an education manager from the cms Education Managers index page, it does not create a corresponding user. This form needs to have a password column, and probably a user method imitating the existing speaker and exhibitor ones added recently.
+
+* Verbiage
+As this feature was initially made for WVC, at some point they wanted it to be called Education Managers, or maybe they wanted it to be trackowners, and then avma wanted it to be education managers. In any case, the verbiage used currently is Education Managers

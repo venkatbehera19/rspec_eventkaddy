@@ -1,0 +1,60 @@
+<div class="row">
+	<div class="col-md-7 mx-auto bg-light">
+		<h4><%= @user == @current_user ? "Your Account Settings" : "Edit User" %></h4>
+ 
+		<%= form_for(@user, :html => { :method => :put, :class => "form well"}) do |f| %>
+
+			<% if @user.errors.any? %>
+					<div id="error_explanation">
+						<h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being updated:</h2>
+			
+						<ul>
+						<% @user.errors.full_messages.each do |msg| %>
+							<li><%= msg %></li>
+						<% end %>
+						</ul>
+					</div>
+				<% end %>
+
+			
+			<%= render :partial => 'user_fields', :locals => { :f => f } %>
+
+			<div class="form-group">
+				<%= f.label :password do %> Password <i>(leave blank if you don't want to change it)</i> <% end %>
+				<%= f.password_field :password, class: "form-control" %>
+			</div>
+			
+			<div class="form-group">
+				<%= f.label :password_confirmation %>
+				<%= f.password_field :password_confirmation, class: "form-control" %>
+			</div>
+
+			<div class="form-group">
+				<%= label_tag :current_password do %> Current password <i>(we need your current password to confirm your changes)</i> <% end %>
+				<%= password_field_tag :current_password, nil, class: "form-control" %>
+			</div>
+		
+			<div class="form-group">
+				<br />
+					<div class="card">
+						<div class="card-header">
+							Two factor authentication
+						</div>
+						<div class="card-body">
+							<% if @user.otp_required_for_login %>
+								<p>Two factor authentication is enabled.</p>
+								<p><%= link_to('Disable Two Factor Authentication', two_factor_settings_path(id: @user.id), class: 'btn btn-danger', method: :delete, data: {confirm: 'Are you sure you want to disable two factor authentication?'}) %></p>
+							<% else %>
+								<p>Two factor authentication is NOT enabled.</p>
+								<p><%= link_to('Enable Two Factor Authentication', new_two_factor_settings_path(id: @user.id), class: 'btn btn-primary') %></p>
+							<% end %>
+						</div>
+					</div>
+					<br />
+			</div>
+		
+
+			<p><%= f.submit "Update", class:"btn btn-primary"    %></p>
+		<% end %>
+	</div>
+</div>

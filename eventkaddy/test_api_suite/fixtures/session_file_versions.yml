@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  session_file: one
+  event_file: one
+  user: one
+  final_version: false
+
+two:
+  event: two
+  session_file: two
+  event_file: two
+  user: two
+  final_version: false

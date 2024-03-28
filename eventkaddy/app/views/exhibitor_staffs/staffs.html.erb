@@ -1,0 +1,175 @@
+<h4>Staffs</h4>
+<div class="mr-auto">
+  <% if @user_is_exhibitor %>
+    <% if @staff_members_count >= @staff_members_limit  %>
+      <button class="btn btn-primary" disabled>New Staff</button>
+      <h6>NOTE: You can create maximum <%=@staff_members_limit%> staff members.</h6>
+    <% else %>
+      <%= link_to 'New Staff', "/exhibitor_staffs/new_staff/#{@exhibitor.id}" ,class:"btn btn-primary" %>
+    <% end %>
+  <% end %>
+  <br><hr>
+  <%= "Exhibitor Company: " + @exhibitor.company_name.to_s if @exhibitor && @exhibitor.company_name %>
+  <br>
+  <%= "Exhibitor Booth Number: " + @exhibitor.location_mapping.name if @exhibitor && @exhibitor.location_mapping %>
+  <br>
+  <% if @exhibitor && @exhibitor.sponsor_level_type_id %>
+    <% sponsor_level_type = SponsorLevelType.find_by(id: @exhibitor.sponsor_level_type_id) %>
+    <%= "Sponsor Level: " + sponsor_level_type.sponsor_type if sponsor_level_type %>
+  <% end %>
+  <hr>
+  <%= "Total Lead Retreival Limit: " + @lead_retrieval_limit_purchased.to_s %>
+  <br><hr>
+  <% if @exhibitor.present? && @exhibitor.staffs.present? %>
+    <%= "Exhibitor Complimentary Passes: " + @complimentary_passes %> 
+    <br>
+    <%= "Exhibitor Discount Passes ($475): " + @discounted_passes %>
+    <br>
+    <%= "Current Exhibitor Staff Limit: " + @staff_members_limit.to_s %>
+  <% else %>
+    <%= "Exhibitor: " + @exhibitor.company_name %>
+    <br>
+    <%= "Exhibitor Booth Number: " + @exhibitor.company_name %>
+    <%= "Exhibitor Complimentary Passes: " + 0.to_s %>
+    <br>
+    <%= "Exhibitor Discount Passes: " + 0.to_s %>
+    <br>
+    <%= "Total Exhibitor Staff Limit: " + @staff_members_limit.to_s %>
+    <br>
+    <%= "Staff Added: 0/#{@staff_members_limit}" %>
+    <br>
+    <%= "Regular Staff Added: 0" %>
+  <% end %>
+  <br/><br/>
+</div>
+<table 
+  id="exhibitor_staffs"
+  cellpadding="0"
+  cellspacing="0"
+  border="0"
+  class="table table-striped table-bordered"
+>
+  <thead>
+    <th>Name</th>
+    <th>Title</th>
+    <th colspan="5" style="text-align: center;">Action</th>
+  </thead>
+  <thead class="secondHeader">
+    <th colspan="3"></th>
+    <% if @user_is_exhibitor %>
+      <th></th>
+      <th>App Messaging</th>
+      <th>Lead Retreival</th>
+    <% end %>
+    <th>Additional Features</th>
+  </thead>
+  <tbody>
+    <% !@exhibitor_staffs.blank? && @exhibitor_staffs.each do |exhibitor_staff| %>
+      <tr>
+        <td><%=exhibitor_staff.first_name %>&nbsp;<%=exhibitor_staff.last_name%></td>
+        <td><%=exhibitor_staff.title%></td>
+        <td class= 'sepActions'>
+          <%= link_to '<button type="button" class="btn edit">Edit</button>'.html_safe, edit_exhibitor_staff_path(exhibitor_staff.slug) %>
+        </td>
+        <% if @user_is_exhibitor %>
+        <td class= 'sepActions'>
+          <%= link_to '<button type="button" class="btn delete">Delete</button
+        >'.html_safe, exhibitor_staff_path(exhibitor_staff.slug), data: { confirm: 'Are you sure you want to delete this staff member?' }, :method => :delete %>
+        </td>
+        <% if is_booth_owner? exhibitor_staff.id %>
+          <td class= 'sepActions'><%= link_to 'Disable',"/exhibitor_staffs/remove_booth_owner/#{exhibitor_staff.slug}", class:"btn btn-outline-dark", style:"color: #343a40; border-color: #343a40;",
+          data: { confirm: 'Are you sure you want to remove this staff member from messaging booth?' }, :method => :delete%></td>
+        <% else %>
+          <td class= 'sepActions'><%= link_to 'Enable',"/exhibitor_staffs/add_booth_owner/#{exhibitor_staff.slug}", class:"btn show", style:"color: #033c73; border-color: #033c73;"%></td>
+        <% end %>
+      <% if @lead_retrieval_limit_purchased %>
+        <% unless @lead_retreval_attendees.keys.include? exhibitor_staff.email %>
+          <% if (@lead_retrieval_limit_purchased - @lead_retreval_attendees.keys.count) == 0 %>
+            <td class="sepActions">Limit Reached</td>
+          <% else %>
+            <td  class= 'sepActions'><%= link_to 'Enable', "/exhibitor_staffs/enable_lead_retrieval/#{exhibitor_staff.slug}" ,class:"btn btn-success"%></td>
+          <% end %>  
+        <% else %>
+          <td  class= 'sepActions'><%= link_to 'Disable', "/exhibitor_staffs/delete_lead_retrieval/#{exhibitor_staff.slug}" ,class:"btn btn-danger"%></td>
+        <% end %>
+        <% end %>
+      <% end %>
+      <td class= 'sepActions'>
+        <%= link_to 'Send for Staff', "/emails_queues/queue_exhibitor_staff_password_email/#{exhibitor_staff.id}" ,class:"btn btn-primary", method: :post %>
+         <% if @lead_retreval_attendees[exhibitor_staff.email] %>
+           <%= link_to 'Send for Lead Retreival', "/emails_queues/queue_email_password_for_attendee/#{@lead_retreval_attendees[exhibitor_staff.email][0].id}" ,class:"btn btn-primary", method: :post %> 
+         <% end %>   
+       </td>
+       <td class="forDropDown">
+        <a data-toggle="dropdown" class="ellipse-style">
+          <i class="fa fa-ellipsis-v"></i>
+        </a>  
+        <div class="dropdown-menu">
+          <%= link_to '<button type="button" class="btn edit btn-sm">edit</button>'.html_safe, edit_exhibitor_staff_path(exhibitor_staff.slug) %>
+          <% if @user_is_exhibitor %>
+            <%= link_to '<button type="button" class="btn delete btn-sm">delete</button>'.html_safe, exhibitor_staff_path(exhibitor_staff.slug), data: { confirm: 'Are you sure you want to delete this staff member?' }, :method => :delete %>
+            <% if is_booth_owner? exhibitor_staff.id %>
+              <%= link_to 'Disable Msg',"/exhibitor_staffs/remove_booth_owner/#{exhibitor_staff.slug}", class:"btn btn-outline-dark btn-sm", style:"color: #343a40; border-color: #343a40;",
+             data: { confirm: 'Are you sure you want to remove this staff member from messaging booth?' }, :method => :delete%>
+            <% else %>
+              <%= link_to 'Enable Msg',"/exhibitor_staffs/add_booth_owner/#{exhibitor_staff.slug}", class:"btn show btn-sm", style:"color: #033c73; border-color: #033c73;"%>
+            <% end %>
+            <% if @lead_retrieval_limit_purchased %>
+              <% unless @lead_retreval_attendees.keys.include? exhibitor_staff.email %>
+                <% if (@lead_retrieval_limit_purchased - @lead_retreval_attendees.keys.count) == 0 %>
+                  <%= link_to 'LR LIMIT REACHED', "#" ,class: "btn btn-dark btn-sm"%>
+                <% else %>
+                  <%= link_to 'Enable LR', "/exhibitor_staffs/enable_lead_retrieval/#{exhibitor_staff.slug}" ,class:"btn btn-success btn-sm"%>
+                <% end %>  
+              <% else %>
+                <%= link_to 'Delete LR', "/exhibitor_staffs/delete_lead_retrieval/#{exhibitor_staff.slug}" ,class:"btn btn-danger btn-sm"%>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= link_to 'Send for Staff', "/emails_queues/queue_exhibitor_staff_password_email/#{exhibitor_staff.id}" ,class:"btn btn-primary btn-sm", method: :post %>
+          <% if @lead_retreval_attendees[exhibitor_staff.email] %>
+            <%= link_to 'Send for Lead Retreival', "/emails_queues/queue_email_password_for_attendee/#{@lead_retreval_attendees[exhibitor_staff.email][0].id}" ,class:"btn btn-primary btn-sm", method: :post %> 
+          <% end %>
+        </div>
+      </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline'
+    })
+    $('#exhibitor_staffs').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>
+
+<style>
+
+  .sepActions {
+    text-align: center;
+  }
+
+  .forDropDown {
+    display: none;
+  }
+
+  @media only screen and (max-width: 950px) {
+    .sepActions, .secondHeader {
+      display: none;
+    }
+
+    .forDropDown {
+      display: block;
+    }
+  }
+
+
+</style>

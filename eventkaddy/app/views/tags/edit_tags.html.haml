@@ -1,0 +1,34 @@
+.row.mt-3
+  .col-md-12.bg-light.custom-border
+    %h3 Currently Saved Tags
+    %small Some tags may not be edittable below, as they are set by your conference organizer
+    %br
+    %br
+
+    - @tagsets.each do |set|
+      = set 
+      %br
+
+    %h3 Select Tags
+
+    = form_for @model, :html => { :method => :post }, :url => "/#{@controller_name}/update_tags/#{@tag_type_name}/#{@model.id}" do |f|
+
+      .field 
+        Hold the ctrl key on Windows, or Apple button on Mac to select multiple tagsets. Deselect tagsets to have the associations removed.
+        %br
+        %br
+        Tags are ordered from least specific to most specific and delimited by "->". Tags form the main navigation features of the conference app, therefore choose the most accurate tags you can.
+
+      %br
+      %br
+      .row.mb-3
+        .col-md-11
+          %b Tag Sets
+          %br
+          %br
+
+          = select_tag(:tagsets, options_for_select(@preset_tagsets, @tagsets), :multiple => true, :size=>30, :style => "width:100%")
+
+      = f.submit 'Update Tags', class: 'btn btn-primary submit-btn'
+
+

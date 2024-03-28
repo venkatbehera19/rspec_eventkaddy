@@ -1,0 +1,52 @@
+Eventkaddy::Application.routes.draw do
+
+  get 'settings' => 'settings#index'
+  get 'settings/cms'
+  get 'settings/cordova'
+  get 'settings/qna'
+  get 'settings/exhibitor_portal'
+  get 'settings/video_portal'
+  get 'settings/video_portal_strings'
+  get 'settings/video_portal_headings'
+  get 'settings/video_portal_contents'
+  get 'settings/video_portal_styles'
+  get 'settings/video_portal_images'
+  get 'settings/simple_registration_settings'
+  get 'settings/speaker_registration_settings'
+  get 'settings/registration_portal_settings'
+  get 'settings/video_portal_reporting'
+  get 'settings/exhibitor_registration_portal_settings'
+  get 'settings/attendee_portal'
+  get 'settings/attendee_badge'
+
+  get  'settings/program_feed_booleans'
+  post 'settings/update_program_feed_booleans'
+  get  'settings/program_feed_headings'
+  post 'settings/update_program_feed_headings'
+
+  post 'settings'                                     => 'settings#update'
+  post 'settings/update_video_portal_strings'         => 'settings#update_video_portal_strings'
+  post 'settings/update_video_portal_headings'        => 'settings#update_video_portal_headings'
+  post 'settings/update_video_portal_contents'        => 'settings#update_video_portal_contents'
+  post 'settings/update_video_portal_styles'          => 'settings#update_video_portal_styles'
+  post 'settings/upload_video_portal_image'           => 'settings#upload_video_portal_image'
+  post 'settings/update_video_portal_reporting'       => 'settings#update_video_portal_reporting'
+  post 'settings/update_cms_settings'                 => 'settings#update_cms_settings'
+  post 'settings/update_cordova_settings'             => 'settings#update_cordova_settings'
+  post 'settings/update_qna_settings'                 => 'settings#update_qna_settings'
+  post 'settings/update_exhibitor_portal_settings'    => 'settings#update_exhibitor_portal_settings'
+  post 'settings/update_exhibitor_portal_banner'      => 'settings#update_exhibitor_portal_banner'
+  post 'settings/update_speaker_portal_banner'        => 'settings#update_speaker_portal_banner'
+  post 'settings/update_simple_registration_settings' => 'settings#update_simple_registration_settings'
+  post 'settings/update_speaker_registration_settings' => 'settings#update_speaker_registration_settings'
+  post 'settings/update_registration_portal_settings' => 'settings#update_registration_portal_settings'
+  post 'settings/update_exhibitor_registration_portal_settings' => 'settings#update_exhibitor_registration_portal_settings'
+  post "settings/upload_email_template_image"         => "settings#upload_email_template_image"
+  post "settings/upload_email_template_image_organization"  => "settings#upload_email_template_image_organization"
+  post "settings/update_slots_config"                 => 'settings#update_slots_config'
+  post "settings/update_attendee_portal_settings"     => 'settings#update_attendee_portal'
+  post 'settings/update_attendee_badge_settings'        => 'settings#update_attendee_badge_settings'
+
+  delete 'settings/destroy_video_portal_image/:video_portal_image_id'  => 'settings#destroy_video_portal_image'
+
+end

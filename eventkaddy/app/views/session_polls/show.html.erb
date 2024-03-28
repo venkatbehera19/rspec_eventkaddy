@@ -1,0 +1,16 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<%= javascript_include_tag "sessions_polls" %>
+<%= link_to "Back", "/moderator_portals/sessions/#{@session_poll.session.id}/session_polls", class:"btn btn-secondary"%>
+<button type="button" class="btn btn-outline-info full-screen">Toggle Full Screen</button>
+<br/>
+<div id="session_poll_chart">
+	<%= render 'session_polls_cms/show', session_poll: @session_poll %>
+</div>
+
+<script type="text/javascript">
+	var fullScreen = false
+	$('.full-screen').click(function(){
+	    fullScreen = !fullScreen
+	    fullScreen ? $('.navbar').hide() : $('.navbar').show()
+	})
+</script>

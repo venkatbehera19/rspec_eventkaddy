@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  survey_section: one
+  survey: one
+  question_type: one
+  order: 1
+  question: MyText
+
+two:
+  event: two
+  survey_section: two
+  survey: two
+  question_type: two
+  order: 1
+  question: MyText

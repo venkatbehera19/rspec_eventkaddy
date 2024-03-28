@@ -1,0 +1,99 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	wb.add_worksheet(name: "Session File Summary") do |sheet|
+	  sheet.add_row ['Session Code', 'Session Title','Speaker Names','Speaker Emails', 'Number of Notes', 'Final', 'Latest Conference URL','Session Tags','Updated At'], :style => [black_cell, black_cell, black_cell,black_cell,black_cell, black_cell, black_cell, black_cell, black_cell]
+
+    session_file_type = SessionFileType.where( name: @type_name ).first
+    session_files = SessionFile.
+      joins('JOIN sessions ON sessions.id=session_files.session_id').
+      where( event_id: @event_id, session_file_type_id: session_file_type.id )
+
+    if @job
+      @job.update!( status: "Processing Rows", total_rows: session_files.length)
+      @job.write_to_file
+    end
+
+		session_files.each do |session_file|
+
+			speakers       = ''
+			speaker_emails = ''
+			final_version  = ''
+			session = session_file.session
+
+  		session.speakers.each_with_index do |speaker, i|
+  			unless (i+1)===session.speakers.length
+					speakers       += "#{speaker.full_name} |"
+					speaker_emails += "#{speaker.email} | "
+  			else
+					speakers       += "#{speaker.full_name}"
+					speaker_emails += "#{speaker.email}"
+  			end
+  		end
+
+			session_file_versions_final = session_file.session_file_versions[5]
+	  	session_file_versions_count = session_file.session_file_versions.length
+
+    	if (session_file.session_file_versions.length > 0 &&
+				session_file.session_file_versions.order('updated_at DESC').first.event_file!=nil) then
+				#latest_url = "http://avmaspeakers.eventkaddy.net#{session_file.session_file_versions.order('created_at DESC').first.event_file.path}"
+				latest_url = "=HYPERLINK(\"#{session_file.event.master_url}#{session_file.session_file_versions.order('updated_at DESC').first.event_file.path}\""
+    	else
+    		latest_url = "No File Available"
+    	end
+
+			session_tags = ''
+
+			tagType = TagType.where(name:"session").first
+
+			#find all the existing tag groups
+			tags_session = TagsSession.select('session_id,tag_id,tags.parent_id AS tag_parent_id,tags.name AS tag_name').joins('
+				JOIN tags ON tags_sessions.tag_id=tags.id'
+				).where('session_id=? AND tags.tag_type_id=?',session.id,tagType.id)
+
+			tag_groups = []
+
+			tags_session.each_with_index do |tag_session, i|
+
+				tag_groups[i] = []
+
+				#add leaf tag
+				tag_groups[i] << tag_session.tag_name
+				parent_id = tag_session.tag_parent_id #acquired from above table join
+
+				#add ancestor tags, if any
+				while (parent_id!=0)
+					tag = Tag.where(event_id:session[:event_id],id:parent_id)
+					if (tag.length==1) then
+						tag_groups[i] << tag[0].name
+						parent_id = tag[0].parent_id
+					else
+						parent_id = 0
+					end
+				end
+				tag_groups[i].reverse! #reverse the order, as we followed the tag tree from leaf to root
+			end
+
+			if tag_groups.length > 0 then
+				tag_groups.each_with_index do |tag_group, i|
+					tag_group.each_with_index do |tag, i|
+						unless (i+1)===tag_group.length
+						 session_tags += "#{tag}:"
+						else
+						 session_tags += "#{tag}"
+						end
+					end
+					unless (i+1)===tag_groups.length
+						session_tags += ","
+					end
+				end
+			end
+
+  		sheet.add_row [session.session_code,session.title,speakers,speaker_emails,session_file_versions_count,session_file_versions_final,latest_url,session_tags,session.updated_at]
+      @job.plus_one_row if @job
+  		sheet.column_widths 20,40,20,20,20,20,40,60,20
+		end
+	end
+end

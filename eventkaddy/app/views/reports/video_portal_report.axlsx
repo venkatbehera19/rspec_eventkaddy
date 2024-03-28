@@ -1,0 +1,56 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+login_data      = GetLoginData.new(@event_id).call
+video_view_data = GetVideoViewData.new(@event_id).call
+attendee_ids = []
+attendee_ids << login_data.map {|a| a['attendee_id'] }
+attendee_ids << video_view_data.map {|a| a['attendee_id'] }
+attendee_ids.flatten!.uniq!
+
+attendees = Attendee.where(id:attendee_ids)
+
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+
+	heads = ['Attendee ID', 'First Name', 'Last Name', 'Company', 'Username', 'City', 'State', 'Country', 'Event Name', 'Login Date', 'Session Code', 'Session Title', 'Time Started Viewing']
+
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Video Portal Report") do |sheet|
+	  sheet.add_row heads, :style => style
+
+	  attendees.each do |a|
+
+	  	logins = login_data.select {|login| login['attendee_id'] == a.id}
+
+	  	logins.each_with_index do |login, i|
+
+	  		if logins.length > i + 1
+		  		next_login = logins[i + 1]
+		  	else
+		  		next_login = {"created_at" => '2100-02-08T14:13:47.000Z'}
+		  	end
+
+	  		video_views = video_view_data.select {|video_view|
+	  			(Time.parse(login['created_at'])..Time.parse(next_login['created_at'])).cover?(Time.parse(video_view['created_at'])) && video_view['attendee_id'] == a.id}
+
+	  		video_views.each do |video_view|
+
+					viewed_at    = Time.parse(video_view['created_at']).strftime('%F %R')
+					logged_in_at = Time.parse(login['created_at']).strftime('%F %R')
+
+					sheet.add_row [a.id, a.first_name, a.last_name, a.company, a.username, a.city, a.state, a.country, @event_name, logged_in_at, video_view['session_code'], video_view['session_title'], viewed_at], :height => 15
+					sheet.column_widths 20,20,20,20,20,20,20,20,20,30,20,60,30
+				end
+			end
+		end
+	end
+end

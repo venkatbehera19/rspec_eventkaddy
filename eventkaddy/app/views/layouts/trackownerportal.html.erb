@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>EventKaddy CMS</title>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <%= csrf_meta_tag %>
+
+  <% @event_setting = EventSetting.where("event_id= ?",session[:event_id]).first %>
+  <%  @tab_type_ids = Array.new %>
+    <%  TabType.where(portal:"trackowner").each do |t|   %>
+    <%    @tab_type_ids.push(t.id)  %>
+    <%  end %>
+
+    <%  @tabs = Tab.where(event_id:session[:event_id],tab_type_id:@tab_type_ids) %>
+</head>
+
+<body>
+
+<div class="d-flex" id="wrapper">
+	<div class="accordion bg-light border-right" id="sidebar-wrapper">
+			<div class="brand-logo text-center">
+					<% if @event_setting && @event_setting.event_file_portal_logo %>
+							<a href="/">
+									<%= image_tag(@event_setting.event_file_portal_logo.path, :size=>'50x50', class: "navbar-brand", style: "font-size: 0.8rem;") %>
+							</a>
+					<% else %>
+							<a href="/">
+									<!-- <img src="/assets/ek_logo.png" width="100px" height="40px"> -->
+									<%= image_tag 'ek_logo_large.png', width: "100px", height: "40px" %>
+							</a>
+					<% end %>
+			</div>
+			<div class="list-group">
+					<% if !(@tabs.length==0) %>
+							<% @tabs.each do |tab| %>
+									<% if tab.enabled %>
+											<%= link_to "/trackowner_portals/#{tab.tab_type.controller_action}", class: "list-group-item list-group-item-action d-flex" do %>
+													<div class="icon-div"></div> <%= tab.name %>
+											<% end %>
+									<% end %>
+							<% end %>
+					<% else %>
+							<%= link_to "/trackowner_portals/landing", class: "list-group-item list-group-item-action d-flex" do %>
+									<div class="icon-div"></div>Welcome
+							<% end %>
+							<%= link_to "/trackowner_portals/sessions", class: "list-group-item list-group-item-action d-flex" do %>
+									<div class="icon-div"></div>Sessions
+							<% end %>
+							<%= link_to "/trackowner_portals/speakers", class: "list-group-item list-group-item-action d-flex" do %>
+									<div class="icon-div"></div>Speakers
+							<% end %>
+							<%= link_to "/trackowner_portals/session_files", class: "list-group-item list-group-item-action d-flex" do %>
+									<div class="icon-div"></div>Session Notes
+							<% end %>
+					<% end %>
+			</div>
+
+	</div>
+	<div id="page-content-wrapper">
+		<% if user_signed_in? && !current_user.id.eql?(true_user.id) %>
+			<div class="impersonate-banner">
+				You are signed-in as <%= current_user.email %>&nbsp;
+				<%= link_to "Back to admin", stop_impersonating_users_path, method: :post %>
+			</div>
+		<% end %>
+		<div class="navbar navbar-expand-md navbar-dark bg-celurean-custom">
+				<svg id="menu-toggle" class="opened" width="30" height="30" viewBox="0 0 100 100" onclick="this.classList.toggle('opened');">
+						<path class="line line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058" />
+						<path class="line line2" d="M 20,50 H 80" />
+						<path class="line line3" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942" />
+				</svg>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#trackowners-topnav">
+						<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="trackowners-topnav">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item"><%= link_to "Home", "/home/index", class: "nav-link" %></li>
+						<% if user_signed_in? then %>
+							<li class="nav-item"><%= link_to "Change Password", "/trackowner_portals/edit_account", class: "nav-link" %></li>
+							<li class="nav-item"><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete, class: "nav-link" %></li>
+						<% else %>
+							<li class="nav-item"><%= link_to "Speaker Portal", "/users/sign_in", class: "nav-link" %></li>
+							<li class="nav-item"><%= link_to "Manager Login", "/users/sign_in", class: "nav-link" %></li>
+						<% end %>
+					</ul>
+				</div>
+
+		</div>
+
+			<div class="container-fluid content-container500">
+				<div class="row">
+
+					<div class="col-sm-11 col-centered">
+						<% if (@event_setting && !@event_setting.event_file_portal_banner.blank?) then %>
+							<%= image_tag(@event_setting.event_file_portal_banner.path, style: 'width: 100%; max-height: 8rem;')  %>
+						<% end %>
+
+						<div id="user_defined_header">
+							<% if (@current_tab!=nil && @current_tab.header_text!=nil && @current_tab.header_text.length > 0) then %>
+								<hr class="soften">
+								<%=@current_tab.header_text.html_safe %>
+								<hr class="soften">
+							<% end %>
+						</div>
+
+						<div id="content">
+							<% if notice %>
+								<p class="alert alert-info"><%= notice %></p>
+									<% end %>
+									<% if alert %>
+										<p class="alert alert-danger"><%= alert %></p>
+							<% end %>
+
+							<%= yield %>
+						</div>
+
+						<div id="user_defined_footer">
+							<% if (@current_tab!=nil && @current_tab.footer_text!=nil && @current_tab.footer_text.length > 0) then %>
+								<hr class="soften">
+								<%=@current_tab.footer_text.html_safe %>
+								<hr class="soften">
+							<% end %>
+						</div>
+
+					</div>
+				</div><!--row-->
+			</div>
+
+			<hr>
+
+			<div class="footer">
+				<div class="footer-text">
+					<% if (!(@event_setting.nil?) && (@event_setting.support_email_address!=nil)) then %>
+						Questions? Email <strong><a href="mailto:<%=@event_setting.support_email_address %>?subject=2014 Speaker Portal Inquiry" class="portal_email"><%= @event_setting.support_email_address %></a></strong>
+					<% else %>
+						Questions?  Email support@eventkaddy.com
+					<% end %>
+				</div>
+			</div>
+	</div>
+</div>
+
+
+</body>
+</html>

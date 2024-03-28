@@ -1,0 +1,272 @@
+:javascript
+    $(function() {
+        var checkTrue = function() { $(this).children('input')[1].checked = true; };
+        var checkFalse = function() {
+            $(this).children('input')[0].value = 0;
+            $(this).children('input')[1].checked = false;
+        };
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true
+        });
+    });
+
+:css
+    #accordion {
+       margin-top:10px;
+       margin-bottom:10px;
+    }
+    .acc-div {
+        padding:10px;
+    }
+%h4 Video Portal Headings
+%br/ 
+.bg-light.custom-border.px-4.py-4{style:'min-height:500px;'}
+
+    = form_for @video_portal_headings, :html => { :method => :post }, :url => '/settings/update_video_portal_headings' do |f|
+
+        #accordion
+            %h4 Site Configurations
+            .acc-div
+                .form-group
+                    %label HTML Title
+                    = f.text_field :html_title, class: "form-control"
+                .form-group
+                    %label Google Analytics Key
+                    = f.text_field :ga_key, class: "form-control"
+                .form-group
+                    %label Background Color
+                    = f.text_field :video_portal_bgcolor, class: "form-control"
+                .field
+                    %label Photo Gallery URL
+                    = f.text_field :photo_gallery_url, class: "form-control"
+                .form-group
+                    %label Game URL
+                    = f.text_field :game_url, class: "form-control"
+                .form-group
+                    %label Landing Page (relative path)
+                    = f.text_field :landing, class: "form-control"
+                .form-group
+                    %label Dashboard Page Heading
+                    = f.text_field :dashboard_heading, class: "form-control"
+
+
+            %h4 Main Menu Names
+            .acc-div
+                .form-group
+                    %label Dashboard Menu Name
+                    = f.text_field :dashboard_menu_name, class: "form-control"
+                .form-group
+                    %label Session Menu Name
+                    = f.text_field :session_menu_name, class: "form-control"
+                .form-group
+                    %label Exhibitor Menu Name
+                    = f.text_field :exhibitor_menu_name, class: "form-control"
+                .form-group
+                    %label Networking Menu Name
+                    = f.text_field :networking_menu_name, class: "form-control"
+                .form-group
+                    %label Info Menu Name
+                    = f.text_field :blog_menu_name, class: "form-control"
+                .form-group
+                    %label Notifications Menu Name
+                    = f.text_field :notifications_menu_name, class: "form-control"
+                .form-group
+                    %label Survey Menu Name
+                    = f.text_field :survey_menu_name, class: "form-control"
+                .form-group
+                    %label On Demand Menu Name
+                    = f.text_field :on_demand_menu_name, class: "form-control"  
+                .form-group
+                    %label Help Menu Name
+                    = f.text_field :help_menu_name, class: "form-control"
+                .form-group
+                    %label Photo Menu Name
+                    = f.text_field :photo_gallery_menu_name, class: "form-control"
+                .form-group
+                    %label Game Menu Name
+                    = f.text_field :game_menu_name, class: "form-control"
+                .form-group
+                    %label Messaging Menu Name
+                    = f.text_field :messaging_menu_name, class: "form-control"
+                .form-group
+                    %label Booked Slots
+                    = f.text_field :booked_slots_menu_name, class: "form-control"
+
+            %h4 Session Page Headings
+            .acc-div
+                .form-group
+                    %label Sessions by Days
+                    = f.text_field :session_heading_days, class: "form-control"
+                -# .field
+                -#     %label Sessions by Tags
+                -#     = f.text_field :session_heading_session_tag
+                -# .field
+                -#     %label Sessions by Audience Tag
+                -#     = f.text_field :session_heading_audience_tag
+                .form-group
+                    %label Sessions by Speaker
+                    = f.text_field :session_heading_speakers, class: "form-control"
+                .form-group
+                    %label Sessions in Favorites
+                    = f.text_field :session_heading_favorites, class: "form-control"
+                .form-group
+                    %label Sessions by My CE
+                    = f.text_field :session_heading_ce, class: "form-control"
+                .form-group
+                    %label Sessions by Search
+                    = f.text_field :session_heading_search, class: "form-control"
+            
+            %h4 Exhibitor Page Headings
+            .acc-div
+                .form-group
+                    %label Exhibitor Gallery
+                    = f.text_field :exhibitor_heading_gallery, class: "form-control"
+                .form-group
+                    %label Exhibitor by Letter
+                    = f.text_field :exhibitor_heading_letter, class: "form-control"
+                .form-group
+                    %label Exhibitor by Alphabet
+                    = f.text_field :exhibitor_heading_alphabet, class: "form-control"
+                .form-group
+                    %label Exhibitor by Sponsors
+                    = f.text_field :exhibitor_heading_sponsers, class: "form-control"
+                .form-group
+                    %label Exhibitor by Categories
+                    = f.text_field :exhibitor_heading_categories, class: "form-control"
+                .form-group
+                    %label Exhibitor by Search
+                    = f.text_field :exhibitor_heading_search, class: "form-control"
+
+            %h4 Sessions Sub Menu Names
+            .acc-div
+                .form-group
+                    %label Sessions by Days
+                    = f.text_field :session_menu_days, class: "form-control"
+                .form-group
+                    %label On-Demand Videos
+                    = f.text_field :on_demand , class: "form-control"               
+                .form-group
+                    %label Sessions by Tags
+                    = f.text_field :session_menu_session_tag, class: "form-control"
+                .form-group
+                    %label Sessions by Audience Tag
+                    = f.text_field :session_menu_audience_tag, class: "form-control"
+                .form-group
+                    %label Sessions by Speaker
+                    = f.text_field :session_menu_speakers, class: "form-control"
+                .form-group
+                    %label Sessions in Favorites
+                    = f.text_field :session_menu_favorites, class: "form-control"
+                .form-group
+                    %label Sessions by My CE
+                    = f.text_field :session_menu_ce, class: "form-control"
+                .form-group
+                    %label Sessions by Search
+                    = f.text_field :session_menu_search, class: "form-control"
+
+            %h4 Exhibitors Sub Menu Names
+            .acc-div
+                .form-group
+                    %label Exhibitors by Sponsor
+                    = f.text_field :exhibitor_menu_sponser, class: "form-control"
+                .form-group
+                    %label Exhibitors Alphabetically
+                    = f.text_field :exhibitor_menu_alphabetically, class: "form-control"
+                .form-group
+                    %label Exhibitors by Category
+                    = f.text_field :exhibitor_menu_category, class: "form-control"
+                .form-group
+                    %label Exhibitors by Search
+                    = f.text_field :exhibitor_menu_search, class: "form-control"
+
+
+            %h4 Attendees Sub Menu Names
+            .acc-div
+                .form-group
+                    %label Attendees Alphabetically
+                    = f.text_field :attendee_menu_alphabetically, class: "form-control"
+                .form-group
+                    %label Attendees by Category
+                    = f.text_field :attendee_menu_category, class: "form-control"
+                .form-group
+                    %label Attendees by Search
+                    = f.text_field :attendee_menu_search, class: "form-control"
+
+
+            %h4 Session Labels
+            .acc-div
+                .form-group
+                    %label Session Info
+                    = f.text_field :session_info_label, class: "form-control"
+                .form-group
+                    %label Speaker Info
+                    = f.text_field :session_speaker_info_label, class: "form-control"
+                .form-group
+                    %label Files
+                    = f.text_field :session_files_label, class: "form-control"
+                .form-group
+                    %label Feedback
+                    = f.text_field :session_feedback_label, class: "form-control"
+                .form-group
+                    %label Q&A
+                    = f.text_field :session_qa_label, class: "form-control"
+                .form-group
+                    %label Notes
+                    = f.text_field :session_notes_label, class: "form-control"
+                .form-group
+                    %label Polling
+                    = f.text_field :session_polling_label, class: "form-control"
+                .form-group
+                    %label Claim CE
+                    = f.text_field :session_claim_ce_label, class: "form-control"
+                
+
+
+            %h4 Exhibitor Labels
+            .acc-div
+                .form-group
+                    %label Exhibitor Info
+                    = f.text_field :exhibitor_info_label, class: "form-control"
+                .form-group
+                    %label Exhibitor Miscellaneous
+                    = f.text_field :exhibitor_misc_label, class: "form-control"
+                .form-group
+                    %label Files
+                    = f.text_field :exhibitor_files_label, class: "form-control"
+                .form-group
+                    %label Notes
+                    = f.text_field :exhibitor_notes_label, class: "form-control"
+                .form-group
+                    %label Contact Me Form
+                    = f.text_field :exhibitor_contact_label, class: "form-control"
+                .form-group
+                    %label Products
+                    = f.text_field :exhibitor_products_label, class: "form-control"
+                .form-group
+                    %label Links
+                    = f.text_field :exhibitor_links_label, class: "form-control"
+                .form-group
+                    %label Messages
+                    = f.text_field :exhibitor_messages_label, class: "form-control"
+                -# .field
+                -#     %label Staffs
+                -#     = f.text_field :exhibitor_staffs_label, class: "form-control"
+                .field
+                    %label Timeslots Booking
+                    = f.text_field :timeslots_booking_label, class: "form-control"
+                .field
+                    %label Screen
+                    = f.text_field :screen_label, class: "form-control"
+                .field
+                    %label Chat
+                    = f.text_field :exhibitor_chat_label, class: "form-control"
+            %h4 Save as Default Settings
+            .acc-div
+                .field
+                    %label Default 
+                    = label_tag do
+                        = check_box_tag :save_as_default, '1', false
+                        Save Style as Default   
+
+        = f.submit 'Update Video Portal Heading Settings', class:'btn btn-primary'

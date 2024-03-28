@@ -1,0 +1,39 @@
+<h1>Listing sponsor_specifications</h1>
+<%= link_to 'New Sponsor specification', new_sponsor_specification_path,class:"btn btn-primary" %> <br/><br/>
+<table>
+  <tr>
+    <th>Exhibitor</th>
+    <th>Sponsor level type</th>
+    <th>Banner ad</th>
+    <th>Banner ad iphone</th>
+    <th>Banner ad android</th>
+    <th>Banner ad mobile</th>
+    <th>Banner ad home</th>
+    <th>Banner ad touch</th>
+    <th>Banner ad link</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @sponsor_specifications.each do |sponsor_specification| %>
+  <tr>
+    <td><%= sponsor_specification.exhibitor_id %></td>
+    <td><%= sponsor_specification.sponsor_level_type %></td>
+    <td><%= sponsor_specification.banner_ad %></td>
+    <td><%= sponsor_specification.banner_ad_iphone %></td>
+    <td><%= sponsor_specification.banner_ad_android %></td>
+    <td><%= sponsor_specification.banner_ad_mobile %></td>
+    <td><%= sponsor_specification.banner_ad_home %></td>
+    <td><%= sponsor_specification.banner_ad_touch %></td>
+    <td><%= sponsor_specification.banner_ad_link %></td>
+    <td><%= link_to 'Show', sponsor_specification ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_sponsor_specification_path(sponsor_specification) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', sponsor_specification, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

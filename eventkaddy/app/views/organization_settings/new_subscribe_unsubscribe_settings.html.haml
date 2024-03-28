@@ -1,0 +1,63 @@
+%h4 Member Subscribe/Unsubscribe Setting
+%br/
+.bg-light.custom-border.px-2.py-2.container-fluid
+	= form_for @organization_setting, :html => { :method => :post,  :multipart => true}, :url => '/organization_settings/subscribe_unsubscribe_settings' do |f| 
+		.alert{:class => "alert-info", :style=>"wdith:100%"}
+			%b Member Subscribe Url:
+			%a{ :href=> "#{@event.cms_url}/members/#{@event.organization.id}/subscribe", :target=>"_blank"}
+				="#{@event.cms_url}/members/#{@event.organization.id}/subscribe"
+			%br    
+			%b Member Unsubscribe Url:
+			%a{ :href=> "#{@event.cms_url}/members/#{@event.organization.id}/unsubscribe", :target=>"_blank"}
+				="#{@event.cms_url}/members/#{@event.organization.id}/unsubscribe"    
+		= f.hidden_field :organization_id
+		= f.hidden_field :setting_type_id
+		.d-flex.flex-row#cards-container.mt-2
+			.card.card-body.settings-card
+				%h5 Add Fields
+				.d-flex.mb-4
+					= select_tag :type, options_for_select(['text', 'number', 'checkbox'])
+					= text_field_tag :field_label, nil, placeholder: 'Field name/label'
+					= button_tag "Add Field", type: 'button', class: 'btn btn-outline-info btn-sm add-fields'
+				%h5 Fields For Subscribe Page
+				.card{:style => "width: 18rem;"}
+					%ul.list-group.list-group-flush.fields-lists
+						- if @organization_setting.fields
+							- @organization_setting.fields.each do |key, value|
+								- remove_id = "#{key}_#{value}"
+								%li.field_list.list-group-item{:id => "#{remove_id}"}
+									%p.mb-0
+										%span.keys{"data-value": key}
+											= "#{key.titleize.gsub('_', ' ')} (#{value})"
+										%a.btn.btn-outline-danger.btn-sm.remove-field{:style => " position: relative; float: right; font-size: 10px; ", "data-remove" => "#{remove_id}"} Remove
+									%input#organization_setting_fields_phone_number{:name => "organization_setting[fields][#{key}]", :type => "hidden", :value => "#{value}"}/
+
+
+		.d-flex.flex-row#cards-container.mt-2
+			.card.card-body.settings-card
+				%h5 Member Subscribe Header Page Image
+				- if (@organization_setting.subcribe_page_header_image_id != nil)
+					- subscribe_file = OrganizationFile.find_by(id: @organization_setting.subcribe_page_header_image_id)
+					- subscribe_file_url = subscribe_file.file_path(@event.id)["url"]
+
+					= image_tag(subscribe_file_url, :style => "width: 60%;height: 60%;")
+					= f.label :subcribe_page_header_image_id, "Choose a New Header Image Logo"
+					= f.file_field :subcribe_page_header_image_id
+				- else
+					= f.label :subcribe_page_header_image_id, "Choose a Header Image Logo"
+					= f.file_field :subcribe_page_header_image_id
+		.d-flex.flex-row#cards-container.mt-2
+			.card.card-body.settings-card
+				%h5 Member Unsubscribe Header Page Image
+				- if (@organization_setting.unsubcribe_page_header_image_id != nil)
+					- unsubscribe_file = OrganizationFile.find_by(id: @organization_setting.unsubcribe_page_header_image_id)
+					- unsubscribe_file_url = unsubscribe_file.file_path(@event.id)["url"]
+
+					= image_tag(unsubscribe_file_url, :style => "width: 60%;height: 60%;")
+					= f.label :unsubcribe_page_header_image_id, "Choose a New Header Image Logo"
+					= f.file_field :unsubcribe_page_header_image_id
+				- else
+					= f.label :unsubcribe_page_header_image_id, "Choose a Header Image Logo"
+					= f.file_field :unsubcribe_page_header_image_id
+		%br
+		= f.submit 'Update Settings', class:'btn btn-primary'

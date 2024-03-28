@@ -1,0 +1,79 @@
+.form-horizontal.well
+    %h3 Add Scavenger Hunt Item
+    = form_for(@scavenger_hunt_item, html: { multipart: true}) do |f|
+        .field
+            Associated Image (not mandatory)
+            %br
+            = file_field_tag "event_file"
+        %br
+        %br
+        .field
+            Scavenger Hunt
+            %br
+            = f.select_tag :scavenger_hunt_item_type_id, options_from_collection_for_select(@scavenger_hunts, :id, :title)
+        .field
+            Name
+            %br
+            = f.text_field :name
+        .field
+            Description
+            %br
+            = f.text_area :description, style:'height:150px;'
+        .field
+            Answer (Anything that can be typed on a phone. We suggest a 4 digit code)
+            %br
+            = f.text_field :answer
+        = f.submit 'Add Scavenger Hunt Item', class:'btn btn-primary'
+
+.ek-heading
+    %h3 Scavenger Hunt Items
+
+.form-horizontal.well
+
+    - if @scavenger_hunt_items.length == 0
+        No items have been added to this event yet.
+
+    - @scavenger_hunt_items.each do |item|
+        .row{style:'margin:15px;'}
+            .pull-left{style:'width:90%;'}
+                %h4= item.name
+
+                = form_for(item, html: { multipart: true}, url: {action: "update", id:item}) do |f|
+
+                    - unless item.event_file_id.blank?
+                        .banner-image-container{style:'margin-bottom:10px;'}
+                            = link_to image_tag(item.path), item.path
+                            %br
+
+                    .field
+                        Associated Image (not mandatory)
+                        %br
+                        = file_field_tag "event_file"
+                    %br
+                    %br
+                    .field
+                        Scavenger Hunt
+                        %br
+                        = f.select_tag :scavenger_hunt_item_type_id, options_from_collection_for_select(@scavenger_hunts, :id, :title, item.scavenger_hunt_id)
+                    .field
+                        Name
+                        %br
+                        = f.text_field :name
+                    .field
+                        Description
+                        %br
+                        = f.text_area :description, style:'height:150px;'
+                    .field
+                        Answer
+                        %br
+                        = f.text_field :answer
+                        %br
+                        %br
+
+                        = f.submit 'Update Item', class:'btn btn-primary'
+
+            .pull-right
+                = link_to 'Delete', "/scavenger_hunt_items/#{item.id}", :confirm => 'Are you sure?', :method => :delete, class:"btn delete"
+        %hr
+
+

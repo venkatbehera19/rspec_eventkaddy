@@ -1,0 +1,37 @@
+<h4 class="mt-4">Category: <%= @product_category.name %></h4>
+
+<p>List Of Products</p>
+<table class="table table-striped" id="products_table">
+	<thead>
+  <tr>
+    <th>Name</th>
+    <th>Price</th>
+    <th>Action</th>
+  </tr>
+	</thead>
+	<tbody>
+		<% @product_category.products.each do |product| %>
+			<tr>
+				<td><%= product.name %></td>
+				<td><%= product.price %></td>
+				<td>
+					<div class="table-actions">
+						<div class="btn-group d-flex">
+							<%= link_to('Edit', edit_product_path(product), class: "btn btn-outline-success") %>
+							<%= link_to('Delete', product_path(product), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn btn-outline-danger") %>
+					</div>
+					<div class="dropdown">
+						<a data-toggle= 'dropdown' style="font-size:1.4rem; cursor: pointer;">
+							<i class="fa fa-ellipsis-v"></i>
+						</a>
+						<div class="dropdown-menu">
+								<%= link_to('Edit', edit_product_path(product), class: "btn text-info dropdown-item") %>
+								<%= link_to('Delete', product_path(product), data: {:confirm => 'Are you sure?'}, :method => :delete ,class:"btn text-danger dropdown-item") %>
+							</div>
+						</div>
+					</div>
+				 </td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>

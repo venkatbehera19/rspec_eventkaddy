@@ -1,0 +1,2 @@
+module ExhibitorPortalGlobalConfigsHelper
+end

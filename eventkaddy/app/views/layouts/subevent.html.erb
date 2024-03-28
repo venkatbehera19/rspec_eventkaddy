@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>EventKaddy CMS</title>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+  
+  <%= csrf_meta_tag %>
+</head>
+
+<body>
+
+	<div class="container">
+	
+		<div id="header" class="span-24 last">
+			
+			<div id="logo" class="span-6">
+				<h2>EventKaddy CMS</h2>
+			</div><!--logo-->
+			
+			<div id="vertical-menu-bar" class="span-17 last">
+				
+				<div id="vertical-menu-1">
+					<table>
+						<tr>
+						<% if user_signed_in? then %>
+<!-- 						<td><%= link_to "Logout #{current_user.email}", "/users/sign_out" %></td> -->
+						<td><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete %></td>
+						
+						<% else %>
+						<td><%= link_to "login", "/users/sign_in" %></td>
+						<% end %>
+						</tr>
+					</table>
+				</div>
+				
+				<div id="vertical-menu-2">
+					<table>
+						<tr>
+							<% if session[:event_id] && session[:event_name] then %>
+							<td><%= link_to session[:event_name], "/events/configure/#{session[:event_id]}" %></td>
+							<td><%= link_to "(change event)", "/home/index" %></td>
+							<% else %>
+							<td></td>
+							<% end %>
+						</tr>
+						
+					</table>
+				</div>
+				
+			</div><!--vertical-menu-bar-->
+			
+		</div><!--header-->
+		
+		<div id="left-sidebar" class="span-3 colborder">
+			<div id="first-left-sidebar">
+				<table>
+					<% if (current_user.role? :super_admin) then %>
+					
+						<tr><th>Session Management</th></tr>
+						<tr><td><%= link_to 'Sessions', "/sessions" %></td</tr>
+						<tr><td><%= link_to 'Speakers', "/speakers" %></td</tr>
+						<tr><td><%= link_to 'Rooms', "/location_mappings/rooms" %></td</tr>
+<!-- 						<tr><td><%= link_to 'Tracks', "/tracks" %></td</tr> -->
+<!-- 						<tr><td><%= link_to 'Subtracks', "/subtracks" %></td</tr> -->
+						<tr><td><%= link_to 'Attendees', "/attendees" %></td</tr>	
+						<tr><td><%= link_to 'Feedback Summary', "/feedbacks/results.xlsx" %></td</tr>																	
+						<tr><th>Exhibitor Management</th></tr>
+						<tr><td><%= link_to 'Exhibitors', "/exhibitors" %></td</tr>
+						<tr><td><%= link_to 'Booths', "/location_mappings/booths" %></td</tr>
+						<tr><th>Mobile Configuration</th></tr>
+						<tr><td><%= link_to 'Event Maps', "/event_maps" %></td></tr>
+						<tr><td><%= link_to 'Home Button Groups', "/home_button_groups" %></td</tr>
+						<tr><td><%= link_to 'Notifications', "/notifications" %></td</tr>
+					<% else %>
+						<!--display only limited editing options -->
+						<tr><th>Session Management</th></tr>
+						<tr><td><%= link_to 'Sessions', "/sessions" %></td</tr>
+						<tr><td><%= link_to 'Speakers', "/speakers" %></td</tr>
+						<tr><td><%= link_to 'Rooms', "/location_mappings/rooms" %></td</tr>
+<!-- 						<tr><td><%= link_to 'Tracks', "/tracks" %></td</tr> -->
+<!-- 						<tr><td><%= link_to 'Subtracks', "/subtracks" %></td</tr> -->
+						<tr><td><%= link_to 'Attendees', "/attendees" %></td</tr>						
+						<tr><td><%= link_to 'Feedback Summary', "/feedbacks/results.xlsx" %></td</tr>						
+						<tr><th>Exhibitor Management</th></tr>
+						<tr><td><%= link_to 'Exhibitors', "/exhibitors" %></td</tr>
+						<tr><td><%= link_to 'Booths', "/location_mappings/booths" %></td</tr>
+						<tr><th>App Configuration</th></tr>
+						<!--tr><td><%= link_to 'Extras', "/home_button_groups/category/extras" %></td></tr-->
+						<tr><td><%= link_to 'Social', "/home_button_groups/category/social" %></td></tr>
+						<!--tr><td><%= link_to 'Videos', "/home_button_groups/category/videos" %></td></tr-->
+						<tr><td><%= link_to 'Home Button Groups', "/home_button_groups" %></td</tr>
+						<tr><td><%= link_to 'Event Maps', "/event_maps" %></td></tr>
+						<tr><td><%= link_to 'Notifications', "/notifications" %></td</tr>
+					<% end %>
+				</table>
+			</div><!--first-left-sidebar-->
+			
+			<div id="second-left-sidebar">
+				<%= yield :event_sub_menu %>
+			</div><!--second-left-sidebar-->
+			
+		</div><!--left-sidebar-->
+		
+		<div id="content" class="span-20 last">
+			<% if notice %>
+				<p class="notice"><%= notice %></p>
+       		<% end %>
+       		<% if alert %>
+       			<p class="alert"><%= alert %></p>
+			<% end %>
+			
+			<%= yield %>
+		</div>
+		
+		<div id="footer" class="span-24 last">
+			<div id="footer-text">
+				Questions?  Email support@eventkaddy.com
+			</div><!--footer-text-->
+		</div>
+	
+	</div><!--container-->
+	
+</body>
+</html>

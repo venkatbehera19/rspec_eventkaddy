@@ -1,0 +1,79 @@
+/* GENERAL */
+
+.exhibitor-product-headers {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: normal;
+  color: #243743;
+  text-align: center;
+}
+
+#exprod {
+  width: 90%;
+  margin: auto;
+  max-width: 940px;
+  background-color: #f0f0f0;
+  padding-bottom: 50px;
+  padding-top: 20px;
+}
+
+#exprod-header {
+  text-align: center;
+}
+
+#exprod-image {
+  text-align: center;
+}
+
+.exprod-image {
+  text-align: center;
+  display: block;
+  margin: auto;
+}
+
+#exprod-desc {
+  text-align: center;
+  margin-left: 0;
+}
+
+#exprod-res {
+  text-align: center;
+  max-width: 100%;
+}
+
+#exprod-res p {
+  max-width: 100%;
+}
+
+#exprod-res a:hover {
+  text-decoration: none;
+}
+
+#exprod-address p {
+  margin: 0;
+  text-align: center;
+}
+
+@media (min-width: 480px) {
+  #exprod-image {
+    width: 50%;
+  }
+
+  #exprod-desc {
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 480px) {
+  #exprod-image {
+    width: 100%;
+  }
+
+  #exprod-image img {
+    width: 90%;
+    text-align: center;
+  }
+
+  #exprod-desc {
+    max-width: 100%;
+  }
+}

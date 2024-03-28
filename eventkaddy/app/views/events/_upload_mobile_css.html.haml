@@ -1,0 +1,13 @@
+= form_tag("/events/upload_mobile_css", method: "post", remote: true, multipart: true, id: "upload-form") do
+  .modal.fade#form-modal-without-job{tabindex: "-1", role: "dialog", "aria-labelledby": "exampleModalLabel", "aria-hidden": "true"}
+    .modal-dialog{role: 'document'}
+      .modal-content.py-3.px-4
+        .modal-header
+          %h4.modal-title Upload spreadsheet file
+          %button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+            &times;
+          = label_tag(:file, class: "file-upload-lab") do
+            %i.fa.fa-arrow-down
+            %p.file-name Click to select or drag and drop the file here
+          = file_field_tag(:file, class: "d-none file-tag")
+          = button_tag("Upload", class: 'btn btn-primary form-control close', data: {sname:'config-page-import-sessions'}, 'data-dismiss': 'modal', style: 'opacity: 1;')

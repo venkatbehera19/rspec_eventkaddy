@@ -1,0 +1,14 @@
+<h5>Keynote Speakers</h5>
+<div class="row py-3" id="keynote-speaker-cards">
+  <%= render partial: 'speakers_list', locals: {speakers: @keynote_speakers} %>
+</div>
+<div class="pagination-buttons row justify-content-between p-3">
+  <button class="btn btn-outline-primary keynote-speakers-pagination" type="button" id="prev_keynote_speakers">
+    <i class="fa fa-angle-left"></i> 
+  </button>
+  <button class="btn btn-outline-primary keynote-speakers-pagination" type="button" id="next_keynote_speakers">
+    <i class="fa fa-angle-right"></i>
+  </button>
+</div>
+<%= hidden_field_tag :total_pages_keynote, @total_pages_keynote %>
+<hr>

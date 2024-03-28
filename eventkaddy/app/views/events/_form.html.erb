@@ -1,0 +1,190 @@
+<%= form_for(@event, :html => { :multipart => true, :class=>"form-horizontal well" } ) do |f| %>
+    <% if @event.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@event.errors.count, "error") %> prohibited this event from being saved:</h2>
+
+            <ul>
+                <% @event.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+        <%= f.hidden_field :org_id, :value => @organization_id %>
+    </div>
+
+    <div class="form-group">
+        <%= f.label :name %>
+        <%= f.text_field :name, class: "form-control" %>
+    </div>
+
+    <!--<div class="field">
+        <%= label_tag :photo_file, "Logo"%>
+        <%= file_field_tag :photo_file %><br /><br />
+        </div>-->
+
+        <div class="form-group">
+            <%= f.label :description %>
+            <%= f.text_area :description, :rows => 4, class: "form-control" %>
+        </div>
+
+        <!--add users to this event -->
+        <!-- <% if @user_list!=nil %>  
+            <div class="form-group">
+                <%= label_tag(:add_users, "Add Users:") %>
+                <%= select_tag(:user_ids, options_for_select(@users.map { |user| ["#{user.email}" ,user.id] },@user_list),:multiple => true, :size=>30, class: "custom-select") %>
+            </div>  
+
+        <% else %>
+            <div class="form-group">
+                <%= label_tag(:add_users, "Add Users:") %>
+                <%= select_tag(:user_ids, options_for_select(@users.map { |user| ["#{user.email}" ,user.id] }),{:multiple => true, :size =>30, class: "custom-select"}) %>
+            </div>  
+        <% end %> -->
+        <%= hidden_field_tag :user_ids, @user_list ? @user_list : [] %>
+        <div class="form-group">
+            <label for="add_users">Add users</label>
+            <div id="added-users">
+                <%= added_user_tags(@users, @user_list) %>
+            </div>
+            <input type="text" id="add-users" class="form-control" list="user-list"
+                placeholder="Select from suggestions to Add">
+            <datalist id="user-list">
+                <%= options_for_select(@users.map { |user| ["#{user.email}", {id: user.id}] }, disabled: @users.where(id: @user_list).pluck(:email)) %>
+            </datalist>
+        </div>
+
+        <div class="form-group narrow-datetime">
+            <%= f.label :event_start_at %><br/>
+            <%= f.date_select :event_start_at, {}, class: "custom-select" %>
+        </div>
+        <div class="form-group narrow-datetime">
+            <%= f.label :event_end_at %> <br/>
+            <%= f.date_select :event_end_at, {}, class: "custom-select" %>
+        </div>
+        <!-- <div class="field">
+            <%= f.label :longitude %><br />
+            <%= f.text_field :longitude %>
+            </div>
+            <div class="field">
+            <%= f.label :latitude %><br />
+            <%= f.text_field :latitude %>
+            </div>
+            <div class="field">
+            <%= f.label :url_web %><br />
+            <%= f.text_field :url_web %>
+            </div>
+            <div class="field">
+            <%= f.label :url_facebook %><br />
+            <%= f.text_field :url_facebook %>
+            </div>
+            <div class="field">
+            <%= f.label :url_twitter %><br />
+            <%= f.text_field :url_twitter %>
+            </div>
+            <div class="field">
+            <%= f.label :url_rss %><br />
+            <%= f.text_field :url_rss %> 
+            </div>-->
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <%= f.label :exhibitors do %>
+                        <%= f.check_box :exhibitors %>
+                        Exhibitors
+                    <% end %><br>
+
+                    <%= f.label :enhanced_listings do %>
+                        <%= f.check_box :enhanced_listings %>
+                        Enhanced Listings
+                    <% end %><br>
+
+                    <%= f.label :sponsorship do %>
+                        <%= f.check_box :sponsorship %>
+                        Sponsorship
+                    <% end %><br>
+
+                    <%= f.label :flare_enabled do %>
+                        <%= f.check_box :flare_enabled %>
+                        Flare Enabled
+                    <% end %><br>
+
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <%= f.label :iphone do %>
+                        <%= f.check_box :iphone %>
+                        iPhone
+                    <% end %><br>
+
+                    <%= f.label :android do %>
+                        <%= f.check_box :android %>
+                        Android
+                    <% end %><br>
+
+                    <%= f.label :mobile_site do %>
+                        <%= f.check_box :mobile_site %>
+                        Mobile Site
+                    <% end %><br>
+
+                    <%= f.label :hide_in_app do %>
+                        <%= f.check_box :hide_in_app %>
+                        Hide In App
+                    <% end %><br>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <%= f.label :touchscreen do %>
+                        <%= f.check_box :touchscreen %>
+                        Touchscreen
+                    <% end %><br>
+
+                    <%= f.label :soma_record do %>
+                        <%= f.check_box :soma_record %>
+                        Soma Record
+                    <% end %><br>
+
+                    <%= f.label :multi_event_status do %>
+                        <%= f.check_box :multi_event_status %>
+                        Multi Event Status
+                    <% end %><br>
+
+                </div>
+            </div><!-- row -->
+            <br />
+
+            <div class="actions">
+                <%= f.submit class:"btn btn-primary"   %>
+            </div>
+        <% end %>
+
+<script>
+    $("#add-users").change(function(){
+        let email = $(this).val();
+        let option = $('option[value="' + email + '"]');
+        if (option.length === 0){
+            $(this).val("");
+            return;
+        }
+        let id = option.attr('id');
+        option.attr("disabled", "")
+        //console.log(email, id);
+        $("#added-users").append("<span class='add-user-tags' id=" + id + ">" + 
+            email + 
+            "<span class='remove-tag ml-2'>&times;</span>" +  
+        "</span>");
+        let users = $("#user_ids");
+        let user_ids = users.val();
+        users.val(user_ids + " " + id);
+        $(this).val("");
+
+    });
+    $("#added-users").on('click', '.add-user-tags .remove-tag', function(){
+        let parent = $(this).parent();
+        let users = $("#user_ids");
+        let user_ids = users.val();
+        let removed_id = parent.attr("id");
+        users.val(user_ids.replace(removed_id, ""));
+        parent.remove();
+        $('option[id="' + removed_id + '"]').removeAttr("disabled")
+    });
+</script>

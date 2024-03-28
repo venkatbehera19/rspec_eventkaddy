@@ -1,0 +1,30 @@
+<%= form_for(@app_image_setting, :html => { :multipart => true, :class=>"bg-light custom-border px-3 px-3" } ) do |f| %>
+  
+  <% if @app_image_setting.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@app_image_setting.errors.count, "error") %> prohibited this exhibitor file from being saved:</h2>
+
+      <ul>
+        <% @app_image_setting.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :app_image_type_id, :value =>  @app_image_type.id %>
+  </div>
+  <div class="form-group">
+      <%= label_tag "Device Type"%>
+      <%= f.collection_select(:device_type_id, DeviceType.order(:name).where(leaf:1), :id, :name, {}, class: "custom-select")%>
+  </div>
+  <div class="form-group">
+      <%= label_tag "Size"%>
+      <%= f.collection_select(:app_image_size_id, AppImageSize.order(:image_width), :id, :app_image_size_description, {}, class: "custom-select")%>
+  </div>
+  </br>
+  <div class="actions">
+    <%= f.submit "Create New Setting", class:"btn btn-primary"   %>
+  </div>
+<% end %>

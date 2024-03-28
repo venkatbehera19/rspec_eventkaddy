@@ -1,0 +1,44 @@
+<%= link_to 'Back', app_images_path + '?app_image_type_id=' + @app_image_type.id.to_s, class:"btn btn-primary"%>
+<%= link_to 'New Setting', new_device_app_image_size_path, class:"btn btn-primary"%>
+
+
+
+<h4>Image Settings for <%=@app_image_type.name.capitalize%>s</h4>
+<br><br>
+
+<div class="table-responsive">
+<table id="app_image_settings" cellpadding="0" cellspacing="0" border="0" class="table table-striped">
+  <thead>
+    <tr>
+      <th>Device</th>
+      <th>Size</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @app_image_settings.each do |setting| %>
+      <tr>
+        <td><%= setting.device_type.name %> </td>
+        <td>width: <%= setting.app_image_size.image_width%></br>
+            height: <%= setting.app_image_size.image_height%></td>
+        <td class="table-actions">
+          <div class="dropdown">
+            <a data-toggle="dropdown" style="font-size: 1.4rem; cursor: pointer;">
+              <i class="fa fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu">
+              <%= link_to 'Edit', edit_device_app_image_size_path(setting) ,class:"btn dropdown-item text-success" %>
+              <%= link_to 'Delete', setting, :confirm => 'Are you sure?', :method => :delete ,class:"btn dropdown-item text-danger" %>
+            </div>
+          </div>
+          <div class="btn-group d-flex">
+            <%= link_to 'Edit', edit_device_app_image_size_path(setting) ,class:"btn btn-outline-success" %>
+            <%= link_to 'Delete', setting, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>

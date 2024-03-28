@@ -1,0 +1,2 @@
+module SponsorLevelTypesHelper
+end

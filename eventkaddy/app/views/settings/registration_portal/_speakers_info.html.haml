@@ -1,0 +1,6 @@
+.form-group.custom-control.custom-switch
+    = f.check_box :show_header_speaker_page, class: "custom-control-input"
+    = f.label :show_header_speaker_page, class: "custom-control-label" do
+        Show Header
+%label Speakers Info
+= f.cktext_area :speakers_info, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}

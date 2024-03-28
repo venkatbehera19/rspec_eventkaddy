@@ -1,0 +1,77 @@
+.well{style:'min-height:500px;'}
+
+    = form_for @video_portal_strings, :html => { :method => :post }, :url => '/settings/update_video_portal_strings' do |f|
+        .field
+            %label HTML Title
+            = f.text_field :html_title
+        .field
+            %label Google Analytics Key
+            = f.text_field :ga_key
+        .field
+            %label Background Color
+            = f.text_field :video_portal_bgcolor
+        .field
+            %label Photo Gallery URL
+            = f.text_field :photo_gallery_url
+        .field
+            %label Game URL
+            = f.text_field :game_url
+        .field
+            %label Landing Page (relative path)
+            = f.text_field :landing
+        .field
+            %label Dashboard Menu Name
+            = f.text_field :dashboard_menu_name
+        .field
+            %label Session Menu Name
+            = f.text_field :session_menu_name
+        .field
+            %label Exhibitor Menu Name
+            = f.text_field :exhibitor_menu_name
+        .field
+            %label Networking Menu Name
+            = f.text_field :networking_menu_name
+        .field
+            %label Info Menu Name
+            = f.text_field :blog_menu_name
+        .field
+            %label Notifications Menu Name
+            = f.text_field :notifications_menu_name
+        .field
+            %label Survey Menu Name
+            = f.text_field :survey_menu_name
+        .field
+            %label Help Menu Name
+            = f.text_field :help_menu_name
+        .field
+            %label On Demand Name
+            = f.text_field :on_demand_menu_name
+        .field
+            %label Photo Menu Name
+            = f.text_field :photo_gallery_menu_name
+        .field
+            %label Game Menu Name
+            = f.text_field :game_menu_name
+        .field
+            %label Messaging Menu Name
+            = f.text_field :messaging_menu_name
+        .field
+            %label Dashboard Content
+            = f.cktext_area :dashboard_title, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Dashboard Slider Content
+            = f.cktext_area :dashboard_slider, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Login Page Content
+            = f.cktext_area :login_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label External CE Content
+            = f.cktext_area :external_ce_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+        .field
+            %label Internal CE Content
+            = f.text_field :internal_ce_text
+        .field
+            %label Help Page Content
+            = f.cktext_area :help_text, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+
+        = f.submit 'Update Video Portal String Settings', class:'btn btn-primary'

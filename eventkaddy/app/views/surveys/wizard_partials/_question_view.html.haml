@@ -1,0 +1,70 @@
+.wizard-view.question-view{data:{hash:'#question', order:'', survey_section_id:'', question_id:''}}
+
+    .top-panel.btn-toolbar
+        .btn-group
+            #question_save_button.proceed_to_answer_button.save_button.btn.btn-success{data:{'model' => 'question', 'hash' => '#answer'},style:'border-right:1px solid black;'}>
+                Save & Add Answers
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}>
+                Save & . . .
+            .dropdown-menu
+                %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#hint'}}
+                    = '. . . Proceed to Adding Hints'
+                %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#question'}}
+                    = '. . . Proceed to Adding Another Question'
+
+                - unless current_user.role? :exhibitor
+                    %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#survey_section'}}
+                        = '. . . Proceed to Adding Another Survey Section'
+
+                .dropdown-divider{:role => "separator"}
+
+                %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#index'}}
+                    = '. . . Go to Surveys Index'
+                - unless current_user.role? :exhibitor
+                    %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#sessionassoc'}}
+                        = '. . . Go to Create Session Associations Page'
+                    %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#exhibitorassoc'}}
+                        = '. . . Go to Create Exhibitor Associations Page'
+                    - if @survey.survey_type_id == 1
+                        %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#certificateassoc'}}
+                            = '. . . Go to CE Certificate Associations Page'
+                %a.save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#questionorder'}}
+                    = '. . . Go to Modify Question Order Page'
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;'}>
+            %button.btn.btn-primary.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                Don't Save & . . .
+            .dropdown-menu.wizard-special-actions
+                - unless current_user.role? :exhibitor
+                    %a.dont_save_button.dropdown-item{data:{'model' => 'question', 'hash' => '#survey_section'}}
+                        = '. . . Proceed to Adding Another Survey Section'
+                .dropdown-divider
+                %a.dropdown-item{:href => "/surveys"}
+                    = '. . . Go to Surveys Index'
+
+        .ml-auto.wizard-bar-btn-group
+            .wizard-removal.btn.btn-danger{data:{'model' => 'question'}}
+                X Remove This Question
+
+    .wizard-form.survey_form
+
+        .field
+            .wizard-extra-details
+
+        .form-group
+            %label#question-label.wizard-label{for: "question_question"} Question
+            %input#question_question.wizard-input.form-control
+
+        - if current_user.role? :exhibitor
+            .form-inline.mb-3
+                %label.wizard-label.mr-2{for: "question_type_id"} Type
+                = select_tag "question_type_id", options_from_collection_for_select(QuestionType.where("name != ?","Autocomplete Exhibitor"), "id", "name", "1"), class: "custom-select"
+
+        - else
+            .form-inline.mb-3
+                %label.wizard-label.mr-2{for: "question_type_id"} Type
+                = select_tag "question_type_id", options_from_collection_for_select(QuestionType.all, "id", "name", "1"), class: "custom-select"
+
+

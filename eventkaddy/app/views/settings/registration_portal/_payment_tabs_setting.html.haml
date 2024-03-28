@@ -1,0 +1,42 @@
+= javascript_include_tag "unordered-files/sortandrename.js"
+%h4 Product
+#stable-height
+  #response
+  
+.form-group 
+  = f.label :product_categories_id, "Choose Registration Product Category" 
+  %br/
+  = f.collection_select :registration_category_ids, ProductCategory.where(event_id: session[:event_id]), :id, :name, {class: 'multiselect'}, {multiple: true}
+  %br/
+
+.form-group 
+  = f.label :product_categories_id, "Choose Multiple Product Category" 
+  %br/
+  = f.collection_select :product_categories_ids, ProductCategory.where(event_id: session[:event_id]), :id, :name, {class: 'multiselect'}, {multiple: true}
+  %br/
+  %br/
+  = f.check_box :is_list_view
+  = f.label :is_list_view, "Products List View"
+
+
+%ul.sortable-tabs.mx-auto
+  - @tabs.each do |tab|
+    %li.d-flex.flex-row.tab-row.mb-2
+      .position-btns.handle{style: "width: 5%;"}
+        %button.pos-btn.btn{type: "button", role: "up"}
+          %i.fa.fa-angle-up
+        %br/
+        %button.pos-btn.btn{type: "button", role: "down"}
+          %i.fa.fa-angle-down
+      .tab-text.form-inline.row.ml-4.mr-4{style: "width: 74%;"}
+        %input(type="text" value="#{tab.name}" class="form-control col-md-7")/
+        = link_to 'Edit Header and Footer', edit_tab_path(tab) ,class:"btn btn-outline-success col-md-5 handle"
+      .pt-4.enabled-disabled.pull-right
+        - if tab.enabled
+          %label.switch.handle
+            %input(type="checkbox" id="#{tab.tab_type_id}" checked=true)/
+            %span.slider.round
+        - else
+          %label.switch.handle
+            %input(type="checkbox" id="#{tab.tab_type_id}")/
+            %span.slider.round

@@ -1,0 +1,19 @@
+<% if @speaker_payment_detail == nil %>
+  <p>Payment details have not been entered by conference staff at this time.</p>
+<% else %>
+  <% @s = @speaker_payment_detail %>
+  <div class="table-responsive">
+  <table class="table">
+
+<!-- 	  <tr><th>Payment Type</th><td><%= @s.payment_type %></td></tr>
+ -->	  
+ 		<tr><th>Eligible Payment Rate</th><td><% if (@s.eligible_payment_rate!=nil) %><%= @s.eligible_payment_rate %><% end %></td></tr>
+	 	<tr><th>Total Honorarium</th><td><% if (@s.total_honorarium!=nil && is_i(@s.total_honorarium)) %><%= "$%.2f" % @s.total_honorarium %><%else%><%=@s.total_honorarium%><% end %></td></tr>
+	 	<tr><th>Total Per Diem</th><td><% if (@s.total_per_diem!=nil && is_i(@s.total_per_diem)) %><%= "$%.2f" % @s.total_per_diem %><%else%><%=@s.total_per_diem%><% end %></td></tr>
+
+  </table>
+  </div>
+<% end %>
+
+
+

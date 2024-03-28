@@ -1,0 +1,189 @@
+<body>
+  <nav class="navbar navbar-light bg-light reg-banner">
+    <%= @settings.reg_banner.to_s.html_safe %>
+  </nav>
+  <div class="container-fluid d-flex flex-column mx-auto reg-main">
+    <div class="d-flex reg-section-container align-items-center reg-header pb-0" style="<%= "background-image: linear-gradient(to bottom, ##{@settings.gradient_top || '317eac'}, ##{@settings.gradient_bottom || 'a4b5c0'}" if !@settings.show_header_edit_page %>">
+      <div class="row mx-auto d-flex reg-row">
+        <div class="col-12 d-flex reg-col">
+          <!-- ======= Nav ======= /
+          -->
+          <nav class="navbar navbar-expand-sm navbar-light full-width">
+            <a class="navbar-brand text-wrap">
+              <% event_setting = EventSetting.select(:portal_logo_event_file_id).where(event_id:params[:event_id]).first_or_create %>
+              <% if event_setting && event_setting.event_file_portal_logo %>
+                <%= image_tag(event_setting.event_file_portal_logo.path, :class =>'photo_preview') %>
+              <% else %>
+                <img src="/assets/ek_logo.png" width="100px"/>
+              <% end %>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations">
+                      <i class="fa fa-home"></i>
+                    </a>
+                  </li>
+                <% if @settings.method("agenda").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/agenda">
+                      AGENDA
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("speakers").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/speakers">
+                      SPEAKERS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("exhibitors").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/exhibitors">
+                      EXHIBITORS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("sponsors").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/sponsors">
+                      SPONSORS
+                    </a>
+                  </li>
+                <% end %>
+                <% if @settings.method("hotel_information").call() %>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/<%= params[:event_id] %>/registrations/hotel_information">
+                      HOTEL INFORMATION
+                    </a>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </nav>
+          <div class="row">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if notice %>
+    <div class="alert alert-success shadow" role="alert" style="border-left:#155724 5px solid; border-radius: 0px">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true" style="color:#155724">&times;</span>
+      </button>
+      <div class="row">
+        <i class="fa fa-check-circle-o success-font"></i>
+        <p style="font-size:12px" class="mb-0 font-weight-light"><%= notice %></p>
+      </div>
+    </div>
+  <% end %>
+  <% if alert %>
+      <div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true" style="color:#721C24">&times;</span>
+          </button>
+          <div class="row">
+                  <i class="fa fa-exclamation-circle danger-font"></i>
+                  <p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+          </div>
+      </div>
+  <% end %>
+  <div id="user_defined_header">
+    <% if (@current_tab!=nil && @current_tab.header_text!=nil && @current_tab.header_text.length > 0) %>
+        <hr class="soften">
+        <%=@current_tab.header_text.html_safe %>
+        <hr class="soften">
+    <% end %>
+  </div>
+  <%= render "/registrations/cart_page" %>
+  <div id="user_defined_footer">
+    <% if @current_tab!=nil && @current_tab.footer_text!=nil && @current_tab.footer_text.length > 0 %>
+        <hr class="soften">
+        <%= @current_tab.footer_text.html_safe %>
+        <hr class="soften">
+    <% end %>
+  </div>
+</body>
+<style>
+  .reg-header{
+    background-image: url("<%=(!!@settings.reg_header_bg_img && @settings.show_header_edit_page) ? EventFile.find(@settings.reg_header_bg_img.to_i).path : '' %>");
+  }
+  label.registered-attendee-form-label {
+    font-size: 1.2rem;
+  }
+  .required-field::after {
+    content: '*';
+    color: red;
+    margin-left: 2px;
+  }
+  td {
+    font-weight: 100 !important;
+  }
+  li.nav-item.HeaderCart {
+      cursor: pointer;
+      font: inherit;
+      border: none;
+      background-color: white;
+      color: black;
+      padding: 0.35rem 1rem;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-radius: 25px;
+      font-weight: bold;
+  }
+
+  span.HeaderCart_icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      margin-right: 0.5rem;
+  }
+  span.HeaderCart_badge {
+      background-color: black;
+      padding: 0.25rem 1rem;
+      border-radius: 25px;
+      margin-left: 1rem;
+      font-weight: bold;
+      color: white;
+  }
+  #topBtn {
+     display: none;
+     position: fixed;
+     bottom: 66px;
+     right: 30px;
+     z-index: 99;
+     font-size: 25px;
+     border: none;
+     outline: none;
+     background-color: black;
+     color: white;
+     cursor: pointer;
+     padding: 15px;
+     border-radius: 4px;
+  }
+
+  span#lblCartCount {
+      font-size: 14px;
+      background: #2FA4E7;
+      color: #fff;
+      padding: 0 5px;
+      vertical-align: top;
+      margin-left: -6px;
+  }
+  @media (max-width: 767.98px) { .border-sm-start-none { border-left: none !important; } }
+</style>
+
+<script>
+  window.addEventListener("pageshow", function(event) {
+    var historyTraversal = event.persisted || 
+                          ( typeof window.performance != "undefined" && window.performance.navigation.type === 2  );
+    if (historyTraversal){
+      window.location.reload();
+    }
+  })
+</script>

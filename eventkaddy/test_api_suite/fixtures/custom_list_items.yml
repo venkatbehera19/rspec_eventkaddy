@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  custom_list: one
+  title: MyText
+  content: MyText
+  position: 1
+
+two:
+  event: two
+  custom_list: two
+  title: MyText
+  content: MyText
+  position: 1

@@ -1,0 +1,216 @@
+:javascript
+    $(function() {
+        $('.jpicker').jPicker({window:{position:{x:'100',y:'300'}}});
+        var checkTrue = function() { $(this).children('input')[1].checked = true; };
+        var checkFalse = function() {
+            $(this).children('input')[0].value = 0;
+            $(this).children('input')[1].checked = false;
+        };
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            collapsible: true
+        });
+    });
+    $(document).on('change','#button_classes_select', function(){
+        let selected_cls = $(this).val();
+        console.log(selected_cls);
+        $('#sample_button').removeClass().addClass('btn ' + selected_cls);
+    });
+
+:css
+    #accordion {
+       margin-top:10px;
+       margin-bottom:10px;
+    }
+    .acc-div {
+        padding:10px;
+    }
+    
+%h4 Attendee Badge Portal Settings
+%br/
+%div{style:'min-height:500px;'}
+    = form_for @attendee_badge_settings, :html => {:multipart => true, :method => :post }, :url => '/settings/update_attendee_badge_settings' do |f|
+        #accordion
+            %h4 General Configurations
+            .acc-div
+                .alert{:class => "alert-info", :style=>"width:100%"}
+                    %b Attendee Badge Print Url:
+                    %a{ :href=> "#{@event.cms_url}/#{@event.id}/attendee_badge_print", :target=>"_blank"}
+                        ="#{@event.cms_url}/#{@event.id}/attendee_badge_print"
+                .field
+                    %h5 Attendee Badge Portal
+                    = f.radio_button(:portal_open, 1, { checked: @attendee_badge_settings.portal_open})
+                    Open&nbsp;&nbsp;
+                    = f.radio_button(:portal_open, 0, {checked: !@attendee_badge_settings.portal_open})
+                    Close&nbsp;&nbsp;
+                %hr/
+                .form-group
+                    %label Google Analytics Key
+                    = f.text_field :ga_key, class: "form-control"
+                .form-group
+                    %label HTML Title
+                    = f.text_field :html_title, class: "form-control"
+                .field
+                    Search Attendee By
+                    = f.select :search_attendee_by, ['account_code', 'first_name', 'last_name'], {:selected => f.object.search_attendee_by}
+                / .field
+                /     Badge Template
+                /     = f.select :badge_format, BadgeTemplate.where(event_id: session[:event_id]).collect {|u| [u.name, u.id]}, {:selected => f.object.badge_format}
+                .field
+                    Badge Template For Attendee
+                    = f.select :badge_format_for_attendee, BadgeTemplate.where(event_id: session[:event_id]).collect {|u| [u.name, u.id]}, {:selected => f.object.badge_format_for_attendee}
+                    Show Attendee Search Field
+                    = f.check_box :show_badge_search_field_for_attendee
+                .field
+                    Badge Template For Exhibitor
+                    = f.select :badge_format_for_exhibitor, BadgeTemplate.where(event_id: session[:event_id]).collect {|u| [u.name, u.id]}, {:selected => f.object.badge_format_for_exhibitor}
+                    Show Exhibitor Search Field
+                    = f.check_box :show_badge_search_field_for_exhibitor
+                .field
+                    Badge Template For Speakers
+                    = f.select :badge_format_for_speakers, BadgeTemplate.where(event_id: session[:event_id]).collect {|u| [u.name, u.id]}, {:selected => f.object.badge_format_for_speakers}
+                    Show Speaker Search Field
+                    = f.check_box :show_badge_search_field_for_speaker
+                .field
+                    No. of times badge to be printed by Attendee
+                    = f.select :allowed_times_to_print_badge, (1..10).to_a, {:selected => f.object.allowed_times_to_print_badge}
+                .custom-control.custom-switch
+                    = f.check_box :use_pin_for_security, class: "custom-control-input", id: 'use-pin'
+                    %label.custom-control-label{:for => "use-pin"} Use Pin To Print Badge
+                .form-group
+                    %label OverRide Code
+                    = f.text_field :overide_code, class: "form-control"
+
+
+            %h4 Styles
+            .acc-div
+                %h5 Text Color Theme
+                %small Please select Light text-color for Dark backgrounds and vice versa.
+
+                %br/
+                %br/
+                .field
+                    = f.radio_button(:dark_bg_theme, 1, { checked: @attendee_badge_settings.dark_bg_theme})
+                    Light&nbsp;&nbsp;
+                    = f.radio_button(:dark_bg_theme, 0, { checked: !@attendee_badge_settings.dark_bg_theme})
+                    Dark
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :bold_text, class: "custom-control-input", id: "bold-text-switch"
+                    %label.custom-control-label{:for => "bold-text-switch"} Bold Text
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :text_shadow, class: "custom-control-input", id: "text-shadow-switch"
+                    %label.custom-control-label{:for => "text-shadow-switch"} Text Shadow
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :text_shadow_h1, class: "custom-control-input", id: "text-shadow_h1-switch"
+                    %label.custom-control-label{:for => "text-shadow_h1-switch"} Apply Text Shadow to h1
+                %br/
+                .custom-control.custom-switch
+                    = f.check_box :text_shadow_h2, class: "custom-control-input", id: "text-shadow_h2-switch"
+                    %label.custom-control-label{:for => "text-shadow_h2-switch"} Apply Text Shadow to h2
+                %hr/
+                %h5 Page Background
+                .form-group
+                    %label Background Image
+                    %br
+                    -if !@attendee_badge_settings.body_background_image.blank?
+                        =image_tag(EventFile.find(@attendee_badge_settings.body_background_image.to_i).path, :class=>'photo_preview')
+
+                    = file_field_tag :body_background_image, style: "width: 85%;"
+                %br/
+                .form-group
+                    %label Background Color
+                    %br
+                    = f.text_field :body_background_color, class: 'jpicker form-control d-inline', value: @attendee_badge_settings.body_background_color || 'ffffff', style: "width: 85%;"
+                .form-group
+                    %label Background Position
+                    %br
+                    = f.text_field :body_background_position, value: @attendee_badge_settings.body_background_position || 'center', class: 'form-control d-inline', style: "width: 85%;"
+                .form-group
+                    %label Background Size
+                    %br
+                    = f.text_field :body_background_size, value: @attendee_badge_settings.body_background_size || 'cover', class: 'form-control d-inline', style: "width: 85%;"    
+                .form-group
+                    %label Background Repeat
+                    %br
+                    = f.text_field :body_background_repeat, value: @attendee_badge_settings.body_background_repeat || 'no-repeat', class: 'form-control d-inline', style: "width: 85%;"
+                %br/
+                %hr/
+                %h5 Headers font-color
+                .form-group
+                    %label h1
+                    %br
+                    = f.text_field :h1_color, class: 'jpicker form-control d-inline', value: @attendee_badge_settings.h1_color || '317eac', style: "width: 85%;"
+                .form-group
+                    %label h2
+                    %br
+                    = f.text_field :h2_color, class: 'jpicker form-control d-inline', value: @attendee_badge_settings.h2_color || '317eac', style: "width: 85%;"    
+                .form-group
+                    %label h3
+                    %br
+                    = f.text_field :h3_color, class: 'jpicker form-control d-inline', value: @attendee_badge_settings.h3_color || '317eac', style: "width: 85%;"       
+                
+                .form-group
+                    %label h4
+                    %br
+                    = f.text_field :h4_color, class: 'jpicker form-control d-inline', value: @attendee_badge_settings.h4_color || '317eac', style: "width: 85%;"       
+              
+            %h4 Portal Images
+            .acc-div
+                %table                
+                    - if (@event_setting.attendee_badge_portal_banner_event_file_id!=nil) then
+                        - e =  EventFile.find(@event_setting.attendee_badge_portal_banner_event_file_id)
+                        - if e.cloud_storage_type_id.blank?
+                            %tr
+                                %td= image_tag(e.path, :class=>'photo_preview')                            
+                            %tr
+                                %td  
+                            %tr
+                                %td.text-break
+                                    Download your current banner photo: 
+                                    %br
+                                    = link_to e.name, e.path
+                        - else
+                            - e_url = e.return_authenticated_url()
+                            %tr                            
+                                %td= image_tag(e_url['url'], :class=>'photo_preview')
+                            %tr
+                                %td  
+                            %tr
+                                %td.text-break
+                                    Download your current banner photo: 
+                                    %br
+                                    = link_to e.name, e_url['url'], download: '', target:'_blank'
+                        %tr
+                            %td  
+                        %tr
+                            %td
+                                .field
+                                    = label_tag "Upload a new Registration Banner:"
+                                    = file_field_tag :portal_banner_file
+                    - else
+                        %tr
+                            %td
+                                .field
+                                    = label_tag :portal_banner_file, "Choose a Attendee Badge Portal Banner"
+                                    %br
+                                    = file_field_tag :portal_banner_file
+
+            %h4 Portal Page 
+            .acc-div
+                .field
+                    %label Heading
+                    = f.cktext_area :attendee_badge_portal_heading, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label SubHeading
+                    = f.cktext_area :attendee_badge_portal_subheading, style:"min-width:700px;height:300px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label Event Duration
+                    = f.cktext_area :attendee_badge_portal_duration, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+                .field
+                    %label Event Content
+                    = f.cktext_area :attendee_badge_portal_content, style:"min-width:700px;height:700px", :ckeditor => {:toolbar => "Full"}
+
+        = f.submit 'Update', class:'btn btn-primary'

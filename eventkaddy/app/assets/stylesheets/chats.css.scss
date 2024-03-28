@@ -1,0 +1,99 @@
+// Place all the styles related to the Chats controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+.pseudo-table {
+  display: table;
+  max-width: 1280px;
+  /* width: 940px; */
+  margin: 0 auto;
+}
+
+.embedded-chat-container {
+  // float:left;
+  background-color: #101010;
+  // height:430px;
+  // width:300px;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #101010;
+  // width:100%;
+  /* display: table-cell; */
+  vertical-align: bottom;
+}
+.chat-header {
+  background-color: #011e3d;
+  //color:#C3E1E1;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+  height: 6%;
+}
+
+.chat-log {
+  background-color: white;
+  text-align: left;
+  padding: 5px;
+  height: 350px;
+  // height: 460px;
+  //height:88%;
+  overflow-y: auto;
+  border-bottom: 1px solid #101010;
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+    0 -10px -10px 5px rgba(0, 0, 0, 0.5), 0 1px 8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.chat-name {
+  color: #101010;
+  font-weight: 400;
+}
+
+.chat-message {
+  font-weight: 200;
+  color: #7d7d7d;
+}
+
+#chat-input {
+  margin: 0px;
+  width: 99%;
+  text-align: left;
+  height: 6%;
+  // border-top:1px solid #101010;
+  // border-bottom:1px solid #101010;
+  // box-shadow: 0 3px 4px 0 rgba(0, 0, 0, .14), 0 3px 3px -2px rgba(0, 0, 0, .2), 0 1px 8px 0 rgba(0, 0, 0, .12)
+}
+.chat_and_video_container {
+  height: 430px;
+}
+.edit-chat-details {
+  float: right;
+}
+#chat-details {
+  float: right;
+}
+.chat-details-input {
+  width: 98%;
+}
+.mark-premium {
+  color: #e32;
+  display: inline;
+}
+.subscribed {
+  text-align: center;
+  color: #000000bf;
+}
+.clear-chat-btn {
+  float: right;
+}
+.chat-log-disabled {
+  background-color: white;
+  text-align: left;
+  padding: 5px;
+  height: 350px;
+  overflow-y: auto;
+  border-bottom: 1px solid #101010;
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+    0 -10px -10px 5px rgba(0, 0, 0, 0.5), 0 1px 8px 0 rgba(0, 0, 0, 0.12);
+}
+.chat-outer-container {
+  margin: auto;
+}

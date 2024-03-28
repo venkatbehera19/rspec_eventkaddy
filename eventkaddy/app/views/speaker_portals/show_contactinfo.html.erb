@@ -1,0 +1,246 @@
+<% form = FormWithSettings.new 'speaker_portal_settings', session[:event_id] %>
+
+<%= form_for(@speaker, :html => { :multipart => true, :class => "bg-light custom-border px-3 py-3 mt-3" }, :url => {:action => "update_contactinfo"}   ) do |f| %>
+
+    <div class="actions">
+        <% event = Event.find(session[:event_id]) %>
+        <% if (!(@event_setting.nil?) && !(@event_setting.speaker_details_editable)) then %>
+            <% if (!(@event_setting.support_email_address.nil?) && !(@event_setting.support_email_address == "")) then %>
+                Please contact <a href="mailto:<%=@event_setting.support_email_address %>" class="portal_email">
+                    <%= @event_setting.support_email_address %>
+                </a> if you wish to make any changes to your contact info.
+            <% else %>
+                Speaker details are not presently editable.
+            <% end %>
+        <% else %>
+            <%= f.submit "Update My Profile", class:"btn btn-primary" %>
+        <% end %>
+
+    </div>
+
+    <hr>
+
+    <div class="row">
+
+        <div class="col-md-5">
+
+            <% if @speaker.errors.any? %>
+                <div id="error_explanation">
+                    <h2>
+                        <%= pluralize(@speaker.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+                    <ul>
+                        <% @speaker.errors.full_messages.each do |msg| %>
+                            <li>
+                                <%= msg %>
+                            </li>
+                        <% end %>
+                    </ul>
+                </div>
+            <% end %>
+
+            <div class="field">
+                <%= f.hidden_field :event_id, :value => @speaker.event_id %>
+            </div>
+
+
+            <% form.unless_setting :hide_photo_file do %>
+                <table>
+                    <% if @speaker.event_file_photo!=nil %>
+                        <tr>
+                            <td>
+                                <%= image_tag(@speaker.event_file_photo.path, :height=>'100') %>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                Download your current profile photo: <%= link_to @speaker.event_file_photo.name, @speaker.event_file_photo.path %>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+
+                        <% form.unless_setting :locked_photo_file do %>
+                            <tr>
+                                <td>
+                                    <div class="field">
+                                        <%= label_tag "Upload a new photo:" %>
+                                        <%= file_field_tag :photo_file %>
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        <% end %>
+                    <% else %>
+                        <% form.unless_setting :locked_photo_file do %>
+                            <tr>
+                                <td>
+                                    <div class="field">
+                                        <%= label_tag :photo_file, "Choose a Profile Photo" %>
+                                        <br>
+                                        <%= file_field_tag :photo_file %>
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                </table>
+            <% end # unless hide photo file %>
+
+            <% form.unless_setting :hide_cv_file do %>
+                <table>
+                    <% if @speaker.event_file_cv!=nil %>
+                        <tr>
+                            <td>
+                                Download your current CV: <%= link_to @speaker.event_file_cv.name, @speaker.event_file_cv.path %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <% form.unless_setting :locked_cv_file do %>
+                            <tr>
+                                <td>
+                                    <div class="field">
+                                        <%= label_tag "Upload a replacement CV:" %>
+                                        <%= file_field_tag :cv_file %>
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        <% end %>
+                    <% else %>
+                        <% form.unless_setting :locked_cv_file do %>
+                            <tr>
+                                <td>
+                                    <div class="field">
+                                        <%= label_tag :cv_file, "Upload a CV (optional):" %>
+                                        <br>
+                                        <%= file_field_tag :cv_file %>
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                </table>
+            <% end %>
+
+            <% form.unless_setting :hide_fd_file do %>
+                <table>
+                    <% if (@speaker.event_file_fd!=nil) then %>
+                        <tr>
+                            <td>
+                                Download your current Financial Disclosure: <%= link_to @speaker.event_file_fd.name, @speaker.event_file_fd.path %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <% form.unless_setting :locked_cv_file do %>
+                            <tr>
+                                <td>
+                                    <div class="field">
+                                        <%= label_tag "Upload a replacement Financial Disclosure:" %>
+                                        <%= file_field_tag :fd_file %>
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        <% end %>
+                    <% else %>
+                        <% form.unless_setting :locked_cv_file do %>
+                            <tr>
+                                <td>
+                                    <div class="field">
+                                        <%= label_tag :fd_file, "Upload a Financial Disclosure (optional):" %>
+                                        <br>
+                                        <%= file_field_tag :fd_file %>
+                                    </div>
+                                    <br>
+                                </td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                </table>
+            <% end %>
+            <%unless event.master_url.blank?%>
+                <%form.unless_setting :hide_speaker_form_online_url do%>
+                <div class="form-check">
+                    <%= label_tag :online_url, class: "form-check-label" do %>
+                        <%= check_box_tag :online_url, 1, true, class: "form-check-input" %>
+                        Include Online Copy of Latest Speaker Photo
+                    <% end %>
+                </div>
+                <%end%>
+                <%=hidden_field_tag :online_url, 1%>
+            <%end%>
+            <br>
+
+            <%= form.text_field f, "first_name", nil, class: "form-control" %>
+            <%= form.text_field f, "middle_initial", nil, class: "form-control" %>
+            <%= form.text_field f, "last_name", nil, class: "form-control" %>
+
+            <div class="form-group">
+                <%= f.label :email, "Email" %>
+                <%= f.text_field :email, readonly:true, class: "form-control" %>
+
+                <% if !(@event_setting.nil?) && !(@event_setting.speaker_details_editable) %>
+                    <% if !(@event_setting.support_email_address.nil?) && !(@event_setting.support_email_address == "") %>
+                        <p>Please contact <a href="mailto:<%=@event_setting.support_email_address %>" class="portal_email"><%= @event_setting.support_email_address %></a> if you wish to change your email address.</p>
+                        <br>
+                    <% end %>
+                <% end %>
+            </div>
+
+            <%# <%= form.text_field f, "email" %1> %>
+            <%= form.text_field f, "honor_prefix", nil, class: "form-control" %>
+            <%= form.text_field f, "honor_suffix", nil, class: "form-control" %>
+            <%= form.text_field f, "company", "Organization", class: "form-control" %>
+            <%= form.text_field f, "address1", "Address Line 1", class: "form-control" %>
+            <%= form.text_field f, "address2", "Address Line 2", class: "form-control" %>
+            <%= form.text_field f, "address3", "Address Line 3", class: "form-control" %>
+            <%= form.text_field f, "city", nil, class: "form-control" %>
+            <%= form.text_field f, "state", nil, class: "form-control" %>
+            <%= form.text_field f, "country", nil, class: "form-control" %>
+            <%= form.text_field f, "zip", nil, class: "form-control" %>
+            <%= form.text_field f, "work_phone", nil, class: "form-control" %>
+            <%= form.text_field f, "mobile_phone", nil, class: "form-control" %>
+            <%= form.text_field f, "home_phone", nil, class: "form-control" %>
+            <%= form.text_field f, "fax", nil, class: "form-control" %>
+            <%= form.text_field f, "facebook_url", nil, class: "form-control" %>
+            <%= form.text_field f, "linked_in", nil, class: "form-control" %>
+            <%= form.text_field f, "twitter_url", nil, class: "form-control" %>
+            <%= form.text_field f, "custom_filter_1", nil, class: "form-control" %>
+            <%= form.text_field f, "custom_filter_2", nil, class: "form-control" %>
+            <%= form.text_field f, "custom_filter_3", nil, class: "form-control" %>
+        </div>
+
+        <div class="col-md-5 mx-auto">
+
+            <%= form.text_area f, "biography", nil, class: "form-control"  %>
+            <%= form.text_area f, "notes", "Additional Notes", class: "form-control"  %>
+            <%= form.text_area f, "availability_notes", "Availability Notes", class: "form-control"  %>
+            <%= form.text_area f, "financial_disclosure", "Financial Disclosure", class: "form-control"  %>
+
+            <%= form.text_field f, "fd_tax_id", "FD Tax ID (XXX-XX-5555)", class: "form-control" %>
+            <%= form.text_field f, "fd_pay_to", "FD Pay To (Add contact/address info if different from primary contact info)", class: "form-control" %>
+            <%= form.text_field f, "fd_street_address", "FD Street Address", class: "form-control" %>
+            <%= form.text_field f, "fd_city", "FD City", class: "form-control" %>
+            <%= form.text_field f, "fd_state", "FD State", class: "form-control" %>
+            <%= form.text_field f, "fd_zip", "FD Zip", class: "form-control" %>
+
+
+        </div>
+    </div>
+
+<% end %>
+

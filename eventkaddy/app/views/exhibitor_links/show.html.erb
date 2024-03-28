@@ -1,0 +1,28 @@
+<%= link_to 'Back', exhibitor_links_path,class:"btn" %> 
+<%= link_to 'Edit', edit_exhibitor_link_path(@exhibitor_link) ,class:"btn edit" %> 
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Event:</b>
+  <%= @exhibitor_link.event_id %>
+</p>
+
+<p>
+  <b>Exhibitor:</b>
+  <%= @exhibitor_link.exhibitor_id %>
+</p>
+
+<p>
+  <b>Exhibitor link name:</b>
+  <%= @exhibitor_link.exhibitor_link_name %>
+</p>
+
+<p>
+  <b>Exhibitor link url:</b>
+  <%= @exhibitor_link.exhibitor_link_url %>
+</p>
+
+
+

@@ -1,0 +1,72 @@
+<%= form_for(@ticket, :html => { :multipart => true, :class => "form-horizontal well" }) do |f| %>
+  <% if @ticket.errors.any? %>
+    <div class="alert alert-danger" role="alert">
+      <h5><%= pluralize(@ticket.errors.count, "error") %> prohibited this ticket from being saved:</h2>
+
+      <ul>
+      <% @ticket.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.hidden_field :event_id, :value => @event.id %>
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title , class: "form-control", required: true%>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="form-group">
+        <%= f.label :date %>
+        <%= f.date_field :date , class: "form-control", required: true%>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <%= f.label :start_time %>
+        <%= f.datetime_field :start_time , class: "form-control", required: true%>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <%= f.label :end_time %>
+        <%= f.datetime_field :end_time , class: "form-control", required: true%>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :session %>
+    <%= f.select 'session_id', options_from_collection_for_select(@event.sessions, 'id', 'title'), {include_blank: true} ,{class: "form-control"} %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :location %>
+    <%= f.text_field :location , class: "form-control"%>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description %>
+    <%= f.text_area :description , class: "form-control"%>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag :background_image, "Choose a File" %>
+    <%= file_field_tag "background_image" %>
+    <div>
+    <% unless f.object.event_file.blank? %>
+      <% url = f.object.event_file.return_authenticated_url%>
+      <%= image_tag(url["url"], class: "img-thumbnail", size: "350x350") %>
+    <% end %>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <%= f.submit class:"btn btn-primary"   %>
+  </div>
+<% end %>

@@ -1,0 +1,58 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div id="content">
+			<h4>Product Categories</h4>
+			<div class="btn-toolbar my-2">
+				<div class="btn-group mr-2">
+					<a class="btn btn-primary" href="<%= new_product_category_path %>">New Product Category
+						<i class="fa fa-plus"></i>
+					</a>
+					<a class="btn btn-primary ml-2" href="<%= create_default_product_categories_product_categories_path %>">Create Default Product Categories
+						<i class="fa fa-plus"></i>
+					</a>
+				</div>
+			</div>
+			<%= link_to('Reorder The Product Category','/reorder_product_category', class: "btn btn-primary mb-3") %>
+			<br> 
+
+				<table class="table table-striped" id="product_category_table">
+					<thead>
+			      <tr>
+			        <th>Name</th>
+			        <th>Actions</th>
+			      </tr>
+					</thead>
+					<tbody>
+						<% @product_categories.each do |category| %>
+							<tr>
+								<td><%= category.name %></td>
+								<td>
+									<div class="table-actions">
+										<div class="btn-group d-flex">
+											<%= link_to('Edit', edit_product_category_path(category), class: "btn btn-outline-success") %>
+											<%= link_to('Show', product_category_path(category), class: "btn btn-outline-success") %>
+											<% if category.deleted %>
+												<%= link_to('Add', add_product_category_path(category), data: {:confirm => 'Are you sure?'},method: :post, class: "btn btn-outline-info") %>
+											<% else %>
+												<%= link_to('Delete', product_category_path(category), data: {:confirm => 'Are you sure?'}, method: :delete, class: "btn btn-outline-danger") %>
+											<% end %>
+									</div>
+									<div class="dropdown">
+										<a data-toggle= 'dropdown' style="font-size:1.4rem; cursor: pointer;">
+											<i class="fa fa-ellipsis-v"></i>
+										</a>
+										<div class="dropdown-menu">
+												<%= link_to('Edit', edit_product_category_path(category), class: "btn text-info dropdown-item") %>
+												<%= link_to('Show', product_category_path(category), class: "btn text-info dropdown-item") %>
+											</div>
+										</div>
+									</div>
+								 </td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+		</div>
+	</div>
+</div>
+

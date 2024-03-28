@@ -1,0 +1,77 @@
+<div class="row">
+  <div class="col-md-12">
+    <p>Choose Any One</p>
+    <table class="table table-bordered">
+        <thead>
+      <tr>
+        <th>Options</th>
+        <th>Price</th>
+        <th>Name</th>
+      </tr>
+        </thead>
+        <tbody>
+            <% products = Product.registration_products(params[:event_id]) %>
+            <% products.each do |product| %>
+                <tr>
+                    <% require_membership = ["aafp_member", "aafp_non_member", "aafp_retired"].include?(product.iid)%>
+                    <td><%= radio_button("product", "id", product.id, {class: "products", "data-product": product.id, "data-event": params[:event_id], "data-attendee": @register_form&.id, "data-require-membership": require_membership}) %></td>
+                    <td><%= number_to_currency(product.price, :unit => "$") %></td>
+                    <td><%= product.name %></td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+  </div>
+
+  <div class="col-md-6">
+    
+  </div>
+  
+</div>
+
+
+
+<script>
+  $('.products').click(function(){
+    product = this.dataset.product
+    event = this.dataset.event
+    attendee = this.dataset.attendee
+    requireMembership = this.dataset.requireMembership
+    url = `/${event}/registrations/payment/${attendee}/${product}?transaction_id=${$('#transaction_id').val()}`
+    $.ajax({
+      type: "get",
+      url: url,
+      beforeSend: function(response){
+        $('.payment-merchant-form :submit').prop("disabled", true)
+        if($('.payment-merchant-form').is(':empty')){
+          $('.payment-merchant-form').html('<div class="spinner-border text-primary"></div>')
+        } 
+      },
+      success: function (response) {
+        $('.spinner-border').remove()
+        if (response.url){
+          window.location.href = window.location.origin + response.url
+        }
+
+        if(requireMembership == 'true'){
+          $('#transaction_membership_id').removeAttr('disabled')
+          $('#transaction_membership_id').show()
+        }else{
+          $('#transaction_membership_id').prop('disabled', true)
+          $('#transaction_membership_id').hide()
+        }
+
+        if($('.payment-merchant-form').is(':empty')){
+          $('.payment-merchant-form').html(response)
+        }
+
+
+        $('.payment-merchant-form :submit').prop("disabled", false)
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  })
+</script>
+

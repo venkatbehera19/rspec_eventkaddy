@@ -1,0 +1,34 @@
+<%= form_for(@event, :html => { :multipart => true, :class=>"form-horizontal well", method: 'post' }, :url => { :action => :create_files_for_placeholders } ) do |f| %>
+
+    <% if @event.errors.any? %>
+        <div id="error_explanation">
+            <h2><%= pluralize(@event.errors.count, "error") %> prohibited this session file from being saved:</h2>
+
+            <ul>
+                <% @event.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+            </ul>
+        </div>
+    <% end %>
+
+    <div class="field">
+        <%= f.hidden_field :event_id, :value => session[:event_id] %>
+    </div>
+
+    <p>Use this function if you have already uploaded session files and their filenames via an excel sheet previously. Files uploaded here must match the filenames from the aforementioned excel sheet.</p>
+
+    <%= label_tag :publish_all, "Publish All Files Uploaded Here" do %>
+        <%= check_box_tag :publish_all %>
+        Check to set all files uploaded to Published.
+    <% end %><br>
+
+    <div class="field">
+        <%= label_tag :event_files, "Choose a File" %>
+        <%= file_field_tag "event_files[]", :multiple => true %>
+    </div><br />
+
+    <div class="actions">
+        <%= f.submit "Upload Files", class:"btn btn-primary"   %>
+    </div>
+<% end %>

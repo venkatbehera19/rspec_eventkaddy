@@ -1,0 +1,203 @@
+- for_exhibitor = @registration_portal_settings.setting_type.name == "exhibitor_registration_portal_settings"
+- for_attendee = @registration_portal_settings.setting_type.name == "registration_portal_settings"
+- unless for_exhibitor
+    %h5 Locked Fields (cannot be edited by attendee)
+    .field
+        = f.check_box :locked_email
+        Email Locked
+
+%br
+%h5 Form Fields
+.field
+    = f.check_box :email
+    Email
+- unless for_exhibitor
+    .field
+        = f.check_box :username
+        Username (By default username will be same as email)
+.field
+    = f.check_box :first_name
+    First Name
+.field
+    = f.check_box :last_name
+    Last Name
+.field
+    = f.check_box :password
+    Password
+- unless for_exhibitor    
+    .field
+        = f.check_box :honor_prefix
+        Honor Prefix
+    .field
+        = f.check_box :honor_suffix
+        Honor Suffix
+    .field
+        = f.check_box :title
+        Title
+.field
+    = f.check_box :company
+    Company
+- unless for_exhibitor
+    .field
+        = f.check_box :biography
+        Biography
+    .field
+        = f.check_box :business_unit
+        Business Unit
+    .field
+        = f.check_box :business_phone
+        Business Phone
+.field
+    = f.check_box :mobile_phone
+    Mobile Phone
+.field
+    = f.check_box :country
+    Country
+.field
+    = f.check_box :state
+    State
+.field
+    = f.check_box :city
+    City  
+.field
+    = f.check_box :twitter_url
+    URL Twitter
+.field
+    = f.check_box :facebook_url
+    URL Facebook
+.field
+    = f.check_box :linked_in
+    URL Linkedin
+
+.field
+    = f.check_box :badge_name
+    Badge Name
+
+%br
+%h5 Required Form Fields
+.field
+    = f.check_box :required_email
+    Email
+- unless for_exhibitor
+    .field
+        = f.check_box :required_username
+        Username
+.field
+    = f.check_box :required_first_name
+    First Name
+.field
+    = f.check_box :required_last_name
+    Last Name
+.field
+    = f.check_box :required_password
+    Password
+- unless for_exhibitor
+    .field
+        = f.check_box :required_honor_prefix
+        Honor Prefix
+    .field
+        = f.check_box :required_honor_suffix
+        Honor Suffix
+    .field
+        = f.check_box :required_title
+        Title
+.field
+    = f.check_box :required_company
+    Company
+- unless for_exhibitor
+    .field
+        = f.check_box :required_biography
+        Biography
+    .field
+        = f.check_box :required_business_unit
+        Business Unit
+    .field
+        = f.check_box :required_business_phone
+        Business Phone
+.field
+    = f.check_box :required_mobile_phone
+    Mobile Phone
+.field
+    = f.check_box :required_country
+    Country
+.field
+    = f.check_box :required_state
+    State
+.field
+    = f.check_box :required_city
+    City
+.field
+    = f.check_box :required_twitter_url
+    URL Twitter
+.field
+    = f.check_box :required_facebook_url
+    URL Facebook
+.field
+    = f.check_box :required_linked_in
+    URL Linkedin
+.field
+    = f.check_box :required_badge_name
+    Badge Name
+%br
+%h5 Form Labels
+.field
+    = f.text_field :email_label
+    Email
+- unless for_exhibitor
+    .field
+        = f.text_field :username_label
+        Username (By default username will be same as email)
+.field
+    = f.text_field :first_name_label
+    First Name
+.field
+    = f.text_field :last_name_label
+    Last Name
+- unless for_exhibitor
+    .field
+        = f.text_field :honor_prefix_label
+        Honor Prefix
+    .field
+        = f.text_field :honor_suffix_label
+        Honor Suffix
+    .field
+        = f.text_field :title_label
+        Title
+.field
+    = f.text_field :company_label
+    Company
+- unless for_exhibitor
+    .field
+        = f.text_field :biography_label
+        Biography
+    .field
+        = f.text_field :business_unit_label
+        Business Unit
+    .field
+        = f.text_field :business_phone_label
+        Business Phone
+.field
+    = f.text_field :mobile_phone_label
+    Mobile Phone
+.field
+    = f.text_field :country_label
+    Country
+.field
+    = f.text_field :state_label
+    State
+.field
+    = f.text_field :city_label
+    City
+.field
+    = f.text_field :twitter_url_label
+    URL Twitter
+.field
+    = f.text_field :facebook_url_label
+    URL Facebook
+.field
+    = f.text_field :linked_in_label
+    URL Linkedin
+.field
+    = f.text_field :badge_name_label
+    Badge Name
+%br

@@ -1,0 +1,19 @@
+console.log("ajax response for upload maps");
+
+
+$('#upload-map-form').bind("ajax:success", function(){
+  if ( $(this).data('remotipartSubmitted') ) {
+  
+  	console.log("data successfully uploaded");
+  	$('#upload-notice').append("<p class='notice'>Map Data Successfully Uploaded</p>");
+  	$('#upload-debug').append("<p class='notice'><%= escape_javascript (@import_map_result.html_safe) %></p>");
+  	
+  }
+  
+  
+});
+
+
+
+
+

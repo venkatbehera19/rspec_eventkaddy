@@ -1,0 +1,34 @@
+wb = xlsx_package.workbook
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	heads = ['HS Button Name','HS Icon Filename','HS Position','SubS Button Name','SubS Icon Filename','SubS Redner URL','SubS Content','SubS Position']
+
+	style = []
+
+	heads.each do |h|
+		style << black_cell
+	end
+
+	wb.add_worksheet(name: "Attendee Data") do |sheet|
+	  sheet.add_row heads, :style => style
+
+		HomeButtonGroup.where(event_id:@event_id).each do |group|
+
+			if group.home_button_entries.length > 1
+
+				group.home_button_entries.each do |entry|
+		  		sheet.add_row [entry.home_button_group.name,entry.home_button_group.icon_button,entry.home_button_group.position,entry.name,entry.icon_entry,entry.render_url,entry.content,entry.position]
+		  		sheet.column_widths 20,20,20,20,20,20,20,20
+		  	end
+		  elsif group.home_button_entries.length===1
+	  		sheet.add_row [group.name,group.icon_button,group.position,group.home_button_entries.first.name,group.home_button_entries.first.icon_entry,group.home_button_entries.first.render_url,group.home_button_entries.first.content,group.home_button_entries.first.position]
+	  		sheet.column_widths 20,20,20,20,20,20,20,20
+	  	else
+	  		sheet.add_row [group.name,group.icon_button,group.position,"","","","",""]
+	  		sheet.column_widths 20,20,20,20,20,20,20,20
+			end
+		end
+	end
+end

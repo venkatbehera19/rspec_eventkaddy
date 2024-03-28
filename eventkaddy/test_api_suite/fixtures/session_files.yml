@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  session: one
+  title: MyString
+  description: MyText
+  session_file_type: one
+
+two:
+  event: two
+  session: two
+  title: MyString
+  description: MyText
+  session_file_type: two

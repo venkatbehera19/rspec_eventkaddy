@@ -1,0 +1,45 @@
+Linode - Webserver # 2 Config Details
+
+IP:  173.230.137.60
+
+	/etc/network/interfaces:
+
+
+		# The loopback interface
+		auto lo
+		iface lo inet loopback
+
+		# Configuration for eth0 and aliases
+
+		# This line ensures that the interface will be brought up during boot.
+		auto eth0 eth0:0 eth0:1
+
+		# eth0 - This is the main IP address that will be used for most outbound connections.
+		# The address, netmask and gateway are all necessary.
+		iface eth0 inet static
+		 address 173.230.137.60 
+		 netmask 255.255.255.0
+		 gateway 173.230.137.1
+
+		# eth0:1 - First Private IP.  No gateway (they are not publicly routable) so all you need to
+		# specify is the address and netmask.
+		iface eth0:1 inet static
+		 address 192.168.131.222
+		 netmask 255.255.128.0
+		 
+		# eth0:2
+		# This is a second public IP address.
+		#iface eth0:0 inet static
+		# address 173.230.133.101
+		# netmask 255.255.255.0
+		# gateway 173.230.133.1
+
+		# eth0:3
+		# This is a third public IP address.
+		#iface eth0:1 inet static
+		# address 173.230.133.248
+		# netmask 255.255.255.0
+		# gateway 173.230.133.1
+
+
+

@@ -1,0 +1,82 @@
+
+<script>
+    EK.speakerList.reset(<%= @speakers.to_json.html_safe %>);
+</script>
+
+<% settings = Setting.return_cms_settings session[:event_id] %>
+
+<h4>Session File Reporting</h4>
+<div class="btn-group pull-right">
+
+    <div class="dropdown" id="menu1">
+
+        <a class="dropdown-toggle btn report-dropdown" data-toggle="dropdown" href="#menu1">
+            <span class="d-none d-md-inline">Session File Downloads</span>
+            <i class="fa fa-download d-inline d-md-none"></i>
+        </a>
+
+        <div class="dropdown-menu report-dropdown-list">
+            <%= link_to "Export Session Files To Spreadsheet", "/session_files/spreadsheet_summary.xlsx?type=conference note", class: "dropdown-item" %>
+            <div class="dropdown-divider"></div>
+            <%= link_to "Download All Session Files as Zip", "/session_files/download_all_zip", class: "dropdown-item" %>
+        </div>
+    </div>
+
+    <div class="dropdown btn-group">
+        <button class="btn report-dropdown dropdown-toggle" data-toggle="dropdown"> Views </button>
+        <div class="dropdown-menu">
+            <%= link_to 'Grid View', '/grid_view', class:"dropdown-item"%>
+            <%= link_to 'Sessions', '/sessions', class: "dropdown-item" %>
+            <%= link_to 'Video Views', '/video_views', class: "dropdown-item" %>
+            <%= link_to  "Media Files", sessions_media_files_path, class: "dropdown-item" %>
+        </div>
+    </div>
+
+    <div class="dropdown btn-group">
+        <button class="btn report-dropdown" data-toggle="dropdown"> 
+            <i class="fa fa-ellipsis-v"></i>
+        </button>
+        <div class="dropdown-menu">
+            <% unless settings.method("hide_session_file_index_select_sessions_to_add_session_files_to").call %>
+                <%= link_to "Select Sessions To Add Session Files To", "/session_files/select_sessions", class:"dropdown-item" %>
+            <% end %>
+            <% unless settings.method("hide_session_file_index_add_session_file_to_all_sessions").call %>
+                <%= link_to "Add Session File To All Sessions", "/session_files/add_file_to_all?type=conference note", class:"dropdown-item" %>
+            <% end %> 
+            <% unless settings.method("hide_session_file_index_finalize_all_sessions_files").call %>
+                <%= link_to "Finalize All Session Files", "/session_files/finalize_versions?type=conference note", class:"dropdown-item" %>
+            <% end %>
+            <% unless settings.method("hide_session_file_index_select_session_files_to_publish").call %>
+                <%= link_to "Select Session Files To Publish", "/session_files/publish_select_sessions", class:"dropdown-item" %>
+            <% end %>
+        </div>
+    </div>
+
+</div>
+<br><br>
+<%= link_to 'Show Conference Notes', "/session_files/summary?type=conference note" ,class:"btn btn-outline-info" %>  <%= link_to 'Show PowerPoints', "/session_files/summary?type=powerpoint" ,class:"btn btn-outline-info" %>  <br><br>
+<div id="lightbox" class="white_content"></div>
+<div id="fade" class="black_overlay"></div>
+
+
+<table id="session_files_summary" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" data-source="<%= session_files_summary_url(format: "json") %>">
+    <thead>
+        <tr>
+            <th class="hide-on-mobile">Session Code</th>
+            <th>Session Title</th>
+            <th class="hide-on-mobile">Speaker Name</th>
+            <th class="hide-on-mobile">Speaker Email</th>
+            <th class="hide-on-mobile">Number of Versions</th>
+            <th class="sorting-false">Latest File URL</th>
+            <% if ( current_user.role?(:client) || current_user.role?(:super_admin) ) then %>
+                <th class="sorting-false"></th>
+            <% end %>
+        </tr>
+    </thead>
+
+    <tbody></tbody>
+
+</table>
+
+<br />
+

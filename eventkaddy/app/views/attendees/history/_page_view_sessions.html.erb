@@ -1,0 +1,57 @@
+<div class="dropdown">
+  <div
+    class="btn report-dropdown dropdown-toggle"
+    data-toggle="dropdown"
+  >
+    Page Views Sessions Downloads
+  </div>
+  <div class="dropdown-menu report-dropdown-list">
+    <%= link_to "Export Page Views Sessions To Spreadsheet", "/attendees/#{@attendee.id}/page_view_sessions_report", class: "dropdown-item" %>
+  </div>
+</div>
+<br>
+ <h4 class="view-title">Page Views Sessions</h4>
+<br />
+<br >
+<table
+    id="cms-page-view-sessions-table"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="table table-striped table-bordered"
+  >
+    <thead>
+      <th>session code</th>
+      <th>session title&nbsp;&nbsp;&nbsp;&nbsp;</th>
+      <th>date</th>
+      <th>start time</th>
+      <th>end time</th>
+      <th>first visit</th>
+      <th>number of visits</th>
+    </thead>
+  <% !@page_view_sessions.blank? && @page_view_sessions.each do |session| %>
+    <tr>
+      <td><%= session['session_code'] %></td>
+      <td><%= session['session_title'] %></td>
+      <td><%= session['date'] %></td>
+      <td><%= get_local_time(session['start_at']) %></td>
+      <td><%= get_local_time(session['end_at']) %></td>
+      <td><%= "#{session['updated_at'].strftime('%Y-%m-%d')} at #{get_local_time(session['updated_at'])}"%></td>
+      <td style="text-align:center">
+        <%= link_to session['number_of_visits'], "/attendees/#{@attendee.id}/view_history/page_views/#{session['id']}?session_code=#{session['session_code']}" %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+<script>
+  $(function () {
+    $.extend($.fn.dataTableExt.oStdClasses, {
+      sWrapper: 'dataTables_wrapper form-inline'
+    })
+    $('#cms-page-view-sessions-table').dataTable({
+      sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>"
+    })
+    $('dataTables_filter').css('display', 'none')
+    return $('table.dataTable th').css('max-width', '97% !important')
+  })
+</script>

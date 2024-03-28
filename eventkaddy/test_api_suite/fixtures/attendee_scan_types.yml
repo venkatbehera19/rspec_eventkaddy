@@ -1,0 +1,14 @@
+
+
+attendee_to_attendee:
+  name: attendee_to_attendee
+
+session:
+  name: session
+
+exhibitor:
+  name: exhibitor
+
+location_mapping:
+  name: location_mapping
+

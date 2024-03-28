@@ -1,0 +1,6 @@
+<%= form_with(url: download_requests_path, method: :post) do |form| %>
+  <%= form.hidden_field :event_id, value: @event.id %>
+  <%= form.label :file_type, 'File Type' %>
+  <%= form.select :request_type, options_for_select(DownloadRequest.request_types.map { |key, value| [value, key] }), {}, class: 'form-control' %>
+  <%= form.submit 'Initiate Download', class: 'btn btn-primary' %>
+<% end %>

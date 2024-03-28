@@ -1,0 +1,6 @@
+<%= link_to "Back", "/moderator_portals/sessions/#{@session_poll.session.id}/session_polls", class:"btn btn-secondary"%>
+
+<h1>Editing Session Poll</h1>
+<%= form_for(@session_poll, url: update_moderator_session_poll_path(@session_poll), method: :patch) do |form| %>
+  <%= render 'session_polls_cms/form', session_poll: @session_poll, form: form %>
+<% end %>

@@ -1,0 +1,155 @@
+%h4 Q&A Page Settings
+%br/
+.bg-light.custom-border.px-4.py-4{style:'min-height:500px;'}
+
+    = form_for @cordova_booleans, :html => { :multipart => true, :method => :post }, :url => '/settings/update_qna_settings' do |f|
+
+        - if @first_qa_session
+            = link_to "View Guest QA Page", "/qa_feed/#{@first_qa_session.id}", class:"btn btn-link", target:"_blank"
+            %br
+            %br
+            %br
+        - else
+            .alert
+                There are no sessions marked for Q&A yet for this event. To enabled 
+                Q&A for a session, visit the Sessions index from the side menu and
+                click the edit button for the session with which you wish to enable
+                Q&A. Select the checkbox for "Session Q/A Enabled" near the 
+                top of the form. A link to that session's guest Q&A page will appear
+                in place of this message for your review.
+
+        .field
+            = f.check_box :guest_qa_page_enabled
+            Guest Q&A Page Button in App Enabled
+
+        .field
+            = f.check_box :guest_qa_page_webpage_enabled
+            Guest Q&A Web Page Enabled
+
+        .field
+            = f.check_box :guest_qa_page_hide_session_title
+            Guest Q&A Page Hide Session Title
+
+        .field
+            = f.check_box :guest_qa_page_hide_attendee_name
+            Guest Q&A Page Hide Attendee Name
+
+        %hr
+        .field
+            Guest Q&A Logo
+            %br
+            Should be squarish as it will appear next to the session title.
+            %br
+            %br
+            %table
+                - banner_label = "Choose a Logo"
+                - if @cordova_strings.guest_qa_page_banner_path
+                    - banner_label = "Current Logo"
+                    %tr
+                        %td= image_tag(@cordova_strings.guest_qa_page_banner_path, :height=>'100')
+                %tr
+                    %td
+                        .field
+                            = label_tag :guest_qa_page_banner_path, banner_label
+                            %br
+                            = file_field_tag :guest_qa_page_banner_path
+                            %br
+
+        :ruby
+            color_picker = ->(string_setting) {
+              text_field_tag( 
+                string_setting,
+                @cordova_strings.send(string_setting),
+                class: "jpicker form-control d-inline",
+                style: "width: 85%;",
+                name:  "string_setting[#{string_setting}]"
+              )
+            }
+        %hr
+        .field
+            Guest Q&A Page Google APIs Font
+            %br
+            %br
+            This font may be the name of anything appearing in google fonts
+            %a{:href => "https://fonts.google.com/"} https://fonts.google.com
+            %br
+            It must match the name exactly including capitals. Choose only one
+            font and leave no trailing spaces.
+            %br
+            %br
+            You may notice the font change on page load as it is downloaded
+            from the api. It will be cached by your browser and will not need to
+            load on subsequent views.
+            %br
+            %br
+            = text_field_tag :guest_qa_page_google_apis_font, @cordova_strings.guest_qa_page_google_apis_font, name: "string_setting[guest_qa_page_google_apis_font]", placeholder: "Examples: Oswald, Open Sans, Monstserrat, Raleway", class: "form-control"
+
+        %hr
+
+        .form-group
+            No Questions Yet Header Text
+            = text_field_tag :guest_qa_page_no_questions_header, @cordova_strings.guest_qa_page_no_questions_header, name: "string_setting[guest_qa_page_no_questions_header]", placeholder: "Welcome", class: "form-control"
+
+        .form-group
+            No Questions Yet Content Text
+            = text_field_tag :guest_qa_page_no_questions_content, @cordova_strings.guest_qa_page_no_questions_content, name: "string_setting[guest_qa_page_no_questions_content]", placeholder: "No questions are currently approved. You may submit your questions from our app on the session information page.", class: "form-control"
+
+        %hr
+        .form-group
+            Guest Q&A Page Background Color
+            %br
+            = color_picker.call :guest_qa_page_background_colour
+
+        .form-group
+            Guest Q&A Page Title Background Color
+            %br
+            = color_picker.call :guest_qa_page_title_background_colour
+
+        .form-group
+            Guest Q&A Page Title Text Color
+            %br
+            = color_picker.call :guest_qa_page_title_text_colour
+
+        .form-group
+            Guest Q&A Page Question Background Color
+            %br
+            = color_picker.call :guest_qa_page_question_background_colour
+
+        .form-group
+            Guest Q&A Page Question Text Color
+            %br
+            = color_picker.call :guest_qa_page_question_text_colour
+
+        %br
+        %h4 Q&A Page Mode
+        .field
+            = radio_button_tag :guest_qa_page_type, :guest_qa_page_use_whitelist_enabled, !!@cordova_booleans.guest_qa_page_use_whitelist_enabled
+            Guest Q&A Page Use Whitelist Enabled
+        .field
+            = radio_button_tag :guest_qa_page_type, :guest_qa_page_single_question_mode_enabled, !!@cordova_booleans.guest_qa_page_single_question_mode_enabled
+            Guest Q&A Page Show Only One Question At A Time
+        .field
+            = radio_button_tag :guest_qa_page_type, :guest_qa_page_show_all_questions_mode_enabled, !!@cordova_booleans.guest_qa_page_show_all_questions_mode_enabled
+            Guest Q&A Page Always Show All Questions (Default)
+
+        %br
+        %h4 Moderator Portal
+        .field
+            = f.check_box :chat_management
+            Chat Management
+
+        .field
+            = f.check_box :session_video_display
+            Session Video Display
+            
+        .field
+            = f.check_box :poll_management
+            Poll Management
+        .field
+            = f.check_box :add_polls
+            Allow Moderator To Add Polls    
+
+        = f.submit 'Update Q&A Settings', class:'btn btn-primary'
+
+:javascript
+    $('.jpicker').jPicker({});

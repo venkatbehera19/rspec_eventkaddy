@@ -1,0 +1,56 @@
+%br
+%br
+%br
+.threads-container.box-shadow--6dp
+    .threads-nav-bar
+        %a.message-button-container{href:'/exhibitor_portals/messages',data:{toggle:"tooltip", placement:"top", title:"Return to Inbox"},style:'display:inline-block;'}
+            %span.compose-message.fa.fa-chevron-left.clickable.message-button
+        .new-message-header
+            %span.fa.fa-pencil
+            New Message
+    .new-message-container
+        = form_for @message, :url => {:controller => 'exhibitor_messages', :action => 'create'} do |f|
+
+            Selected Recipients:
+            #recipients-added-container No recipients selected yet.
+
+            .field
+                Choose Recipients
+                %br
+                %input#search-input
+                #add-recipient.btn.btn-success.btn-sm Add Recipient
+
+                = hidden_field_tag 'recipient_attendees'
+            .field
+                Title
+                %br
+                = text_field_tag 'thread_title'
+            .field
+                Message
+                %br
+                = text_area_tag 'message', '', style: 'width:100%;'
+            .field
+                = f.submit 'Send Message', class:"btn btn-primary"
+
+:javascript
+    $(function() {
+        var MG = modulejs.require('messages/messages');
+        MG.init();
+        var id= MG.getUrlVars()["id"];
+        var type= MG.getUrlVars()["type"];
+        if (id === undefined || id === null){
+            return;
+        }
+        if (type === undefined || type === null){
+            return;
+        }
+        if(type==='attendee'){
+            $.getJSON(MG.attendees_array_url+'?id='+id, function (data) { 
+                attendee_id = data[0].value;
+                name = data[0].label;
+                MG.prepopulateAttendeeOrGroup(name, 'a_'+attendee_id)
+                
+            });
+            return;
+        }
+    });

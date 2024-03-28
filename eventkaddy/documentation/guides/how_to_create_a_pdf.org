@@ -1,0 +1,75 @@
+#+TITLE: How to Create a PDF
+
+This guide will show you the process for making the PDF generator, and hooking it into the emailing service on the ek conference cordova application.
+
+* Step 1: Run the PDF rake task
+
+The PDF rake task is located here:
+
+        [[../../lib/tasks/setup_pdf_generator.rake][setup_pdf_generator.rake]]
+
+From inside the lodestar/eventkaddy/ directory, run
+
+#+NAME: rake command
+#+BEGIN_SRC sh
+        rake prawn_pdf:all[Credits_Bear_PDF,20]
+        rake prawn_pdf:all[Certificate_of_Completion,227]
+        rake prawn_pdf:all[Certificate_of_Attendance,208]
+        rake prawn_pdf:all[Detailed_Certificate_of_Attendance,208]
+        rake prawn_pdf:all[Certificate_of_Attendance,201]
+        rake prawn_pdf:all[Detailed_Continuing_Education_Certificate,201]
+#+END_SRC
+
+from the terminal, where Credits_Bear_PDF is what you would like the default name to be within the custom list on the conference app (underscores will be replaced with spaces) and 20 is the event id. If you make a mistake with the name, you need not run rake again.  Special delimiters can be used to adjust the name of the client, for instance, changed their mind. Details at the end of the guide.
+
+This task:
+
+- updates routes in [[../../config/routes/ce_credits_routes.rb][ce credits routes]]
+- updates requires in [[../../config/initializers/ce_credit_pdfs.rb][ce credit pdf initializer]]
+- updates methods in [[../../app/controllers/feature_controllers/ce_credits_controller.rb][ce credits controller]]
+- creates a generator class in [[../../app/services/pdf_generators/][services/pdf_generators]]
+- creates an email script in [[../../ek_scripts/pdf-generators][ek_scripts/pdf-generators]]
+
+The code that achieves this meta-programming can be found in [[../../lib/code_amend/][lib/code_ammend]], but you will not need to adjust it for this guide.
+
+rake will output some helpful information about what to do next.
+
+* Step 2: Edit the PDF Generator
+
+Following by example of the existing pdf_generators that were created via this method, you can edit the attach_pdf_contents method, working with the prawn_pdf api. Use the prawn_options method to specify things like orientation.
+
+To avoid the tedium of working with the prawn pdf api, you can supply an image of the pdf, and then use the api to edit just the parts which require variable data. This will result in a larger pdf file, but less time spent writing the pdf, especially when the requirements are complicated and implementation with prawn pdf is not obvious.
+
+The permissions of an image used this way should be 644.
+
+* Step 3: Edit the Email PDF Script
+
+You need only change the content and subject variables. You will find the script in
+
+        [[../../ek_scripts/pdf-generators/][ek_scripts/pdf-generators/]]
+
+* Step 4: Restart Rails
+
+In production, this means stopping and starting the thin server.
+
+#+NAME: server restart commands
+#+BEGIN_SRC sh
+        sudo /etc/init.d/thin-ekwvcportal stop
+        sudo /etc/init.d/thin-ekwvcportal start
+#+END_SRC
+
+Each time you make an edit to the pdf generator, the modifications will not take effect when visiting the generator url until the server is restarted. This does not apply to the email pdf service, which requires the pdf generator file each time its script in ek_scripts is run.
+
+You can test the look of the pdf by visiting the url generated at the end of [[../../config/routes/ce_credits_routes.rb][ce_credits_routes]]
+
+example url:
+http://localhost:3000/ce_credits/event_114_generate_risk_intelligence_certificate?event_id=114&account_code=ourcode214926
+
+* Step 5: Add special syntax to a custom list item
+
+Write ::Credits_Bear_PDF:: in the content field of a custom list item. Where Credits_Bear_PDF is the name you supplied to the rake task above.
+
+If you want to change the label, add ^^Some Label^^ before the closing ::
+
+        example: ::Credits_Bear_PDF^^Some Different Label^^::
+

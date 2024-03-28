@@ -1,0 +1,91 @@
+<h4>Media files</h4>
+<div class="dropdown btn-group pull-right">
+  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Views </button>
+  <div class="dropdown-menu">
+      <%= link_to 'Grid View', '/grid_view', class:"dropdown-item"%>
+      <%= link_to 'Session Files', '/session_files/summary?type=conference note', class: "dropdown-item" %>
+      <%= link_to 'Video Views', '/video_views', class: "dropdown-item" %>
+      <%= link_to  "Sessions", '/sessions', class: "dropdown-item" %>
+  </div>
+</div>
+<br><br><br>
+<table class="table table-stripped table-bordered" id="media-files-table">
+  <thead>
+    <tr>
+      <% if @exhibitor %>
+         <th style="width:60px;" class="d-none d-md-table-cell">Position</th>
+      <%end%>
+      <th>Session Code</th>
+      <th class="d-none d-md-table-cell">File Name</th>
+      <th>Session Name</th>
+      <th>Download</th>
+      <% if @exhibitor %>
+         <th>Thumbnail</th>
+      <%end%>
+      <% if ( current_user.role?(:client) || current_user.role?(:trackowner) || current_user.role?(:super_admin) ) then %>
+        <th></th>
+      <% end %>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @media_files.each do |media_file| %>
+      <tr>
+        <% if @exhibitor %>
+           <td style="font-weight:bold;" class="d-none d-md-table-cell"><center><%=media_file.position %></center></td> 
+        <% end %>
+        <td><%= media_file.session.session_code %></td>
+        <td class="d-none d-md-table-cell"><%= media_file.name %></td>
+        <td><%= media_file.session.title %></td>
+        <td class="button">
+        <% unless media_file.path.blank? %>
+         <%video_url = media_file.return_authenticated_url(session[:event_id], media_file.path)%>
+         <%= link_to(video_url["url"], class:"btn btn-link") do%>
+          <span class="d-none d-md-inline">Download Video</span> 
+          <i class="fa fa-download d-md-none d-inline"></i>
+         <% end %>  
+        <% end %>
+        </td>
+        <% if @exhibitor %>
+           <td>
+           <% unless media_file.event_file_id.blank? %>
+            <%url = media_file.return_authenticated_url(session[:event_id], media_file.event_file.path)%>
+            <%= image_tag(url["url"], :height=>'100') %>
+           <% end %>
+           </td>
+        <% end %>
+
+        <td class="table-actions">
+          <div class="btn-group d-flex">
+            <%= link_to 'Edit', edit_media_file_path(media_file) ,class:"btn btn-outline-success" %>
+            <%= link_to 'Delete', media_file, :confirm => 'Are you sure?', :method => :delete ,class:"btn btn-outline-danger" %>
+          </div>
+          <div class="dropdown dropleft">
+            <a class="ellipse-style" data-toggle="dropdown">
+              <i class="fa fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu">
+              <%= link_to 'Edit', edit_media_file_path(media_file) ,class:"btn dropdown-item text-success" %>
+              <%= link_to 'Delete', media_file, :confirm => 'Are you sure?', :method => :delete ,class:"btn dropdown-item text-danger" %>
+            </div>
+          </div>
+        </td>
+
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<script>
+  $("#media-files-table").dataTable({
+    sDom: "<'pull-left'l><'ml-auto mr-1'f>rt<'pull-left'i><'ml-auto'p>",
+    iDisplayLength: 10,
+    fnInitComplete: () => { 
+      $(".dataTables_filter input").attr('placeholder', 'SEARCH');
+      $(".dataTables_filter label").html($(".dataTables_filter input").clone(true, true));
+      $(".dataTables_length label").html($(".dataTables_length select").clone(true, true))
+        .prepend("<span class='d-none d-md-inline'>Show:</span>");
+      $(".dataTables_length option[value='10']").attr('selected', 'selected')
+    }
+  })
+</script>

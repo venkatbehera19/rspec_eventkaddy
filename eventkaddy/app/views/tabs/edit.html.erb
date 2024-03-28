@@ -1,0 +1,12 @@
+<h4>Editing Tab: <%= @tab.name %></h4>
+<% if @tab.tab_type.portal==="speaker" then %>
+  <%= link_to 'Back', "/settings/speaker_portal", class:"btn btn-link" %><br/><br/>
+<% elsif @tab.tab_type.portal==="attendee" then %>
+  <%= link_to 'Back', "/settings/registration_portal_settings", class:"btn btn-link" %><br/><br/>
+<% else %>
+  <%= link_to 'Back', "/settings/exhibitor_portal", class:"btn btn-link" %><br/><br/>
+<% end %>
+
+<%= render 'form' %>
+
+

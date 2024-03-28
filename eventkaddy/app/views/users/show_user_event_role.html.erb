@@ -1,0 +1,279 @@
+<h2>Manage Events and Role for :- <%= @user.email %></h2>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+  Add Events
+</button> 
+<br>
+<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Event ID</th>
+      <th>Event Name</th>
+      <th>Organization</th>
+      <th>Roles</th>
+      <th>Start date</th>
+      <th>End date</th>
+      <th>Select roles</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @user_events.each do |user_event| %>
+      <tr id="<%= user_event.id %>">
+        <td class="eventId"><%= user_event.event.id %></td>
+        <td><%= user_event.event.name %></td>
+        <td><%= user_event.event.organization.name %></td>
+        <td><%= user_event.roles.pluck(:name).join(",") %></td>
+        <td><%= user_event.event.event_start_at %></td>
+        <td><%= user_event.event.event_end_at %></td>
+        <td class="dp-container d-flex">
+            <div class="dropdown-container">
+              <div class="dropdown-button noselect">
+                <div class="dropdown-label">Roles</div>
+                <div class="dropdown-quantity">(<span class="quantity">Any</span>)</div>
+                <i class="fa fa-filter"></i>
+              </div>
+              <div class="dropdown-list" style="display: none;">
+                <input type="search" placeholder="Search Role" class="dropdown-search drop-search"/>
+                <ul id="role_data"></ul>
+              </div>
+            </div>
+            <button class="btn submit">Update</button>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Add Events</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= render partial: 'user_event_role_form', locals: { user: @user} %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% user_events = @user.users_events %>
+<% options = Event.event_options_for_user(user_events) %>
+<style>
+  .noselect {
+	 -webkit-touch-callout: none;
+	 -webkit-user-select: none;
+	 -khtml-user-select: none;
+	 -moz-user-select: none;
+	 -ms-user-select: none;
+	 user-select: none;
+  }
+  .dropdown-container, .instructions {
+        width: 200px;
+        font-size: 14px;
+        font-family: sans-serif;
+        overflow: auto;
+  }
+  .instructions {
+      width: 100%;
+  }
+  .dropdown-button {
+      float: left;
+      width: 100%;
+      background: whitesmoke;
+      padding: 10px 10px;
+      cursor: pointer;
+      border: 1px solid lightgray;
+      box-sizing: border-box;
+  }
+  .dropdown-button .dropdown-label, .dropdown-button .dropdown-quantity {
+      float: left;
+  }
+  .dropdown-button .dropdown-quantity {
+      margin-left: 4px;
+  }
+  .dropdown-button .fa-filter {
+      float: right;
+  }
+  .drop-search{
+      width: 100%;
+      font-weight: 800;
+      text-align: center;
+  }
+  .dropdown-list {
+      float: left;
+      width: 100%;
+      border: 1px solid lightgray;
+      border-top: none;
+      box-sizing: border-box;
+      padding: 10px 12px;
+  }
+  .dropdown-list input[type="search"] {
+      padding: 5px 0;
+  }
+  .dropdown-list ul {
+      margin: 10px 0;
+      max-height: 200px;
+      overflow-y: auto;
+  }
+  .dropdown-list ul input[type="checkbox"] {
+      position: relative;
+      top: 2px;
+  }
+  #role_data{
+        list-style-type: none;
+  }
+</style>
+
+<script>
+  $(document).ready(function() {
+  var roleData = JSON.parse(<%=raw @roles.to_json %>);
+  var userId = <%= @user.id %>;
+  var selectedRole = JSON.parse(<%=raw @result.to_json %>);
+
+  // debugger
+
+  $('.dp-container').each(function() {
+    var container = $(this);
+    var dropdownList;
+    
+    container
+      .on('click', '.dropdown-button', function() {
+        dropdownList = container.find('.dropdown-list').toggle();
+      })
+      .on('input', '.dropdown-search', function() {
+        var target = $(this);
+        var search = target.val().toLowerCase();
+        var dropdownList = target.closest('.dropdown-list');
+
+        if (!search) {
+          dropdownList.find('li').show();
+          return false;
+        }
+
+        dropdownList.find('li').each(function() {
+          var text = $(this).text().toLowerCase();
+          var match = text.indexOf(search) > -1;
+          $(this).toggle(match);
+        });
+      })
+      .on('change', '[type="checkbox"]', function() {
+        var numChecked = container.find('[type="checkbox"]:checked').length;
+        container.find('.quantity').text(numChecked || 'Any');
+      })
+      .on('click', '.submit', function() {
+        var checkedDropdownlist = container.find('input[type="checkbox"]:checked');
+        var eventId = container.find('.eventId').text();
+        var user_event_id = container.closest('tr').attr('id');
+        var checkedData = [];
+
+        checkedDropdownlist.each(function() {
+          var roleId = $(this).attr('name');
+          var roleName = $(this).siblings('label[for="' + roleId + '"]').text();
+          checkedData.push({ id: roleId, name: roleName, event_id: eventId });
+        });
+
+        $.ajax({
+            url: `/user_event/${user_event_id}/users/${userId}/update_user_role_event`,
+            method: 'PATCH',
+            contentType: 'application/json',
+            data: JSON.stringify({data: checkedData }),
+            success: function(response){
+              alert('Successfully updated the role for this user')
+            },
+            error: function(xhr, status, error){
+              console.error("Error updating the role", error);
+            }
+          })
+        
+      });
+
+      // console.log('selectedRole', selectedRole)
+      var tr_id = container.closest('tr').attr('id');
+      var role_id = selectedRole[tr_id]
+      roleData.forEach(function(state) {
+        state.capName = state.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+        var stateHTML = role_id.includes(state.id) ? renderStateTemplateChecked(state) : renderStateTemplate(state);
+        container.find('#role_data').append(stateHTML)
+      });
+      var numChecked = container.find('[type="checkbox"]:checked').length;
+      container.find('.quantity').text(numChecked || 'Any');
+  });
+
+  function renderStateTemplate(state) {
+    return `<li>
+                <input name="${state.id}" type="checkbox">
+                <label for="${state.id}">${state.capName}</label>
+            </li>`;
+  }
+
+  function renderStateTemplateChecked(state) {
+    return `<li>
+                <input name="${state.id}" type="checkbox" checked>
+                <label for="${state.id}">${state.capName}</label>
+            </li>`;
+  }
+  // debugger
+});
+
+</script>
+
+<script>
+  var eventData = JSON.parse(<%=raw options.to_json %>);
+  // debugger
+  $('.dropdown-container1')
+        .on('click', '.dropdown-button', function() {
+            $(this).siblings('.dropdown-list').toggle();
+        })
+        .on('input', '.dropdown-search', function() {
+            var target = $(this);
+            var dropdownList = target.closest('.dropdown-list');
+            var search = target.val().toLowerCase();
+        
+            if (!search) {
+                dropdownList.find('li').show();
+                return false;
+            }
+        
+            dropdownList.find('li').each(function() {
+                var text = $(this).text().toLowerCase();
+                var match = text.indexOf(search) > -1;
+                $(this).toggle(match);
+            });
+        })
+        .on('change', '[type="checkbox"]', function() {
+            var container = $(this).closest('.dropdown-container1');
+            var numChecked = container. find('[type="checkbox"]:checked').length;
+            container.find('.quantity').text(numChecked || 'Any');
+        });
+
+        // <li> template rendering function
+          function renderStateTemplate(state) {
+            return `<li>
+                <input name="${state.id}" type="checkbox">
+                <label for="${state.id}">${state.capName}</label>
+            </li>`;
+        }
+        // Populating list with states
+        eventData.forEach(function(state){
+            state.capName = state.name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+            var stateHTML = renderStateTemplate(state);
+            $('#event_data').append(stateHTML)
+        })
+
+        function updateSelectedEventIds() {
+            var selectedIds = [];
+            $('#event_data input[type="checkbox"]:checked').each(function () {
+                selectedIds.push($(this).attr('name'));
+            });
+            $('#selected_event_ids').val(selectedIds);
+        }
+
+        $('#event_data').on('change', 'input[type="checkbox"]', function () {
+            updateSelectedEventIds();
+            console.log("event_data")
+        });
+
+</script>

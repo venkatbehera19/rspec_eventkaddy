@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+  <meta charset="utf-8">
+  <title>Email CE Certificate</title>
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_include_tag "application" %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+  <style>
+    .alert-note {
+      color: #998728;
+      background-color: #F2F1AE;
+      border-color: #787404;
+      border-radius: 5px;
+    }
+
+    .normal-link-style {
+      color:blue;
+    }
+
+    .normal-link-style:hover {
+      color:#010041;
+      background-color:transparent;
+      text-decoration: underline;
+      cursor:pointer;
+    }
+
+    #get_reg_id_box {
+      position:fixed;
+      text-align      : center;
+      border-radius   : 10px;
+      /*padding-top     : 20px;*/
+      max-height          : 300px;
+      max-width           : 400px;
+      background-color: white;
+      z-index         : 19;
+      color           : black;
+      display         : none;
+    }
+
+    #overlay {
+      z-index         : 18;
+      position        : fixed;
+      width           : 100%;
+      height          : 100%;
+      top             : 0;
+      left            : 0;
+      opacity         : 0.8;
+      background-color: black;
+      display         : none;
+    }
+
+    #close_reg_id_box {
+      cursor      : pointer;
+      color       : #5B5D5A;
+      font-weight : 900;
+      font-size   : 16;
+      margin-right: 20px;
+      margin-top  : 20px;
+    }
+
+    @media only screen and (max-device-width: 768px) {
+      #get_reg_id_box {
+        height      : 100%;
+        width       : 100%;
+        max-height  : none;
+        max-width   : none;
+        top:0px;
+      }
+    }
+
+  </style>
+
+  <body>
+    <div id="exprod" class="container-fluid center-block" style="width:300px;">
+
+      <center>
+
+        <div class="content" class="col-sm-8">
+          <% if notice %>
+            <p class="alert alert-info"><%= notice %></p>
+          <% end %>
+          <% if alert %>
+            <p class="alert alert-danger"><%= alert %></p>
+          <% end %>
+        </div>
+
+        <h2>Email CE Certificate</h2>
+
+          <%= render @form_type %>
+
+      </center>
+    </div>
+
+<script>
+
+  var $overlay, $reg_id_box;
+
+  function initializeRegIdBox() {
+
+    $overlay = $('<div id="overlay"></div>');
+    $overlay.prependTo('body');
+    $reg_id_box = $('<div id="get_reg_id_box">'                                       +
+                        '<span id="close_reg_id_box" class="pull-right">'             +
+                          'Close'                                                     +
+                        '</span><br><br>'                                             +
+                        '<h4>Retrieve Registration ID</h4>'                           +
+                        'First Name<br>'                                              +
+                        '<input id="rid-first_name"></input><br><br>'                 +
+                        'Last Name<br>'                                               +
+                        '<input id="rid-last_name"></input><br><br>'                  +
+                        '<div id="get-rid" class="btn btn-primary">Retrieve Registration ID</div>' +
+                      '</div>');
+    // function actualWidth(ele) {
+    //   width = ele.width();
+    //   max_width = parseInt( ele.css('max-width') );
+    //   if (width >= max_width) return max_width;
+    //   return width;
+    // }
+
+    // function actualHeight(ele) {
+    //   height = ele.height();
+    //   max_height = parseInt( ele.css('max-height') );
+    //   if (height >= max_height) return max_height;
+    //   return height;
+    // }
+
+    $reg_id_box.prependTo('body');
+  }
+
+  function toggleRegIdBox() {
+
+    if ($(window).width() > 768) {
+      $reg_id_box.css({height:$(window).height()  / 2 + 'px',
+                       width: $(window).width()  / 2 + 'px'});
+      var center_pixel_left = ($(window).width()  / 2 - $reg_id_box.width()  / 2);
+      var center_pixel_top  = ($(window).height() / 3 - $reg_id_box.height() / 2);
+
+      $reg_id_box.css({'left'     : center_pixel_left + 'px',
+                        'top'      : center_pixel_top  + 'px'});
+    }
+
+
+
+    if ($reg_id_box.css('display') === 'none') {
+      if ($(window).width() > 768) {
+        $overlay.css({'opacity':'0.3'});
+        $overlay.fadeIn(500);
+      }
+      $reg_id_box.fadeIn(500);
+    } else {
+      if ($(window).width() > 768) { $overlay.fadeOut(500); }
+      $reg_id_box.fadeOut(500);
+    }
+  }
+
+  function getAttendeeRegId() {
+
+    var first_name = $('#rid-first_name').val();
+    var last_name  = $('#rid-last_name').val();
+    var send_data  = { first_name:first_name, last_name:last_name, event_id:<%=@event.id%>};
+
+    $.ajaxSetup({ timeout: 10000 });
+
+    $.ajax({
+      type:     'GET',
+      url:      '/ce_credits/get_reg_id',
+      // dataType: 'JSON',
+      data:     send_data,
+      success: function(srv_data) {
+        response = srv_data;
+
+        alert(response[0].message);
+        if (response[0].status==="Success") {
+          $('#registration_id').val(response[0].reg_id);
+          $('#last_name').val(last_name);
+          toggleRegIdBox();
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        if (EKSGrid.debug) console.log("ajax error");
+        if (EKSGrid.debug) console.log(jqXHR);
+        if (EKSGrid.debug) console.log(textStatus);
+        if (EKSGrid.debug) console.log(errorThrown);
+      }
+    });
+  }
+
+  initializeRegIdBox();
+
+  $("#forgot-reg-id").on('click touchstart', function(e) { e.preventDefault(); toggleRegIdBox(); });
+
+  $('#close_reg_id_box').on('click touchstart', function(e) { e.preventDefault(); toggleRegIdBox(); });
+
+  $('#get-rid').on('click touchstart', function(e) { e.preventDefault(); getAttendeeRegId(); });
+
+</script>
+
+  </body>
+
+</html>

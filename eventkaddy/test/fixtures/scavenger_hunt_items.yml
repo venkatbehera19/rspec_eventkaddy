@@ -1,0 +1,17 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   event_file_id: 1
+#   exhibitor_id: 1
+#   name: MyString
+#   description: MyString
+#   answer: MyString
+
+# two:
+#   event_id: 1
+#   event_file_id: 1
+#   exhibitor_id: 1
+#   name: MyString
+#   description: MyString
+#   answer: MyString

@@ -1,0 +1,36 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+wb.styles do |s|
+
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+	heads = ['First Name', 'Last Name', 'Company', 'Title', 'Email', 'Phone']
+
+	style =  []
+
+  long_text_style  = s.add_style :alignment => { :horizontal=> :left, :word_wrap => true }
+  light_grey_cell_left_align = s.add_style :bg_color => "A6A0A2", :fg_color => "FF", :sz => 16
+
+	heads.each do |h|
+		style << black_cell
+	end
+	wb.add_worksheet(name: "Video Views Report") do |sheet|
+    sheet.merge_cells "A1:E1"
+    sheet.add_row [ "Attendees List for CE checked-in Session: #{@session_code} - #{@session_title} " ], :style => light_grey_cell_left_align
+    sheet.add_row
+	  sheet.add_row heads, :style => style
+
+	  !@ce_checkedin_attendees.blank? && @ce_checkedin_attendees.each do |attendee|
+      sheet.add_row [
+        attendee.first_name, 
+        attendee.last_name,
+        attendee.company, 
+        attendee.title, 
+        attendee.email, 
+        attendee.mobile_phone.to_s + ' ' + attendee.business_phone.to_s
+      ], :height => 15, :style => long_text_style
+    	sheet.column_widths 20,20, 40, 40, 30, 20
+    end
+	end
+end

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  event_id: 1
+  name: MyString
+  content: MyText
+  template_type_id: 1
+
+two:
+  event_id: 1
+  name: MyString
+  content: MyText
+  template_type_id: 1

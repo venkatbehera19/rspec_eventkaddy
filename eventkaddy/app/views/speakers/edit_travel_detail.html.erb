@@ -1,0 +1,85 @@
+<%= form_for(@speaker_travel_detail, :html => { :multipart => true, :class => "form-horizontal well" }, :url => {:action => "update_travel_detail"}   ) do |f| %>
+
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+  <hr/>
+
+  <% if @speaker_travel_detail.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@speaker_travel_detail.errors.count, "error") %> prohibited this speaker from being saved:</h2>
+
+      <ul>
+      <% @speaker_travel_detail.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.hidden_field :speaker_id, :value => @speaker.id %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :approved_arrival_date %>
+    <div class="d-flex col-sm-9 ml-0 pl-0">
+      <%= f.date_select :approved_arrival_date, {:include_blank => true, :default => nil}, class: "custom-select"  %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :approved_departure_date %>
+    <div class="d-flex col-sm-9 ml-0 pl-0">
+      <%= f.date_select :approved_departure_date, {:include_blank => true, :default => nil}, class: "custom-select"  %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :actual_arrival_date %>
+    <div class="d-flex col-sm-9 ml-0 pl-0">
+      <%= f.date_select :actual_arrival_date, {:include_blank => true, :default => nil}, class: "custom-select"  %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :actual_departure_date %>
+    <div class="d-flex col-sm-9 ml-0 pl-0">
+      <%= f.date_select :actual_departure_date, {:include_blank => true, :default => nil}, class: "custom-select"  %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :hotel_name %>
+    <%= f.text_field :hotel_name, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :hotel_confirmation_number %>
+    <%= f.text_field :hotel_confirmation_number, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :hotel_cost %>
+    <%= f.text_field :hotel_cost, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :hotel_reimbursement %>
+    <%= f.text_field :hotel_reimbursement, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :airfare_cost %>
+    <%= f.text_field :airfare_cost, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :airfare_reimbursement %>
+    <%= f.text_field :airfare_reimbursement, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :mileage %>
+    <%= f.text_field :mileage, class: "form-control" %>
+  </div>
+  <div class="form-group">
+    <%= f.label :comments %>
+    <%= f.text_area :comments, class: "form-control" %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Update" ,class:"btn btn-primary" %>
+  </div>
+  
+<% end %>

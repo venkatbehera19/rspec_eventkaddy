@@ -1,0 +1,148 @@
+<%= javascript_include_tag 'unordered-files/jquery.form.js' %>
+<%= javascript_include_tag 'unordered-files/image_upload.js' %>
+
+<%= form_for(@home_button_entry, :html => { :multipart => true, :class=>"bg-light custom-border px-3 py-3" } ) do |f| %>
+  <% if @home_button_entry.errors.any? %>
+    <div id="error_explanation" class="error">
+      <h4><%= pluralize(@home_button_entry.errors.count, "error") %> prohibited this home_button_entry from being saved:</h4>
+
+      <ul>
+      <% @home_button_entry.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% @home_button_group_id=@home_button_entry.group_id %>
+
+  <% end %>
+
+<div class="row">
+ <div class="col-sm-8">
+
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+  <div id="uploadedImages"></div><br>
+
+  <div id="spinner">
+    <%= image_tag "spinner.gif" %>
+  </div>
+  <div id="response"></div>
+
+        <div class="field">
+          <%= label_tag :event_file, "Upload a picture" %> <br>
+          <%= file_field_tag :event_file %>
+        </div>
+        <input type="button" value="Upload" id="SubmitUpload" class="btn btn-primary" /><br /><br />
+
+
+  <div class="field">
+    <%= f.hidden_field :group_id, :value => @home_button_group_id %>
+    <%= hidden_field_tag :json %>
+  </div>
+
+<!--  <div class="field">
+    <%= f.label :position %>
+    <%= f.text_field :position %><br /><br />
+  </div> -->
+
+  <!--div class="field">
+    <%= f.label :render_url %><br />
+    <%= f.text_field :render_url %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :image_file, "Icon Image"%><br />
+    <%= file_field_tag :image_file %>
+  </div-->
+
+  <div class="form-group">
+    <%= f.label :content %>
+    <%= f.cktext_area :content, :ckeditor => {:toolbar => "Full"} %>
+  </div>
+
+<%= label_tag "Position" %>
+<table id="tabstable" class="tabstable">
+  <thead>
+  <tr>
+    <th></th>
+    <th></th>
+  </tr>
+</thead>
+  <tr>
+    <td>
+      <ul id="position" class="connectedSortable">
+        <% @home_button_entries.each do |entry| %>
+          <li id="<%= entry.id %>" class="ui-state-default"><%= entry.name %></li>
+        <% end %>
+
+      </ul>
+    </td>
+    <td>
+      <%= label_tag :position, "Your New Entry", :style=>"text-align:center;" %>
+      <ul id="new_entry" class="highlighted">
+          <li id="new" class="highlighted ui-state-default">New Entry</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+ <div class="form-group">
+    <%= f.label :home_button_entry_type_id, 'Extras Type' %>
+    <%= f.select :home_button_entry_type_id, @home_button_entry_types.map{ |c| [c.name, c.id] }, {}, class: "custom-select" %>
+  </div>
+
+
+  <br />
+   <div class="actions">
+    <%= f.submit class:"btn btn-primary", :onclick=>"$('#event_file').val('');" %>
+  </div>
+</div>
+<div class="col-sm-3 ml-auto">
+  <div id="gallery">
+    <% if @event_files!=nil %>
+      <% @event_files.each do |file| %>
+      <div class="float">
+          <%= image_tag(file.path) %>
+
+          <p><%= link_to "Delete", {:controller => :event_files, :action => :destroy, :id => file.id}, { :method => :delete, :remote => true, :class =>'deleter btn delete'}   %></p>
+
+      </div>
+      <% end %>
+    <% end %>
+  </div>
+
+</div> <!--col-sm-3-->
+<% end %>
+
+<script>
+  if (/edit/i.test(window.location)) {
+    $("#new_entry").parent().remove();
+  }
+  $(function () {
+    $("#position, #new_entry").sortable({
+      connectWith: ".connectedSortable",
+      update: function () {
+        var newstatus = [];
+        $(this).children().each(function () {
+          var column, id, name, order;
+          column     = $(this).parent().attr("id");
+          id         = $(this).attr("id");
+          name       = $(this).html();
+          order      = $(this).index();
+          return newstatus.push({
+            id       : id,
+            column   : column,
+            name     : name,
+            order    : order
+          });
+        });
+        $("#json").empty().attr("value",JSON.stringify(newstatus));
+      }
+    })
+  });
+  $("#home_button_entry_name").blur(function () {
+    $("#new").empty().append(this.value);
+  });
+</script>

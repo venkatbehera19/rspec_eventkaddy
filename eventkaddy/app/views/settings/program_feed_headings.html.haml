@@ -1,0 +1,15 @@
+%h4 Program Feed Headings
+%br/
+.bg-light.custom-border.px-2.py-2.container-fluid
+    = form_for @program_feed_headings, :html => { :method => :post }, :url => '/settings/update_program_feed_headings' do |f|
+
+        .form-group
+            = f.label :program_title
+            = f.text_field :program_title, class: "form-control"
+        .form-group
+            = f.label :program_heading
+            = f.text_field :program_heading, class: "form-control"            
+
+
+        %br
+        = f.submit 'Update Video Portal Settings', class:'btn btn-primary'

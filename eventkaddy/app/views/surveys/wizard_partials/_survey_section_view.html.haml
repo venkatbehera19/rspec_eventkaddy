@@ -1,0 +1,49 @@
+.wizard-view.survey_section-view{data:{hash:'#survey_section'}}
+
+    .top-panel.btn-toolbar
+        .btn-group
+            .save_button.btn.btn-success{data:{'model' => 'survey_section', 'hash' => '#question'},style:'border-right:1px solid black;'}>
+                Save & Add Questions
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;border-right:1px solid black;'}>
+            %button.btn.btn-success.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}>
+                Save & . . .
+            .dropdown-menu.wizard-special-actions
+                %a.save_button.dropdown-item{data:{'model' => 'survey_section', 'hash' => '#survey_section'}}
+                    = '. . . Add Another Survey Section'
+                %div.dropdown-divider{:role => "separator"}
+                %a.save_button.dropdown-item{data:{'model' => 'survey_section', 'hash' => '#index'}}
+                    = '. . . Return to Index'
+                %a.save_button.dropdown-item{data:{'model' => 'survey_section', 'hash' => '#sessionassoc'}}
+                    = '. . . Go to Create Session Associations Page'
+                %a.save_button.dropdown-item{data:{'model' => 'survey_section', 'hash' => '#exhibitorassoc'}}
+                    = '. . . Go to Create Exhibitor Associations Page'
+                - if @survey.survey_type_id == 1
+                    %a.save_button.dropdown-item{data:{'model' => 'survey_section', 'hash' => '#certificateassoc'}}
+                        = '. . . Go to CE Certificate Associations Page'
+                %a.save_button.dropdown-item{data:{'model' => 'survey_section', 'hash' => '#questionorder'}}
+                    = '. . . Go to Modify Question Order Page'
+
+        .btn-group.wizard-bar-btn-group{style:'margin-left:0px;'}>
+            %button.btn.btn-primary.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+                Don't Save & . . .
+            .dropdown-menu.wizard-special-actions
+                %a.dropdown-item{:href => "/surveys"}
+                    = '. . . Return to Index'
+
+
+        .ml-auto.wizard-bar-btn-group
+            .wizard-removal.btn.btn-danger{data:{'model' => 'survey_section'}}
+                X Remove This Survey Section
+
+    .wizard-form.survey_form
+
+        Survey Sections provide a way to group sets of questions together. Heading and sub-heading may be left blank if they are not desired.
+
+        .form-group
+            %label#survey_section-label.wizard-label{for: "survey_section_heading"} Survey Section Heading (will be bold)
+            %input#survey_section_heading.wizard-input.form-control
+
+        .form-group
+            %label.wizard-label{for: "survey_section_subheading"} Survey Section Sub-heading (some extra, unbolded details)
+            %textarea#survey_section_subheading.wizard-input.form-control

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <title>EventKaddy CMS</title>
+        <%= stylesheet_link_tag    "application" %>
+        <%= javascript_include_tag "application" %>
+        <%= javascript_include_tag '/raty/js/jquery.raty.min.js'%>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <%= csrf_meta_tag %>
+
+        <% @event_setting = EventSetting.where("event_id= ?",session[:event_id]).first %>
+        <% preview_tab_id = TabType.find_by(controller_action: 'preview', portal:"exhibitor")&.id %>
+        <%  @tab_type_ids = TabType.where(portal:"exhibitor").ids%>
+        <%#  TabType.where(portal:"exhibitor").each do |t| %>
+            <%# @tab_type_ids.push(t.id) %>
+        <%# end %>
+
+        <% @tabs = Tab.where(event_id:session[:event_id],tab_type_id:@tab_type_ids, enabled:true).order(:order) %>
+    </head>
+
+    <body>
+        <div class="d-flex" id="wrapper">
+
+            <div class="accordion bg-light border-right" id="sidebar-wrapper">
+                <div class="brand-logo text-center">
+                    <% if (@event_setting && @event_setting.event_file_portal_logo) then %>
+                        <a href="/">
+                            <%= image_tag(@event_setting.event_file_portal_logo.path, :size=>'100x40') %>
+                        </a>
+                    <% else %>
+                        <a href="/">
+                            <!-- <img src="/assets/ek_logo.png" width="100px" height="40px"> -->
+                            <%= image_tag 'ek_logo_large.png', width: "100px", height: "40px" %>
+                        </a>
+                    <% end %>
+                </div>
+                <div class="list-group">
+                    <% if !(@tabs.length==0) %>
+                        <% @tabs.each do |tab| %>
+                            <% if tab.tab_type_id != preview_tab_id %>
+                                <%= link_to "/exhibitor_portals/#{tab.tab_type.controller_action}", class: "list-group-item list-group-item-action d-flex" do %>
+                                    <div class="icon-div"></div> <%= tab.name %>
+                                <% end %>
+                            <% else %>
+                                <% exhibitor_staff = current_user.is_a_staff? ? ExhibitorStaff.find_by_user_id(current_user.id) : ExhibitorStaff.where(exhibitor_id: current_user.first_or_create_exhibitor( session[:event_id] ).id, event_id:session[:event_id], user_id: current_user.id, is_exhibitor:true).first_or_create %>
+                                <%= link_to "#{Event.find(session[:event_id]).virtual_portal_url}/exhibitors/exhibitor_profile_preview/#{exhibitor_staff.slug}", target: '_blank', class: "list-group-item list-group-item-action d-flex" do %>
+                                <div class="icon-div"></div> <%= tab.name %>
+                                <% end %>
+                            <% end %>
+                        <% end %>
+                    <% else %>
+                        <%= link_to "/exhibitor_portals/landing", class: "list-group-item list-group-item-action d-flex" do %>
+                            <div class="icon-div"></div>Welcome
+                        <% end %>
+                        <%= link_to "/exhibitor_portals/show_exhibitordetails", class: "list-group-item list-group-item-action d-flex" do %>
+                            <div class="icon-div"></div>Exhibitor Details
+                        <% end %>
+                        <%= link_to "/exhibitor_portals/messages", class: "list-group-item list-group-item-action d-flex" do %>
+                            <div class="icon-div"></div>Conference Messages
+                        <% end %>
+                        <%= link_to "/exhibitor_portals/show_message", class: "list-group-item list-group-item-action d-flex" do %>
+                            <div class="icon-div"></div>Exhibitor Page Content
+                        <% end %>
+                        <%= link_to "/exhibitor_products", class: "list-group-item list-group-item-action d-flex" do %>
+                            <div class="icon-div"></div>Exhibitor Products
+                        <% end %>
+                    <% end %>
+                </div>
+
+            </div>
+
+            <div id="page-content-wrapper">
+                <% if user_signed_in? && !current_user.id.eql?(true_user.id) %>
+					<div class="impersonate-banner">
+						You are signed-in as <%= current_user.email %>&nbsp;
+						<%= link_to "Back to admin", stop_impersonating_users_path, method: :post %>
+					</div>
+				<% end %>
+                <nav class="navbar navbar-expand-xl bg-celurean-custom navbar-dark">
+                    <svg id="menu-toggle" class="opened" width="30" height="30" viewBox="0 0 100 100" onclick="this.classList.toggle('opened');">
+                        <path class="line line1" d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058" />
+                        <path class="line line2" d="M 20,50 H 80" />
+                        <path class="line line3" d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942" />
+                    </svg>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#speaker-portal-navcollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="speaker-portal-navcollapse">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item"><%= link_to "Home", "/home/index", class: "nav-link" %></li>
+                            <% if user_signed_in? %>
+                                <% settings = Setting.return_exhibitor_portal_settings session[:event_id] %>
+                                <% unless settings.method("hide_change_password").call %>
+                                    <li class="nav-item"><%= link_to "Change Password", "/exhibitor_portals/edit_account", class: "nav-link" %></li>
+                                <% end %>
+                                <li class="nav-item"><%= link_to "Logout #{current_user.email}", destroy_user_session_path, :method => :delete, class: "nav-link" %></li>
+                            <% else %>
+                                <%# I'm not sure this else would ever be triggered; 
+                                    probably leftover from copying application layout %>
+                                <li class="nav-item"><%= link_to "Speaker Portal", "/users/sign_in", class: "nav-link" %></li>
+                                <li class="nav-item"><%= link_to "Manager Login", "/users/sign_in", class: "nav-link" %></li>
+                            <% end %>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="container content-container500 mt-4 content-containerp5">
+
+                    <% if (!(@event_setting.nil?) && !(@event_setting.exhibitor_banner_event_file_id.blank?)) %>
+                        <%= image_tag(EventFile.find(@event_setting.exhibitor_banner_event_file_id).path, width:'100%', style: "height: auto;") %><br><br>
+                    <% end %>
+
+                    <div id="user_defined_header">
+                        <% if (@current_tab!=nil && @current_tab.header_text!=nil && @current_tab.header_text.length > 0) %>
+                            <hr class="soften">
+                            <%=@current_tab.header_text.html_safe %>
+                            <hr class="soften">
+                        <% end %>
+                    </div>
+
+                    <div id="content">
+                        <% if notice %>
+                            <div class="alert alert-info shadow" role="alert" style="border-left:#178acc 5px solid; border-radius: 0px">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true" style="color:#178acc">&times;</span>
+                                </button>
+                                <div class="row">
+                                        <i class="fa fa-check-circle-o info-font"></i>
+                                        <p style="font-size:12px;color:#178acc !important;" class="mb-0 font-weight-light"><%= notice %></p>
+                                </div>
+                            </div>
+                        <% end %>
+                        <% if alert %>
+                            <div class="alert alert-danger shadow" role="alert" style="border-left:#721C24 5px solid; border-radius: 0px">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true" style="color:#721C24">&times;</span>
+                                </button>
+                                <div class="row">
+                                        <i class="fa fa-exclamation-circle danger-font"></i>
+                                        <p style="font-size:12px" class="mb-0 font-weight-light"><%= alert %></p>
+                                </div>
+                            </div>
+                        <% end %>
+
+                        <%= yield %>
+                    </div>
+
+                    <div id="user_defined_footer">
+                        <% if @current_tab!=nil && @current_tab.footer_text!=nil && @current_tab.footer_text.length > 0 %>
+                            <hr class="soften">
+                            <%= @current_tab.footer_text.html_safe %>
+                            <hr class="soften">
+                        <% end %>
+                    </div>
+                    <hr>
+
+                    <div class="footer">
+                        <div class="footer-text">
+                            <% if (!(@event_setting.nil?) && (@event_setting.support_email_address!=nil)) %>
+                                Questions? Email <strong><a href="mailto:<%=@event_setting.support_email_address %>?subject=Exhibitor Portal Inquiry" class="portal_email"><%= @event_setting.support_email_address %></a></strong>
+                            <% else %>
+                                Questions?  Email support@eventkaddy.com
+                            <% end %>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,151 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one: &one
+  organization: Fiserv #org_id
+  event_file: one #logo_event_file_id
+  name: Best Event
+  description: MyText
+  splash_screen: MyString
+  background_color: MyString
+  logo: MyString
+  email_title: MyString
+  email_body: MyText
+  facebook_title: MyString
+  facebook_body: MyText
+  twitter_body: MyString
+  event_start_at: 2017-05-10 11:36:31
+  event_end_at: 2017-05-10 11:36:31
+  address_line1: MyString
+  address_line2: MyString
+  city: MyString
+  state: MyString
+  zip: MyString
+  longitude: 9.99
+  latitude: 9.99
+  url_web: MyString
+  url_facebook: MyString
+  url_twitter: MyString
+  url_rss: MyString
+  exhibitors: false
+  enhanced_listings: false
+  sponsorship: false
+  iphone: false
+  android: false
+  mobile_site: false
+  touchscreen: false
+  soma_record: false
+  notification_UA_AK: MyString
+  notification_UA_AMS: MyString
+  utc_offset: "+12:00"
+  master_url: MyString
+  diy_status: 1
+  diy_login_ct: 0
+  diy_login_ct_allowed: 1
+  diy_fullscale: 0
+  multi_event_status: 1
+  diy_username: my_user_name
+  diy_user_pass: my_user_pass
+  event_server: MyString
+  flare_enabled: 1
+
+two: &two
+  organization: two  #org_id
+  event_file: two   #logo_event_file_id
+  name: Worst Event
+  description: MyText
+  splash_screen: MyString
+  background_color: MyString
+  logo: MyString
+  email_title: MyString
+  email_body: MyText
+  facebook_title: MyString
+  facebook_body: MyText
+  twitter_body: MyString
+  event_start_at: 2017-05-10 11:36:31
+  event_end_at: 2017-05-10 11:36:31
+  address_line1: MyString
+  address_line2: MyString
+  city: MyString
+  state: MyString
+  zip: MyString
+  longitude: 9.99
+  latitude: 9.99
+  url_web: MyString
+  url_facebook: MyString
+  url_twitter: MyString
+  url_rss: MyString
+  exhibitors: false
+  enhanced_listings: false
+  sponsorship: false
+  iphone: false
+  android: false
+  mobile_site: false
+  touchscreen: false
+  soma_record: false
+  notification_UA_AK: MyString
+  notification_UA_AMS: MyString
+  utc_offset: "+12:00"
+  master_url: MyString
+  diy_status: 0
+  diy_login_ct: 0
+  diy_login_ct_allowed: 0
+  diy_fullscale: 0
+  multi_event_status: 0
+  diy_username: my_user_name
+  diy_user_pass: my_user_pass
+  event_server: MyString
+  flare_enabled: 0
+
+three:
+  id: 64
+  organization: two  #org_id
+  event_file: two   #logo_event_file_id
+  name: Worst Event
+  description: MyText
+  splash_screen: MyString
+  background_color: MyString
+  logo: MyString
+  email_title: MyString
+  email_body: MyText
+  facebook_title: MyString
+  facebook_body: MyText
+  twitter_body: MyString
+  event_start_at: 2017-05-10 11:36:31
+  event_end_at: 2017-05-10 11:36:31
+  address_line1: MyString
+  address_line2: MyString
+  city: MyString
+  state: MyString
+  zip: MyString
+  longitude: 9.99
+  latitude: 9.99
+  url_web: MyString
+  url_facebook: MyString
+  url_twitter: MyString
+  url_rss: MyString
+  exhibitors: false
+  enhanced_listings: false
+  sponsorship: false
+  iphone: false
+  android: false
+  mobile_site: false
+  touchscreen: false
+  soma_record: false
+  notification_UA_AK: MyString
+  notification_UA_AMS: MyString
+  utc_offset: "+12:00"
+  master_url: MyString
+  diy_status: 0
+  diy_login_ct: 0
+  diy_login_ct_allowed: 0
+  diy_fullscale: 0
+  multi_event_status: 0
+  diy_username: my_user_name
+  diy_user_pass: my_user_pass
+  event_server: MyString
+  flare_enabled: 0
+
+fifty:
+  <<: *two
+  id: 50
+  name: Event 50

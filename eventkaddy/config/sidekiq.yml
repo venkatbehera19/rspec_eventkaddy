@@ -1,0 +1,34 @@
+# Sample configuration file for Sidekiq.
+# Options here can still be overridden by cmd line args.
+# Place this file at config/sidekiq.yml and Sidekiq will
+# pick it up automatically.
+---
+:concurrency: 10
+:timeout: 25
+:logfile: log/sidekiq.log
+:verbose: false
+# :schedule:
+#   external_api_imports:
+#     cron: "0 18 * * * *" # Runs every 18th hour of the day
+#     class: CronJobForExternalApiImportScriptsWorker
+# Sidekiq will run this file through ERB when reading it so you can
+# even put in dynamic logic, like a host-specific queue.
+# http://www.mikeperham.com/2013/11/13/advanced-sidekiq-host-specific-queues/
+:queues:
+  - critical
+  - default
+  - low
+  - exhibitor
+  - attendee_survey_image
+  - attendee_survey_image_queue
+  - cron_job_queue
+  - delete_order_for_attendee_queue
+
+# you can override concurrency based on environment
+development:
+  :verbose: true
+  :concurrency: 15
+production:
+  :concurrency: 25
+staging:
+  :concurrency: 15

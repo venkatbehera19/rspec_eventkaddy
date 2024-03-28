@@ -1,0 +1,28 @@
+#+TITLE: Setting up ssh and rsynce on a server
+
+* Explanation
+
+We use rsync to sync files between the cms and other servers, such as ones that host the videoplayer (duck) and the api. 
+
+We will setup a one-way pull with rsync. We will pull data to the videoplayer server from the cms
+
+* Steps
+
+Setup ssh
+1. Login to the videoplayer server. 
+2. Create a key pair by typing the command: ssh-keygen
+3. Don't erase existing keys, instead create a new file if the keys already exist.
+4. We will use the ssh-copy-id tool. If it is not installed, install it. The command is: ssh-copy-id username@remote_host(this will be the cms ip address)
+
+Setup Rsync
+1. Open the crontab (crontab -e) on the videoplayer server and add a command to run the rsync script every minute: 
+
+*/2 * * * * /home/deploy/.owncloud/run_rsync_oneway_sync_athena.sh >> /home/deploy/resync_debug_athena.txt 2>&1
+
+2. Navigate to where the script is being called and add these line to the script: 
+
+#!/bin/bash
+date
+rsync -avh deploy@192.168.145.16:/home/deploy/owncloud_files/ox-event_data_sync/ /home/deploy/ownCloud/ox-event_data_sync_athena
+
+

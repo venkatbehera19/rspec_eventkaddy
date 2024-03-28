@@ -1,0 +1,123 @@
+wb = xlsx_package.workbook
+
+wb.styles do |s|
+  black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :center }
+
+  heads = [
+    "First Name",
+    "Last Name",
+    "Title",
+    "HR Focus",
+    "Organization",
+    "Time in Role",
+    "# Initiated Scan",
+    "# Scanned",
+    "Total Connections",
+    "",
+    "Total Connections For Everyone"
+  ]
+
+  style = heads.map {|h| black_cell }
+  style[ heads.length - 2 ] = false
+
+  # could do a join on attendee query instead, but there are few
+  # enough attendees for this event it is not worth the time to
+  # optomize
+  get_tag = ->( parent_name, attendee ) do
+    parent = Tag.select(:id).where(name: parent_name, event_id:@event.id).first
+    parent_id = parent && parent.id
+    result = attendee.tags.where(parent_id: parent_id).first
+    result && result.name
+  end
+
+  total_count = 0
+
+  wb.add_worksheet(name: "Participants") do |sheet|
+    sheet.add_row heads, :style => style
+    Attendee.where(event_id:@event.id).each { |a|
+      init_count = AttendeeScan.where(initiating_attendee_id:a.id).count
+      scanned_by_count = AttendeeScan.where(target_attendee_id:a.id).count
+      row = [
+        a.first_name,
+        a.last_name,
+        a.title,
+        get_tag[ "HR Focus", a ],
+        get_tag[ "Organization", a ],
+        a.custom_filter_1,
+        init_count,
+        scanned_by_count,
+        init_count + scanned_by_count,
+        "",
+        ""
+      ]
+      sheet.add_row row
+      sheet.column_widths *row.map{ |i| 30 }
+
+      total_count += (init_count + scanned_by_count)
+    }
+
+    sheet.rows[1].cells[ heads.length - 1 ].value = total_count
+  end
+
+  # category_data must be a hash with the following values:
+  # name, initiated_scan, scanned, total_scans
+  info_summary_sheet_from_attendee_subset = ->(workbook, category_data, sheet_title) do
+    workbook.add_worksheet(name: sheet_title) do |sheet|
+
+      heads = [ sheet_title, "Initiated Scan", "Scanned", "Total Scans" ]
+      sheet.add_row heads, :style => heads.map {|h| black_cell }
+
+      category_data.each do |c|
+        row = [c[:name], c[:initiated_scan], c[:scanned], c[:total_scans]]
+        sheet.add_row row
+        sheet.column_widths *row.map{ |i| 30 }
+      end
+    end
+  end
+
+  category_stats = ->( attendee_ids_by_category ) do
+    attendee_ids_by_category.map do |k, v|
+      r = {
+        name:           k,
+        initiated_scan: AttendeeScan.where(initiating_attendee_id: v).count,
+        scanned:        AttendeeScan.where(target_attendee_id: v).count
+      }
+      r[:total_scans] = r[:initiated_scan] + r[:scanned]
+      r
+    end
+  end
+
+  attendee_ids_by_title = Hash.new {|h,k| h[k] = [] }
+  Attendee.select("id, title").where(event_id: @event.id).each do |a|
+    next if a.title.blank?
+    attendee_ids_by_title[ a.title ] << a.id
+  end
+
+  attendee_ids_by_tag = ->( parent_tag_name ) do
+    result = {}
+    parent_id = Tag.where(name: parent_tag_name, event_id: @event.id).first.id
+    Tag.select("id, name").where(parent_id: parent_id).each do |tag|
+      result[tag.name] = tag.attendees.map &:id
+    end
+    result
+  end
+
+  info_summary_sheet_from_attendee_subset[ wb, category_stats[ attendee_ids_by_title ], "Title" ]
+
+  ["HR Focus", "Organization"].each do |tag_name|
+    info_summary_sheet_from_attendee_subset[
+      wb,
+      category_stats[ attendee_ids_by_tag[tag_name] ],
+      tag_name 
+    ]
+  end
+
+  attendee_ids_by_custom_filter_1 = Hash.new {|h,k| h[k] = [] }
+  Attendee.select("id, custom_filter_1").where(event_id: @event.id).each do |a|
+    next if a.custom_filter_1.blank?
+    attendee_ids_by_custom_filter_1[ a.custom_filter_1 ] << a.id
+  end
+
+  info_summary_sheet_from_attendee_subset[ wb, category_stats[ attendee_ids_by_custom_filter_1 ], "Time in Role" ]
+
+end

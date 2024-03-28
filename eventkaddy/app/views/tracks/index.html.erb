@@ -1,0 +1,56 @@
+<h4>Listing tracks for:<b> <%= session[:event_name] %></b></h4>
+
+<%= link_to 'New Track', new_track_path,class:"btn btn-primary" %> <br/><br/>
+
+<!--div id="new-track"-->
+<% if (false) then %>
+	<%= link_to 'New Track', new_track_path, :id => "new-form-link", :remote => true, :"data-type" => 'script',class:"btn btn-primary" %> <br/><br/>
+	<a href="" id="hide-form-link">hide</a>
+	<%= render 'form' %>
+<% end %>
+<!--/div-->
+
+<% columns = [{:type => 'html', :class => "first"},{:type => nil, :sortable => 'false'},{:type => nil, :sortable => 'false'}, {:type => nil, :class => "last", :sortable => 'false'}] %>
+<%= datatable(columns, {:sort_by => "[0, 'desc']", :processing => image_tag("spinner.gif") }).html_safe %>
+
+<table id="index-table" class="datatable">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <!--th>Track color</th-->
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </thead>
+  
+ <tbody> 
+<% count=0 %>
+<% @tracks.each do |track| %>
+  <% count=count+1
+  puts count
+   %>
+  <% if count==@tracks.length %>
+  	<tr class="last-row">
+  <% else %>
+    <tr>
+  <% end %>
+  
+    <td><%= track.name %></td>
+    <!--td><div id="track-color-<%= track.id %>" style='background-color:#<%= track.track_color %>;width:50px;height:20px;display:block'></div></td-->
+    <td><%= link_to 'Show', track ,class:"btn show" %></td>
+    <td><%= link_to 'Edit', edit_track_path(track) ,class:"btn edit" %></td>
+    <td><%= link_to 'Delete', track, :confirm => 'Are you sure?', :method => :delete ,class:"btn delete" %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+<br />
+
+<script type="text/javascript">
+ 
+ $('#new-track-form').hide();
+ $('#hide-form-link').hide();
+    
+</script>

@@ -1,0 +1,4 @@
+#+TITLE: CMS Development and Maintenance Goals
+
+* Trouble spots (old, needlessly complex code)
+Session file and session file versions have some complicated logic for accomplishing actually very simple tasks. Very early projects.

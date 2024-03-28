@@ -1,0 +1,17 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   session_file_id: 1
+#   user_id: 1
+#   event_file_id: MyString
+#   event_file_type_id: MyString
+#   final_version: false
+
+# two:
+#   event_id: 1
+#   session_file_id: 1
+#   user_id: 1
+#   event_file_id: MyString
+#   event_file_type_id: MyString
+#   final_version: false

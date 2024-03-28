@@ -1,0 +1,9 @@
+<% last_room = nil %>
+<% @rooms.each do |r| %>
+    <% if last_room != r.name %>
+        <h4><%= link_to r.name, "/location_mappings/#{r.id}" %></h4>
+    <% else %>
+        <%=link_to r.s_title, "/sessions/#{r.s_id}" %><br>
+    <% end %>
+    <% last_room = r.name %>
+<% end %>

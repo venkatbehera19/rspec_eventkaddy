@@ -1,0 +1,17 @@
+# # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+# one:
+#   event_id: 1
+#   name: MyString
+#   status: MyString
+#   row: 1
+#   total_rows: 1
+#   error_message: MyText
+
+# two:
+#   event_id: 1
+#   name: MyString
+#   status: MyString
+#   row: 1
+#   total_rows: 1
+#   error_message: MyText

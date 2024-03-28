@@ -1,0 +1,52 @@
+wb = xlsx_package.workbook
+xlsx_package.use_autowidth = true
+
+def add_basic_info(sheet, s)
+	bold_cell = s.add_style :sz => 16
+	sheet.add_row ["Session Code: #{@session.session_code}"], style: bold_cell, :height => 30
+	sheet.add_row ["Title: #{@session.title}"], style: bold_cell, :height => 30
+	sheet.add_row ["Speakers: #{@session.speakers.map {|s| s.full_name}.join(', ')}"], style: bold_cell, :height => 30
+	sheet.add_row ["Date: #{@session.date}"], style: bold_cell, :height => 30
+	sheet.add_row ["Time: #{@session.start_at.strftime('%T')} - #{@session.end_at.strftime('%T')}"], style: bold_cell, :height => 30
+end
+
+def add_headers(sheet, s)
+	black_cell = s.add_style :bg_color => "00", :fg_color => "FF", :sz => 14, :alignment => { :horizontal=> :left }
+	style = []
+	heads = ['Registration ID', 'Attendee Name']
+	@session.surveys.first.questions
+		.order('questions.survey_section_id, questions.order')
+		.each {|q| heads << q.question; @question_ids << q.id }
+	heads << "Response Last Updated At"
+  heads << "(Local Time) Response Last Updated At"
+	heads.each {|h| style << black_cell }
+	sheet.add_row heads, :style => style
+end
+
+@question_ids = []
+
+utc_offset = Event.find( @session.event_id ).utc_offset || "+00:00"
+
+wb.styles do |s|
+
+	wb.add_worksheet(name: "Survey Results") do |sheet|
+
+		add_basic_info sheet, s
+		sheet.add_row []
+		add_headers sheet, s
+
+		SurveyResponse.where(session_id:@session.id).order('attendee_id').each do |sr|
+
+			attendee = Attendee.find(sr.attendee_id)
+			responses = sr.responses
+			row = [attendee.account_code, attendee.full_name]
+
+      next if responses.blank?
+      row.concat Answer.answers_as_array( @question_ids, responses ) 
+			row << sr.updated_at.to_s
+      row << Time.parse("#{sr.updated_at.strftime('%Y-%m-%d %H:%M:%S')}Z").localtime(utc_offset).to_s
+
+			sheet.add_row row
+		end
+	end
+end

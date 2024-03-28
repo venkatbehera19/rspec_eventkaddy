@@ -1,0 +1,19 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Mobile Phone</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% attendees.each do |attendee| %>
+    <tr>
+      <td> <%= attendee.full_name %> </td>
+      <td> <%= attendee.email %> </td>
+      <td> <%= attendee.mobile_phone %> </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= hidden_field_tag :total_pages, total_pages %>

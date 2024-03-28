@@ -1,0 +1,72 @@
+<% store_name ==  "App Store" ? downloadBtnType="ios" : downloadBtnType="android"%>
+<div id="errorMessage-<%=downloadBtnType%>" class="col-sm-8 mx-auto" style="word-break: break-all; "></div>
+<div class="col-sm-8 mx-auto d-flex justify-content-end">
+  <div class="actions" id="<%=downloadBtnType%>-download-btn-container">
+    <% if job_status=="error" %>
+      <%= link_to download_zip_app_submission_form_uploads_path(form_id: app_submission_form.id), id: "download-btn-#{downloadBtnType}", class: "btn btn-outline-dark download-zip",method: :get ,remote: true do %>Create Zip<%end%>
+    <%elsif (job_status=="started" || job_status=="inProgress") %>
+      <%= link_to "#", id: "download-btn-#{downloadBtnType}", class: "btn btn-outline-info disabled download-zip" ,remote: true do %>
+        <span style="margin-right:10px;" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        Creating Zip...
+      <%end%>
+    <%elsif job_status=="completed"%>
+      <%= link_to download_zip_app_submission_form_uploads_path(form_id: app_submission_form.id), id: "download-btn-#{downloadBtnType}", class: "btn btn-outline-success download-zip", data: {turbolinks: false} do %>Download Zip<%end%>
+    <%end%>
+
+  </div>
+</div>
+
+<script>
+  (function(){
+    let btnType      = "<%= downloadBtnType %>"
+    let jobStatus    = "<%= job_status %>"
+    let errorMessage = "<%= error_message %>"
+    let socket_url   = "<%= @socket_url %>"
+    let CLIENT       = new Faye.Client(socket_url + "/faye");
+    let form_id      = "<%= form_id.to_s %>"
+    let downloadBtn  = $(`#download-btn-${btnType}`)
+
+    createSocketConnection();
+    
+    if(jobStatus == "error"){
+      onError(errorMessage);
+    }
+
+    function createSocketConnection(){
+      CLIENT.subscribe('/app_submission_forms/'+ form_id, function (payload) {
+        if(payload.status=="completed"){
+          download_button_state(payload.status,btnType);
+        }else if(payload.status=="error"){
+          download_button_state(payload.status,btnType);
+          onError(payload.message);
+        }
+      })
+    }
+
+    function onError(data) {
+      $(`#errorMessage-${btnType}`).html(`<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>${data}</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>`);
+    }
+  
+    function  download_button_state(job_status,btnType) {
+      downloadBtn = $(`#download-btn-${btnType}`)
+      switch (job_status) {
+        case "started":
+        case "inProgress":
+          downloadBtn.text("Creating Zip...");
+          downloadBtn.prepend('<span style="margin-right:10px;" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>');
+          downloadBtn.addClass("btn-outline-info disabled");
+          downloadBtn.removeClass("btn-outline-dark");
+          break;
+        case "completed":
+          $(`div#${btnType}-download-btn-container a:first`).replaceWith(`<a id='download-btn-${btnType}' class='btn btn-outline-success download-zip' data-turbolinks='false'href='/app_submission_form_uploads/download_zip?form_id=${form_id}'>Download Zip</a>`);
+          break;
+        case "error":
+          $(`div#${btnType}-download-btn-container a:first`).replaceWith(`<a id='download-btn-${btnType}' class='btn btn-outline-dark download-zip' data-remote="true" href='/app_submission_form_uploads/download_zip?form_id=${form_id}'>Create Zip</a>`);
+          break;
+        default:
+          break;
+      }
+    }
+
+  })();
+</script>

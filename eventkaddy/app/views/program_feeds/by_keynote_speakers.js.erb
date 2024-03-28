@@ -1,0 +1,9 @@
+$("#keynote-speaker-cards").html("<%= j (render partial: 'speakers_list', locals: {speakers: @keynote_speakers}) %>");
+
+$('#total_pages_keynote').val("<%= @total_pages_keynote%>")
+
+$('.keynote-speakers-pagination').removeAttr("disabled");
+if (sel_filter.speakerKeynotePage <= 1)
+	$("#prev_keynote_speakers").attr("disabled", "disabled");
+if (sel_filter.speakerKeynotePage >= parseFloat($("#total_pages_keynote").val()))
+	$("#next_keynote_speakers").attr("disabled", "disabled");

@@ -1,0 +1,165 @@
+<div class="filters-container mb-2">
+	<div class='d-flex'>
+		<div class="selected-attendee-groups col-11">
+
+		</div>
+		<button class="btn ml-auto" data-toggle="collapse" type="button" data-target="#filter_controls">
+			<i class="fa fa-expand"></i>
+		</button>
+	</div>
+	
+	<div id="filter_controls" class="collapse show">
+		<div class="row mt-2">
+			<div class="input-group col-md-4">
+				<input class="app_message_input form-control " id="app_message_company" placeholder="Company" > 
+				<div class="input-group-append">
+					<div id="company" class="app_message_btn btn btn-secondary">
+						<i class="fa fa-sitemap"></i>
+					</div>
+				</div>
+			</div>
+			<div class="input-group col-md-4">
+				<input class="app_message_input form-control" id="app_message_business_unit" placeholder="Business Unit"> 
+				<div class="input-group-append">
+					<div id="business_unit" class="app_message_btn btn btn-secondary">
+						<i class="fa fa-building"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group col-md-4">
+				<input class="app_message_input form-control" id="app_message_attendee" placeholder="Attendee"> 
+				<div class="input-group-append">
+					<div id="attendee" class="app_message_btn btn btn-secondary">
+						<i class="fa fa-address-card"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group col-md-4 mt-md-2">
+				<input class="app_message_input form-control" id="app_message_exhibitor" placeholder="Exhibitor"> 
+				<div class="input-group-append">
+					<div id="exhibitor" class="app_message_btn btn btn-secondary">
+						<i class="fa fa-globe"></i>
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group col-md-4 mt-md-2">
+				<%= select_tag :date, options_for_select(@date_range, @date_range.first), class: "custom-select" %> 
+				<div class="input-group-append">
+					<div id="incomplete_survey_attendees_date" class="app_message_btn btn btn-secondary" style="width: initial;">
+						Incomplete Survey
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group col-md-4 mt-md-2">
+				<%= select_tag :survey, options_from_collection_for_select(@survey, "id", "title"), class: "custom-select" %> 
+				<div class="input-group-append">
+					<div id="survey" class="app_message_btn btn btn-secondary" style="width: initial;">
+						Survey
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="input-group col-md-4 mt-md-2 px-0">
+			<%= select_tag :app_message_attendee_type, options_from_collection_for_select(@attendee_types, "id", "name"), class: "custom-select" %>
+			<div class="input-group-append">
+				<div id="attendee_type" class="app_message_btn btn btn-secondary" style="width: initial;">
+					Attendee Type
+				</div>
+			</div>
+		</div>
+		<button type="button" class="btn btn-outline-secondary d-block ml-auto" id="trigger_filter">
+			Filter
+		</button>
+	</div>
+</div>
+
+<%= form_for(@attendee, :html => { :class => "form-horizontal well", id: 'new_cms_message' }) do |f| %>
+  <% if @attendee.errors.any? %>
+    <div id="error_explanation">
+      <ul>
+      <% @attendee.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <span>Your message will be sent from attendee <b><%= @attendee.first_name + ' ' + @attendee.last_name %></b>.</span> <%= link_to('Click to Update Client Attendee',"/attendees/edit_client_attendee/#{@attendee.id}", class: "btn-link") %>
+	<div class="text-danger" style="font-size: 0.9rem;">If no filter is applied then the message will be sent to all the attendees of the event.</div>
+<br>
+
+		  	<% if true then %>
+			    <%= hidden_field_tag :attendee_data, "{}" %>
+		    <% end %>
+				<div class="field">
+					<% if true then %>
+						<%= hidden_field_tag :attendee_attendee_id, @attendee.id %>
+					<% end %>
+				</div>
+	
+	<div class="row">
+		<div class="col-md-6 px-1 py-1">
+			<h4 class="ml-2">Attendees</h4>
+			<div class="input-group mb-2">
+				<input class="form-control search-ui" id="attendee_search" placeholder="SEARCH" disabled="disabled">
+				<div class="input-group-append">
+					<button type="button" class="btn btn-secondary search-ui" id='clear_search' disabled="disabled" style="display: none;">
+						<i class="fa fa-times"></i>
+					</button>
+					<button type="button" class="btn btn-outline-success search-ui" id="trigger_search" disabled="disabled">
+						<i class="fa fa-search"></i>
+					</button>
+				</div>
+			</div>
+			<div class="filtered-attendees">
+			</div>
+		</div>
+
+		<div class="col-md-6 px-1 py-1">
+			<h4 class="ml-2">Message</h4>
+			<div class="new-message-container">
+				<div class="form-group">
+					<label>Title</label>
+					<%= text_field_tag :title, nil, class: "form-control", required: true %>
+				</div>
+
+				<div class="form-group">
+					<label>Content</label>
+					<%= text_area_tag :msg_content, nil, class: "form-control", rows: 8, required: true %>
+				</div>
+				<div class="actions">
+					<%= f.submit "Send Message!", class:"btn btn-primary"   %>
+				</div>
+			</div>
+		  
+		</div>
+	</div>
+
+<% end %>
+
+<script>
+	$(function() {
+
+		var append_autocomplete_data = function (input_id, url) {
+			$.getJSON(url, function (data) {
+				// console.log(data);
+				$( "#" + input_id ).autocomplete({
+					source: data,
+					minLength: 3
+				});
+			});
+		};
+
+		append_autocomplete_data("app_message_company","/attendees/app_message_company_data");
+		append_autocomplete_data("app_message_business_unit","/attendees/app_message_business_units_data");
+		append_autocomplete_data("app_message_attendee","/attendees/app_message_attendees_data");
+		append_autocomplete_data("app_message_exhibitor","/attendees/app_message_exhibitors_data");
+
+	});
+
+</script>

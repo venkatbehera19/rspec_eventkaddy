@@ -1,0 +1,67 @@
+:css
+  .email-link {
+      text-decoration: none;
+      color: inherit;
+  }
+
+  .survey-section {
+      margin-top:20px;
+      margin-bottom: 5px;
+  }
+
+  .survey-heading {
+      font-size:18px;
+      font-weight:bold;
+      color:#000000b8;
+  }
+
+  .response-table {
+    margin-right:20px !important;
+    max-width: 97%;
+  }
+
+.well
+  = link_to 'Back', '/exhibitor_portals/show_reports', class: 'btn btn-secondary'
+  %br
+  %br
+
+
+  %h2= @attendee.first_name + ' ' + @attendee.last_name 
+  %h4= @attendee.company
+  - if !@setting['hide_exhibitor_portal_attendee_email']
+    %h5= link_to @attendee.email, 'mailto: @attendee.email', class: 'email-link'
+  - if (!@setting['hide_exhibitor_portal_attendee_mobile_phone'] && !@setting['hide_exhibitor_portal_attendee_business_phone'])
+    %h5= "Contact: #{@attendee.business_phone}  #{@attendee.mobile_phone}"
+  -elsif !@setting['hide_exhibitor_portal_attendee_mobile_phone']
+    %h5= "Contact: #{@attendee.mobile_phone}"
+  -elsif !@setting['hide_exhibitor_portal_attendee_business_phone']
+    %h5= "Contact: #{@attendee.business_phone}"
+
+  - @surveys.each do |survey|
+    .survey-section
+      .survey-heading
+        Survey:
+        = survey.title
+    %table.table.table-striped.leaderboard-table.response-table{style:"max-width: 97% !important"}
+      %thead{style:"text-align:left;"}
+        %tr
+          %th{style:"width:50%;"} Questions
+          %th{style:"width:50%;"} Answers
+      %tbody
+      - Response.select("question_id, answer_id, response, rating, GROUP_CONCAT(answer_id SEPARATOR ',') AS ans_ids").where(survey_response_id: survey.survey_response_id).group(:question_id).each do |response|
+        %tr
+          %td.stat.google-api-font 
+            = Question.find(response.question_id).question
+          %td.google-api-font
+            - if response.ans_ids
+              = Answer.where(id: response.ans_ids.split(',')).map(&:answer).join(', ')
+            - elsif response.answer_id
+              = Answer.find(response.answer).answer
+            - elsif response.rating
+              = response.rating
+            - elsif response.response && Question.find(response.question_id).question_type_id == 4
+              = Answer.where(id: response.response.split(',')).map(&:answer).join(', ')
+            - else
+              = response.response
+
+

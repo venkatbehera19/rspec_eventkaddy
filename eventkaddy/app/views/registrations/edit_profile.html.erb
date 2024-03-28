@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-md-6 mx-auto <%= @settings.dark_bg_theme ? 'dark-themed-container' : '' %>">
+      <h2>Edit your profile</h2>
+
+      <%= form_for(@attendee, :html => { :class => "form" }, :url => {:action => "update_profile"}, :method => :put ) do |f| %>
+        <% if @attendee.errors.any? %>
+          <div id="error_explanation">
+            <h2><%= pluralize(@attendee.errors.count, "error") %> prohibited this form from being saved:</h2>
+
+            <ul>
+            <% @attendee.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+            </ul>
+          </div>
+        <% end %>
+        <%= f.hidden_field :slug, :value => params[:slug] %>
+
+        <% if @settings.locked_email %>
+          <div class='form-group attendee-profile-form-input'>
+            <%= f.label :email, :class => "registered-attendee-form-label"%>
+            <%= f.text_field :email, :readonly=>true, class: "form-control" %>
+          </div>
+        <% end %>
+
+        <% text_field = ->(col, label, options={}) {
+            if(@settings.respond_to?(col) &&  @settings.method("#{col}").call())
+              "<div class='form-group attendee-profile-form-input'>#{f.label col, label, {:class => "registered-attendee-form-label"}}#{f.text_field col, options}</div>".html_safe
+            end
+        } %>
+        <%= text_field["username",        "Username", class: "form-control"] %>
+        <%= text_field["first_name",      "First Name", class: "form-control"] %>
+        <%= text_field["last_name",       "Last Name", class: "form-control"] %>
+        <%= text_field["honor_prefix",    "Honor Prefix", class: "form-control"] %>
+        <%= text_field["honor_suffix",    "Honor Suffix", class: "form-control"] %>
+        <%= text_field["business_unit",   "Business Unit", class: "form-control"] %>
+        <%= text_field["title",           "Title", class: "form-control"] %>
+        <%= text_field["business_phone",  "Business Phone", class: "form-control"] %>
+        <%= text_field["mobile_phone",    "Mobile Phone", class: "form-control"] %>
+        <%= text_field["company",         "Company", class: "form-control"] %>
+        <%= text_field["twitter_url",     "Twitter URL", class: "form-control"] %>
+        <%= text_field["facebook_url",    "Facebook URL", class: "form-control"] %>
+        <%= text_field["linked_in",       "Linked In", class: "form-control"] %>
+
+        <%= text_field["biography",       "Biography", class: "form-control"] %>
+        <%= text_field["country",         "Country", class: "form-control"] %>
+        <%= text_field["state",           "State", class: "form-control"] %>
+        <%= text_field["city",            "City", class: "form-control"] %>
+        <%= text_field["custom_filter_3", "Email (visible in attendee list)", class: "form-control"] %>
+        <%= text_field["custom_fields_1", "Custom Fields 1", class: "form-control"] %>
+        <%= text_field["custom_fields_2", "Custom Fields 2", class: "form-control"] %>
+        <%= text_field["custom_fields_3", "Custom Fields 3", class: "form-control"] %>
+
+        <div class="actions ">
+          <%= f.submit "Update Profile", class:"btn btn-primary", style:"width:100%"   %>
+        </div>
+      <% end %>
+      <%= link_to "Back", "/#{params[:event_id]}/registrations/profile/#{params[:slug]}", class:"btn #{@settings.dark_bg_theme ? 'btn-outline-light' : 'btn-outline-dark'}" %>
+      <br/>
+  </div>
+</div>

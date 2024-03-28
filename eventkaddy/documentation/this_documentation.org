@@ -1,0 +1,13 @@
+#+TITLE: This Documentation
+
+* How to Add Documentation
+Simply add files to the documentation directory in the project root. They must use the .org extension, but they are simple text files and you can use other documents as examples to help you structure new documentation. Any number of subdirectories may be used to aid organization.
+
+Org stands for org-mode, an emacs package that has existed a very long time.  It is a good choice because it is durable (being readable in plain text), it is widely supported, it can be exported into numerous other formats, and it has an expansive yet terse feature set. It is similar to markdown, and at its core has a very clever tree structure philosophy to creating notes and tasks. Additional advantages of this form of documentation is the usability of unix tools and search-in-files type functionality.
+
+You will not need to add any routes or controller methods to create documentation. As a bonus, if you view org files on github, links to other files in the repo will be respected. When viewing in the cms, only links webpages will work.
+
+* Special Notes
+- links to files which aren't public will lead to github. They should be made relative to the org file linking them, and that relative link will be replaced by a gsub to github on the cms.
+- use https://olympus-cms.eventkaddy.net/ instead of a relative link, so that it will work on github. In browser, it will be gsubed for a relative link so that it works from localhost and olympus-cms alike.
+- use full links for any external resource like an api

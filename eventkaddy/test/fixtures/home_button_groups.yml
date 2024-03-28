@@ -1,0 +1,13 @@
+# # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+# one:
+#   event_id: 1
+#   name: MyString
+#   icon_button: MyString
+#   position: 1
+
+# two:
+#   event_id: 1
+#   name: MyString
+#   icon_button: MyString
+#   position: 1

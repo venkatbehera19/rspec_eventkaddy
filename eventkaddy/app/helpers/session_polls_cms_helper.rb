@@ -1,0 +1,2 @@
+module SessionPollsCmsHelper
+end
